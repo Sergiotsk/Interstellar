@@ -48,8 +48,8 @@
   --font-texto: 'Exo 2', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 
   /* --- Foco: anillo visible para el 100 % de controles y enlaces (FR-010) --- */
-  /* Usa el naranja de Gargantua: es el unico acento saturado del sitio */
-  --focus-anillo: #ea8232;
+  /* Usa el naranja de Gargantua: es el unico acento saturado del sitio (FR-017) */
+  --focus-anillo: var(--color-gargantua);
 
   /* --- Oscurecimiento de backdrops fotograficos (FR-019) --- */
   /* Uso: `filter: var(--backdrop-oscurecer);` sobre el fondo fotografico */
