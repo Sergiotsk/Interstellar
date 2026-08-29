@@ -661,3 +661,67 @@ section[id] p {
   font-family: var(--font-texto);
   color: var(--color-texto-atenuado);
 }
+
+/* ---------------------------------------------------------------------------
+   11. Seccion de eje con backdrop (feature 002 — mundos-content)
+   ---------------------------------------------------------------------------
+   Patron REUTILIZABLE por los cuatro ejes (Mundos primero; Personajes,
+   La Ciencia y El Viaje despues). Cada `section[id]` de contenido puede sumar
+   la clase `.eje-con-backdrop` para llevar una imagen de fondo propia,
+   oscurecida con `--backdrop-oscurecer` (FR-005), con respaldo de paleta si la
+   imagen no carga (caso limite). Sin custom properties nuevas: solo se
+   consumen las del contrato de la feature 001.
+
+   Contrato: specs/002-mundos-content/contracts/mundos-page.md
+   --------------------------------------------------------------------------- */
+.eje-con-backdrop {
+  position: relative;                 /* contexto para el .eje-backdrop absoluto */
+  overflow: hidden;                   /* el object-fit:cover no se derrama (FR-012, SC-003) */
+  isolation: isolate;                 /* nuevo contexto de apilamiento local */
+  /* Respaldo: si el backdrop no carga, el contenido conserva jerarquia y
+     legibilidad sobre la paleta (caso limite, FR-005). */
+  background-color: var(--color-fondo);
+}
+
+/* Imagen de fondo DECORATIVA (alt="" en el HTML). Cubre toda la seccion y se
+   oscurece para garantizar el contraste del texto encima (FR-005, SC-007). */
+.eje-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: var(--backdrop-oscurecer);
+  z-index: 0;
+}
+
+/* Contenido de la seccion por encima del backdrop. Reserva de padding propia
+   para separar el texto de los bordes de la imagen. */
+.eje-contenido {
+  position: relative;
+  z-index: 1;
+  padding: 0.5rem 0;
+}
+
+/* Sobre fondo fotografico, el texto secundario necesita un poco mas de
+   presencia que sobre la superficie plana del sitio (SC-006, SC-007). */
+.eje-con-backdrop .eje-contenido p,
+.eje-con-backdrop .eje-contenido li {
+  color: var(--color-texto);
+}
+
+.eje-con-backdrop .eje-contenido ul {
+  padding-left: 1.25rem;
+}
+
+.eje-con-backdrop .eje-contenido li {
+  margin: 0.25rem 0;
+  line-height: 1.6;
+}
+
+/* Halo oscuro suave para despegar los encabezados del brillo del backdrop,
+   igual criterio que el Hero de la home (SC-006). */
+.eje-con-backdrop .eje-contenido h2,
+.eje-con-backdrop .eje-contenido h3 {
+  text-shadow: 0 0 1rem var(--color-fondo);
+}
