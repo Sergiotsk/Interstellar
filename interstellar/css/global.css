@@ -725,3 +725,106 @@ section[id] p {
 .eje-con-backdrop .eje-contenido h3 {
   text-shadow: 0 0 1rem var(--color-fondo);
 }
+
+/* ---------------------------------------------------------------------------
+   12. Ficha de personaje con retrato en linea (feature 003 — personajes-content)
+   ---------------------------------------------------------------------------
+   Patron para el eje Personajes (reutilizable por La Ciencia / El Viaje si
+   necesitan contenido con imagen en linea). Cada `section[id]` lleva su <h2>
+   como hijo directo y un <div class="ficha-personaje"> que agrupa el retrato
+   (<figure class="ficha-retrato">) y el texto de la ficha. NO usa el patron
+   backdrop de la feature 002: el retrato es informativo, sin oscurecimiento.
+   Sin custom properties nuevas.
+
+   Contrato: specs/003-personajes-content/contracts/personajes-page.md
+   --------------------------------------------------------------------------- */
+.ficha-personaje {
+  margin-top: 0.5rem;
+}
+
+/* Limpia el float del retrato en escritorio para que la seccion no colapse. */
+.ficha-personaje::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Marco del retrato. Imagen INFORMATIVA: sin --backdrop-oscurecer, sin
+   posicionamiento absoluto. Respaldo de paleta si la imagen no carga
+   (caso limite, FR-006). */
+.ficha-retrato {
+  margin: 0 0 1.25rem;
+  background-color: var(--color-superficie);
+  border: 1px solid color-mix(in srgb, var(--color-texto) 12%, transparent);
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+/* Figura vacia (estado previo a incorporar el archivo del still): no reserva
+   un bloque roto en la maqueta. */
+.ficha-retrato:not(:has(img)) {
+  display: none;
+}
+
+.ficha-retrato img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.ficha-retrato figcaption {
+  padding: 0.5rem 0.75rem;
+  font-family: var(--font-texto);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--color-texto-atenuado);
+}
+
+/* Bloques de texto de la ficha: no heredan del patron .eje-con-backdrop,
+   asi que se estilan aca con las variables ya definidas. */
+.ficha-personaje h3 {
+  font-family: var(--font-hero-titulo);
+  font-size: clamp(1rem, 2.2vw, 1.15rem);
+  letter-spacing: 0.03em;
+  margin: 1.25rem 0 0.4rem;
+}
+
+.ficha-personaje h3:first-of-type {
+  margin-top: 0;
+}
+
+.ficha-personaje p,
+.ficha-personaje li {
+  font-family: var(--font-texto);
+  line-height: 1.7;
+  color: var(--color-texto-atenuado);
+}
+
+.ficha-personaje ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.ficha-personaje li {
+  margin: 0.3rem 0;
+}
+
+/* Linea de credito de reparto: diferenciada del cuerpo y separada del
+   ultimo bloque (aclaracion 2026-08-29: va fuera del <figure>). */
+.ficha-reparto {
+  margin-top: 1.25rem;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--color-texto-atenuado);
+}
+
+/* Escritorio: el retrato flota a la izquierda y el texto lo rodea (maqueta
+   tipo ficha de revista). Mobile (por defecto): sin float, el retrato queda
+   arriba del texto por orden de DOM. Sin anchos fijos que rompan a 320 px. */
+@media (min-width: 48rem) {
+  .ficha-retrato {
+    float: left;
+    width: 15rem;
+    margin: 0.25rem 1.75rem 1rem 0;
+  }
+}

@@ -37,21 +37,37 @@ catálogo en la columna "Fuente").
 | mundos-tesseract | `mundos-tesseract.jpg` | FILMGRAB (film-grab.com) — archivo de fotogramas | https://film-grab.com/2015/04/17/interstellar/ | Material de la pelicula, uso academico con atribucion (research.md D2; politica del catalogo base) | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
 | ciencia-gargantua-render | _sin archivo (por descargar)_ `gargantua-render.jpg` | arXiv — paper 1502.03808 (render DNGR de Gargantua) | https://arxiv.org/abs/1502.03808 | Licencia del material del paper NO verificada para descarga/republicacion | "James, von Tunzelmann, Franklin & Thorne (2015), arXiv:1502.03808" | pendiente |
 | hero-still-endurance | _sin archivo (por descargar)_ `hero-still-endurance.jpg` | TMDB / Fanart.tv | https://www.themoviedb.org/movie/157336-interstellar | Material de la pelicula con copyright (Warner Bros.); uso academico cubierto en condiciones del catálogo aprobado — decidir licencia | "© Paramount Pictures / Warner Bros. Pictures" | pendiente |
+| personajes-cooper | `personajes-cooper.jpg` | FILMGRAB (film-grab.com) — archivo de fotogramas | https://film-grab.com/2015/04/17/interstellar/ | Material de la pelicula, uso academico con atribucion (feature 003, research.md D2) | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
+| personajes-murph | `personajes-murph.jpg` | FILMGRAB (film-grab.com) — archivo de fotogramas | https://film-grab.com/2015/04/17/interstellar/ | Material de la pelicula, uso academico con atribucion (feature 003, research.md D2) | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
+| personajes-brand | `personajes-brand.jpg` | FILMGRAB (film-grab.com) — archivo de fotogramas | https://film-grab.com/2015/04/17/interstellar/ | Material de la pelicula, uso academico con atribucion (feature 003, research.md D2) | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
+| personajes-profesor-brand | `personajes-profesor-brand.jpg` | FILMGRAB (film-grab.com) — archivo de fotogramas | https://film-grab.com/2015/04/17/interstellar/ | Material de la pelicula, uso academico con atribucion (feature 003, research.md D2) | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
+| personajes-mann | `personajes-mann.jpg` | FILMGRAB (film-grab.com) — archivo de fotogramas | https://film-grab.com/2015/04/17/interstellar/ | Material de la pelicula, uso academico con atribucion (feature 003, research.md D2) | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
+| personajes-tars-case | `personajes-tars-case.jpg` | FILMGRAB (film-grab.com) — archivo de fotogramas | https://film-grab.com/2015/04/17/interstellar/ | Material de la pelicula, uso academico con atribucion (feature 003, research.md D2) | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
 
 ## Resumen de estado
 
-- **Descargados (9)**: `hero-m87`, `ciencia-agujero-negro`, `mundos-tierra`,
-  `personajes-astronauta`, `viaje-pilares` (dominio publico / licencia clara del catálogo
-  aprobado) + `mundos-gargantua`, `mundos-miller`, `mundos-mann`, `mundos-tesseract`
-  (feature 002: fotogramas de la pelicula, uso academico con atribucion — research.md D2).
-- **Pendientes (1)**: el render cientifico de Gargantua del paper arXiv (licencia del
-  material no confirmada). Se descargara en una ronda posterior previa verificacion de
-  licencia. Nota: `hero-still-endurance` queda cubierto en la practica por los backdrops
-  de Mundos ya incorporados.
+- **Descargados — features 001 y 002 (9)**: `hero-m87`, `ciencia-agujero-negro`,
+  `mundos-tierra`, `personajes-astronauta`, `viaje-pilares` (dominio publico / licencia
+  clara del catálogo aprobado) + `mundos-gargantua`, `mundos-miller`, `mundos-mann`,
+  `mundos-tesseract` (feature 002: fotogramas de la pelicula, uso academico con
+  atribucion — research.md D2).
+- **Descargados — feature 003 (6)**: `personajes-cooper`, `personajes-murph`,
+  `personajes-brand`, `personajes-profesor-brand`, `personajes-mann`, `personajes-tars-case`
+  — retratos en linea del eje Personajes: fotogramas de la pelicula (FILMGRAB), uso
+  academico con atribucion `© Warner Bros. Pictures / Paramount Pictures`.
+- **Pendientes**: el render cientifico de Gargantua del paper arXiv (licencia del
+  material no confirmada) y `hero-still-endurance` (cubierto en la practica por los
+  backdrops de Mundos).
 - **Backdrops de Mundos — peso** (FR-007, SC-009): `mundos-gargantua.jpg` 169 KB,
   `mundos-miller.jpg` 195 KB, `mundos-mann.jpg` 180 KB, `mundos-tesseract.jpg` 87 KB;
   con `mundos-tierra.jpg` (229 KB) los 5 suman 780 KB. Cada uno ≤250 KB y total ≤1,2 MB.
   Los 4 nuevos re-encodados a JPEG progresivo con Pillow (sin agregar tooling al repo).
+- **Retratos de Personajes — peso** (feature 003, FR-007, SC-008): `personajes-cooper.jpg`
+  64 KB, `personajes-murph.jpg` 61 KB, `personajes-brand.jpg` 81 KB,
+  `personajes-profesor-brand.jpg` 76 KB, `personajes-mann.jpg` 64 KB,
+  `personajes-tars-case.jpg` 80 KB — los 6 suman ~426 KB. Cada uno ≤250 KB y total ≤1,5 MB.
+  Re-encodados a JPEG progresivo con Pillow (cap de ancho 1280 px, sin EXIF, `optimize`;
+  sin agregar tooling al repo).
 
 ## Optimizacion WebP — ENMIENDA aprobada (2026-08-28)
 

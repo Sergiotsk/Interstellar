@@ -24,6 +24,15 @@ const ASSET_CREDITS = [
   'mundos-miller.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',
   'mundos-mann.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',
   'mundos-tesseract.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',
+  // Retratos del eje Personajes (feature 003): fotogramas de la película, uso
+  // académico con atribución al titular del copyright (research.md D2,
+  // contracts/footer-credits.md).
+  'personajes-cooper.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',
+  'personajes-murph.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',
+  'personajes-brand.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',
+  'personajes-profesor-brand.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',
+  'personajes-mann.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',
+  'personajes-tars-case.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',
 ];
 const REPO_URL = 'https://github.com/Sergiotsk/Interstellar.git';
 
