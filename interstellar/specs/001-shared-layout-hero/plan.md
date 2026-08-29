@@ -22,7 +22,7 @@ Técnicamente el enfoque es vanilla: HTML5 semántico y CSS3 con variables CSS e
 
 **Testing**: TDD estricto (Red-Green-Refactor) para el módulo JS de inyección compartido `layout.js` (constitución, Principio V). La capa presentacional (HTML/CSS) se valida contra los criterios de aceptación de la spec y las puertas de calidad de la constitución ("Flujo de Trabajo y Puertas de Calidad").
 
-**Target Platform**: Navegadores evergreen, últimas 2 versiones de Chrome, Edge, Firefox y Safari; sin polyfills (constitución + clarificación Q3).
+**Target Platform**: Navegadores evergreen, últimas 2 versiones de Chrome, Edge y Firefox; sin polyfills (constitución + clarificación Q3, enmendada 2026-08-28: Safari fuera del alcance de verificación).
 
 **Project Type**: Sitio web estático multi-página, sin paso de build; los archivos se sirven tal cual se escriben.
 

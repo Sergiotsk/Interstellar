@@ -38,11 +38,12 @@ No quedan incógnitas abiertas (sin NEEDS CLARIFICATION). La constitución y las
 - **Rationale**: FR-013 + SC-008 obligan al catálogo aprobado y a fuente identificable (NASA/ESA lo exigen explícitamente); FR-019 exige legibilidad sobre fondo fotográfico; el documento base descarta el consumo de API en vivo.
 - **Alternatives considered**: (a) hotlinking desde las fuentes — descartado: contenido fijo y local, rutas relativas, sin optimización posible; (b) PNG/JPG en resolución original — descartado: la constitución pide WebP y resoluciones razonables para no cargar de más.
 
-## D6 — Baseline: últimas 2 versiones de Chrome, Edge, Firefox, Safari (Q3)
+## D6 — Baseline: últimas 2 versiones de Chrome, Edge, Firefox (Q3, enmendada 2026-08-28)
 
 - **Decisión**: navegadores evergreen, últimas 2 versiones; sin polyfills.
 - **Rationale**: clarificación Q3 + constitución (Baseline) + SC-009 (recorridos sin errores en esas versiones).
-- **Alternatives considered**: (a) soporte retroactivo amplio con polyfills — descartado: la constitución lo prohíbe; (b) validar solo Chrome — descartado: Q3 y SC-009 exigen los cuatro navegadores.
+- **Alternatives considered**: (a) soporte retroactivo amplio con polyfills — descartado: la constitución lo prohíbe; (b) validar solo Chrome — descartado: Q3 y SC-009 exigen Chrome, Edge y Firefox.
+- **Enmienda 2026-08-28**: Safari se retira del alcance de verificación por falta de entorno de pruebas en Windows (sin macOS/iOS ni tooling cross-browser). Riesgo WebKit (~18-20 % de usuarios) asumido y documentado; el CSS usado es compatible con Safari 16.2+, riesgo estimado bajo.
 
 ## D7 — División de pruebas: TDD en la lógica JS, aceptación en la presentación (constitución V)
 
