@@ -28,7 +28,7 @@ No quedan incógnitas abiertas (sin NEEDS CLARIFICATION). La constitución y las
 
 ## D4 — Sin build, sin frameworks: archivos servidos tal cual (constitución)
 
-- **Decisión**: HTML5/CSS3/JS ES6+ vanilla. Sin bundler, transpilación, minificación ni autoprefixer; los ES Modules se sirven directamente; el deploy estático (Vercel) no requiere configuración.
+- **Decisión**: HTML5/CSS3/JS ES6+ vanilla. Sin bundler, transpilación, minificación ni autoprefixer; los ES Modules se sirven directamente; el deploy estático (GitHub Pages vía GitHub Actions) no requiere configuración.
 - **Rationale**: Principio I y la consigna de la cátedra (fundamentos web en vanilla); los archivos que se escriben son los que se sirven.
 - **Alternatives considered**: (a) bundler + transpilación — descartado: viola el Principio I; (b) inyección del partial vía `fetch` de HTML remoto — descartado: requiere servidor obligatorio y no es testeable por TDD como unidad de lógica; el módulo ES con datos mantiene la única fuente de verdad (FR-001) y es el módulo que la constitución designa para TDD.
 

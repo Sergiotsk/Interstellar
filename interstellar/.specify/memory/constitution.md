@@ -1,34 +1,27 @@
 <!--
 SYNC IMPACT REPORT
-Version change: [TEMPLATE / unversioned] -> 1.0.0
-Rationale: Primera ratificacion. Se reemplazan todos los placeholders del template `core`
-por principios concretos derivados de proyecto-interstellar-base.md y de la ronda de
-decisiones abiertas resuelta con el autor.
+Version change: 1.0.0 -> 1.1.0
+Rationale: Enmienda a la seccion "Restricciones Tecnicas y Convenciones". Se reemplaza el
+hosting: Vercel -> GitHub Pages, con deploy via GitHub Actions en cada push a `main`. El
+sitio pasa a servirse bajo el subpath `/Interstellar/`, por lo que se eleva a regla dura
+la exigencia de rutas internas relativas. Ningun principio (I-VI) cambia; por eso el bump
+es MINOR y no MAJOR.
 
-Principios definidos:
-  - I. Stack Vanilla, Sin Frameworks        (era [PRINCIPLE_1_NAME])
-  - II. HTML Semantico Primero              (era [PRINCIPLE_2_NAME])
-  - III. Construccion en Capas              (era [PRINCIPLE_3_NAME])
-  - IV. Comprension Sobre Generacion        (era [PRINCIPLE_4_NAME])
-  - V. TDD en la Logica, Aceptacion en la Presentacion  (era [PRINCIPLE_5_NAME])
-  - VI. Rigor Cientifico Verificado         (principio agregado)
+Cambios de esta version:
+  - "Restricciones Tecnicas y Convenciones" -> bloque **Hosting** reescrito (GitHub Pages).
+  - Se agrega referencia a .github/workflows/deploy-pages.yml y al archivo .nojekyll.
 
-Secciones:
-  - "Restricciones Tecnicas y Convenciones" (era [SECTION_2_NAME])
-  - "Flujo de Trabajo y Puertas de Calidad" (era [SECTION_3_NAME])
-  - "Governance" (completada)
+Historial:
+  - 1.0.0 (2026-08-27): Primera ratificacion. Principios I-VI y las tres secciones
+    definidas a partir de proyecto-interstellar-base.md.
 
-Secciones removidas: ninguna.
+Follow-up / consistencia (fuera del alcance de este comando):
+  - specs/001-shared-layout-hero/quickstart.md y research.md -> mencionan "Vercel" como
+    ejemplo de hosting. Feature 001 ya cerrada; se corrige el texto por prolijidad.
+  - .specify/templates/plan-template.md -> el "Constitution Check" no referencia hosting;
+    no requiere cambios.
 
-Follow-up / consistencia pendiente (fuera del alcance de este comando, revisar aparte):
-  - .specify/templates/plan-template.md  -> verificar que el "Constitution Check" referencie
-    los principios I-VI.
-  - .specify/templates/spec-template.md / tasks-template.md -> sin referencias directas a
-    principios; no requieren cambios previstos.
-  - Specs colgadas a crear: "Animacion del viaje de la Endurance" (escena por escena) y
-    una spec por minijuego. NO se detallan aca.
-
-TODOs deferidos: ninguno. No quedan placeholders sin resolver.
+TODOs deferidos: ninguno.
 -->
 
 # Constitucion — Web Interstellar (Programacion IV)
@@ -169,8 +162,17 @@ resoluciones razonables a mano. **Acreditar la fuente de cada imagen es OBLIGATO
 
 **Baseline**: navegadores evergreen, ultimas 2 versiones. Sin polyfills.
 
-**Hosting**: Vercel, deploy estatico automatico desde GitHub en cada push a la rama
-principal. Sin configuracion especial.
+**Hosting**: **GitHub Pages**, deploy estatico automatico via **GitHub Actions** en cada
+push a la rama principal (`main`). El workflow vive en
+`.github/workflows/deploy-pages.yml` y publica el contenido estatico de la raiz del repo
+(`*.html`, `css/`, `js/`, `assets/`); un archivo `.nojekyll` en la raiz desactiva el
+procesado Jekyll. Sin paso de build, sin configuracion extra.
+
+El sitio se sirve bajo el subpath **`https://sergiotsk.github.io/Interstellar/`**. Por eso
+**toda ruta interna DEBE ser relativa** (`css/global.css`, `mundos.html#gargantua`), nunca
+absoluta con `/` inicial: una ruta absoluta apunta a la raiz del dominio y se rompe en
+produccion. Esto refuerza el criterio de aceptacion "links y assets cargan" (rutas
+relativas bien resueltas).
 
 **Backend**: ninguno en esta etapa. Puntajes de minijuegos en `localStorage`. Si en el
 futuro se implementan rankings globales persistentes, la plataforma elegida es **Firebase
@@ -235,4 +237,4 @@ en las specs colgadas si corresponde.
 criterios de aceptacion y los principios antes de considerarse cerrada. El agente reporta
 desvios de forma explicita en vez de resolverlos por su cuenta.
 
-**Version**: 1.0.0 | **Ratified**: 2026-08-27 | **Last Amended**: 2026-08-27
+**Version**: 1.1.0 | **Ratified**: 2026-08-27 | **Last Amended**: 2026-08-29

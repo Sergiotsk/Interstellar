@@ -18,7 +18,7 @@ python -m http.server 8000        # o
 npx serve                          # o cualquier servidor estático
 ```
 
-Abrir http://localhost:8000/ (en producción: Vercel, deploy estático automático desde GitHub).
+Abrir http://localhost:8000/ (en producción: GitHub Pages, deploy estático automático vía GitHub Actions en cada push a `main` → https://sergiotsk.github.io/Interstellar/).
 
 ## Escenarios de validación
 
