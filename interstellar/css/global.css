@@ -1,0 +1,663 @@
+/* =============================================================================
+   css/global.css — Layout compartido y Hero de inicio (feature 001)
+   -----------------------------------------------------------------------------
+   Hoja de estilo global del sitio. Toda la paleta y todo valor reutilizable
+   vive como custom property en `:root` (constitucion, seccion CSS). Ningun
+   color, fuente ni valor reutilizable queda hardcodeado suelto fuera de `:root`
+   (la unica excepcion: constantes de layout como `margin: 0`, que no son
+   valores de paleta).
+
+   Nombres de tokens CONTRATADOS en specs/001-shared-layout-hero/contracts/
+   design-tokens.md — no cambiar nombres.
+
+   La tipografia se sirve via Google Fonts con <link> en el <head> de cada
+   pagina (decisicion T002, registrada en quickstart.md). Familias aprobadas:
+     - Orbitron  -> titulo del Hero / display  (--font-hero-titulo)
+     - Exo 2     -> sitio, navegacion y texto  (--font-sitio / --font-nav / --font-texto)
+   Cada stack incluye fallback legible si la fuente no carga (caso limite).
+
+   Esta hoja se extiende en tareas posteriores (foco, submenus responsive,
+   Hero, scroll-margin de anclas): aca SOLO base + tokens.
+   ========================================================================== */
+
+/* ---------------------------------------------------------------------------
+   1. Tokens de diseno (:root)
+   --------------------------------------------------------------------------- */
+:root {
+
+  /* --- Paleta: espacio (negros y azules profundos) --- */
+  --color-fondo: #0a0e1a;                /* fondo base del sitio (azul noche profundo) */
+  --color-superficie: rgba(20, 28, 49, 0.88); /* superficies: header, nav, footer, tarjetas;
+                                                   con transparencia para superponerse a backdrops */
+
+  /* --- Paleta: Tierra (ocres y dorados terrosos) --- */
+  --color-tierra-ocre: #a8793f;          /* acento de la Tierra: ocre terroso */
+  --color-tierra-oro: #d4a94e;           /* acento de la Tierra: dorado */
+
+  /* --- Paleta: acento unico saturado --- */
+  --color-gargantua: #e8803b;            /* naranja de Gargantua — UNICO color saturado del sitio (FR-017) */
+
+  /* --- Paleta: texto (blanco roto / crema; NUNCA blanco puro) --- */
+  --color-texto: #efe7d6;                /* texto principal: crema */
+  --color-texto-atenuado: #a8a294;       /* textos secundarios (subtitulos, meta): crema atenuado */
+
+  /* --- Tipografia (Google Fonts via <link> + fallbacks legibles) --- */
+  --font-sitio: 'Exo 2', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-hero-titulo: 'Orbitron', 'Exo 2', system-ui, sans-serif;
+  --font-nav: 'Exo 2', 'Segoe UI', system-ui, sans-serif;
+  --font-texto: 'Exo 2', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* --- Foco: anillo visible para el 100 % de controles y enlaces (FR-010) --- */
+  /* Usa el naranja de Gargantua: es el unico acento saturado del sitio (FR-017) */
+  --focus-anillo: var(--color-gargantua);
+
+  /* --- Oscurecimiento de backdrops fotograficos (FR-019) --- */
+  /* Uso: `filter: var(--backdrop-oscurecer);` sobre el fondo fotografico */
+  --backdrop-oscurecer: brightness(0.4);
+}
+
+/* ---------------------------------------------------------------------------
+   2. Reset base
+   --------------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+body, button, input, select, textarea {
+  font-family: var(--font-sitio);
+  color: var(--color-texto);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+  font-family: var(--font-hero-titulo);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--color-texto);
+}
+
+p {
+  line-height: 1.6;
+}
+
+ul, ol {
+  margin-top: 0;
+}
+
+a {
+  color: var(--color-texto);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ---------------------------------------------------------------------------
+   3. Layout base del sitio
+   ---------------------------------------------------------------------------
+   Cuerpo apilado vertical: header superpuesto/arriba, main en el medio
+   (contenido propio de cada pagina, nunca reemplazado) y footer anclado al
+   final. El header del Hero se superpone en tareas posteriores.
+   --------------------------------------------------------------------------- */
+body {
+  display: flex;
+  flex-direction: column;
+  /* Fondo del sitio desde tokens (FR-017): sin esto el <body> quedaba en el
+     blanco por defecto del UA y los placeholders perdian la paleta (T024/T025). */
+  background-color: var(--color-fondo);
+}
+
+main {
+  flex: 1 0 auto;
+  width: 100%;
+}
+
+/* Texto del cuerpo con su token (FR-018): los parrafos de lectura usan
+   --font-texto aunque el <body> base siga en --font-sitio. */
+p {
+  font-family: var(--font-texto);
+}
+
+/* ---------------------------------------------------------------------------
+   4. Header / navegacion (estructura que produce js/layout.js)
+   ---------------------------------------------------------------------------
+   Hooks CSS del contrato layout-injection.md:
+     body > header > nav > ul (nivel superior) > li
+       |-- a (destino directo)
+       |-- button (control de disclosure del submenu)
+       |-- ul (solo para los 4 ejes; destinos anidados)
+   --------------------------------------------------------------------------- */
+header {
+  background: var(--color-superficie);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-texto) 12%, transparent);
+  /* Apilamiento propio del header en TODAS las paginas (BUGFIX defecto #3): el
+     panel desplegable del submenu (z-index:10 dentro del li) pinta por encima
+     del contenido de pagina. El z-index 20 coincide con el del header superpuesto
+     de la home (body.home > header). */
+  position: relative;
+  z-index: 20;
+}
+
+header nav {
+  max-width: 75rem;
+  margin: 0 auto;
+  padding: 0.75rem 1rem;
+}
+
+/* BUGFIX SC-010: `header nav ul` (descendiente) casaba TAMBIEN con el <ul hidden>
+   de cada submenu (display:flex de autor > display:none de la UA) y los dejaba
+   permanentemente desplegados ("bloqueados, fijos"). Con `> ul` el flex queda
+   acotado a la lista de nivel superior y el `hidden` vuelve a colapsar. */
+header nav > ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 1.25rem;
+}
+
+header nav li {
+  position: relative;
+}
+
+/* Enlace del item de nivel superior */
+header nav a {
+  display: inline-block;
+  padding: 0.5rem 0;
+  font-family: var(--font-nav);
+  font-size: 1.05rem;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+}
+
+header nav a:hover {
+  color: var(--color-tierra-oro);
+}
+
+/* Control de disclosure del submenu (boton independiente del enlace). Tiene un
+   aspecto interactivo sutil (borde, esquinas, transicion) para que se perciba
+   como un control que responde al hover/touch, no como texto estatico (BUGFIX
+   SC-010). */
+header nav button {
+  font: inherit;
+  font-size: 0.8rem;
+  color: var(--color-texto-atenuado);
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--color-texto) 18%, transparent);
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.35rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+header nav button:hover {
+  color: var(--color-gargantua);
+}
+
+/* Estado abierto: el control gira (▼ -> ▲) y se tiñe con el acento, seña de
+   que el submenu esta desplegado y que volver a pulsar/salir lo cierra. */
+header nav button[aria-expanded='true'] {
+  transform: rotate(180deg);
+  color: var(--color-gargantua);
+  border-color: color-mix(in srgb, var(--color-gargantua) 45%, transparent);
+}
+
+/* Lista anidada de cada eje (submenu). El `hidden` (puesto por layout.js) es el
+   colapso funcional: cuando esta presente, el UA lo muestra como `display: none`.
+   El CSS de aca/abajo solo presenta los submenus ABIERTOS (T013). */
+/* Seguro explicito (BUGFIX SC-010): si alguna otra regla futura declarara
+   `display` sobre el submenu, el atributo `hidden` aun lo colapsa. Sin
+   `!important`: basta con que ninguna regla de autor declare display cuando
+   esta oculto. */
+header nav ul ul[hidden] {
+  display: none;
+}
+
+header nav ul ul {
+  margin-top: 0.25rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  padding: 0 0 0.25rem 0.5rem;
+}
+
+header nav ul ul a {
+  font-size: 0.95rem;
+  padding: 0.15rem 0;
+}
+
+/* ---------------------------------------------------------------------------
+   4b. Navbar responsive (T013 desktop / T030 drawer mobile)
+   ---------------------------------------------------------------------------
+   El modelo de interaccion es identico en mobile y desktop (FR-009); el CSS
+   solo define la presentacion de los submenus ABIERTOS. El collapse funcional
+   lo mantiene el atributo `hidden` que gestiona layout.js.
+
+   DESKTOP (>= 64rem): el nav fluye normal en una fila y cada submenu abierto se
+   presenta como panel desplegable bajo el disparador (T013). El boton ☰ esta
+   oculto.
+
+   MOBILE (<= 63.999rem): T030 SUPERSEDE la presentacion mobile anterior de T013
+   (submenus en flujo bajo el disparador). El header queda en UNA fila: boton ☰
+   (min 44x44 px, WCAG 2.5.8) + wheel de apertura. El nav queda oculto por
+   defecto y se despliega como drawer/panel apilado con los 8 items (min-height
+   44 px). Los submenus de ejes actuan como ACORDEON DENTRO del drawer (modelo
+   de disclosure FR-009 intacto); la presentacion en flujo de T013 solo persiste
+   como forma del acordeon, dentro del cajon abierto. Sin overflow horizontal a
+   320px (FR-022, SC-003); foco visible (SC-005).
+
+   IMPORTANTE (BUGFIX SC-010): no se declara `display` sobre ningun selector
+   que tambien case con el <ul> anidado del submenu. La lista superior usa el
+   selector de hijo directo `#nav-principal > ul`; el <ul> anidado conserva su
+   `[hidden]{ display:none }` funcional.
+   --------------------------------------------------------------------------- */
+
+/* Boton ☰ — base del drawer. Visible por defecto (mobile); en desktop se oculta
+   dentro del media query de escritorio (>= 64rem). */
+.nav-toggle {
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
+  font-size: 1.25rem;
+  color: var(--color-texto);
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--color-texto) 18%, transparent);
+  border-radius: 0.25rem;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-toggle:hover {
+  color: var(--color-gargantua);
+}
+
+@media (max-width: 63.999rem) {
+  /* Header de UNA fila: ☰ a la izquierda, espacio a la derecha. Mantiene
+     background/padding del base y el `position: relative; z-index: 20` del
+     BUGFIX para que el drawer pague por encima del contenido. */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  /* Drawer: el nav esta oculto por defecto; con la clase `nav-abierto` (que
+     alterna layout.js) se muestra como panel de ancho completo bajo la fila
+     del ☰. Panel en flujo (no absolute) para no hacer saltar la pagina. */
+  #nav-principal {
+    display: none;
+    width: 100%;
+    background: var(--color-superficie);
+    border-top: 1px solid color-mix(in srgb, var(--color-texto) 12%, transparent);
+  }
+
+  #nav-principal.nav-abierto {
+    display: block;
+  }
+
+  /* Lista superior apilada en el drawer: selector de HIJO DIRECTO para NO
+     tocar el <ul> anidado del submenu (BUGFIX SC-010). */
+  #nav-principal > ul {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  /* Cada item del drawer con altura tactil minima (WCAG 2.5.8); la fila del eje
+     alinea enlace + boton ▼, el item plano deja el enlace a ancho completo.
+     `flex-wrap: wrap` permite que el submenu-acordeon pase a SU PROPIA fila
+     debajo del disparador (bugfix T030: no encogerse en la misma linea). */
+  #nav-principal li {
+    min-height: 44px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 100%;
+  }
+
+  #nav-principal a {
+    flex: 1;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    font-size: 1.05rem;
+  }
+
+  /* Boton ▼ del acordeon dentro del drawer: target tactil pleno. */
+  #nav-principal button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Submenu abierto como ACORDEON dentro del drawer: lista anidada apilada a
+     ancho completo en SU PROPIA fila debajo del eje (flex: 1 0 100% dentro del
+     `<li>` con `flex-wrap: wrap`), fondo transparente y sangria. Solo presenta el
+     estado ABIERTO; el `[hidden]` (layout.js) mantiene el colapso funcional. */
+  #nav-principal ul ul {
+    flex: 1 0 100%;
+    background: transparent;
+    padding-left: 1rem;
+  }
+
+  #nav-principal ul ul a {
+    white-space: normal;
+    word-break: break-word; /* evita desbordes por etiqueta larga, p. ej. "dilatacion-temporal" */
+    max-width: 100%;
+  }
+}
+
+/* Desktop (>= 64rem): el submenu abierto se presenta como panel desplegable
+   bajo el disparador, usando el hook `header nav li { position: relative }`
+   ya definido mas arriba. Se usan tokens de superficie y sombra propia (no se
+   inventan nombres nuevos). El nav fluye normal (filas) como en T013 y el
+   boton ☰ del drawer queda oculto (T030). */
+@media (min-width: 64rem) {
+  .nav-toggle {
+    display: none;
+  }
+
+  header nav ul ul {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 14rem;
+    margin-top: 0.25rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--color-superficie);
+    border: 1px solid color-mix(in srgb, var(--color-texto) 15%, transparent);
+    box-shadow: 0 0.5rem 1.25rem color-mix(in srgb, var(--color-fondo) 55%, transparent);
+    z-index: 10;
+  }
+
+  header nav ul ul a {
+    white-space: nowrap; /* en desktop el panel crece con su contenido; sin corte */
+    display: block;
+    padding: 0.35rem 0;
+  }
+}
+
+
+/* ---------------------------------------------------------------------------
+   5. Footer (estructura que produce js/layout.js)
+   ---------------------------------------------------------------------------
+   Contiene creditos, fuentes de imagen (atribucion de cada asset) y el
+   enlace al repositorio (FR-012, FR-013).
+   --------------------------------------------------------------------------- */
+footer {
+  background: var(--color-superficie);
+  border-top: 1px solid color-mix(in srgb, var(--color-texto) 12%, transparent);
+  padding: 1.5rem 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--color-texto-atenuado);
+}
+
+footer p {
+  margin: 0.35rem 0;
+}
+
+footer a {
+  color: var(--color-texto);
+  text-underline-offset: 0.2em;
+}
+
+footer a:hover {
+  color: var(--color-tierra-oro);
+}
+
+footer ul {
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.25rem 1rem;
+}
+
+/* ---------------------------------------------------------------------------
+   6. Foco visible base (FR-010, SC-005, SC-007)
+   ---------------------------------------------------------------------------
+   Anillo de foco visible en el 100 % de los controles/enlaces. Se usa
+   `:focus-visible` para no mostrar el anillo en clics de raton/desktop.
+   --------------------------------------------------------------------------- */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--focus-anillo);
+  outline-offset: 2px;
+  border-radius: 2px;
+  /* Respaldo de contraste para fondos fotograficos: un anillo oscuro del color
+     de fondo que delimita el anillo naranja y lo hace visible tanto sobre la
+     superficie oscura como sobre el Hero/backdrop (FR-010, SC-006). */
+  box-shadow: 0 0 0 2px var(--color-fondo);
+}
+
+/* ---------------------------------------------------------------------------
+   7. Hero de inicio (T014/T015 — FR-014..FR-016, FR-019, FR-022, SC-003, SC-006)
+   ---------------------------------------------------------------------------
+   Seccion de presentacion de la home (`body.home`), UNICO lugar donde el
+   header se superpone sobre el contenido. En el resto de las paginas el header
+   queda en flujo normal (no se reestructura el flujo del <body>).
+
+   Hooks:
+     - body.home > header  -> superposicion del header sobre la parte superior
+                              del Hero (FR-014, Q2). El header lo inyecta
+                              js/layout.js como primer hijo del <body>; al darle
+                              position absolute se lo saca del flujo flex y el
+                              Hero queda como primera region de la pagina.
+     - .hero-backdrop      -> <img> decorativo (alt=""), oscurecido con el token
+                              --backdrop-oscurecer (FR-019, SC-006).
+     - .hero-contenido     -> titulo + tagline por encima del backdrop.
+   --------------------------------------------------------------------------- */
+.hero {
+  position: relative;                   /* base para el backdrop absoluto (y para anclar otros overlays) */
+  min-height: 100svh;                   /* pantalla visible inicial completa en mobile moderno */
+  min-height: 100vh;                    /* respaldo para navegadores sin soporte de svh */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;                     /* sin desborde horizontal a 320px (FR-022, SC-003) */
+  text-align: center;
+  /* Respaldo de fondo coherente con la paleta: si el backdrop no carga, el
+     contenido conserva legibilidad y jerarquia sobre el fondo base (caso limite). */
+  background-color: var(--color-fondo);
+}
+
+body.home > header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;                          /* por encima del contenido del Hero */
+}
+
+/* Backdrop fotografico a pantalla completa. Es decorativo (alt="" en el HTML);
+   el oscurecimiento se aplica SOLO cuando la imagen existe (si falla la carga,
+   el filtro no aplica y el fondo de paleta del .hero sostiene la legibilidad). */
+.hero-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;                    /* cubre toda la pantalla sin deformar */
+  filter: var(--backdrop-oscurecer);    /* oscurece sin depender de una zona clara (FR-019, SC-006) */
+}
+
+/* Titulo + tagline sobre el backdrop: posicionado (y con z-index) para pintar
+   por encima del img absoluto, con reserva vertical superior para no colisionar
+   con el header superpuesto. */
+.hero-contenido {
+  position: relative;
+  z-index: 1;
+  max-width: 60rem;
+  padding: 5.5rem 1.25rem 4rem;
+}
+
+.hero-contenido h1 {
+  margin-bottom: 0.5rem;
+  font-family: var(--font-hero-titulo);
+  /* Escala fluida: el limite minimo impide desbordar el ancho a 320px (FR-022,
+     SC-003) y el maximo sostiene el impacto en desktop. */
+  font-size: clamp(1.5rem, 7vw, 5.5rem);
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-texto);
+  /* Halo oscuro suave para separar el titulo del brillo del backdrop (SC-006) */
+  text-shadow: 0 0 1.5rem var(--color-fondo);
+}
+
+.hero-tagline {
+  margin: 0 auto;
+  max-width: 40rem;
+  font-family: var(--font-texto);
+  font-size: clamp(1rem, 2.5vw, 1.4rem);
+  line-height: 1.6;
+  color: var(--color-texto-atenuado);
+  text-shadow: 0 0 1rem var(--color-fondo);
+}
+
+/* ---------------------------------------------------------------------------
+   8. Introduccion (FR-016)
+   ---------------------------------------------------------------------------
+   Bloque breve inmediatamente despues del Hero: explica el caracter
+   cinematografico y educativo del sitio. Fondo y texto desde tokens.
+   --------------------------------------------------------------------------- */
+.intro {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 3.5rem 1.25rem;
+  text-align: center;
+  background-color: var(--color-fondo);
+}
+
+.intro h2 {
+  margin-bottom: 1rem;
+  font-family: var(--font-hero-titulo);
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  letter-spacing: 0.05em;
+  color: var(--color-texto);
+}
+
+.intro p {
+  max-width: 42rem;
+  margin: 0 auto;
+  font-family: var(--font-texto);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--color-texto);
+}
+
+/* ---------------------------------------------------------------------------
+   9. Compensacion de scroll para destinos ancla (T023 — FR-004, FR-021)
+   ---------------------------------------------------------------------------
+   La carga directa de una URL con ancla (ej. mundos.html#gargantua) debe dejar
+   la seccion destino reconocible y usable por debajo del header (caso limite).
+   El header esta superpuesto (absolute) solo en la home (body.home), que no
+   tiene secciones con ancla; en las paginas de eje queda en flujo normal y su
+   altura real varia: ~4.1rem con una fila de nav (desktop) hasta ~12rem cuando
+   el flex-wrap envuelve filas a 320px (FR-022, SC-003). Un valor fijo no puede
+   seguir ese envoltorio, por lo que se elige en el lado seguro: sobre-cubrir
+   deja la seccion visible y usable; sub-cubrir la esconderia bajo el header,
+   que es exactamente el defecto que esta regla corrige.
+   --------------------------------------------------------------------------- */
+section[id] {
+  scroll-margin-top: 7rem;  /* cubre el header de 1-2 filas (~4.1-6.65rem) + respiro */
+}
+
+@media (max-width: 63.999rem) {
+  section[id] {
+    /* En mobile el nav envuelve filas (hasta ~4 en 320px); 12rem cubre el peor
+       caso y sobra como respiro en tablet, donde el header es mas bajo. */
+    scroll-margin-top: 12rem;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   10. Paginas internas: presentacion coherente de los placeholders
+       (T024/T025 — FR-017..FR-019, HU4-E1, SC-006/SC-007)
+   ---------------------------------------------------------------------------
+   Los placeholders y la home leen con la misma base visual: misma paleta desde
+   tokens (FR-017), mismas jerarquias tipograficas Orbitron/Exo 2 (FR-018) y
+   oscurecimiento de fondos fotograficos con --backdrop-oscurecer (FR-019).
+   No se agrega ningun token nuevo: solo se consumen los del contrato
+   (contracts/design-tokens.md). El unico color saturado que aparece es el
+   naranja de Gargantua (--focus-anillo), FR-017.
+   --------------------------------------------------------------------------- */
+body:not(.home) main > section:first-child {
+  /* Bloque de presentacion de cada pagina: mismo ritmo visual que el .intro
+     de la home (HU4-E1, FR-018). */
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 4rem 1.25rem 2rem;
+  text-align: center;
+}
+
+body:not(.home) main > section:first-child h1 {
+  font-family: var(--font-hero-titulo);
+  font-size: clamp(1.75rem, 5vw, 3rem);
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-texto);
+  margin-bottom: 0.75rem;
+}
+
+body:not(.home) main > section:first-child p {
+  max-width: 42rem;
+  margin: 0 auto;
+  font-family: var(--font-texto);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--color-texto-atenuado);
+}
+
+/* Secciones destino de cada eje (FR-004): cada ancla se presenta con su
+   encabezado Orbitron y una separacion sutil de token (misma familia que el
+   titulo del Hero, FR-018); el contraste de texto y foco se conserva sobre el
+   fondo oscuro del sitio (SC-006). */
+section[id] {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 2.25rem 1.25rem;
+  border-top: 1px solid color-mix(in srgb, var(--color-texto) 12%, transparent);
+}
+
+section[id] h2 {
+  font-family: var(--font-hero-titulo);
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--color-texto);
+  margin-bottom: 0.5rem;
+}
+
+section[id] p {
+  font-family: var(--font-texto);
+  color: var(--color-texto-atenuado);
+}

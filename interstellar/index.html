@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Interstellar — Un viaje por los mundos, personajes y ciencia de la película</title>
+  <!-- Tipografia aprobada (decision T002): Orbitron para el Hero, Exo 2 para el sitio -->
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700&family=Orbitron:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/global.css">
+</head>
+<!-- body.home es el hook del Hero: global.css superpone el header sobre la
+     parte superior del Hero solo en la home; en el resto de las paginas el
+     header queda en flujo normal (FR-014, Q2). -->
+<body class="home">
+  <main>
+    <!-- Hero cinematografico de pantalla completa (FR-014). El backdrop es un
+         <img> decorativo (alt vacio): el nombre «Interstellar» del <h1> es la
+         alternativa textual del titulo/logo (FR-015, caso limite). -->
+    <section class="hero" aria-labelledby="hero-titulo">
+      <img class="hero-backdrop" src="assets/img/hero-backdrop.jpg" alt="">
+      <hgroup class="hero-contenido">
+        <h1 id="hero-titulo">Interstellar</h1>
+        <p class="hero-tagline">Un viaje por los mundos, personajes, viaje y ciencia de la película</p>
+      </hgroup>
+    </section>
+
+    <!-- Introduccion breve inmediatamente despues del Hero (FR-016) -->
+    <section class="intro" aria-labelledby="intro-titulo">
+      <h2 id="intro-titulo">Un recorrido para explorar y aprender</h2>
+      <p>Este sitio recorre los mundos que visita la expedición Endurance, los personajes que la protagonizan, el viaje por el tiempo y el espacio, y la ciencia real —agujeros negros, agujeros de gusano, dilatación temporal— que sostiene la historia de Interstellar.</p>
+    </section>
+  </main>
+  <script type="module" src="js/layout.js"></script>
+</body>
+</html>
