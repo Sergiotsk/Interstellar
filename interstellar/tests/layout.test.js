@@ -112,6 +112,19 @@ describe('js/layout.js — contrato layout-injection.md', () => {
     }
   });
 
+  test('el pie lista los créditos de los retratos de Personajes (FR-007)', () => {
+    for (const archivo of [
+      'personajes-cooper.jpg',
+      'personajes-murph.jpg',
+      'personajes-brand.jpg',
+      'personajes-profesor-brand.jpg',
+      'personajes-mann.jpg',
+      'personajes-tars-case.jpg',
+    ]) {
+      assert.ok(footer.includes(archivo), `falta el crédito de ${archivo}`);
+    }
+  });
+
   test('layout.js no lleva datos propios: sin argumento produce el mismo header que con NavConfig', () => {
     assert.equal(buildHeader(), buildHeader(NavConfig));
   });
