@@ -1,0 +1,16 @@
+# Editor / OS
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Env (git-secrets defense-in-depth; no .env expected in this static site)
+.env*
+
+# Dependencies (defensive — this project has no runtime deps)
+node_modules/
