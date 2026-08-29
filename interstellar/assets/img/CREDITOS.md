@@ -31,18 +31,27 @@ catálogo en la columna "Fuente").
 | mundos-tierra | `mundos-tierra.jpg` | NASA Image Library | https://images.nasa.gov/details/GSFC_20171208_Archive_e001788 | Dominio publico (NASA) | "NASA (Blue Marble 2012)" | descargado |
 | personajes-astronauta | `personajes-astronauta.jpg` | NASA Image Library | https://images.nasa.gov/details/iss054e022823 | Dominio publico (NASA) | "NASA (astronauta Scott Tingle)" | descargado |
 | viaje-pilares | `viaje-pilares-de-creacion.jpg` | NASA Image Library / ESA-Hubble | https://images.nasa.gov/details/GSFC_20171208_Archive_e000842 | Dominio publico con creditos (NASA/ESA Hubble) | "NASA, ESA/Hubble" | descargado |
+| mundos-gargantua | `mundos-gargantua.jpg` | FILMGRAB (film-grab.com) — archivo de fotogramas | https://film-grab.com/2015/04/17/interstellar/ | Material de la pelicula, uso academico con atribucion (research.md D2; politica del catalogo base) | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
+| mundos-miller | `mundos-miller.jpg` | FILMGRAB (film-grab.com) — archivo de fotogramas | https://film-grab.com/2015/04/17/interstellar/ | Material de la pelicula, uso academico con atribucion (research.md D2; politica del catalogo base) | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
+| mundos-mann | `mundos-mann.jpg` | FILMGRAB (film-grab.com) — archivo de fotogramas | https://film-grab.com/2015/04/17/interstellar/ | Material de la pelicula, uso academico con atribucion (research.md D2; politica del catalogo base) | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
+| mundos-tesseract | `mundos-tesseract.jpg` | FILMGRAB (film-grab.com) — archivo de fotogramas | https://film-grab.com/2015/04/17/interstellar/ | Material de la pelicula, uso academico con atribucion (research.md D2; politica del catalogo base) | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
 | ciencia-gargantua-render | _sin archivo (por descargar)_ `gargantua-render.jpg` | arXiv — paper 1502.03808 (render DNGR de Gargantua) | https://arxiv.org/abs/1502.03808 | Licencia del material del paper NO verificada para descarga/republicacion | "James, von Tunzelmann, Franklin & Thorne (2015), arXiv:1502.03808" | pendiente |
 | hero-still-endurance | _sin archivo (por descargar)_ `hero-still-endurance.jpg` | TMDB / Fanart.tv | https://www.themoviedb.org/movie/157336-interstellar | Material de la pelicula con copyright (Warner Bros.); uso academico cubierto en condiciones del catálogo aprobado — decidir licencia | "© Paramount Pictures / Warner Bros. Pictures" | pendiente |
 
 ## Resumen de estado
 
-- **Descargados (5)**: `hero-m87`, `ciencia-agujero-negro`, `mundos-tierra`,
-  `personajes-astronauta`, `viaje-pilares`. Todos de fuentes de dominio publico / licencia
-  clara del catálogo aprobado.
-- **Pendientes (2)**: el render cientifico de Gargantua del paper arXiv (licencia del
-  material no confirmada) y un still de la pelicula del catálogo de cine (copyright; sujeto
-  a la decision de uso academico permitida por el catálogo). Se descargaran en una ronda
-  posterior previa verificacion de licencia, o se importan como WebP ya optimizados.
+- **Descargados (9)**: `hero-m87`, `ciencia-agujero-negro`, `mundos-tierra`,
+  `personajes-astronauta`, `viaje-pilares` (dominio publico / licencia clara del catálogo
+  aprobado) + `mundos-gargantua`, `mundos-miller`, `mundos-mann`, `mundos-tesseract`
+  (feature 002: fotogramas de la pelicula, uso academico con atribucion — research.md D2).
+- **Pendientes (1)**: el render cientifico de Gargantua del paper arXiv (licencia del
+  material no confirmada). Se descargara en una ronda posterior previa verificacion de
+  licencia. Nota: `hero-still-endurance` queda cubierto en la practica por los backdrops
+  de Mundos ya incorporados.
+- **Backdrops de Mundos — peso** (FR-007, SC-009): `mundos-gargantua.jpg` 169 KB,
+  `mundos-miller.jpg` 195 KB, `mundos-mann.jpg` 180 KB, `mundos-tesseract.jpg` 87 KB;
+  con `mundos-tierra.jpg` (229 KB) los 5 suman 780 KB. Cada uno ≤250 KB y total ≤1,2 MB.
+  Los 4 nuevos re-encodados a JPEG progresivo con Pillow (sin agregar tooling al repo).
 
 ## Optimizacion WebP — ENMIENDA aprobada (2026-08-28)
 

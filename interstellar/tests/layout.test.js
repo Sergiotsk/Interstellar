@@ -101,6 +101,17 @@ describe('js/layout.js — contrato layout-injection.md', () => {
     assert.ok(footer.includes('https://github.com/Sergiotsk/Interstellar.git'));
   });
 
+  test('el pie lista los créditos de los backdrops de Mundos (FR-006)', () => {
+    for (const archivo of [
+      'mundos-gargantua.jpg',
+      'mundos-miller.jpg',
+      'mundos-mann.jpg',
+      'mundos-tesseract.jpg',
+    ]) {
+      assert.ok(footer.includes(archivo), `falta el crédito de ${archivo}`);
+    }
+  });
+
   test('layout.js no lleva datos propios: sin argumento produce el mismo header que con NavConfig', () => {
     assert.equal(buildHeader(), buildHeader(NavConfig));
   });

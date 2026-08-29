@@ -8,16 +8,22 @@ import { createSubmenuState } from './submenu-state.js';
 
 const CREDITS = 'Interstellar — sitio académico de fan, sin fines de lucro.';
 const IMAGE_SOURCES_NOTE =
-  'Fuentes del material visual: catálogo aprobado (Wikimedia Commons, NASA Image Library, ESA/Hubble). Créditos por asset:';
+  'Fuentes del material visual: catálogo aprobado (Wikimedia Commons, NASA Image Library, ESA/Hubble) y fotogramas de la película (FILMGRAB, uso académico con atribución). Créditos por asset:';
 // Atribución por asset según assets/img/CREDITOS.md (FR-013, SC-008). Solo se
-// listan los assets descargados del catálogo; los pendientes se sumarán al
-// incorporarse (Gargantúa del paper arXiv y still de la película).
+// listan los assets descargados; los pendientes se sumarán al incorporarse
+// (Gargantúa del paper arXiv). Los backdrops de Mundos (feature 002) son
+// fotogramas de la película: uso académico con atribución al titular del
+// copyright (research.md D2, contracts/footer-credits.md).
 const ASSET_CREDITS = [
   'hero-backdrop.jpg — Event Horizon Telescope Collaboration, CC BY 4.0 (Wikimedia Commons)',
   'ciencia-agujero-negro.jpg — NASA/JPL-Caltech (NASA Image Library)',
   'mundos-tierra.jpg — NASA (Blue Marble 2012)',
   'personajes-astronauta.jpg — NASA (astronauta Scott Tingle)',
   'viaje-pilares-de-creacion.jpg — NASA, ESA/Hubble',
+  'mundos-gargantua.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',
+  'mundos-miller.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',
+  'mundos-mann.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',
+  'mundos-tesseract.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',
 ];
 const REPO_URL = 'https://github.com/Sergiotsk/Interstellar.git';
 
