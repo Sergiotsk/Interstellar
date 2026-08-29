@@ -1,25 +1,27 @@
 # Publica el sitio estático en GitHub Pages (constitución §Restricciones Técnicas — Hosting).
-# Sin build: se sirven los archivos tal cual (Principio I). El sitio queda en
-# https://sergiotsk.github.io/Interstellar/ — accesible desde el celular sin ngrok.
-# Basado en el template oficial "Deploy static content to Pages", con un paso extra
-# que publica SOLO el contenido servible (no specs/, tests/, .specify/, *.md de proceso).
+# El sitio vive en el subdirectorio interstellar/ del repo; este workflow debe estar en
+# la raíz del repo (.github/workflows/) para que GitHub Actions lo detecte.
+# Sin build: se sirven los archivos tal cual (Principio I).
+# Publica en https://sergiotsk.github.io/Interstellar/ — accesible desde el celular sin ngrok.
 name: Deploy static content to Pages
 
 on:
-  # Corre en cada push a la rama por defecto
   push:
     branches: ["main"]
+    # Solo redeploya cuando cambia contenido del sitio.
+    paths:
+      - "interstellar/**.html"
+      - "interstellar/css/**"
+      - "interstellar/js/**"
+      - "interstellar/assets/**"
+      - ".github/workflows/deploy-pages.yml"
+  workflow_dispatch: {}  # redeploy manual a demanda desde la pestaña Actions
 
-  # Permite lanzarlo a mano desde la pestaña Actions (redeploy a demanda)
-  workflow_dispatch:
-
-# Permisos del GITHUB_TOKEN para poder desplegar a GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Una sola publicación a la vez; no se cancela una en curso (deploy de producción)
 concurrency:
   group: "pages"
   cancel-in-progress: false
@@ -38,11 +40,11 @@ jobs:
         uses: actions/configure-pages@v5
 
       - name: Preparar el sitio
-        # Copia SOLO lo servible a _site/. Deja afuera specs/, tests/, .specify/,
-        # .claude/, docs/ y los .md de proceso. .nojekyll desactiva Jekyll.
+        # Copia SOLO lo servible de interstellar/ a _site/. Deja afuera specs/,
+        # tests/, .specify/ y los .md de proceso. .nojekyll desactiva Jekyll.
         run: |
           mkdir -p _site
-          cp -r ./*.html css js assets _site/
+          cp -r interstellar/*.html interstellar/css interstellar/js interstellar/assets _site/
           touch _site/.nojekyll
 
       - name: Upload artifact
