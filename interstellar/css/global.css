@@ -144,20 +144,42 @@ p {
        |-- ul (solo para los 4 ejes; destinos anidados)
    --------------------------------------------------------------------------- */
 header {
-  background: var(--color-superficie);
-  border-bottom: 1px solid color-mix(in srgb, var(--color-texto) 12%, transparent);
+  /* SIN fondo ni borde: el header se integra con el Hero (home) y con el fondo
+     de cada pagina interna. A la vista queda solo el boton CASE; la superficie
+     la aporta el drawer al abrirse (#nav-principal). */
+  background: transparent;
+  /* Fila que sostiene el boton CASE. En la home ademas se superpone al Hero
+     (body.home > header, mas abajo); en el resto queda en flujo normal. */
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
   /* Apilamiento propio del header en TODAS las paginas (BUGFIX defecto #3): el
-     panel desplegable del submenu (z-index:10 dentro del li) pinta por encima
-     del contenido de pagina. El z-index 20 coincide con el del header superpuesto
-     de la home (body.home > header). */
+     drawer (hijo del header) pinta por encima del contenido de pagina. El
+     z-index 20 coincide con el del header superpuesto de la home. */
   position: relative;
   z-index: 20;
 }
 
+/* El <nav> ya NO es una barra en flujo: es el DRAWER. Cerrado por defecto en
+   todos los viewports; se despliega como panel flotante bajo el boton CASE
+   cuando layout.js le pone la clase `nav-abierto` (no empuja el contenido). */
 header nav {
-  max-width: 75rem;
-  margin: 0 auto;
-  padding: 0.75rem 1rem;
+  position: absolute;
+  top: 100%;
+  left: 0.75rem;
+  display: none;
+  width: min(22rem, calc(100vw - 1.5rem));
+  max-height: calc(100dvh - 100%);
+  overflow-y: auto;
+  padding: 0.5rem 0.75rem;
+  background: var(--color-superficie);
+  border: 1px solid color-mix(in srgb, var(--color-texto) 15%, transparent);
+  border-radius: 0.35rem;
+  box-shadow: 0 0.75rem 1.5rem color-mix(in srgb, var(--color-fondo) 60%, transparent);
+}
+
+header nav.nav-abierto {
+  display: block;
 }
 
 /* BUGFIX SC-010: `header nav ul` (descendiente) casaba TAMBIEN con el <ul hidden>
@@ -169,13 +191,19 @@ header nav > ul {
   padding: 0;
   list-style: none;
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0 1.25rem;
+  flex-direction: column;
+  align-items: stretch;
 }
 
 header nav li {
   position: relative;
+  /* Fila del item: enlace a la izquierda + boton ▼ del acordeon a la derecha.
+     `flex-wrap` deja que el submenu (ul anidado) caiga a su propia fila debajo. */
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;                 /* target tactil (WCAG 2.5.8) */
 }
 
 /* Enlace del item de nivel superior */
@@ -188,6 +216,15 @@ header nav a {
   text-decoration: none;
 }
 
+/* En el drawer, el enlace superior ocupa el ancho de su fila y tiene alto
+   tactil pleno; el boton ▼ del acordeon queda al lado. */
+header nav > ul > li > a {
+  flex: 1;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
 header nav a:hover {
   color: var(--color-tierra-oro);
 }
@@ -195,10 +232,13 @@ header nav a:hover {
 /* Control de disclosure del submenu (boton independiente del enlace). Tiene un
    aspecto interactivo sutil (borde, esquinas, transicion) para que se perciba
    como un control que responde al hover/touch, no como texto estatico (BUGFIX
-   SC-010). */
+   SC-010). Target tactil pleno: el drawer es la unica navegacion en todos los
+   viewports (WCAG 2.5.8). */
 header nav button {
   font: inherit;
   font-size: 0.8rem;
+  min-width: 44px;
+  min-height: 44px;
   color: var(--color-texto-atenuado);
   background: transparent;
   border: 1px solid color-mix(in srgb, var(--color-texto) 18%, transparent);
@@ -231,169 +271,94 @@ header nav ul ul[hidden] {
   display: none;
 }
 
+/* Submenu de cada eje: cae a SU PROPIA fila, ancho completo, debajo del eje
+   (dentro del <li> con `flex-wrap: wrap`), con sangria. NO se declara `display`
+   sobre este selector (BUGFIX SC-010): el atributo `hidden` (layout.js) es el
+   colapso funcional y debe poder ganar siempre. */
 header nav ul ul {
   margin-top: 0.25rem;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.15rem;
-  padding: 0 0 0.25rem 0.5rem;
+  flex: 1 0 100%;
+  padding: 0 0 0.25rem 1rem;
+  background: transparent;
 }
 
 header nav ul ul a {
   font-size: 0.95rem;
   padding: 0.15rem 0;
+  white-space: normal;
+  word-break: break-word;   /* etiquetas largas ("dilatacion-temporal") sin desborde a 320px */
+  max-width: 100%;
 }
 
 /* ---------------------------------------------------------------------------
-   4b. Navbar responsive (T013 desktop / T030 drawer mobile)
+   4b. Boton CASE + drawer — UNICA navegacion, todos los viewports
    ---------------------------------------------------------------------------
-   El modelo de interaccion es identico en mobile y desktop (FR-009); el CSS
-   solo define la presentacion de los submenus ABIERTOS. El collapse funcional
-   lo mantiene el atributo `hidden` que gestiona layout.js.
-
-   DESKTOP (>= 64rem): el nav fluye normal en una fila y cada submenu abierto se
-   presenta como panel desplegable bajo el disparador (T013). El boton ☰ esta
-   oculto.
-
-   MOBILE (<= 63.999rem): T030 SUPERSEDE la presentacion mobile anterior de T013
-   (submenus en flujo bajo el disparador). El header queda en UNA fila: boton ☰
-   (min 44x44 px, WCAG 2.5.8) + wheel de apertura. El nav queda oculto por
-   defecto y se despliega como drawer/panel apilado con los 8 items (min-height
-   44 px). Los submenus de ejes actuan como ACORDEON DENTRO del drawer (modelo
-   de disclosure FR-009 intacto); la presentacion en flujo de T013 solo persiste
-   como forma del acordeon, dentro del cajon abierto. Sin overflow horizontal a
-   320px (FR-022, SC-003); foco visible (SC-005).
-
-   IMPORTANTE (BUGFIX SC-010): no se declara `display` sobre ningun selector
-   que tambien case con el <ul> anidado del submenu. La lista superior usa el
-   selector de hijo directo `#nav-principal > ul`; el <ul> anidado conserva su
-   `[hidden]{ display:none }` funcional.
+   Ya NO hay barra horizontal de escritorio: en cualquier viewport la
+   navegacion es el boton CASE (menu-hamburguesa "girado" a 4 barras
+   verticales) que abre el drawer `#nav-principal` (panel flotante definido mas
+   arriba, junto a `header`). El modelo de disclosure de los submenus (FR-009)
+   queda intacto: actuan como ACORDEON dentro del drawer. La disposicion de los
+   items (fila con enlace + boton ▼, submenu en su propia fila) la fijan las
+   reglas base `header nav > ul`, `header nav li` y `header nav > ul > li > a`.
+   Foco visible via la regla global de `:focus-visible` (SC-005). Sin overflow
+   horizontal a 320px: el panel usa `width: min(22rem, calc(100vw - 1.5rem))`.
    --------------------------------------------------------------------------- */
 
-/* Boton ☰ — base del drawer. Visible por defecto (mobile); en desktop se oculta
-   dentro del media query de escritorio (>= 64rem). */
 .nav-toggle {
   display: inline-flex;
-  min-width: 44px;
-  min-height: 44px;
-  font-size: 1.25rem;
-  color: var(--color-texto);
-  background: transparent;
-  border: 1px solid color-mix(in srgb, var(--color-texto) 18%, transparent);
-  border-radius: 0.25rem;
-  cursor: pointer;
   align-items: center;
   justify-content: center;
+  min-width: 44px;                  /* target tactil (WCAG 2.5.8) */
+  min-height: 44px;
+  padding: 0;
+  color: var(--color-texto);
+  background: transparent;
+  border: 0;                        /* sin caja: a la vista quedan solo las barras */
+  cursor: pointer;
 }
 
 .nav-toggle:hover {
   color: var(--color-gargantua);
 }
 
-@media (max-width: 63.999rem) {
-  /* Header de UNA fila: ☰ a la izquierda, espacio a la derecha. Mantiene
-     background/padding del base y el `position: relative; z-index: 20` del
-     BUGFIX para que el drawer pague por encima del contenido. */
-  header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-  }
-
-  /* Drawer: el nav esta oculto por defecto; con la clase `nav-abierto` (que
-     alterna layout.js) se muestra como panel de ancho completo bajo la fila
-     del ☰. Panel en flujo (no absolute) para no hacer saltar la pagina. */
-  #nav-principal {
-    display: none;
-    width: 100%;
-    background: var(--color-superficie);
-    border-top: 1px solid color-mix(in srgb, var(--color-texto) 12%, transparent);
-  }
-
-  #nav-principal.nav-abierto {
-    display: block;
-  }
-
-  /* Lista superior apilada en el drawer: selector de HIJO DIRECTO para NO
-     tocar el <ul> anidado del submenu (BUGFIX SC-010). */
-  #nav-principal > ul {
-    flex-direction: column;
-    align-items: stretch;
-    width: 100%;
-  }
-
-  /* Cada item del drawer con altura tactil minima (WCAG 2.5.8); la fila del eje
-     alinea enlace + boton ▼, el item plano deja el enlace a ancho completo.
-     `flex-wrap: wrap` permite que el submenu-acordeon pase a SU PROPIA fila
-     debajo del disparador (bugfix T030: no encogerse en la misma linea). */
-  #nav-principal li {
-    min-height: 44px;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    max-width: 100%;
-  }
-
-  #nav-principal a {
-    flex: 1;
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-    font-size: 1.05rem;
-  }
-
-  /* Boton ▼ del acordeon dentro del drawer: target tactil pleno. */
-  #nav-principal button {
-    min-width: 44px;
-    min-height: 44px;
-  }
-
-  /* Submenu abierto como ACORDEON dentro del drawer: lista anidada apilada a
-     ancho completo en SU PROPIA fila debajo del eje (flex: 1 0 100% dentro del
-     `<li>` con `flex-wrap: wrap`), fondo transparente y sangria. Solo presenta el
-     estado ABIERTO; el `[hidden]` (layout.js) mantiene el colapso funcional. */
-  #nav-principal ul ul {
-    flex: 1 0 100%;
-    background: transparent;
-    padding-left: 1rem;
-  }
-
-  #nav-principal ul ul a {
-    white-space: normal;
-    word-break: break-word; /* evita desbordes por etiqueta larga, p. ej. "dilatacion-temporal" */
-    max-width: 100%;
-  }
+/* Icono CASE: 4 barras VERTICALES (la hamburguesa de 3 lineas horizontales
+   "girada" 90 grados). Se dibuja entero aca; las <span> del HTML son
+   decorativas. `currentColor` hace que el hover y el estado abierto del boton
+   tiñan las barras sin repetir el valor del color. */
+.case-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  width: 20px;
+  height: 20px;
 }
 
-/* Desktop (>= 64rem): el submenu abierto se presenta como panel desplegable
-   bajo el disparador, usando el hook `header nav li { position: relative }`
-   ya definido mas arriba. Se usan tokens de superficie y sombra propia (no se
-   inventan nombres nuevos). El nav fluye normal (filas) como en T013 y el
-   boton ☰ del drawer queda oculto (T030). */
-@media (min-width: 64rem) {
-  .nav-toggle {
-    display: none;
-  }
+.case-icon span {
+  width: 3px;
+  height: 100%;
+  background: currentColor;
+  border-radius: 1px;
+  transition: height 0.18s ease, background-color 0.18s ease;
+}
 
-  header nav ul ul {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    min-width: 14rem;
-    margin-top: 0.25rem;
-    padding: 0.5rem 0.75rem;
-    background: var(--color-superficie);
-    border: 1px solid color-mix(in srgb, var(--color-texto) 15%, transparent);
-    box-shadow: 0 0.5rem 1.25rem color-mix(in srgb, var(--color-fondo) 55%, transparent);
-    z-index: 10;
-  }
+/* Abierto: las 4 barras se escalonan (silueta del robot CASE "en marcha") y
+   toman el unico acento saturado del sitio (FR-017). */
+.nav-toggle[aria-expanded='true'] {
+  color: var(--color-gargantua);
+}
 
-  header nav ul ul a {
-    white-space: nowrap; /* en desktop el panel crece con su contenido; sin corte */
-    display: block;
-    padding: 0.35rem 0;
+.nav-toggle[aria-expanded='true'] .case-icon span:nth-child(1) { height: 55%; }
+.nav-toggle[aria-expanded='true'] .case-icon span:nth-child(2) { height: 100%; }
+.nav-toggle[aria-expanded='true'] .case-icon span:nth-child(3) { height: 70%; }
+.nav-toggle[aria-expanded='true'] .case-icon span:nth-child(4) { height: 40%; }
+
+/* Respeta la preferencia de menos movimiento: las barras y el ▼ cambian de
+   estado sin transicion. */
+@media (prefers-reduced-motion: reduce) {
+  .case-icon span,
+  header nav button {
+    transition: none;
   }
 }
 
@@ -579,23 +544,14 @@ body.home > header {
    La carga directa de una URL con ancla (ej. mundos.html#gargantua) debe dejar
    la seccion destino reconocible y usable por debajo del header (caso limite).
    El header esta superpuesto (absolute) solo en la home (body.home), que no
-   tiene secciones con ancla; en las paginas de eje queda en flujo normal y su
-   altura real varia: ~4.1rem con una fila de nav (desktop) hasta ~12rem cuando
-   el flex-wrap envuelve filas a 320px (FR-022, SC-003). Un valor fijo no puede
-   seguir ese envoltorio, por lo que se elige en el lado seguro: sobre-cubrir
-   deja la seccion visible y usable; sub-cubrir la esconderia bajo el header,
-   que es exactamente el defecto que esta regla corrige.
+   tiene secciones con ancla; en las paginas de eje queda en flujo normal. Desde
+   la feature del boton CASE el header es UNA fila de altura fija en todo
+   viewport (~4.25rem: boton de 44px + 0.75rem de padding arriba y abajo), sin
+   barra de nav que envuelva filas. Un unico valor cubre todos los casos con
+   respiro; se elige en el lado seguro (sobre-cubrir deja la seccion visible).
    --------------------------------------------------------------------------- */
 section[id] {
-  scroll-margin-top: 7rem;  /* cubre el header de 1-2 filas (~4.1-6.65rem) + respiro */
-}
-
-@media (max-width: 63.999rem) {
-  section[id] {
-    /* En mobile el nav envuelve filas (hasta ~4 en 320px); 12rem cubre el peor
-       caso y sobra como respiro en tablet, donde el header es mas bajo. */
-    scroll-margin-top: 12rem;
-  }
+  scroll-margin-top: 5.5rem;  /* header de ~4.25rem + respiro, igual en todo viewport */
 }
 
 /* ---------------------------------------------------------------------------
