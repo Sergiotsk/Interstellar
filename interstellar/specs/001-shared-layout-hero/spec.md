@@ -1,10 +1,10 @@
 # Especificación de feature: Layout compartido y Hero de inicio
 
-**Rama de feature**: `No creada (sin hook de rama configurado)`
+**Rama de feature**: `feat/001-shared-layout-hero` (mergeada a `main` vía PR #2)
 
 **Creada**: 2026-08-28
 
-**Estado**: Borrador
+**Estado**: Implementada — pendiente enmiendas de consistencia post-análisis (ver Clarifications, enmienda 2026-08-28)
 
 **Entrada**: Descripción del usuario: "Crear la capa fundacional del sitio Interstellar: layout compartido, navegación multinivel responsive, pie común, página de inicio con Hero cinematográfico, base visual centralizada y páginas de destino placeholder navegables."
 
@@ -15,6 +15,10 @@
 - Q: ¿Qué comportamiento deben tener los submenús de navegación en desktop y mobile? → A: Clic, toque, Enter o Space alternan el submenú; solo uno permanece abierto. Escape, clic exterior o abandonar la navegación lo cierran y restauran el foco.
 - Q: ¿Cómo debe ubicarse el encabezado respecto del Hero en la primera pantalla? → A: El Hero ocupa la pantalla completa y el encabezado se superpone sobre su parte superior.
 - Q: ¿En cuáles navegadores debe funcionar obligatoriamente la feature para considerarse aprobada? → A: Las dos versiones más recientes de Chrome, Edge, Firefox y Safari.
+
+### Session 2026-08-28 (enmienda posterior)
+
+- Q: ¿Se mantiene Safari dentro del alcance de verificación de SC-009? → A: No. Safari se retira del alcance de verificación por falta de entorno de pruebas (desarrollo en Windows, sin macOS/iOS ni tooling cross-browser). Los navegadores obligatorios quedan en las dos versiones más recientes de Chrome, Edge y Firefox. Riesgo asumido y documentado: WebKit (~18-20 % de usuarios reales) no recibe verificación explícita; el CSS empleado (`color-mix`, `100svh` con fallback, `:focus-visible`, prefijos `-webkit-`) es compatible con Safari 16.2+, por lo que el riesgo estimado es bajo.
 - Q: ¿La prueba con cinco personas debe aprobarse obligatoriamente antes de considerar terminada la feature? → A: Sí. Al menos 4 de 5 personas deben reconocer la temática y encontrar una sección en menos de 30 segundos.
 - Q: ¿Qué tipos de imágenes pueden usarse para el Hero y los placeholders de esta feature? → A: Las fuentes detalladas en proyecto-interstellar-base.md, priorizando calidad, impacto visual y coherencia con la película, con procedencia documentada.
 
@@ -109,7 +113,7 @@ Como visitante, quiero colores, tipografía y jerarquías consistentes para leer
 - **FR-010**: Un submenú abierto DEBE cerrarse al presionar Escape, hacer clic fuera o abandonar la navegación y DEBE restaurar el foco a su control; además, el foco de teclado DEBE ser visible en todos los controles y enlaces interactivos, y su orden de recorrido DEBE seguir la secuencia visual y semántica del contenido.
 - **FR-011**: Cada destino superior DEBE resolver a una página disponible; las páginas internas sin contenido definitivo DEBEN mostrar un placeholder semántico con nombre y propósito de la sección, además del layout común.
 - **FR-012**: El pie común DEBE mostrar créditos del proyecto, fuentes del material visual utilizado y un enlace al repositorio `https://github.com/Sergiotsk/Interstellar.git` o a su destino equivalente aprobado.
-- **FR-013**: Cada material visual incluido, especialmente el backdrop del Hero, DEBE provenir de las fuentes detalladas en `proyecto-interstellar-base.md`, priorizando calidad, impacto visual y coherencia con la película, y DEBE tener su fuente, atribución y condiciones de uso registradas de forma visible o accesible desde los créditos.
+- **FR-013**: Cada material visual incluido, especialmente el backdrop del Hero, DEBE provenir de las fuentes detalladas en `proyecto-interstellar-base.md` (archivo en la raíz del repositorio, fuente única de verdad del catálogo), priorizando calidad, impacto visual y coherencia con la película, y DEBE tener su fuente, atribución y condiciones de uso registradas de forma visible o accesible desde los créditos.
 - **FR-014**: La página de inicio DEBE contener una región principal cuyo Hero ocupe la pantalla visible inicial completa; el encabezado DEBE superponerse sobre la parte superior del Hero en lugar de consumir espacio vertical separado.
 - **FR-015**: El Hero DEBE presentar un backdrop de Interstellar, un título o logo con alternativa textual y un subtítulo o tagline, manteniendo todos los textos legibles sobre la imagen.
 - **FR-016**: La página de inicio DEBE incluir, inmediatamente después del Hero, una introducción breve que explique que el sitio recorre los mundos, personajes, viaje y ciencia de Interstellar.
@@ -150,9 +154,9 @@ Como visitante, quiero colores, tipografía y jerarquías consistentes para leer
 - **SC-004**: Una persona puede llegar desde Inicio a cualquiera de los siete destinos superiores restantes en un máximo de dos interacciones después de disponer de la navegación.
 - **SC-005**: En pruebas de navegación en mobile y desktop, clic, toque, Enter y Space alternan cada submenú, solo uno permanece abierto, y Escape, clic exterior o abandonar la navegación lo cierran y restauran el foco; además, el 100 % de los enlaces y controles puede enfocarse, muestra un indicador visible y puede activarse sin puntero.
 - **SC-006**: En el 100 % de las vistas del Hero evaluadas en mobile y desktop, el título, el subtítulo, el encabezado y la navegación superpuestos, y la introducción se leen sin depender de una zona clara específica del backdrop.
-- **SC-007**: El 100 % de las páginas incluidas supera la revisión acordada de estructura semántica y jerarquía de encabezados, y todas las imágenes cumplen su tratamiento alternativo correspondiente.
+- **SC-007**: El 100 % de las páginas incluidas supera la revisión de estructura semántica y jerarquía de encabezados definida en la constitución (§«Flujo de Trabajo y Puertas de Calidad» — criterios de aceptación por página), y todas las imágenes cumplen su tratamiento alternativo correspondiente.
 - **SC-008**: El 100 % de los materiales visuales publicados en esta feature proviene del catálogo de fuentes de `proyecto-interstellar-base.md` y posee una fuente identificable en los créditos, incluida la imagen principal del Hero.
-- **SC-009**: Los recorridos completos de navegación, carga directa de páginas y apertura de anclas finalizan sin errores en consola en las dos versiones más recientes de Chrome, Edge, Firefox y Safari.
+- **SC-009**: Los recorridos completos de navegación, carga directa de páginas y apertura de anclas finalizan sin errores en consola en las dos versiones más recientes de Chrome, Edge y Firefox. Safari queda fuera del alcance de verificación (ver Clarifications, enmienda 2026-08-28).
 - **SC-010**: Como puerta de aceptación obligatoria antes de considerar completa la feature, en una prueba moderada con cinco personas, al menos cuatro identifican la temática de Interstellar y encuentran una sección superior solicitada en menos de 30 segundos desde la página de inicio.
 
 ## Suposiciones
@@ -163,5 +167,5 @@ Como visitante, quiero colores, tipografía y jerarquías consistentes para leer
 - El backdrop del Hero y los materiales visuales de esta feature se seleccionarán del catálogo de `proyecto-interstellar-base.md`, priorizando calidad, impacto visual y coherencia con la película, y se almacenarán con una atribución compatible con su licencia o condiciones de uso.
 - Los textos científicos detallados y sus etiquetas de rigor no forman parte de los placeholders; se incorporarán en features posteriores con verificación de fuentes.
 - Las páginas placeholder existen para garantizar navegación completa, no para anticipar contenido editorial ni interacción propia de cada sección.
-- Las pruebas de compatibilidad se realizarán sobre las dos versiones más recientes de Chrome, Edge, Firefox y Safari, conforme a la constitución.
+- Las pruebas de compatibilidad se realizarán sobre las dos versiones más recientes de Chrome, Edge y Firefox, conforme a la constitución; Safari queda fuera del alcance de verificación (ver Clarifications, enmienda 2026-08-28).
 - El repositorio público indicado es el destino aprobado para el enlace del pie mientras no se designe un equivalente diferente.

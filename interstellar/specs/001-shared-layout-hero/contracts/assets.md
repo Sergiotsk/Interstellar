@@ -4,7 +4,7 @@
 
 ## Fuentes permitidas (catálogo aprobado)
 
-Únicamente las fuentes detalladas en `proyecto-interstellar-base.md`:
+Únicamente las fuentes detalladas en `/proyecto-interstellar-base.md` (raíz del repositorio, fuente única de verdad de este catálogo; la lista de abajo es solo un digest de referencia):
 
 - **Material de la película**: TMDB, Fanart.tv, Wikimedia Commons, Alpha Coders, WallpaperFlare, Wallpaper Cave, Wallpapers.com, WallpaperCat.
 - **Material espacial real (dominio público)**: NASA Image Library, ESA/Hubble, Unsplash, Rawpixel (NASA).

@@ -6,7 +6,7 @@
 
 ## Prerrequisitos
 
-- Navegador evergreen moderno: últimas 2 versiones de Chrome, Edge, Firefox o Safari (ver `research.md` D6).
+- Navegador evergreen moderno: últimas 2 versiones de Chrome, Edge o Firefox (ver `research.md` D6).
 - Nada que instalar; sin build. El sitio se sirve tal cual está escrito (constitución I).
 
 ## Servir localmente
@@ -35,7 +35,8 @@ Abrir http://localhost:8000/ (en producción: GitHub Pages, deploy estático aut
 1. En desktop y en viewport móvil: abrir el drawer (☰) en mobile, alternar cada submenú con clic y con toque; verificar que solo uno permanece abierto y que ninguna opción queda superpuesta, recortada o genera desplazamiento horizontal involuntario; cada ítem ocupa al menos 44 px de alto (HU1-E2, FR-021).
 2. Con teclado: enfocar un control de submenú, alternar con Enter y con Space, cerrar con Escape; verificar foco visible, orden coherente y restauración del foco al control (HU1-E3).
 3. Cerrar con clic fuera y al abandonar la navegación; elegir un destino anidado y verificar que el submenú se cierra (HU1-E4).
-4. Referencia de comportamiento: `contracts/navigation.md` y `data-model.md` §6 (SubmenuState).
+4. Con un submenú abierto, redimensionar la ventana cruzando el breakpoint (≈64rem) en ambos sentidos y también cambiar de página: la navegación NO debe quedar con contenido bloqueado, oculto ni con un submenú "pegado" abierto (caso límite de `spec.md`; invariante de `data-model.md` §6).
+5. Referencia de comportamiento: `contracts/navigation.md` y `data-model.md` §6 (SubmenuState).
 
 ### E3 — Hero fullscreen y legibilidad (HU2, FR-014..FR-016, SC-003, SC-006)
 
@@ -56,7 +57,7 @@ Abrir http://localhost:8000/ (en producción: GitHub Pages, deploy estático aut
 
 ### E6 — Ausencia de errores y assets verificados (FR-021, SC-009, SC-008)
 
-1. Recorridos completos (navegación, carga directa, anclas) sin errores en consola en Chrome, Edge, Firefox y Safari (SC-009).
+1. Recorridos completos (navegación, carga directa, anclas) sin errores en consola en Chrome, Edge y Firefox (SC-009). Safari fuera del alcance de verificación (spec.md, Clarifications, enmienda 2026-08-28).
 2. Confirmar que cada imagen proviene del catálogo aprobado y está acreditada en `creditos.html` (enlazada desde el pie de todas las páginas) (SC-008). Referencia: `contracts/assets.md`.
 
 ### E7 — Prueba moderada de 5 personas (SC-010) — puerta de aprobación obligatoria

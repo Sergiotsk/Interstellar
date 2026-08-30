@@ -34,5 +34,5 @@ Toda paleta y todo valor reutilizable se define como custom property en `:root` 
 ## Verificación
 
 - FR-017: revisión de paleta en todas las páginas; el único color saturado es el naranja de Gargantúa.
-- SC-007: revisión de jerarquía tipográfica y de foco acordada.
+- SC-007: revisión de jerarquía tipográfica y de foco según la constitución (§«Flujo de Trabajo y Puertas de Calidad»).
 - Inspección de código: ausencia de valores de paleta hardcodeados fuera de `:root`.
