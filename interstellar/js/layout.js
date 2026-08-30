@@ -66,13 +66,18 @@ function buildTopLevelItem(item) {
 
 export function buildHeader(navConfig = NavConfig) {
   const items = navConfig.items.map(buildTopLevelItem).join('\n');
-  // T030: boton ☰ de apertura/cierre del drawer mobile. Vive FUERA del <nav>
+  // Boton CASE: menu-hamburguesa "girado" a 4 barras VERTICALES (guiño al robot
+  // de la pelicula). Abre/cierra el drawer de navegacion en TODOS los viewports
+  // (ya no hay barra horizontal de escritorio). Las 4 <span> internas son
+  // DECORATIVAS (el <span.case-icon> lleva aria-hidden): el nombre accesible del
+  // control lo da el aria-label; el icono se dibuja por completo con CSS.
+  // Vive FUERA del <nav>
   // (primer hijo del <header>, antes del <nav>) para que collectDisclosures(nav)
   // —que consulta `button[aria-controls]` dentro del nav— nunca lo confunda con
   // un disclosure de submenu. El nav lleva id="nav-principal" (target del
   // aria-controls y hook del CSS para mostrar/ocultar el drawer en mobile).
   return `<header>
-  <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="nav-principal" aria-label="Abrir menú de navegación">☰</button>
+  <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="nav-principal" aria-label="Abrir menú de navegación"><span class="case-icon" aria-hidden="true"><span></span><span></span><span></span><span></span></span></button>
   <nav id="nav-principal" aria-label="Navegación principal">
     <ul>
 ${items}
@@ -223,10 +228,10 @@ function wireDisclosure(nav, estado) {
 }
 
 /* -----------------------------------------------------------------------------
-   Drawer mobile (T030) — contracts/navigation.md + FR-022, SC-003, SC-005.
-   El nav queda oculto por defecto en mobile (CSS) y se muestra como panel
-   desplagable al pulsar el boton ☰. Mecanismo elegido: JS alterna (a) el
-   `aria-expanded` del boton ☰ y (b) la clase `nav-abierto` sobre el
+   Drawer de navegacion — contracts/navigation.md + FR-022, SC-003, SC-005.
+   El nav queda oculto por defecto en TODOS los viewports (CSS) y se muestra
+   como panel flotante al pulsar el boton CASE. Mecanismo elegido: JS alterna
+   (a) el `aria-expanded` del boton CASE y (b) la clase `nav-abierto` sobre el
    `<nav id="nav-principal">`; el CSS usa esa clase para mostrar el panel.
    ----------------------------------------------------------------------------- */
 function wireDrawer(header, nav, estado) {
@@ -286,7 +291,7 @@ function wireDrawer(header, nav, estado) {
     }
   });
 
-  // Escape (nivel documento): cierra el drawer y restaura el foco al ☰.
+  // Escape (nivel documento): cierra el drawer y restaura el foco al boton CASE.
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && nav.classList.contains('nav-abierto')) {
       cerrarDrawer();
