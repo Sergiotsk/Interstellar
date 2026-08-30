@@ -784,3 +784,138 @@ section[id] p {
     margin: 0.25rem 1.75rem 1rem 0;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   13. Concepto de ciencia + etiqueta de rigor (feature 004 — ciencia-content)
+   ---------------------------------------------------------------------------
+   Patron para el eje La Ciencia (reutilizable por El Viaje). Cada `section[id]`
+   de concepto lleva la clase `.concepto`; el `section[id]` base solo estiliza
+   `h2` y `p`, asi que aca se cubren `h3`, `ul`, `li` y `figure`. La etiqueta de
+   rigor (`.rigor`) es un `<span>` inline con el nivel escrito: la distincion
+   entre niveles la da el TEXTO, no el color (FR-016). Sin custom properties
+   nuevas; el unico acento saturado admitido es --color-gargantua, reservado a
+   `.rigor-licencia`.
+
+   Contrato: specs/004-ciencia-content/contracts/ciencia-page.md
+   --------------------------------------------------------------------------- */
+.concepto h3 {
+  font-family: var(--font-hero-titulo);
+  font-size: clamp(1rem, 2.2vw, 1.2rem);
+  letter-spacing: 0.03em;
+  color: var(--color-texto);
+  margin: 1.5rem 0 0.5rem;
+}
+
+.concepto h3:first-of-type {
+  margin-top: 0.75rem;
+}
+
+.concepto p,
+.concepto li {
+  font-family: var(--font-texto);
+  line-height: 1.75;
+  color: var(--color-texto-atenuado);
+}
+
+.concepto ul {
+  margin: 0.25rem 0 0;
+  padding-left: 1.25rem;
+}
+
+.concepto li {
+  margin: 0.35rem 0;
+  font-size: 0.95rem;
+}
+
+/* Figura ilustrativa (solo en #agujeros-negros): imagen INFORMATIVA, sin
+   --backdrop-oscurecer y sin posicionamiento absoluto. */
+.concepto figure {
+  margin: 0 0 1.25rem;
+  max-width: 32rem;
+  background-color: var(--color-superficie);
+  border: 1px solid color-mix(in srgb, var(--color-texto) 12%, transparent);
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+.concepto figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.concepto figcaption {
+  padding: 0.5rem 0.75rem;
+  font-family: var(--font-texto);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--color-texto-atenuado);
+}
+
+/* Etiqueta de rigor: comun a los tres niveles. El nivel se lee en el texto
+   del <span> ("✓ Ciencia real", etc.), nunca solo por color (FR-011, FR-016). */
+.rigor {
+  display: inline-block;
+  white-space: nowrap;
+  margin-left: 0.35rem;
+  padding: 0.05rem 0.45rem;
+  border: 1px solid color-mix(in srgb, var(--color-texto) 22%, transparent);
+  border-radius: 999px;
+  background-color: var(--color-superficie);
+  color: var(--color-texto);
+  font-family: var(--font-texto);
+  font-size: 0.78rem;
+  font-weight: 500;
+  vertical-align: baseline;
+}
+
+/* Variacion minima dentro de la paleta aprobada: el borde izquierdo marca el
+   nivel como refuerzo (nunca como unica senal). El unico acento saturado del
+   sitio (naranja de Gargantua) se reserva para la licencia narrativa. */
+.rigor-real {
+  border-left-width: 3px;
+  border-left-style: solid;
+  border-left-color: color-mix(in srgb, var(--color-texto) 55%, transparent);
+}
+
+.rigor-plausible {
+  border-left-width: 3px;
+  border-left-style: dashed;
+  border-left-color: color-mix(in srgb, var(--color-texto) 40%, transparent);
+}
+
+.rigor-licencia {
+  border-left-width: 3px;
+  border-left-style: solid;
+  border-left-color: var(--color-gargantua);
+}
+
+/* Leyenda de rigor: unica en la pagina, en la seccion de intro. */
+.rigor-leyenda {
+  margin: 1.5rem 0 0;
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.4rem 0.9rem;
+  align-items: baseline;
+  font-family: var(--font-texto);
+}
+
+.rigor-leyenda dt {
+  margin: 0;
+}
+
+.rigor-leyenda dd {
+  margin: 0;
+  color: var(--color-texto-atenuado);
+  font-size: 0.95rem;
+}
+
+@media (max-width: 30rem) {
+  .rigor-leyenda {
+    grid-template-columns: 1fr;
+    gap: 0.15rem;
+  }
+  .rigor-leyenda dd {
+    margin-bottom: 0.5rem;
+  }
+}
