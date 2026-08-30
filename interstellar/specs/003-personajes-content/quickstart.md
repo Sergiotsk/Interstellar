@@ -6,7 +6,7 @@
 
 ## Prerrequisitos
 
-- Features 001 y 002 fusionadas en `main` (layout compartido, tokens, pie con `imageSources`, `scroll-margin-top` de anclas, patrón de contenido por eje, `CREDITOS.md`).
+- Features 001 y 002 fusionadas en `main` (layout compartido, tokens, pie común, `scroll-margin-top` de anclas, patrón de contenido por eje, `CREDITOS.md`). Nota (2026-08-30): la atribución por asset se movió del pie a `creditos.html` (`js/creditos.js`); el pie la enlaza.
 - Navegador evergreen: últimas 2 versiones de Chrome, Edge o Firefox (Safari fuera del alcance de verificación).
 - Node instalado (para `node --test`; parte del runtime, no una dependencia del repo).
 - Nada que instalar, sin build.
@@ -29,7 +29,7 @@ node --test tests/*.test.js
 
 > Nota: `node --test tests/` (arg de directorio) está roto en Node 25; usar el glob `tests/*.test.js` o `node --test` sin argumento.
 
-Debe pasar en verde: `smoke.test.js`, `submenu-state.test.js` y `layout.test.js` (este último ahora incluye la aserción de créditos de Personajes — ver `contracts/footer-credits.md`).
+Debe pasar en verde: `smoke.test.js`, `submenu-state.test.js`, `layout.test.js` y `creditos.test.js` (la aserción de créditos de Personajes se movió a este último cuando la lista pasó de `buildFooter()` a `buildCreditosContent()` — ver `contracts/footer-credits.md`).
 
 ## Escenarios de validación
 
@@ -52,7 +52,7 @@ Debe pasar en verde: `smoke.test.js`, `submenu-state.test.js` y `layout.test.js`
 
 1. En cada ficha, verificar un `<figure class="ficha-retrato">` con un `<img>` propio (distinto de las otras 5) y un `<figcaption>` que describe la imagen.
 2. Confirmar que el `<img>` tiene `alt` **descriptivo** del personaje (no vacío) y que **no** hay oscurecimiento ni backdrop a sección completa (no se usa `.eje-con-backdrop`).
-3. Verificar que la línea de reparto es un `<p class="ficha-reparto">` **fuera** del `<figure>`, y que la atribución `© Warner Bros.` **no** está en el `<figcaption>` sino en el pie.
+3. Verificar que la línea de reparto es un `<p class="ficha-reparto">` **fuera** del `<figure>`, y que la atribución `© Warner Bros.` **no** está en el `<figcaption>` sino en `creditos.html` (enlazada desde el pie).
 4. Simular fallo de carga (renombrar temporalmente un `.jpg` o bloquear la imagen en DevTools): el `<figure>` conserva un fondo coherente con la paleta y la maqueta de la ficha no se rompe (caso límite).
 
 ### E4 — Reparto completo y consistente (SC-009)
@@ -63,7 +63,7 @@ Debe pasar en verde: `smoke.test.js`, `submenu-state.test.js` y `layout.test.js`
 
 ### E5 — Créditos e imágenes (FR-006, FR-007, SC-008)
 
-1. Revisar el pie: los 6 retratos de Personajes figuran con su atribución `© Warner Bros. Pictures` (mecanismo `ASSET_CREDITS`).
+1. Abrir `creditos.html` (enlace "Créditos y fuentes" en el pie): los 6 retratos de Personajes figuran con su atribución `© Warner Bros. Pictures` (mecanismo `ASSET_CREDITS` en `js/creditos.js`).
 2. Verificar `assets/img/CREDITOS.md`: 6 filas nuevas con fuente del catálogo (FILMGRAB), URL de origen real y `estado` correcto; "Resumen de estado" y nota de peso actualizados.
 3. Medir cada `assets/img/personajes-*.jpg`: ≤ 250 KB por archivo; suma de los 6 ≤ 1,5 MB.
 4. Confirmar formato JPEG y ruta relativa en el `src`.

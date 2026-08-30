@@ -6,6 +6,13 @@
 
 **Propósito**: en un sitio estático, el "dato" es la estructura del contenido y su atribución. Este modelo describe las entidades que se materializan como HTML en `personajes.html` y como filas en el registro de créditos, con sus reglas de validación mapeadas a los FR de la spec.
 
+> **Actualizado (2026-08-30) — rama `feat/creditos-page`.** El array `ASSET_CREDITS` y su
+> render se movieron de `js/layout.js` (pie) a `js/creditos.js` (página `creditos.html`).
+> Donde este modelo dice `buildFooter()` / "el pie" / `tests/layout.test.js` para los
+> créditos por asset, léase `buildCreditosContent()` / "la página de créditos" /
+> `tests/creditos.test.js`. Las 6 entradas de los retratos, su formato y su sincronía
+> 1:1 con `assets/img/CREDITOS.md` no cambian.
+
 ## 1. Ficha de personaje
 
 **Descripción**: una de las seis entradas del eje Personajes. Se materializa como un `<section id="…">` dentro del `<main>` de `personajes.html`.
