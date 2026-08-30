@@ -14,3 +14,6 @@ Thumbs.db
 
 # Dependencies (defensive — this project has no runtime deps)
 node_modules/
+# Agent / methodology tooling (per-machine, no es parte del sitio)
+.atl/
+.opencode/
