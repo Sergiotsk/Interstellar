@@ -7,34 +7,9 @@ import { NavConfig } from './nav-data.js';
 import { createSubmenuState } from './submenu-state.js';
 
 const CREDITS = 'Interstellar — sitio académico de fan, sin fines de lucro.';
-const IMAGE_SOURCES_NOTE =
-  'Fuentes del material visual: catálogo aprobado (Wikimedia Commons, NASA Image Library, ESA/Hubble) y fotogramas de la película (FILMGRAB, uso académico con atribución). Créditos por asset:';
-// Atribución por asset según assets/img/CREDITOS.md (FR-013, SC-008). Solo se
-// listan los assets descargados; los pendientes se sumarán al incorporarse
-// (Gargantúa del paper arXiv). Los backdrops de Mundos (feature 002) son
-// fotogramas de la película: uso académico con atribución al titular del
-// copyright (research.md D2, contracts/footer-credits.md).
-const ASSET_CREDITS = [
-  'hero-backdrop.jpg — Event Horizon Telescope Collaboration, CC BY 4.0 (Wikimedia Commons)',
-  'ciencia-agujero-negro.jpg — NASA/JPL-Caltech (NASA Image Library)',
-  'mundos-tierra.jpg — NASA (Blue Marble 2012)',
-  'personajes-astronauta.jpg — NASA (astronauta Scott Tingle)',
-  'viaje-pilares-de-creacion.jpg — NASA, ESA/Hubble',
-  'mundos-gargantua.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',
-  'mundos-miller.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',
-  'mundos-mann.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',
-  'mundos-tesseract.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',
-  // Retratos del eje Personajes (feature 003): fotogramas de la película, uso
-  // académico con atribución al titular del copyright (research.md D2,
-  // contracts/footer-credits.md).
-  'personajes-cooper.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',
-  'personajes-murph.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',
-  'personajes-brand.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',
-  'personajes-profesor-brand.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',
-  'personajes-mann.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',
-  'personajes-tars-case.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',
-];
 const REPO_URL = 'https://github.com/Sergiotsk/Interstellar.git';
+// La atribución por asset ya NO vive en el pie: se movió a creditos.html
+// (módulo js/creditos.js). El pie solo enlaza esa página + el repo.
 
 function escapeHtml(value) {
   return String(value)
@@ -87,16 +62,14 @@ ${items}
 }
 
 export function buildFooter() {
-  const assetList = ASSET_CREDITS.map(
-    (credit) => `    <li>${escapeHtml(credit)}</li>`,
-  ).join('\n');
+  // Pie mínimo: disclaimer + enlaces (créditos y repo). La lista de atribución
+  // por asset vive en creditos.html (FR-012, FR-013; contrato assets.md).
   return `<footer>
   <p>${escapeHtml(CREDITS)}</p>
-  <p>${escapeHtml(IMAGE_SOURCES_NOTE)}</p>
   <ul>
-${assetList}
+    <li><a href="creditos.html">Créditos y fuentes</a></li>
+    <li><a href="${escapeHtml(REPO_URL)}">Repositorio del proyecto</a></li>
   </ul>
-  <a href="${escapeHtml(REPO_URL)}">Repositorio del proyecto</a>
 </footer>`;
 }
 

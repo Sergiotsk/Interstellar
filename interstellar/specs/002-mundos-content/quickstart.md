@@ -6,7 +6,7 @@
 
 ## Prerrequisitos
 
-- Feature 001 fusionada en `main` (layout compartido, tokens, pie con `imageSources`, `scroll-margin-top` de anclas).
+- Feature 001 fusionada en `main` (layout compartido, tokens, pie común, `scroll-margin-top` de anclas). Nota (2026-08-30): la atribución por asset se movió del pie a `creditos.html` (`js/creditos.js`); el pie la enlaza.
 - Navegador evergreen: últimas 2 versiones de Chrome, Edge o Firefox (Safari fuera del alcance de verificación).
 - Node instalado (para `node --test`; es parte del runtime, no una dependencia del repo).
 - Nada que instalar, sin build.
@@ -29,7 +29,7 @@ node --test tests/*.test.js
 
 > Nota: `node --test tests/` (arg de directorio) está roto en Node 25; usar el glob `tests/*.test.js` o `node --test` sin argumento.
 
-Debe pasar en verde: `smoke.test.js`, `submenu-state.test.js` y `layout.test.js` (este último ahora incluye la aserción de créditos de Mundos — ver `contracts/footer-credits.md`).
+Debe pasar en verde: `smoke.test.js`, `submenu-state.test.js`, `layout.test.js` y `creditos.test.js` (la aserción de créditos de Mundos se movió a este último cuando la lista pasó de `buildFooter()` a `buildCreditosContent()` — ver `contracts/footer-credits.md`).
 
 ## Escenarios de validación
 
@@ -44,7 +44,7 @@ Debe pasar en verde: `smoke.test.js`, `submenu-state.test.js` y `layout.test.js`
 
 1. En cada sección, verificar un backdrop propio (`img.eje-backdrop`), distinto de los otros cuatro, oscurecido, con el texto legible encima sin depender de una zona clara (SC-007).
 2. Simular fallo de carga (renombrar temporalmente un `.jpg` o bloquear la imagen en DevTools): la sección conserva jerarquía y legibilidad sobre `--color-fondo` (caso límite).
-3. Revisar el pie: los 5 backdrops de Mundos (Tierra + 4 nuevos) figuran con su fuente y atribución (FR-006, SC-002).
+3. Abrir `creditos.html` (enlace "Créditos y fuentes" en el pie): los 5 backdrops de Mundos (Tierra + 4 nuevos) figuran con su fuente y atribución (FR-006, SC-002).
 4. Verificar `assets/img/CREDITOS.md`: 4 filas nuevas con fuente del catálogo, URL de origen real y `estado` correcto; "Resumen de estado" actualizado.
 
 ### E3 — Peso de imágenes (FR-007, SC-009)

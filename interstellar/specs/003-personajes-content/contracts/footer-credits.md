@@ -2,6 +2,14 @@
 
 **Valida**: FR-006, FR-007, SC-008, Principio V.
 
+> **SUPERSEDIDO EN PARTE (2026-08-30) — rama `feat/creditos-page`.** El registro de
+> atribución por asset se movió del **pie** a la página dedicada `creditos.html`
+> (módulo `js/creditos.js`). Donde este contrato dice `buildFooter()` / "el pie",
+> léase **`buildCreditosContent()` en `js/creditos.js`** / "la página de créditos".
+> El array `ASSET_CREDITS` ahora vive en `js/creditos.js` y su test es
+> **`tests/creditos.test.js`**. Las 6 líneas de los retratos de Personajes y su
+> sincronía con `assets/img/CREDITOS.md` siguen VIGENTES sin cambios.
+
 ## Qué se toca
 
 El pie común lo construye `buildFooter()` en `js/layout.js` a partir del array constante `ASSET_CREDITS`. Los créditos de los retratos de Personajes se agregan **sin cambiar la estructura del pie** (FR-008): solo se extiende la lista de datos, sincronizada con `assets/img/CREDITOS.md`.

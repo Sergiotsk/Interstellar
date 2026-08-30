@@ -2,8 +2,11 @@
 
 **Feature**: `001-shared-layout-hero` · **Contrato**: `specs/001-shared-layout-hero/contracts/assets.md` · **Valida**: FR-013, SC-008.
 
-Este registro es la fuente unica de verdad de la atribucion de cada imagen del sitio
-(Frontalmente usado por el pie comun — `FooterContent.imageSources`, `data-model.md` §5).
+Este registro es la fuente unica de verdad de la atribucion de cada imagen del sitio.
+Se materializa en la pagina `creditos.html` (modulo `js/creditos.js`, array
+`ASSET_CREDITS`), enlazada desde el pie comun de todas las paginas
+(`CreditsPageContent.imageSources`, `data-model.md` §5b). Sincronia 1:1: toda fila con
+`estado: descargado` tiene su linea en `ASSET_CREDITS` y viceversa.
 Referencia al catálogo aprobado de `proyecto-interstellar-base.md` (SOURCE = fuente del
 catálogo en la columna "Fuente").
 

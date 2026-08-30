@@ -93,36 +93,19 @@ describe('js/layout.js — contrato layout-injection.md', () => {
     }
   });
 
-  test('el footer tiene créditos, sección de fuentes y enlace al repo (FR-012, FR-013)', () => {
+  test('el pie: disclaimer, enlace a créditos y enlace al repo (FR-012, FR-013)', () => {
     assert.ok(footer.startsWith('<footer>'));
     assert.ok(countMatches(footer, /<footer>/g) === 1);
     assert.match(footer, /Interstellar/i);
-    assert.match(footer, /Fuent/i);
+    // La atribución por asset se movió a creditos.html: el pie solo la enlaza.
+    assert.ok(footer.includes('href="creditos.html"'));
     assert.ok(footer.includes('https://github.com/Sergiotsk/Interstellar.git'));
   });
 
-  test('el pie lista los créditos de los backdrops de Mundos (FR-006)', () => {
-    for (const archivo of [
-      'mundos-gargantua.jpg',
-      'mundos-miller.jpg',
-      'mundos-mann.jpg',
-      'mundos-tesseract.jpg',
-    ]) {
-      assert.ok(footer.includes(archivo), `falta el crédito de ${archivo}`);
-    }
-  });
-
-  test('el pie lista los créditos de los retratos de Personajes (FR-007)', () => {
-    for (const archivo of [
-      'personajes-cooper.jpg',
-      'personajes-murph.jpg',
-      'personajes-brand.jpg',
-      'personajes-profesor-brand.jpg',
-      'personajes-mann.jpg',
-      'personajes-tars-case.jpg',
-    ]) {
-      assert.ok(footer.includes(archivo), `falta el crédito de ${archivo}`);
-    }
+  test('el pie ya NO incrusta la lista de créditos por asset (se movió a creditos.html)', () => {
+    assert.ok(!footer.includes('mundos-gargantua.jpg'));
+    assert.ok(!footer.includes('personajes-cooper.jpg'));
+    assert.doesNotMatch(footer, /Fuentes del material visual/i);
   });
 
   test('layout.js no lleva datos propios: sin argumento produce el mismo header que con NavConfig', () => {

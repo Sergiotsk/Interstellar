@@ -102,13 +102,27 @@
 
 **Descripción**: contenido del pie común (FR-012, FR-013).
 
+> **Actualizado (2026-08-30):** `imageSources` se movió del pie a la página `creditos.html`
+> (ver §5b). El pie quedó mínimo: `credits` + enlace a `creditos.html` + `repoUrl`.
+
 | Campo | Tipo | Descripción | Validación |
 |---|---|---|---|
-| `credits` | string | Créditos del proyecto | Presentes en las 8 páginas (FR-012, SC-001) |
-| `imageSources` | AssetCredit[] | Por cada material visual: fuente del catálogo, atribución y condiciones de uso | Obligatorio para el 100 % de los assets (FR-013, SC-008) |
+| `credits` | string | Disclaimer / créditos del proyecto | Presentes en las 8 páginas (FR-012, SC-001) |
+| `creditsUrl` | string | `creditos.html` — enlace a la página de créditos y fuentes | Presente en las 8 páginas (FR-013) |
 | `repoUrl` | string | `https://github.com/Sergiotsk/Interstellar.git` o equivalente aprobado | FR-012 |
 
+## 5b. CreditsPageContent
+
+**Descripción**: contenido de `creditos.html` (módulo `js/creditos.js`). Materializa la
+atribución que antes vivía en el pie (FR-013, SC-008).
+
+| Campo | Tipo | Descripción | Validación |
+|---|---|---|---|
+| `intro` | string | Nota de fuentes del material visual (catálogo aprobado) | FR-013 |
+| `imageSources` | AssetCredit[] | Por cada material visual: fuente del catálogo, atribución y condiciones de uso | Obligatorio para el 100 % de los assets descargados (FR-013, SC-008); sincronía 1:1 con `assets/img/CREDITOS.md` |
+
 **AssetCredit** = `{ assetId, source (fuente del catálogo), attribution, usageUrl }`.
+En código: array `ASSET_CREDITS` de strings `'<archivo> — <atribución> (<fuente>)'`.
 
 ## 6. SubmenuState
 

@@ -57,7 +57,7 @@ Abrir http://localhost:8000/ (en producción: GitHub Pages, deploy estático aut
 ### E6 — Ausencia de errores y assets verificados (FR-021, SC-009, SC-008)
 
 1. Recorridos completos (navegación, carga directa, anclas) sin errores en consola en Chrome, Edge, Firefox y Safari (SC-009).
-2. Confirmar que cada imagen proviene del catálogo aprobado y está acreditada en el pie (SC-008). Referencia: `contracts/assets.md`.
+2. Confirmar que cada imagen proviene del catálogo aprobado y está acreditada en `creditos.html` (enlazada desde el pie de todas las páginas) (SC-008). Referencia: `contracts/assets.md`.
 
 ### E7 — Prueba moderada de 5 personas (SC-010) — puerta de aprobación obligatoria
 

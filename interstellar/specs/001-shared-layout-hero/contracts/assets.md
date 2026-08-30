@@ -26,9 +26,11 @@ Cualquier asset fuera de este catálogo queda PROHIBIDO en esta feature (FR-013,
 
 ## Atribución obligatoria
 
-- Cada asset se registra en el pie común (`FooterContent.imageSources`, `data-model.md` §5) con: fuente del catálogo, link a la fuente y condiciones de uso (SC-008).
-- La atribución cubre el 100 % de los materiales publicados en esta feature, incluida la imagen principal del Hero (FR-013).
-- El pie también expone el enlace al repositorio `https://github.com/Sergiotsk/Interstellar.git` (FR-012).
+> **Actualizado (2026-08-30):** el registro de atribución por asset se movió del pie a una **página dedicada** `creditos.html` (módulo `js/creditos.js`, array `ASSET_CREDITS`), **enlazada desde el pie común de todas las páginas**. La regla de fondo no cambia: cada imagen sigue acreditada y la atribución sigue siendo alcanzable desde cualquier página en un clic. El pie conserva el enlace al repo y suma el enlace a `creditos.html`.
+
+- Cada asset se registra en la página de créditos (`CreditsPageContent.imageSources`, `data-model.md` §5) con: fuente del catálogo, atribución y condiciones de uso (SC-008); sincronizado 1:1 con `assets/img/CREDITOS.md`.
+- La atribución cubre el 100 % de los materiales publicados, incluida la imagen principal del Hero (FR-013).
+- El pie común de las 8 páginas expone el enlace a `creditos.html` y el enlace al repositorio `https://github.com/Sergiotsk/Interstellar.git` (FR-012).
 
 ## Verificación
 
