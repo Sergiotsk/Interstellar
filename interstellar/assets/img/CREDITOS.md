@@ -102,6 +102,11 @@ catálogo en la columna "Fuente").
   1280 px, sin EXIF, `optimize`; sin agregar tooling al repo). Formato scope 960x402 en
   `mundos-tierra-granja`, `personajes-murph-nina` y `personajes-murph-anciana` (fuente
   film-grab a esa resolucion); el resto 1280x720.
+- **`viaje-pilares-de-creacion.jpg` — re-comprimida** (feature 005, T020, FR-008/SC-004):
+  pasaba de 250 KB (509 KB, 1280x1199) al entrar a la galeria. Re-encodada con Pillow a
+  960x899, JPEG progresivo q68, **248 KB** (contenido de campo estelar muy detallado: no
+  baja de 250 KB a 1280 px con calidad aceptable). Mismo criterio de sin-tooling que el
+  resto. Unico asset que la referencia hoy: `galeria.html` (`viaje.html` sigue placeholder).
 
 ## Optimizacion WebP — ENMIENDA aprobada (2026-08-28)
 

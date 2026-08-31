@@ -174,3 +174,12 @@ que lleva a `mundos.html` / `personajes.html` / `ciencia.html` / `viaje.html`
 - Commit al cerrar la implementación (T019); Conventional Commits, sin atribución a IA.
 - Parar en cualquier checkpoint para validar la historia de forma independiente.
 - Evitar: pies que repiten el `alt`, `<div>` donde va un semántico, rutas absolutas con `/`.
+
+---
+
+## Phase 7: Convergence
+
+Añadido por `/speckit-converge` (2026-08-30) tras `/speckit-implement`. Assessment del
+código contra `spec.md` / `plan.md` / `tasks.md`. Un solo hallazgo.
+
+- [X] T020 Re-comprimir `assets/img/viaje-pilares-de-creacion.jpg` a 250 KB o menos con Pillow (mismo método que las 13 nuevas: cap 1280 px, JPEG progresivo, sin EXIF, `optimize`, sin tooling en el repo). Hoy pesa 508.939 bytes (~497 KB) y `galeria.html` la referencia en la categoría El Viaje, incumpliendo "cada imagen ≤ 250 KB" per SC-004 y FR-008 (`contradicts`). La imagen también la usa `viaje.html`, que se beneficia del ajuste. Actualizar la nota de peso de `assets/img/CREDITOS.md` si corresponde. Re-correr `node --test tests/*.test.js` (26/26).
