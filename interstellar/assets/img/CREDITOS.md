@@ -46,6 +46,19 @@ catálogo en la columna "Fuente").
 | personajes-profesor-brand | `personajes-profesor-brand.jpg` | FILMGRAB (film-grab.com) — archivo de fotogramas | https://film-grab.com/2015/04/17/interstellar/ | Material de la pelicula, uso academico con atribucion (feature 003, research.md D2) | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
 | personajes-mann | `personajes-mann.jpg` | FILMGRAB (film-grab.com) — archivo de fotogramas | https://film-grab.com/2015/04/17/interstellar/ | Material de la pelicula, uso academico con atribucion (feature 003, research.md D2) | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
 | personajes-tars-case | `personajes-tars-case.jpg` | FILMGRAB (film-grab.com) — archivo de fotogramas | https://film-grab.com/2015/04/17/interstellar/ | Material de la pelicula, uso academico con atribucion (feature 003, research.md D2) | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
+| galeria-mundos-tierra-tormenta | `mundos-tierra-tormenta.jpg` | FILMGRAB (film-grab.com) — archivo de fotogramas | https://film-grab.com/2015/04/17/interstellar/ | Material de la pelicula, uso academico con atribucion (feature 005, research.md) | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
+| galeria-mundos-miller-oceano | `mundos-miller-oceano.jpg` | FILMGRAB (film-grab.com) — archivo de fotogramas | https://film-grab.com/2015/04/17/interstellar/ | Material de la pelicula, uso academico con atribucion (feature 005, research.md) | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
+| galeria-mundos-mann-hielo | `mundos-mann-hielo.jpg` | FILMGRAB (film-grab.com) — archivo de fotogramas | https://film-grab.com/2015/04/17/interstellar/ | Material de la pelicula, uso academico con atribucion (feature 005, research.md) | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
+| galeria-mundos-tierra-granja | `mundos-tierra-granja.jpg` | FILMGRAB (film-grab.com) — archivo de fotogramas | https://film-grab.com/2015/04/17/interstellar/ | Material de la pelicula, uso academico con atribucion (feature 005, research.md) | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
+| galeria-viaje-endurance | `viaje-endurance.jpg` | FILMGRAB (film-grab.com) — archivo de fotogramas | https://film-grab.com/2015/04/17/interstellar/ | Material de la pelicula, uso academico con atribucion (feature 005, research.md) | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
+| galeria-viaje-tierra-orbita | `viaje-tierra-orbita.jpg` | FILMGRAB (film-grab.com) — archivo de fotogramas | https://film-grab.com/2015/04/17/interstellar/ | Material de la pelicula, uso academico con atribucion (feature 005, research.md) | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
+| galeria-viaje-tierra-lejana | `viaje-tierra-lejana.jpg` | FILMGRAB (film-grab.com) — archivo de fotogramas | https://film-grab.com/2015/04/17/interstellar/ | Material de la pelicula, uso academico con atribucion (feature 005, research.md) | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
+| galeria-personajes-murph-nina | `personajes-murph-nina.jpg` | FILMGRAB (film-grab.com) — archivo de fotogramas | https://film-grab.com/2015/04/17/interstellar/ | Material de la pelicula, uso academico con atribucion (feature 005, research.md) | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
+| galeria-personajes-murph-adulta | `personajes-murph-adulta.jpg` | FILMGRAB (film-grab.com) — archivo de fotogramas | https://film-grab.com/2015/04/17/interstellar/ | Material de la pelicula, uso academico con atribucion (feature 005, research.md) | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
+| galeria-personajes-murph-anciana | `personajes-murph-anciana.jpg` | FILMGRAB (film-grab.com) — archivo de fotogramas | https://film-grab.com/2015/04/17/interstellar/ | Material de la pelicula, uso academico con atribucion (feature 005, research.md) | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
+| galeria-ciencia-gargantua | `ciencia-gargantua.jpg` | FILMGRAB (film-grab.com) — archivo de fotogramas | https://film-grab.com/2015/04/17/interstellar/ | Material de la pelicula, uso academico con atribucion (feature 005, research.md) | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
+| galeria-ciencia-tesseract | `ciencia-tesseract.jpg` | FILMGRAB (film-grab.com) — archivo de fotogramas | https://film-grab.com/2015/04/17/interstellar/ | Material de la pelicula, uso academico con atribucion (feature 005, research.md) | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
+| galeria-ciencia-agujero-gusano | `ciencia-agujero-gusano.jpg` | FILMGRAB (film-grab.com) — archivo de fotogramas | https://film-grab.com/2015/04/17/interstellar/ | Material de la pelicula, uso academico con atribucion (feature 005, research.md) | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
 
 ## Resumen de estado
 
@@ -58,6 +71,13 @@ catálogo en la columna "Fuente").
   `personajes-brand`, `personajes-profesor-brand`, `personajes-mann`, `personajes-tars-case`
   — retratos en linea del eje Personajes: fotogramas de la pelicula (FILMGRAB), uso
   academico con atribucion `© Warner Bros. Pictures / Paramount Pictures`.
+- **Descargados — feature 005 (13)**: galeria de imagenes. Mundos: `mundos-tierra-tormenta`,
+  `mundos-miller-oceano`, `mundos-mann-hielo`, `mundos-tierra-granja`. El Viaje:
+  `viaje-endurance`, `viaje-tierra-orbita`, `viaje-tierra-lejana`. Personajes (etapas de
+  Murph): `personajes-murph-nina`, `personajes-murph-adulta`, `personajes-murph-anciana`.
+  La Ciencia: `ciencia-gargantua`, `ciencia-tesseract`, `ciencia-agujero-gusano`. Todos
+  fotogramas de la pelicula (FILMGRAB), uso academico con atribucion
+  `© Warner Bros. Pictures / Paramount Pictures`.
 - **Pendientes**: el render cientifico de Gargantua del paper arXiv (licencia del
   material no confirmada) y `hero-still-endurance` (cubierto en la practica por los
   backdrops de Mundos).
@@ -71,6 +91,17 @@ catálogo en la columna "Fuente").
   `personajes-tars-case.jpg` 80 KB — los 6 suman ~426 KB. Cada uno ≤250 KB y total ≤1,5 MB.
   Re-encodados a JPEG progresivo con Pillow (cap de ancho 1280 px, sin EXIF, `optimize`;
   sin agregar tooling al repo).
+- **Imagenes de galeria — peso** (feature 005, FR-008, SC-004): `mundos-tierra-tormenta.jpg`
+  136 KB, `mundos-miller-oceano.jpg` 151 KB, `mundos-mann-hielo.jpg` 244 KB,
+  `mundos-tierra-granja.jpg` 114 KB, `viaje-endurance.jpg` 67 KB,
+  `viaje-tierra-orbita.jpg` 175 KB, `viaje-tierra-lejana.jpg` 84 KB,
+  `personajes-murph-nina.jpg` 59 KB, `personajes-murph-adulta.jpg` 91 KB,
+  `personajes-murph-anciana.jpg` 44 KB, `ciencia-gargantua.jpg` 111 KB,
+  `ciencia-tesseract.jpg` 209 KB, `ciencia-agujero-gusano.jpg` 35 KB — las 13 suman
+  ~1,5 MB. Cada una ≤250 KB. Re-encodadas a JPEG progresivo con Pillow (cap de ancho
+  1280 px, sin EXIF, `optimize`; sin agregar tooling al repo). Formato scope 960x402 en
+  `mundos-tierra-granja`, `personajes-murph-nina` y `personajes-murph-anciana` (fuente
+  film-grab a esa resolucion); el resto 1280x720.
 
 ## Optimizacion WebP — ENMIENDA aprobada (2026-08-28)
 

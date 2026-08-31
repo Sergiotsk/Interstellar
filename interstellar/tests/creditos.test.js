@@ -34,10 +34,11 @@ describe('js/creditos.js — página de créditos y fuentes', () => {
   });
 
   test('cubre el 100 % de los assets descargados del registro (SC-008)', () => {
-    // Sincronía con assets/img/CREDITOS.md: 15 assets con estado `descargado`
+    // Sincronía con assets/img/CREDITOS.md: 28 assets con estado `descargado`
     // (5 de features 001/002 con licencia clara + 4 backdrops de Mundos + 6
-    // retratos de Personajes). Los `pendiente` NO se listan hasta tener archivo.
-    assert.equal(ASSET_CREDITS.length, 15);
+    // retratos de Personajes + 13 imágenes de la galería, feature 005). Los
+    // `pendiente` NO se listan hasta tener archivo.
+    assert.equal(ASSET_CREDITS.length, 28);
     for (const linea of ASSET_CREDITS) {
       // Cada línea: `<archivo>.jpg — <atribución no vacía>`.
       assert.match(linea, /^[a-z0-9-]+\.jpg — \S.*$/, `formato inválido: ${linea}`);
