@@ -53,9 +53,9 @@ cambios en `assets/img/`, `CREDITOS.md` y `js/creditos.js` ya están hechos (sou
 
 **Performance Goals**: Sin errores de consola en el recorrido de `galeria.html` (FR-013,
 SC-007). Peso total de la página ≤ 4 MB (FR-008, SC-011); con las 28 imágenes actuales el
-total ronda **~3 MB** (15 reutilizadas ~2,6 MB + 13 nuevas ~1,5 MB, menos las que ya no
-se cuentan dos veces). `loading="lazy"` en el 100 % de las miniaturas difiere la carga
-fuera del viewport (FR-008a, SC-011).
+total medido es **3,30 MB** (documento ~14 KB + CSS ~34 KB + 28 imágenes ~3,25 MB), con
+amplio margen sobre el tope. `loading="lazy"` en el 100 % de las miniaturas difiere la
+carga fuera del viewport (FR-008a, SC-011).
 
 **Constraints**: Sin frameworks/librerías/TypeScript y sin build (Principio I). Sin
 módulo JS propio (FR-016): la galería no tiene filtro ni lightbox. Tiles uniformes 3:2 con

@@ -58,7 +58,7 @@ propio (FR-016).
 | C3 | Cada categoría: un `<h2>` con el nombre visible + un `<a class="galeria-eje-enlace">` a la página del eje con ruta relativa (FR-002, FR-009). El texto del enlace es explícito ("Ir a la página de Mundos"), no "aquí". |
 | C4 | Las figuras van en un `<ul class="galeria-grid">`; cada imagen es un `<li>` con un `<figure>` dentro (FR-002, FR-011). El `<ul>` lleva `list-style: none`. |
 | C5 | Cada `<figure>`: un `<a href="assets/img/<archivo>">` (ruta relativa, FR-004) que envuelve **solo** el `<img>`, y un `<figcaption>` hermano del `<a>` (no dentro). Sin `<div>` intermedio. |
-| C6 | Cada `<img>`: `src` relativo a `assets/img/`, `alt` descriptivo no vacío (FR-003, FR-011), `loading="lazy"` (FR-008a, SC-011), `width` y `height` con las dimensiones reales del archivo (1280×720 o 960×402) para reservar el espacio y evitar reflow. |
+| C6 | Cada `<img>`: `src` relativo a `assets/img/`, `alt` descriptivo no vacío (FR-003, FR-011), `loading="lazy"` (FR-008a, SC-011), `width` y `height` con las dimensiones reales de **ese** archivo (varían por imagen — la mayoría 1280×720, otras 960×402, 1280×1280, 2560×1072, 925×1197, 1920×1920, 1280×853, 960×899) para reservar el espacio y evitar reflow. |
 | C7 | El `<figcaption>` describe qué muestra la imagen y nombra su eje ("… Eje Mundos."). Tono descriptivo, español; sin datos científicos ni etiquetas de rigor `✓`/`~`/`✎` (FR-003 nota). No repite literal el `alt`. |
 | C8 | Reparto de las 28 imágenes por categoría según `data-model.md` (Mundos 9 · Personajes 10 · La Ciencia 5 · El Viaje 4). Cada archivo aparece en una sola categoría. |
 | C9 | Ningún `href`/`src` absoluto con `/` inicial ni URL de dominio; todo relativo (constitución 1.1.0). |
