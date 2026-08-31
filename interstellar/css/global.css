@@ -919,3 +919,71 @@ section[id] p {
     margin-bottom: 0.5rem;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   14. Galeria (feature 005 — galeria)
+   ---------------------------------------------------------------------------
+   La galeria agrupa las imagenes del sitio en cuatro `section[id]` (una por
+   eje). El `section[id]` base (seccion 10) ya da el `h2`, el `max-width` y el
+   `border-top`; aca se cubren el enlace al eje, la cuadricula y la figura.
+   Tiles uniformes 3:2 con `object-fit: cover` (FR-002a): el recorte de
+   miniatura es intencional, no un defecto. `minmax(min(100%, 16rem), 1fr)`
+   garantiza 1 columna sin desbordamiento a 320 px (FR-012). Solo tokens
+   existentes; sin custom properties nuevas, sin segundo color saturado (FR-014).
+   --------------------------------------------------------------------------- */
+.galeria-eje-enlace {
+  display: inline-block;
+  margin-top: 0.25rem;
+  font-family: var(--font-nav);
+  font-size: 0.95rem;
+  color: var(--color-texto-atenuado);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  text-decoration-color: color-mix(in srgb, var(--color-texto) 35%, transparent);
+}
+
+.galeria-eje-enlace:hover,
+.galeria-eje-enlace:focus-visible {
+  color: var(--color-texto);
+  text-decoration-color: currentColor;
+}
+
+.galeria-grid {
+  list-style: none;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+}
+
+.galeria-grid > li {
+  min-width: 0;
+}
+
+.galeria-grid figure {
+  margin: 0;
+}
+
+.galeria-grid figure > a {
+  display: block;
+  background: var(--color-superficie);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.galeria-grid img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+}
+
+.galeria-grid figcaption {
+  margin-top: 0.4rem;
+  font-family: var(--font-texto);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--color-texto-atenuado);
+}
