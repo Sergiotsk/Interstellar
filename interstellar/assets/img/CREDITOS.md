@@ -113,10 +113,11 @@ catálogo en la columna "Fuente").
   Se RETIRAN `mundos-mann-hielo` y `personajes-murph-adulta`: eran el MISMO fotograma que `mundos-mann` y
   `personajes-murph` (duplicados detectados en revision; solo diferian en el grado de color).
 - **Fondo del Hero — video (2026-08-31)**: el backdrop de `index.html` es un `<video>` mudo en loop
-  (`hero-fondo.webm` 1,56 MB / `hero-fondo.mp4` 2,14 MB, 1088x612, ~30 s: push-in lento hasta
-  negro total + destello + vuelta, loop sin corte) con `poster` `hero-gargantua.jpg` (137 KB, frame
-  del propio video). Re-encodado del mp4 del autor con ffmpeg (VP9 crf47 / H264 crf31, sin audio,
-  ffmpeg concat fwd+flash+reverse). El navegador baja UNO de los dos.
+  (`hero-fondo.webm` 2,18 MB / `hero-fondo.mp4` 2,12 MB, 1024x576, ~36 s: push-in lento al
+  agujero negro -> negro total -> punto de luz -> galaxia (Andromeda) -> fulgor calido suave ->
+  vuelta, loop sin corte) con `poster` `hero-gargantua.jpg` (137 KB, frame del propio video).
+  Armado con ffmpeg de 3 clips del autor (video_inicio + clip_2 galaxia + clip_3 fulgor, este ultimo
+  con highlights bajados ~35%) + reverse del primero para cerrar el loop. VP9 crf44 / H264 crf32, sin audio.
   `js/layout.js` no lo reproduce si hay `prefers-reduced-motion: reduce` -> queda el poster fijo.
   Decision del autor pese al peso (se evaluaron alternativas mas livianas: CSS Ken Burns, GIF).
 - **Tope de peso de la galeria — ENMIENDA (2026-08-31)**: la feature 005 fijaba ‘peso total de pagina
