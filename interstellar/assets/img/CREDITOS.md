@@ -115,7 +115,7 @@ catálogo en la columna "Fuente").
 - **Fondo del Hero — video (2026-08-31)**: el backdrop de `index.html` es un `<video>` mudo en loop
   (`hero-fondo.webm` 2,18 MB / `hero-fondo.mp4` 2,12 MB, 1024x576, ~36 s: push-in lento al
   agujero negro -> negro total -> punto de luz -> galaxia (Andromeda) -> fulgor calido suave ->
-  vuelta, loop sin corte) con `poster` `hero-gargantua.jpg` (137 KB, frame del propio video).
+  vuelta, loop sin corte) con `poster` `hero-gargantua.jpg` (57 KB, 1024x576, frame del propio video; era 137 KB / 1280x720, se achico para el LCP).
   Armado con ffmpeg de 3 clips del autor (video_inicio + clip_2 galaxia + clip_3 fulgor, este ultimo
   con highlights bajados ~35%) + reverse del primero para cerrar el loop. VP9 crf44 / H264 crf32, sin audio.
   `js/layout.js` no lo reproduce si hay `prefers-reduced-motion: reduce` -> queda el poster fijo.
