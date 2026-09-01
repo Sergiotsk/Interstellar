@@ -360,8 +360,10 @@ header nav ul ul a {
   header nav button {
     transition: none;
   }
-  /* Sin deriva del backdrop del Hero: queda la imagen fija (seccion 7). */
-  .hero-backdrop {
+  /* Sin deriva del backdrop ni campo de estrellas del Hero: todo queda fijo (seccion 7). */
+  .hero-backdrop,
+  .hero-estrellas,
+  .hero-estrellas::after {
     animation: none;
   }
 }
@@ -475,16 +477,55 @@ body.home > header {
   height: 100%;
   object-fit: cover;                    /* cubre toda la pantalla sin deformar */
   filter: var(--backdrop-oscurecer);    /* oscurece sin depender de una zona clara (FR-019, SC-006) */
-  /* Deriva Ken Burns muy lenta: solo `transform` (compositor GPU), 0 bytes extra.
+  /* Deriva Ken Burns lenta: solo `transform` (compositor GPU), 0 bytes extra.
      `alternate` evita el corte al reiniciar; el `.hero` ya tiene overflow:hidden.
-     La escala minima (1.04) cubre el translate para que nunca se vea el borde.
+     La escala minima (1.05) cubre el translate para que nunca se vea el borde.
      Se desactiva entera con prefers-reduced-motion (bloque seccion 4). */
-  animation: hero-drift 48s ease-in-out infinite alternate;
+  animation: hero-drift 40s ease-in-out infinite alternate;
 }
 
 @keyframes hero-drift {
-  from { transform: scale(1.04) translate3d(0, 0, 0); }
-  to   { transform: scale(1.12) translate3d(-1.2%, -1%, 0); }
+  from { transform: scale(1.05) translate3d(0, 0, 0); }
+  to   { transform: scale(1.15) translate3d(-1.8%, -1.4%, 0); }
+}
+
+/* Campo de estrellas: dos capas (esta + ::after) que derivan a distinta
+   velocidad -> parallax. Tile PNG de ~1 KB (assets/img/estrellas.png), 260x260,
+   seamless. El elemento es 300% del Hero y arranca en -100% para que el translate
+   (nunca mayor a unos cientos de px) jamas descubra un borde, ni a 320px. El
+   translate final es un multiplo EXACTO del tile visible -> el loop calza sin
+   salto. Solo `transform` (GPU). Se apaga con prefers-reduced-motion. */
+.hero-estrellas {
+  position: absolute;
+  top: -100%;
+  left: -100%;
+  width: 300%;
+  height: 300%;
+  pointer-events: none;
+  background: url(../assets/img/estrellas.png) repeat;
+  background-size: 260px 260px;
+  opacity: 0.45;
+  animation: hero-estrellas-lejos 120s linear infinite;
+}
+
+.hero-estrellas::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url(../assets/img/estrellas.png) repeat;
+  background-size: 150px 150px;         /* tile mas chico + mas rapido = capa "cercana" */
+  opacity: 0.65;
+  animation: hero-estrellas-cerca 75s linear infinite;
+}
+
+@keyframes hero-estrellas-lejos {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-260px, -260px, 0); }   /* 1 tile exacto */
+}
+
+@keyframes hero-estrellas-cerca {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(300px, 450px, 0); }      /* 2x y 3x el tile de 150 */
 }
 
 /* Titulo + tagline sobre el backdrop: posicionado (y con z-index) para pintar
