@@ -14,13 +14,17 @@
 <body class="home">
   <main>
     <!-- Hero cinematografico de pantalla completa (FR-014). El backdrop es un
-         <img> decorativo (alt vacio): el nombre «Interstellar» del <h1> es la
-         alternativa textual del titulo/logo (FR-015, caso limite). -->
+         <video> decorativo (aria-hidden): loop mudo del agujero negro (entra,
+         se hace negro, destella y vuelve). El poster (hero-gargantua.jpg) cubre
+         mientras carga y si el video falla. Con prefers-reduced-motion,
+         js/layout.js lo PAUSA y queda el poster fijo. El nombre «Interstellar»
+         del <h1> es la alternativa textual (FR-015, caso limite). -->
     <section class="hero" aria-labelledby="hero-titulo">
-      <img class="hero-backdrop" src="assets/img/hero-backdrop.jpg" alt="">
-      <!-- Campo de estrellas decorativo: dos capas (esta + ::after) que derivan a
-           distinta velocidad para dar parallax. Solo CSS, tile de ~1 KB. -->
-      <div class="hero-estrellas" aria-hidden="true"></div>
+      <video class="hero-backdrop" poster="assets/img/hero-gargantua.jpg"
+             autoplay muted loop playsinline preload="auto" aria-hidden="true">
+        <source src="assets/img/hero-fondo.webm" type="video/webm">
+        <source src="assets/img/hero-fondo.mp4" type="video/mp4">
+      </video>
       <hgroup class="hero-contenido">
         <h1 id="hero-titulo">Interstellar</h1>
         <p class="hero-tagline">Un viaje por los mundos, personajes, viaje y ciencia de la película</p>

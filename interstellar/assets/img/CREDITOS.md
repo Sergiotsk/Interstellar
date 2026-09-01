@@ -81,6 +81,7 @@ catálogo en la columna "Fuente").
 | g2-viaje-amelia-edmunds | `viaje-amelia-edmunds.jpg` | FILMGRAB (film-grab.com) — archivo de fotogramas | https://film-grab.com/2015/04/17/interstellar/ | Material de la pelicula, uso academico con atribucion (feature galeria-mas-imagenes) | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
 | g2-viaje-planeta-edmunds | `viaje-planeta-edmunds.jpg` | FILMGRAB (film-grab.com) — archivo de fotogramas | https://film-grab.com/2015/04/17/interstellar/ | Material de la pelicula, uso academico con atribucion (feature galeria-mas-imagenes) | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
 | g2-viaje-planeta-edmunds-despegue | `viaje-planeta-edmunds-despegue.jpg` | FILMGRAB (film-grab.com) — archivo de fotogramas | https://film-grab.com/2015/04/17/interstellar/ | Material de la pelicula, uso academico con atribucion (feature galeria-mas-imagenes) | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
+| hero-inicio | `hero-gargantua.jpg` + `hero-fondo.webm` / `hero-fondo.mp4` | Generado con IA (video propio del autor) | n/a (sin fuente externa) | Ilustracion/animacion conceptual generada con IA; prompt propio, sin material con copyright | "Sitio de fan de Interstellar — render con IA" | descargado |
 
 ## Resumen de estado
 
@@ -111,6 +112,13 @@ catálogo en la columna "Fuente").
   Todos fotogramas de FILMGRAB (uso academico con atribucion `© Warner Bros. Pictures / Paramount Pictures`).
   Se RETIRAN `mundos-mann-hielo` y `personajes-murph-adulta`: eran el MISMO fotograma que `mundos-mann` y
   `personajes-murph` (duplicados detectados en revision; solo diferian en el grado de color).
+- **Fondo del Hero — video (2026-08-31)**: el backdrop de `index.html` es un `<video>` mudo en loop
+  (`hero-fondo.webm` 1,56 MB / `hero-fondo.mp4` 2,14 MB, 1088x612, ~30 s: push-in lento hasta
+  negro total + destello + vuelta, loop sin corte) con `poster` `hero-gargantua.jpg` (137 KB, frame
+  del propio video). Re-encodado del mp4 del autor con ffmpeg (VP9 crf47 / H264 crf31, sin audio,
+  ffmpeg concat fwd+flash+reverse). El navegador baja UNO de los dos.
+  `js/layout.js` no lo reproduce si hay `prefers-reduced-motion: reduce` -> queda el poster fijo.
+  Decision del autor pese al peso (se evaluaron alternativas mas livianas: CSS Ken Burns, GIF).
 - **Tope de peso de la galeria — ENMIENDA (2026-08-31)**: la feature 005 fijaba ‘peso total de pagina
   ≤ 4 MB’ (FR-008 / SC-011). Al duplicar la galeria a 50 imagenes ese tope total pierde sentido; la regla
   operativa pasa a ser **cada imagen ≤ 150 KB + `loading="lazy"` obligatorio**. Con lazy load, al abrir solo

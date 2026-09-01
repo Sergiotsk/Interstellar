@@ -67,6 +67,7 @@ export const ASSET_CREDITS = [
   'viaje-amelia-edmunds.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',
   'viaje-planeta-edmunds.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',
   'viaje-planeta-edmunds-despegue.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',
+  'hero-gargantua.jpg — Ilustración conceptual generada con IA (render propio del sitio; poster del video de fondo del inicio)',
 ];
 
 function escapeHtml(value) {

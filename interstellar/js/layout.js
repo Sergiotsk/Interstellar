@@ -279,6 +279,36 @@ function wireDrawer(header, nav, estado) {
   });
 }
 
+// Hero de la home: el <video> de fondo lleva `autoplay muted` en el HTML, pero
+// si hay `prefers-reduced-motion: reduce` lo PAUSAMOS y lo rebobinamos -> queda
+// el poster fijo (hero-gargantua.jpg). Si la preferencia cambia en caliente,
+// reacciona. Inofensivo si la pagina no tiene ese <video>.
+function initHeroVideo() {
+  if (typeof document.querySelector !== 'function' || typeof matchMedia !== 'function') {
+    return;
+  }
+  const video = document.querySelector('video.hero-backdrop');
+  if (!video) {
+    return;
+  }
+  const quieto = matchMedia('(prefers-reduced-motion: reduce)');
+  const aplicar = () => {
+    if (quieto.matches) {
+      video.pause();
+      try { video.currentTime = 0; } catch (_) { /* aun sin metadata */ }
+    } else {
+      const p = video.play();
+      if (p && typeof p.catch === 'function') {
+        p.catch(() => {}); // autoplay bloqueado (iOS bajo consumo): queda el poster
+      }
+    }
+  };
+  aplicar();
+  if (typeof quieto.addEventListener === 'function') {
+    quieto.addEventListener('change', aplicar);
+  }
+}
+
 export function init(navConfig = NavConfig) {
   if (typeof document === 'undefined' || !document.body) {
     return;
@@ -297,6 +327,7 @@ export function init(navConfig = NavConfig) {
   const estado = createSubmenuState();
   wireDisclosure(nav, estado);
   wireDrawer(header, nav, estado);
+  initHeroVideo();
 }
 
 if (typeof document !== 'undefined') {

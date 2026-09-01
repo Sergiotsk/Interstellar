@@ -34,11 +34,11 @@ describe('js/creditos.js — página de créditos y fuentes', () => {
   });
 
   test('cubre el 100 % de los assets descargados del registro (SC-008)', () => {
-    // Sincronía con assets/img/CREDITOS.md: 50 assets con estado `descargado`
+    // Sincronía con assets/img/CREDITOS.md: 51 assets (50 de la galeria + hero-gargantua.jpg) con estado `descargado`
     // (5 con licencia clara NASA/ESA/EHT + 45 fotogramas de FILMGRAB). Cubren las
     // 50 imágenes de la galería por ejes. Los `pendiente` NO se listan hasta
     // tener archivo (convención de honestidad).
-    assert.equal(ASSET_CREDITS.length, 50);
+    assert.equal(ASSET_CREDITS.length, 51);
     for (const linea of ASSET_CREDITS) {
       // Cada línea: `<archivo>.jpg — <atribución no vacía>`.
       assert.match(linea, /^[a-z0-9-]+\.jpg — \S.*$/, `formato inválido: ${linea}`);
