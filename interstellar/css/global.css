@@ -67,6 +67,11 @@
   --color-texto: #efe7d6;                /* texto principal: crema */
   --color-texto-atenuado: #a8a294;       /* textos secundarios (subtitulos, meta): crema atenuado */
 
+  /* --- Paleta: metal del robot CASE (unico acento FRIO del sitio; solo el
+     boton de navegacion en reposo). Gunmetal claro -> se lee como los slabs de
+     CASE y resalta sobre el fondo. Al hover/abrir cambia a --color-gargantua. --- */
+  --color-case: #9aa6b6;
+
   /* --- Tipografia (self-hosted via @font-face seccion 0 + fallbacks legibles) --- */
   --font-sitio: 'Exo 2', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-hero-titulo: 'Orbitron', 'Exo 2', system-ui, sans-serif;
@@ -175,9 +180,11 @@ header {
      la aporta el drawer al abrirse (#nav-principal). */
   background: transparent;
   /* Fila que sostiene el boton CASE. En la home ademas se superpone al Hero
-     (body.home > header, mas abajo); en el resto queda en flujo normal. */
+     (body.home > header, mas abajo); en el resto queda en flujo normal.
+     `flex-end`: el boton CASE va a la DERECHA (visto de frente). */
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   padding: 0.75rem 1rem;
   /* Apilamiento propio del header en TODAS las paginas (BUGFIX defecto #3): el
      drawer (hijo del header) pinta por encima del contenido de pagina. El
@@ -192,7 +199,7 @@ header {
 header nav {
   position: absolute;
   top: 100%;
-  left: 0.75rem;
+  right: 0.75rem;                  /* el drawer abre desde la derecha, bajo el boton CASE */
   display: none;
   width: min(22rem, calc(100vw - 1.5rem));
   max-height: calc(100dvh - 100%);
@@ -337,7 +344,7 @@ header nav ul ul a {
   min-width: 44px;                  /* target tactil (WCAG 2.5.8) */
   min-height: 44px;
   padding: 0;
-  color: var(--color-texto);
+  color: var(--color-case);         /* gunmetal en reposo; hover/abierto -> gargantua */
   background: transparent;
   border: 0;                        /* sin caja: a la vista quedan solo las barras */
   cursor: pointer;
@@ -355,29 +362,65 @@ header nav ul ul a {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 3px;
-  width: 20px;
-  height: 20px;
+  gap: 4px;
+  width: 28px;                     /* mas grande: la referencia al monolito CASE se lee mejor */
+  height: 24px;
 }
 
 .case-icon span {
-  width: 3px;
+  width: 4px;
   height: 100%;
   background: currentColor;
   border-radius: 1px;
-  transition: height 0.18s ease, background-color 0.18s ease;
+  transform-origin: 50% 50%;
+  /* `transform` en la transicion -> al CERRAR, las barras vuelven de la pose
+     cruzada a sus 4 carriles (la animacion se corta al perder el estado abierto). */
+  transition: transform 0.2s ease, background-color 0.18s ease;
 }
 
-/* Abierto: las 4 barras se escalonan (silueta del robot CASE "en marcha") y
-   toman el unico acento saturado del sitio (FR-017). */
+/* Abierto: las barras toman el unico acento saturado del sitio (FR-017). */
 .nav-toggle[aria-expanded='true'] {
   color: var(--color-gargantua);
 }
 
-.nav-toggle[aria-expanded='true'] .case-icon span:nth-child(1) { height: 55%; }
-.nav-toggle[aria-expanded='true'] .case-icon span:nth-child(2) { height: 100%; }
-.nav-toggle[aria-expanded='true'] .case-icon span:nth-child(3) { height: 70%; }
-.nav-toggle[aria-expanded='true'] .case-icon span:nth-child(4) { height: 40%; }
+/* CASE al abrir el menu: la marcha rodante del robot en Miller, en dos fases.
+   FASE 1 (0-44% de `case-corre`): UNA zancada. Las 4 barras son las patas;
+     pivotan desde los "hombros" (`transform-origin: 50% 16%`), abren en X para
+     plantar (`--abre`) y se juntan para el salto (`--junta`), con rebote
+     vertical. `--dx1` las tira PARCIALMENTE al centro -> trabajan en conjunto,
+     no como 4 palitos sueltos.
+   FASE 2 (44-100%): las patas CONVERGEN al centro del icono (`--dx`) y cruzan
+     ahi en angulos DESPAREJOS (`--cruz`) -> un aspa tipo spinner. El pivote baja
+     al centro (`50% 50%`). `forwards` sostiene esa pose.
+   Mientras tanto `case-rodar` hace girar TODO el icono, parejo y continuo, como
+   CASE rodando. La animacion se dispara de cero cada vez que se abre el menu. */
+@keyframes case-corre {
+  0%   { transform-origin: 50% 16%; transform: translateX(var(--dx1, 0)) translateY(13%) rotate(var(--abre, 0deg)); }
+  22%  { transform-origin: 50% 16%; transform: translateX(var(--dx1, 0)) translateY(-8%) rotate(var(--junta, 0deg)); }
+  44%  { transform-origin: 50% 16%; transform: translateX(var(--dx1, 0)) translateY(13%) rotate(var(--abre, 0deg)); }
+  74%  { transform-origin: 50% 50%; transform: translateX(var(--dx, 0)) rotate(var(--cruz, 0deg)); }
+  100% { transform-origin: 50% 50%; transform: translateX(var(--dx, 0)) rotate(var(--cruz, 0deg)); }
+}
+
+@keyframes case-rodar {
+  to { transform: rotate(360deg); }
+}
+
+.nav-toggle[aria-expanded='true'] .case-icon {
+  animation: case-rodar 4.6s linear infinite;
+}
+
+.nav-toggle[aria-expanded='true'] .case-icon span {
+  animation: case-corre 2.6s ease-in-out forwards;
+}
+/* --abre/--junta: angulos de la zancada.  --cruz: angulo en la pose cruzada
+   (DESPAREJO: -55 / 22 / -28 / 60).  --dx: mover al centro del icono de 28px
+   (carriles a 2/10/18/26 -> centro 14).  --dx1: ~1/3 de eso (union parcial).
+   animation-delay negativo -> leve cascada entre patas (segmentos encadenados). */
+.nav-toggle[aria-expanded='true'] .case-icon span:nth-child(1) { --abre: -48deg; --junta: -8deg; --cruz: -55deg; --dx1:  4px; --dx:  12px; animation-delay: -0.12s; }
+.nav-toggle[aria-expanded='true'] .case-icon span:nth-child(2) { --abre: -18deg; --junta: -3deg; --cruz:  22deg; --dx1:  1px; --dx:   4px; animation-delay: -0.08s; }
+.nav-toggle[aria-expanded='true'] .case-icon span:nth-child(3) { --abre:  20deg; --junta:  3deg; --cruz: -28deg; --dx1: -1px; --dx:  -4px; animation-delay: -0.04s; }
+.nav-toggle[aria-expanded='true'] .case-icon span:nth-child(4) { --abre:  50deg; --junta:  8deg; --cruz:  60deg; --dx1: -4px; --dx: -12px; animation-delay:  0s; }
 
 /* Respeta la preferencia de menos movimiento: las barras y el ▼ cambian de
    estado sin transicion. */
@@ -385,6 +428,12 @@ header nav ul ul a {
   .case-icon span,
   header nav button {
     transition: none;
+  }
+  /* Sin la corrida ni el rodar de CASE: el estado abierto se seña solo con el
+     tinte naranja (4 barras verticales, quietas). */
+  .nav-toggle[aria-expanded='true'] .case-icon,
+  .nav-toggle[aria-expanded='true'] .case-icon span {
+    animation: none;
   }
   /* El <video> de fondo del Hero lo pausa js/layout.js con esta misma media
      query; queda visible el poster (hero-gargantua.jpg). */
