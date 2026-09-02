@@ -17,8 +17,8 @@ node_modules/
 # Agent / methodology tooling (per-machine, no es parte del sitio)
 .atl/
 .opencode/
-.specify/extensions/
+interstellar/.specify/extensions/
 
 # Material fuente crudo de assets (clips, frames de referencia, etc.): local.
 # Los assets FINALES (optimizados) si se versionan en assets/img/.
-assets/_source/
+interstellar/assets/_source/
