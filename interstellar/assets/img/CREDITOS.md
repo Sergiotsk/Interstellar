@@ -155,6 +155,16 @@ catálogo en la columna "Fuente").
   baja de 250 KB a 1280 px con calidad aceptable). Mismo criterio de sin-tooling que el
   resto. Unico asset que la referencia hoy: `galeria.html` (`viaje.html` sigue placeholder).
 
+## Tipografia — self-hosted (2026-09-01)
+
+Orbitron y Exo 2 (variable fonts, subset latin) se sirven LOCAL desde
+`assets/fonts/` (`orbitron-latin-var.woff2` 11,8 KB, `exo2-latin-var.woff2` 40,9 KB)
+via `@font-face` en `css/global.css` (seccion 0). Antes venian de Google Fonts con
+un `<link>` en cada `<head>`; se saco para eliminar un request bloqueante de ~780 ms
+y la dependencia de un tercero (PageSpeed). Ambas fuentes son **SIL Open Font License
+1.1** — su redistribucion self-hosted esta permitida. Descargadas del CDN de Google
+Fonts (los mismos woff2 que servia el `<link>`).
+
 ## Optimizacion WebP — ENMIENDA aprobada (2026-08-28)
 
 Los 5 assets descargados estan en JPEG real (resoluciones ya razonables). La conversion a

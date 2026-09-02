@@ -10,15 +10,41 @@
    Nombres de tokens CONTRATADOS en specs/001-shared-layout-hero/contracts/
    design-tokens.md — no cambiar nombres.
 
-   La tipografia se sirve via Google Fonts con <link> en el <head> de cada
-   pagina (decisicion T002, registrada en quickstart.md). Familias aprobadas:
+   La tipografia se sirve LOCAL (self-hosted) desde `assets/fonts/` via
+   @font-face aca abajo (seccion 0) — antes venia de Google Fonts con <link>,
+   se saco para eliminar el request bloqueante y la dependencia de terceros
+   (PageSpeed, 2026-09-01). Familias aprobadas (decision T002):
      - Orbitron  -> titulo del Hero / display  (--font-hero-titulo)
      - Exo 2     -> sitio, navegacion y texto  (--font-sitio / --font-nav / --font-texto)
-   Cada stack incluye fallback legible si la fuente no carga (caso limite).
+   Ambas son variable fonts (subset latin), SIL OFL 1.1. Cada stack incluye
+   fallback legible si la fuente no carga (caso limite).
 
    Esta hoja se extiende en tareas posteriores (foco, submenus responsive,
    Hero, scroll-margin de anclas): aca SOLO base + tokens.
    ========================================================================== */
+
+/* ---------------------------------------------------------------------------
+   0. Fuentes locales (self-hosted, assets/fonts/)
+   ---------------------------------------------------------------------------
+   Variable fonts, subset latin (cubre español: acentos, ñ, «», — ). Un solo
+   woff2 por familia cubre todo el eje de peso. `font-display: swap` -> el texto
+   se ve al toque con el fallback y cambia a la fuente al cargar.
+   --------------------------------------------------------------------------- */
+@font-face {
+  font-family: 'Exo 2';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('../assets/fonts/exo2-latin-var.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Orbitron';
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url('../assets/fonts/orbitron-latin-var.woff2') format('woff2');
+}
 
 /* ---------------------------------------------------------------------------
    1. Tokens de diseno (:root)
@@ -41,7 +67,7 @@
   --color-texto: #efe7d6;                /* texto principal: crema */
   --color-texto-atenuado: #a8a294;       /* textos secundarios (subtitulos, meta): crema atenuado */
 
-  /* --- Tipografia (Google Fonts via <link> + fallbacks legibles) --- */
+  /* --- Tipografia (self-hosted via @font-face seccion 0 + fallbacks legibles) --- */
   --font-sitio: 'Exo 2', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-hero-titulo: 'Orbitron', 'Exo 2', system-ui, sans-serif;
   --font-nav: 'Exo 2', 'Segoe UI', system-ui, sans-serif;
