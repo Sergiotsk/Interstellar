@@ -72,19 +72,18 @@ export function buildFooter() {
   //
   // Consola inferior del cockpit (constitución v2.1.0): TODO se presenta como
   // "tecla" de panel — misma caja con recorte diagonal, bezel y LED que las de
-  // la nav. Cada item lleva una etiqueta técnica corta (`.tele-k`, decorativa),
-  // el valor (`.tele-v`) y un LED (`.led`, decorativo).
-  //   - `.tele-accion`: tecla-BOTÓN — un <a> ocupa toda la caja y es el destino.
-  //   - `.tele` a secas (CREW): DISPLAY del panel — mismo aspecto de tecla pero
-  //     sin acción (no es un enlace; no lleva cursor de puntero).
-  // Textos CORTOS: cada tecla es un botón, no una frase. El disclaimer completo
-  // ("sitio académico de fan, sin fines de lucro") vive en creditos.html; acá
-  // queda una lectura mínima que conserva la marca.
+  // la nav. Cada tecla es UNA palabra (`.tele-v`) + un LED (`.led`, decorativo),
+  // sin etiqueta previa. El LED va a la izquierda (como en la nav).
+  //   - `.tele-accion`: tecla-BOTÓN — un <a> ocupa toda la caja y es el destino
+  //     (`aria-label` da el destino sin sumar texto visible).
+  //   - `.tele` a secas: DISPLAY del panel — mismo aspecto de tecla pero sin
+  //     acción (no es un enlace; no lleva cursor de puntero). El disclaimer
+  //     completo vive en creditos.html; acá "Interstellar" alcanza como marca.
   return `<footer>
   <ul>
-    <li class="tele"><span class="tele-k" aria-hidden="true">CREW</span><span class="tele-v">Interstellar · fan</span><span class="led" aria-hidden="true"></span></li>
-    <li class="tele tele-accion"><a href="creditos.html"><span class="tele-k" aria-hidden="true">REF</span><span class="tele-v">Créditos</span><span class="led" aria-hidden="true"></span></a></li>
-    <li class="tele tele-accion"><a href="${escapeHtml(REPO_URL)}"><span class="tele-k" aria-hidden="true">REPO</span><span class="tele-v">GitHub</span><span class="led led-alerta" aria-hidden="true"></span></a></li>
+    <li class="tele"><span class="led" aria-hidden="true"></span><span class="tele-v">Interstellar</span></li>
+    <li class="tele tele-accion"><a href="creditos.html" aria-label="Créditos y fuentes"><span class="led" aria-hidden="true"></span><span class="tele-v">Créditos</span></a></li>
+    <li class="tele tele-accion"><a href="${escapeHtml(REPO_URL)}" aria-label="Repositorio en GitHub"><span class="led led-alerta" aria-hidden="true"></span><span class="tele-v">GitHub</span></a></li>
   </ul>
 </footer>`;
 }

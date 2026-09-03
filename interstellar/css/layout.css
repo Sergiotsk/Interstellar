@@ -786,22 +786,9 @@ footer .tele-accion:focus-within .tele-v {
   text-shadow: 0 0 10px color-mix(in srgb, var(--instrumento-teal) 55%, transparent);
 }
 
-.tele-k {
-  flex: none;
-  font-size: 0.68rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: color-mix(in srgb, var(--instrumento-teal) 72%, var(--color-texto-atenuado));
-}
-
-.tele-k::after {
-  content: ":";
-  margin-left: 0.1em;
-  opacity: 0.6;
-}
-
 .tele-v {
   color: var(--color-texto-atenuado);
+  letter-spacing: 0.06em;
   transition: color 0.15s ease, text-shadow 0.15s ease;
 }
 
