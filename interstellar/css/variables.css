@@ -1,0 +1,85 @@
+/* =============================================================================
+   css/variables.css — Recursos y tokens globales (feature 006)
+   -----------------------------------------------------------------------------
+   Segunda hoja: se carga despues de reset.css y antes de base.css / layout.css.
+
+   Migracion TEXTUAL de la hoja unica anterior (secciones 0 y 1) — sin cambios
+   de valor (contrato specs/006-reset-css/contracts/hojas-css.md C4). Toda la paleta y
+   todo valor reutilizable vive como custom property en `:root`.
+
+   Nombres de tokens CONTRATADOS en specs/001-shared-layout-hero/contracts/
+   design-tokens.md — no cambiar nombres.
+
+   La tipografia se sirve LOCAL (self-hosted) desde `assets/fonts/` via los
+   @font-face de abajo — antes venia de Google Fonts con <link>, se saco para
+   eliminar el request bloqueante y la dependencia de terceros (PageSpeed,
+   2026-09-01). Familias aprobadas (decision T002):
+     - Orbitron  -> titulo del Hero / display  (--font-hero-titulo)
+     - Exo 2     -> sitio, navegacion y texto  (--font-sitio / --font-nav / --font-texto)
+   Ambas son variable fonts (subset latin), SIL OFL 1.1. Cada stack incluye
+   fallback legible si la fuente no carga (caso limite).
+   ========================================================================== */
+
+/* ---------------------------------------------------------------------------
+   0. Fuentes locales (self-hosted, assets/fonts/)
+   ---------------------------------------------------------------------------
+   Variable fonts, subset latin (cubre español: acentos, ñ, «», — ). Un solo
+   woff2 por familia cubre todo el eje de peso. `font-display: swap` -> el texto
+   se ve al toque con el fallback y cambia a la fuente al cargar.
+   --------------------------------------------------------------------------- */
+@font-face {
+  font-family: 'Exo 2';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('../assets/fonts/exo2-latin-var.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Orbitron';
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url('../assets/fonts/orbitron-latin-var.woff2') format('woff2');
+}
+
+/* ---------------------------------------------------------------------------
+   1. Tokens de diseno (:root)
+   --------------------------------------------------------------------------- */
+:root {
+
+  /* --- Paleta: espacio (negros y azules profundos) --- */
+  --color-fondo: #0a0e1a;                /* fondo base del sitio (azul noche profundo) */
+  --color-superficie: rgba(20, 28, 49, 0.88); /* superficies: header, nav, footer, tarjetas;
+                                                   con transparencia para superponerse a backdrops */
+
+  /* --- Paleta: Tierra (ocres y dorados terrosos) --- */
+  --color-tierra-ocre: #a8793f;          /* acento de la Tierra: ocre terroso */
+  --color-tierra-oro: #d4a94e;           /* acento de la Tierra: dorado */
+
+  /* --- Paleta: acento unico saturado --- */
+  --color-gargantua: #e8803b;            /* naranja de Gargantua — UNICO color saturado del sitio (FR-017) */
+
+  /* --- Paleta: texto (blanco roto / crema; NUNCA blanco puro) --- */
+  --color-texto: #efe7d6;                /* texto principal: crema */
+  --color-texto-atenuado: #a8a294;       /* textos secundarios (subtitulos, meta): crema atenuado */
+
+  /* --- Paleta: metal del robot CASE (unico acento FRIO del sitio; solo el
+     boton de navegacion en reposo). Gunmetal claro -> se lee como los slabs de
+     CASE y resalta sobre el fondo. Al hover/abrir cambia a --color-gargantua. --- */
+  --color-case: #9aa6b6;
+
+  /* --- Tipografia (self-hosted via @font-face seccion 0 + fallbacks legibles) --- */
+  --font-sitio: 'Exo 2', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-hero-titulo: 'Orbitron', 'Exo 2', system-ui, sans-serif;
+  --font-nav: 'Exo 2', 'Segoe UI', system-ui, sans-serif;
+  --font-texto: 'Exo 2', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* --- Foco: anillo visible para el 100 % de controles y enlaces (FR-010) --- */
+  /* Usa el naranja de Gargantua: es el unico acento saturado del sitio (FR-017) */
+  --focus-anillo: var(--color-gargantua);
+
+  /* --- Oscurecimiento de backdrops fotograficos (FR-019) --- */
+  /* Uso: `filter: var(--backdrop-oscurecer);` sobre el fondo fotografico */
+  --backdrop-oscurecer: brightness(0.4);
+}
