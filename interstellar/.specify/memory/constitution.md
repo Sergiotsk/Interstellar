@@ -1,29 +1,22 @@
 <!--
 SYNC IMPACT REPORT
-Version change: 1.2.0 -> 2.0.0
-Rationale: Se REDEFINE el Principio I. La catedra autorizo el uso de librerias de terceros
-(2026-09-03). El Principio I pasaba de "PROHIBIDOS los frameworks y librerias de terceros /
-ninguna dependencia de runtime" a PERMITIR librerias de proposito acotado (animacion,
-render WebGL/Canvas, motor de juego 2D, audio, particulas) usadas desde el JS propio y
-cargadas SIN paso de build (ESM pinneado para prototipar; vendorizadas en `js/vendor/` al
-cerrar la feature). Redefinir un principio core -> bump MAJOR.
+Version change: 2.0.0 -> 2.1.0
+Rationale: Enmienda a "Restricciones Tecnicas / Diseno". (1) Se admite un SEGUNDO acento
+saturado, acotado por CAPA: el teal/cian de pantallas (`#4fd0e0`) para la capa de interfaz
+de nave (el "chrome" del cockpit: header, footer, LEDs, instrumentos), sin bajar al
+contenido; el naranja de Gargantua sigue siendo el unico acento del contenido narrativo.
+(2) Se corrige un dato ya obsoleto: la tipografia dejo de servirse via Google Fonts
+(`<link>`) el 2026-09-01 y hoy es self-hosted via `@font-face`. Expande guia material sin
+redefinir ningun principio core -> bump MINOR.
 
 Cambios de esta version:
-  - Principio I: renombrado "Stack Vanilla, Sin Frameworks" -> "Stack Vanilla, Librerias
-    con Criterio". Se permite libreria de proposito acotado, con justificacion por spec
-    (problema, peso KB gzip, impacto LCP/TBT, paginas donde carga). SIGUEN PROHIBIDOS:
-    frameworks de app/UI (React, Preact, Vue, Angular, Svelte, Solid, Astro, Lit),
-    frameworks CSS (Tailwind, Bootstrap), TypeScript, preprocesadores CSS. Sigue SIN build.
-  - Principio V: aclaracion -> el glue de integracion de una libreria de render/animacion/
-    juego (montaje de escena, wiring de tweens, callbacks visuales) es capa presentacional;
-    la logica que orquesta (estado, scoring, victoria, calculos) sigue con TDD estricto.
-  - "Restricciones Tecnicas": bloque CSS (sin framework/preprocesador, explicito); parrafo
-    JavaScript ampliado (librerias + carpeta `js/vendor/` + sin build); `/js/vendor`
-    agregado al arbol de carpetas; "Fuera de alcance" -> se quita "WebGL/Three.js";
-    Hosting refuerza "publica `js/vendor/` tal cual".
-  - "Flujo de Trabajo / Criterios de aceptacion": nuevo item -> toda libreria nueva viene
-    justificada en su spec y vendorizada (o ESM pinneado desde CDN con motivo escrito);
-    sin paso de build.
+  - "Restricciones Tecnicas / Diseno": "el naranja de Gargantua como unico acento saturado"
+    -> "dos acentos saturados, uno por capa" (Gargantua = contenido narrativo; teal `#4fd0e0`
+    = capa de interfaz de nave / cockpit, no baja al contenido; ambar y rojo = LED de
+    estado/alerta puntuales dentro de esa capa).
+  - "Restricciones Tecnicas / Diseno": "Tipografia via Google Fonts (`<link>`)" -> "self-
+    hosted via `@font-face` desde `assets/fonts/` (woff2 subset latin); sin `<link>` a
+    servicios de terceros".
 
 Historial:
   - 1.0.0 (2026-08-27): Primera ratificacion. Principios I-VI y las tres secciones
@@ -34,6 +27,9 @@ Historial:
     cargadas en orden como `<link>` independientes, sin `@import`.
   - 2.0.0 (2026-09-03): Principio I redefinido -> se permiten librerias de proposito
     acotado, sin paso de build. Autorizacion de la catedra.
+  - 2.1.0 (2026-09-03): Diseno -> segundo acento saturado acotado a la capa de interfaz
+    de nave (teal `#4fd0e0` para el cockpit: header/footer/LEDs); tipografia self-hosted
+    (`@font-face`), se retira la mencion a Google Fonts.
 
 Follow-up / consistencia (fuera del alcance de este comando):
   - specs/001-005 mencionan reglas del Principio I viejo; features cerradas, no se tocan.
@@ -216,10 +212,14 @@ en `js/vendor/<lib>@<version>/` y se importan por ruta relativa desde los modulo
 que las usan; se cargan solo en la(s) pagina(s) que las necesitan. Sin paso de build.
 
 **Diseno**: paleta de negros y azules profundos para el espacio, ocres y dorados para la
-Tierra, el naranja de Gargantua como unico acento saturado. Blancos rotos / crema para
-texto; nada de blancos puros. Backdrops oscurecidos (`filter: brightness(...)`) para
-legibilidad. Tipografia via Google Fonts (`<link>`). Efectos ambientales sutiles, sin
-recargar.
+Tierra. **Dos acentos saturados, uno por capa**: el naranja de Gargantua es el unico acento
+del **contenido narrativo** (ejes, fichas, licencia narrativa); el teal/cian de pantallas
+(`#4fd0e0`) es el acento de la **capa de interfaz de nave** — el "chrome" del cockpit:
+header, footer, LEDs, instrumentos — y **no baja al contenido**. Ambar y rojo quedan como
+LED de estado/alerta puntuales dentro de esa capa. Blancos rotos / crema para texto; nada
+de blancos puros. Backdrops oscurecidos (`filter: brightness(...)`) para legibilidad.
+Tipografia **self-hosted via `@font-face` desde `assets/fonts/` (woff2 subset latin); sin
+`<link>` a servicios de terceros**. Efectos ambientales sutiles, sin recargar.
 
 **Assets**: imagenes locales, referenciadas con rutas relativas, optimizadas a WebP y a
 resoluciones razonables a mano. **Acreditar la fuente de cada imagen es OBLIGATORIO**
@@ -309,4 +309,4 @@ en las specs colgadas si corresponde.
 criterios de aceptacion y los principios antes de considerarse cerrada. El agente reporta
 desvios de forma explicita en vez de resolverlos por su cuenta.
 
-**Version**: 2.0.0 | **Ratified**: 2026-08-27 | **Last Amended**: 2026-09-03
+**Version**: 2.1.0 | **Ratified**: 2026-08-27 | **Last Amended**: 2026-09-03
