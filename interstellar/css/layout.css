@@ -73,11 +73,24 @@ header::before {
   content: "";
   position: absolute;
   inset: 0;
+  /* Mini-panel de estado a la izquierda: dos LED (SYS teal + PWR ámbar)
+     pintados como radial-gradient — núcleo brillante + halo suave — para que la
+     banda se lea como consola aun en teléfonos, donde el rótulo comparte poco
+     espacio. En escritorio (>=60rem) se quitan: la fila de nav pinta encima. */
   background:
+    radial-gradient(9px 9px at 15px 50%,
+      color-mix(in srgb, var(--instrumento-teal) 95%, transparent) 0 3px,
+      color-mix(in srgb, var(--instrumento-teal) 45%, transparent) 4px 5px,
+      transparent 9px),
+    radial-gradient(9px 9px at 27px 50%,
+      color-mix(in srgb, var(--led-ambar) 92%, transparent) 0 3px,
+      color-mix(in srgb, var(--led-ambar) 42%, transparent) 4px 5px,
+      transparent 9px),
     repeating-linear-gradient(90deg, transparent 0 22px, rgba(255, 255, 255, 0.025) 22px 23px),
     linear-gradient(180deg,
       color-mix(in srgb, var(--cockpit-metal-alto) 94%, transparent),
       color-mix(in srgb, var(--cockpit-metal) 88%, transparent));
+  background-repeat: no-repeat;
   backdrop-filter: blur(8px);
   /* Filo inferior "encendido": bezel teñido de teal + una línea de luz teal
      inset justo por encima del corte, para que la banda se lea como instrumento
@@ -100,12 +113,14 @@ footer {
   --focus-anillo: var(--instrumento-teal);
 }
 
-/* Rotulo de estacion (decorativo): da el "instrumento" del lado izquierdo de la
-   banda sin sumar markup ni tocar la navegacion. Se oculta si no entra. */
+/* Rotulo de estacion (decorativo): "instrumento" del lado izquierdo de la banda,
+   despues de los dos LED del mini-panel. Sin markup ni cambios en la nav. Se
+   mantiene visible en telefono (a 320px entra sin chocar con el boton CASE);
+   solo se retira en escritorio, donde la fila de nav ocupa la banda. */
 header::after {
   content: "NAV \00B7 RANGER";
   position: absolute;
-  left: 1rem;
+  left: 2.7rem;
   top: 50%;
   transform: translateY(-50%);
   font-family: var(--font-instrumento);
@@ -118,8 +133,10 @@ header::after {
   white-space: nowrap;
 }
 
-@media (max-width: 26rem) {
-  header::after { display: none; }   /* en pantallas muy angostas no compite con el boton */
+/* A 320px el rótulo completo apretaría contra el botón: se acorta a "NAV". Los
+   dos LED del mini-panel siguen dando la lectura de consola. */
+@media (max-width: 22rem) {
+  header::after { content: "NAV"; }
 }
 
 /* El <nav> ya NO es una barra en flujo: es el DRAWER. Cerrado por defecto en
@@ -431,6 +448,16 @@ header nav ul ul a {
 
   header::after {
     display: none;                      /* el rotulo cede su lugar a la fila */
+  }
+
+  /* Sin los dos LED del mini-panel: en escritorio la fila de nav ocupa la banda
+     y los LED quedarian detras del primer enlace. Se deja solo grilla + metal. */
+  header::before {
+    background:
+      repeating-linear-gradient(90deg, transparent 0 22px, rgba(255, 255, 255, 0.025) 22px 23px),
+      linear-gradient(180deg,
+        color-mix(in srgb, var(--cockpit-metal-alto) 94%, transparent),
+        color-mix(in srgb, var(--cockpit-metal) 88%, transparent));
   }
 
   /* El <nav> vuelve al flujo: sin panel, sin clip-path, sin caja flotante. */
