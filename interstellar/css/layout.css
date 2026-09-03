@@ -346,10 +346,15 @@ header nav ul ul a {
   min-width: 44px;                  /* target tactil (WCAG 2.5.8) */
   min-height: 44px;
   padding: 0;
-  color: var(--color-case);         /* gunmetal en reposo; hover/abierto -> gargantua */
+  color: var(--color-case);         /* gunmetal en reposo; hover/abierto -> teal */
   background: transparent;
   border: 0;                        /* sin caja: a la vista quedan solo las barras */
   cursor: pointer;
+  /* Por ENCIMA de `header::before`: ese pseudo lleva `backdrop-filter`, que le
+     crea un stacking context y lo hace pintar sobre el contenido no-posicionado
+     del header. Sin esto, la banda tapa el boton (invisible y sin clic). */
+  position: relative;
+  z-index: 1;
 }
 
 .nav-toggle:hover {
