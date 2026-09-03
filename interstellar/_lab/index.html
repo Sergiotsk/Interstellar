@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab · pruebas de librerías</title>
+  <link rel="stylesheet" href="_lab.css">
+</head>
+<body class="lab">
+  <div class="lab-index">
+    <h1>_lab · pruebas de librerías</h1>
+    <p class="lab-sub">
+      Sandbox de la rama <code>spike/librerias</code>. NO es el sitio. Pruebas
+      descartables para decidir qué librería entra en cada feature.
+      Servir con <code>python -m http.server</code> desde <code>interstellar/</code>
+      y abrir <code>/_lab/</code>. Las librerías se cargan como ESM pinneado desde
+      <code>esm.sh</code> (en producción se vendorizan).
+    </p>
+
+    <a class="lab-card" href="gsap-scrolltrigger.html">
+      <h2>GSAP + ScrollTrigger</h2>
+      <p>Mini scrollytelling del viaje de la Endurance: 5 escenas, dos con
+        <em>pin</em> + <em>scrub</em> (la animación atada al scroll), reveal
+        on-enter, barra de progreso. Carga las 4 hojas reales del sitio para
+        probar la convivencia. Respeta <code>prefers-reduced-motion</code>.</p>
+      <span class="lab-tag">~30 KB · animación + narrativa</span>
+    </a>
+
+    <a class="lab-card" href="gargantua-ogl.html">
+      <h2>Gargantua — OGL</h2>
+      <p>Un plano a pantalla completa con un fragment shader GLSL: disco de
+        acreción con flujo animado, lente gravitacional que curva el fondo
+        estrellado, horizonte de sucesos. Todo el efecto vive en el shader.</p>
+      <span class="lab-tag">~10 KB · shader 2D</span>
+    </a>
+
+    <a class="lab-card" href="gargantua-three.html">
+      <h2>Gargantua — three.js</h2>
+      <p>La misma idea pero como escena 3D real: geometría (anillo, esferas),
+        cámara con órbita (arrastrá para mirar alrededor), campo de estrellas de
+        3000 puntos, disco con ShaderMaterial. Mostrá el "3D de verdad" y su costo.</p>
+      <span class="lab-tag">~170 KB · escena 3D</span>
+    </a>
+
+    <a class="lab-card" href="filmstrip-mundos.html">
+      <h2>Filmstrip de Mundos — GSAP</h2>
+      <p>Prototipo para <code>mundos.html</code>: cada mundo suma una tira de
+        celuloide con fotogramas de esa parte de la trama, desfilando lento
+        (loop infinito sin salto). Hover = desacelera; fuera de vista = pausa;
+        <code>prefers-reduced-motion</code> = scroll manual. Pátina de film
+        (grano, viñeta, desaturado) hecha con CSS.</p>
+      <span class="lab-tag">~30 KB · carrusel / marquee cinematográfico</span>
+    </a>
+
+    <p class="lab-sub" style="margin-top:2.5rem">
+      Comparar entre OGL y three.js: mirá FPS (abajo a la derecha), el peso en
+      la pestaña Network de DevTools, y si el efecto necesita cámara / volumen
+      real (→ three) o alcanza con un plano y un shader (→ OGL).
+    </p>
+  </div>
+</body>
+</html>
