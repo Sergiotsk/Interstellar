@@ -1,29 +1,44 @@
 <!--
 SYNC IMPACT REPORT
-Version change: 1.1.0 -> 1.2.0
-Rationale: Enmienda a la seccion "Restricciones Tecnicas y Convenciones". Se reemplaza la
-convencion de CSS: de un unico `css/global.css` a una arquitectura de CUATRO hojas globales
-de responsabilidad unica (`reset.css` -> `variables.css` -> `base.css` -> `layout.css`),
-cargadas como `<link>` independientes en ese orden, sin `@import`. Habilita a la feature
-006-reset-css. Ningun principio (I-VI) cambia; se amplia materialmente una guia -> bump MINOR.
+Version change: 1.2.0 -> 2.0.0
+Rationale: Se REDEFINE el Principio I. La catedra autorizo el uso de librerias de terceros
+(2026-09-03). El Principio I pasaba de "PROHIBIDOS los frameworks y librerias de terceros /
+ninguna dependencia de runtime" a PERMITIR librerias de proposito acotado (animacion,
+render WebGL/Canvas, motor de juego 2D, audio, particulas) usadas desde el JS propio y
+cargadas SIN paso de build (ESM pinneado para prototipar; vendorizadas en `js/vendor/` al
+cerrar la feature). Redefinir un principio core -> bump MAJOR.
 
 Cambios de esta version:
-  - "Restricciones Tecnicas y Convenciones" -> bloque **CSS** reescrito (1 hoja -> 4 hojas
-    globales en orden fijo, sin @import; CSS por pagina pesada se suma despues).
-  - "Flujo de Trabajo y Puertas de Calidad" -> Criterios de aceptacion: se agrega el item
-    "las hojas de estilo cargan en el orden definido".
+  - Principio I: renombrado "Stack Vanilla, Sin Frameworks" -> "Stack Vanilla, Librerias
+    con Criterio". Se permite libreria de proposito acotado, con justificacion por spec
+    (problema, peso KB gzip, impacto LCP/TBT, paginas donde carga). SIGUEN PROHIBIDOS:
+    frameworks de app/UI (React, Preact, Vue, Angular, Svelte, Solid, Astro, Lit),
+    frameworks CSS (Tailwind, Bootstrap), TypeScript, preprocesadores CSS. Sigue SIN build.
+  - Principio V: aclaracion -> el glue de integracion de una libreria de render/animacion/
+    juego (montaje de escena, wiring de tweens, callbacks visuales) es capa presentacional;
+    la logica que orquesta (estado, scoring, victoria, calculos) sigue con TDD estricto.
+  - "Restricciones Tecnicas": bloque CSS (sin framework/preprocesador, explicito); parrafo
+    JavaScript ampliado (librerias + carpeta `js/vendor/` + sin build); `/js/vendor`
+    agregado al arbol de carpetas; "Fuera de alcance" -> se quita "WebGL/Three.js";
+    Hosting refuerza "publica `js/vendor/` tal cual".
+  - "Flujo de Trabajo / Criterios de aceptacion": nuevo item -> toda libreria nueva viene
+    justificada en su spec y vendorizada (o ESM pinneado desde CDN con motivo escrito);
+    sin paso de build.
 
 Historial:
   - 1.0.0 (2026-08-27): Primera ratificacion. Principios I-VI y las tres secciones
     definidas a partir de proyecto-interstellar-base.md.
   - 1.1.0 (2026-08-29): Hosting Vercel -> GitHub Pages (Actions), subpath /Interstellar/,
     rutas internas relativas como regla dura.
+  - 1.2.0 (2026-09-02): Arquitectura CSS de 4 hojas (reset -> variables -> base -> layout),
+    cargadas en orden como `<link>` independientes, sin `@import`.
+  - 2.0.0 (2026-09-03): Principio I redefinido -> se permiten librerias de proposito
+    acotado, sin paso de build. Autorizacion de la catedra.
 
 Follow-up / consistencia (fuera del alcance de este comando):
-  - specs/001-005 -> quickstart.md / plan.md mencionan `css/global.css`. Features cerradas;
-    se corrige el texto por prolijidad cuando se toque cada archivo.
-  - La feature 006-reset-css materializa esta arquitectura (disuelve `global.css` en las
-    cuatro hojas y actualiza los `<link>` de las 9 paginas).
+  - specs/001-005 mencionan reglas del Principio I viejo; features cerradas, no se tocan.
+  - La primera feature que sume una libreria crea `js/vendor/` y fija el patron
+    `<lib>@<version>/`.
 
 TODOs deferidos: ninguno.
 -->
@@ -37,23 +52,45 @@ DEBE respetar.
 
 ## Core Principles
 
-### I. Stack Vanilla, Sin Frameworks
+### I. Stack Vanilla, Librerias con Criterio
 
-El sitio se construye unica y exclusivamente con **HTML5 semantico, CSS puro y JavaScript
-ES6+**. Estan PROHIBIDOS los frameworks y librerias de terceros: sin React, Preact, Angular,
-Astro, Tailwind, TypeScript, jQuery, ni ninguna dependencia de runtime. La interactividad,
-los efectos y los minijuegos se resuelven con **APIs nativas del navegador** (Canvas 2D,
-Intersection Observer, localStorage, Fetch, Web Audio).
+El nucleo del sitio se construye con **HTML5 semantico, CSS puro y JavaScript ES6+ escrito
+a mano como ES Modules**. Ese nucleo no se negocia: la interactividad y los efectos parten
+de las **APIs nativas del navegador** (Canvas 2D, Intersection Observer, localStorage,
+Fetch, Web Audio) y se suma una libreria SOLO cuando resuelve un problema que la plataforma
+no cubre bien.
 
-No hay paso de build: sin bundler, sin transpilacion, sin minificacion automatizada, sin
-autoprefixer. Los archivos que se escriben son los que se sirven. Unica dependencia externa
-por red permitida: **Google Fonts via `<link>`** y **embeds de video via `<iframe>`**
-(YouTube). Se asume JavaScript habilitado en el navegador; la degradacion sin-JS no es un
-objetivo del proyecto.
+**Librerias de terceros PERMITIDAS** (autorizacion de la catedra, 2026-09-03), de proposito
+acotado y usadas DESDE el JavaScript propio: animacion, render WebGL/Canvas, motor de juego
+2D, audio, particulas. Ejemplos orientativos, NO lista cerrada: GSAP/ScrollTrigger,
+three.js, OGL, PixiJS, Phaser, Howler, Lottie, tsParticles. Toda feature que introduzca una
+libreria DEBE justificar en su spec: (a) que problema resuelve, (b) por que no se hace
+razonablemente con plataforma nativa, (c) su peso en KB gzip y su impacto en LCP/TBT,
+(d) en que pagina(s) carga (nunca global si solo la usa una pagina).
 
-**Razon**: la catedra evalua el dominio de los fundamentos web y la efectividad dirigiendo
-IA, no el uso de abstracciones. Cada capacidad debe salir de la plataforma, no de una
-libreria.
+**PROHIBIDO**: frameworks de aplicacion o de UI (React, Preact, Vue, Angular, Svelte,
+Solid, Astro, Lit); frameworks CSS y utilidades atomicas (Tailwind, Bootstrap); TypeScript;
+preprocesadores CSS (Sass, Less, PostCSS). No se adopta el modelo de componentes / JSX de
+ningun framework: el JS propio se escribe a mano.
+
+**Sin paso de build**: sin bundler, sin transpilacion, sin minificacion automatizada, sin
+autoprefixer. Las librerias se cargan como **ES Modules con version FIJADA (pinned)** desde
+un CDN de ESM mientras la feature esta en prototipo, y las **librerias criticas se
+VENDORIZAN** en `js/vendor/<lib>@<version>/` antes de cerrar la feature, para no depender de
+un CDN en runtime. Una libreria que se deja como ESM pinneado desde CDN en produccion tiene
+que explicar el motivo en su spec y asumir ese CDN como dependencia de runtime. Los
+archivos que se escriben o vendorizan son los que se sirven.
+
+**Dependencias externas por red permitidas**: fuentes (Google Fonts via `<link>` o
+self-hosted), embeds de video via `<iframe>` (YouTube), y CDN de ESM solo durante el
+prototipo de una feature. Se asume JavaScript habilitado en el navegador; la degradacion
+sin-JS no es un objetivo del proyecto.
+
+**Razon**: la catedra autorizo el uso de librerias. Lo que se evalua sigue siendo el
+dominio de HTML semantico + CSS + JS vanilla y la efectividad dirigiendo IA. Una libreria
+entra para resolver un problema concreto, entendida y pesada (Principio IV) — no como
+sustituto de entender la plataforma. El "sin build" mantiene el sitio auditable: lo que se
+lee en el repo es lo que corre.
 
 ### II. HTML Semantico Primero
 
@@ -107,6 +144,12 @@ La **capa presentacional** —HTML semantico, CSS, animaciones de scroll, efecto
 puramente visuales— NO se testea con framework; se valida contra los **criterios de
 aceptacion** de la seccion "Flujo de Trabajo y Puertas de Calidad".
 
+El **glue de integracion de una libreria** de render, animacion o juego (montaje de escena,
+wiring de tweens, registro de callbacks visuales) es capa presentacional y se valida por
+aceptacion. La **logica que esa libreria dibuja** —estado del minijuego, scoring, condicion
+de victoria, maquinas de estado, calculos puros— sigue con **TDD estricto** aunque el
+render lo haga la libreria.
+
 **Razon**: el TDD protege donde hay ramas de decision y regresiones reales; forzarlo sobre
 markup y estilos seria sobreingenieria y contradice el alcance acotado del proyecto.
 
@@ -135,7 +178,8 @@ ante un evaluador que sepa del tema.
 ```
 /                 -> archivos .html (index.html, mundos.html, ...)
 /css              -> hojas de estilo
-/js               -> modulos JavaScript
+/js               -> modulos JavaScript propios
+/js/vendor        -> librerias de terceros vendorizadas (`<lib>@<version>/`)
 /assets/img       -> imagenes (locales, rutas relativas)
 /assets/fonts     -> tipografias self-hosted (solo si no alcanza con Google Fonts)
 ```
@@ -161,12 +205,15 @@ sin `@import`:
 
 Cuando una pagina pesada lo justifique, se suma un CSS propio (`css/viaje.css`,
 `css/minijuegos.css`) cargado **despues** de las cuatro. Layout con Grid/Flexbox; responsive
-con media queries.
+con media queries. **Sin framework CSS ni preprocesador** (Principio I): las cuatro hojas se
+escriben a mano.
 
 **JavaScript**: **ES Modules** (`<script type="module">`, `import`/`export`), un modulo por
 responsabilidad, cargado solo en la pagina que lo usa. Sin variables globales. El header
 (con el menu) y el footer se mantienen en un unico partial **inyectado por un modulo JS
-compartido** en cada pagina.
+compartido** en cada pagina. Las **librerias de terceros** (Principio I) viven vendorizadas
+en `js/vendor/<lib>@<version>/` y se importan por ruta relativa desde los modulos propios
+que las usan; se cargan solo en la(s) pagina(s) que las necesitan. Sin paso de build.
 
 **Diseno**: paleta de negros y azules profundos para el espacio, ocres y dorados para la
 Tierra, el naranja de Gargantua como unico acento saturado. Blancos rotos / crema para
@@ -184,7 +231,8 @@ resoluciones razonables a mano. **Acreditar la fuente de cada imagen es OBLIGATO
 push a la rama principal (`main`). El workflow vive en
 `.github/workflows/deploy-pages.yml` y publica el contenido estatico de la raiz del repo
 (`*.html`, `css/`, `js/`, `assets/`); un archivo `.nojekyll` en la raiz desactiva el
-procesado Jekyll. Sin paso de build, sin configuracion extra.
+procesado Jekyll. Sin paso de build, sin configuracion extra: el workflow publica los
+archivos tal cual, incluido `js/vendor/`.
 
 El sitio se sirve bajo el subpath **`https://sergiotsk.github.io/Interstellar/`**. Por eso
 **toda ruta interna DEBE ser relativa** (`css/global.css`, `mundos.html#gargantua`), nunca
@@ -197,7 +245,7 @@ futuro se implementan rankings globales persistentes, la plataforma elegida es *
 (Firestore)** — y recien ahi se abre una spec para eso.
 
 **Fuera de alcance** (no hacer, es sobreingenieria para este TP): PWA, service workers, SEO
-avanzado, optimizacion extrema, i18n, ARIA avanzado, consumo de API en vivo, WebGL/Three.js.
+avanzado, optimizacion extrema, i18n, ARIA avanzado, consumo de API en vivo.
 
 ## Flujo de Trabajo y Puertas de Calidad
 
@@ -226,6 +274,10 @@ volumen de contenido. El umbral se define en esa spec, no se improvisa.
 - **Links y assets cargan** correctamente (rutas relativas bien resueltas).
 - Las **hojas de estilo cargan en el orden definido** (§ CSS): `reset -> variables -> base
   -> layout`, y el CSS propio de la pagina despues.
+- Si la pagina incorpora una **libreria de terceros** (Principio I): esta **justificada en
+  su spec** (problema que resuelve, peso en KB gzip, paginas donde carga) y **vendorizada**
+  en `js/vendor/` — o, si queda como ESM pinneado desde CDN, la spec explica por que. Sin
+  paso de build.
 - Respeta la **paleta y la tipografia** definidas (via variables CSS).
 - Los textos de ciencia estan **verificados contra fuente** y **etiquetados** (Principio VI).
 - Para modulos de logica JS involucrados: sus **tests estan en verde** (Principio V).
@@ -257,4 +309,4 @@ en las specs colgadas si corresponde.
 criterios de aceptacion y los principios antes de considerarse cerrada. El agente reporta
 desvios de forma explicita en vez de resolverlos por su cuenta.
 
-**Version**: 1.2.0 | **Ratified**: 2026-08-27 | **Last Amended**: 2026-09-02
+**Version**: 2.0.0 | **Ratified**: 2026-08-27 | **Last Amended**: 2026-09-03
