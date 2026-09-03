@@ -534,59 +534,117 @@ header nav ul ul a {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
-    align-items: center;
-    gap: 0.1rem 0.15rem;
+    align-items: stretch;
+    gap: 0.5rem 0.55rem;                /* separacion real entre teclas */
   }
 
+  /* La TECLA es el <li> ENTERO: dentro viven el enlace del eje y su ▼, como una
+     sola cara de panel. El fondo/bezel/recorte van en `li::before` (absoluto) y
+     NO en el <li>, para que el `clip-path` no recorte el dropdown (hijo
+     posicionado del <li>). */
   header nav > ul > li {
+    position: relative;
     min-height: auto;
+    flex: 0 0 auto;
     flex-wrap: nowrap;
     justify-content: flex-start;
+    align-items: stretch;
+    isolation: isolate;                /* contexto de apilamiento propio de la tecla */
   }
 
-  /* Boton-panel: cada eje como una tecla retroiluminada de la consola. El
-     recorte diagonal (`--recorte-tecla`) lo hereda de la regla base. */
-  header nav > ul > li > a {
-    flex: 0 0 auto;
-    min-height: auto;
-    padding: 0.4rem 0.8rem;
+  header nav > ul > li::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
     border: 1px solid var(--cockpit-bezel);
     background: linear-gradient(180deg, var(--cockpit-metal-alto), var(--cockpit-metal));
+    clip-path: var(--recorte-tecla);
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+
+  /* Tecla encendida (hover / foco dentro / seccion actual): bezel teal + fondo
+     teal apagado (#1e5a63 -> #12262a de la referencia). */
+  header nav > ul > li:hover::before,
+  header nav > ul > li:focus-within::before,
+  header nav > ul > li:has(> a[aria-current='page'])::before {
+    border-color: var(--instrumento-teal);
+    background: linear-gradient(180deg,
+      color-mix(in srgb, var(--instrumento-teal) 34%, var(--cockpit-metal)),
+      color-mix(in srgb, var(--cockpit-metal) 88%, #000));
+  }
+
+  /* La tecla en interaccion se eleva: su dropdown queda sobre las teclas vecinas. */
+  header nav > ul > li:hover,
+  header nav > ul > li:focus-within {
+    z-index: 2;
+  }
+
+  /* Enlace del eje: cara de la tecla, sin caja propia. */
+  header nav > ul > li > a {
+    position: relative;
+    z-index: 1;
+    flex: 0 0 auto;
+    min-height: auto;
+    border: 0;
+    background: none;
+    clip-path: none;
+    padding: 0.5rem 0.4rem 0.5rem 0.85rem;
+  }
+
+  /* Ejes sin ▼ (Inicio, Galeria, Minijuegos, Trailer): padding derecho pleno. */
+  header nav > ul > li:not(:has(> button)) > a {
+    padding-right: 0.85rem;
+  }
+
+  header nav > ul > li > a:hover,
+  header nav > ul > li > a:focus-visible {
+    background: none;                  /* el encendido lo pinta li::before */
+    border-color: transparent;
   }
 
   header nav > ul > li > a::before {
     width: 6px;
     height: 6px;
-    margin-right: 0.45rem;
+    margin-right: 0.5rem;
   }
 
-  /* Encendida: bezel teal pleno + fondo teal apagado (como la tecla activa de
-     la referencia: #1e5a63 -> #12262a) + texto teal brillante. */
-  header nav > ul > li > a:hover,
-  header nav > ul > li > a:focus-visible,
+  /* Texto + LED encendidos junto con la tecla. */
+  header nav > ul > li:hover > a,
+  header nav > ul > li:focus-within > a,
   header nav > ul > li > a[aria-current='page'] {
-    border-color: var(--instrumento-teal);
-    background: linear-gradient(180deg,
-      color-mix(in srgb, var(--instrumento-teal) 34%, var(--cockpit-metal)),
-      color-mix(in srgb, var(--cockpit-metal) 88%, #000));
     color: color-mix(in srgb, var(--instrumento-teal) 85%, #fff);
     text-shadow: 0 0 10px color-mix(in srgb, var(--instrumento-teal) 62%, transparent);
   }
 
-  /* El ▼ vuelve a ser un caret sin caja: es parte de la tecla del eje, no una
-     tecla aparte. Anula el fondo/bezel/recorte de la regla base. */
-  header nav button {
+  header nav > ul > li:hover > a::before,
+  header nav > ul > li:focus-within > a::before,
+  header nav > ul > li > a[aria-current='page']::before {
+    opacity: 1;
+    box-shadow: 0 0 8px 2px color-mix(in srgb, var(--instrumento-teal) 80%, transparent);
+  }
+
+  /* El ▼: indicador en la CARA de la tecla — sin caja, del color del eje. */
+  header nav > ul > li > button {
+    position: relative;
+    z-index: 1;
     min-width: auto;
     min-height: auto;
-    padding: 0.15rem 0.1rem 0.15rem 0;
+    padding: 0.5rem 0.7rem 0.5rem 0.05rem;
     border: 0;
     background: none;
     clip-path: none;
-    font-size: 0.7rem;
+    color: color-mix(in srgb, var(--instrumento-teal) 68%, var(--color-texto-atenuado));
+    font-size: 0.6rem;
+    line-height: 1;
   }
 
-  header nav button[aria-expanded='true'] {
-    background: none;                   /* en la barra el ▼ no lleva caja encendida */
+  header nav > ul > li:hover > button,
+  header nav > ul > li:focus-within > button,
+  header nav > ul > li > button:hover,
+  header nav > ul > li > button[aria-expanded='true'] {
+    background: none;
+    color: color-mix(in srgb, var(--instrumento-teal) 85%, #fff);
   }
 
   /* Submenu = dropdown flotante bajo el eje. `li` ya es position:relative. El
@@ -647,25 +705,70 @@ footer {
   clip-path: polygon(0 12px, 20px 0, calc(100% - 20px) 0, 100% 12px, 100% 100%, 0 100%);
 }
 
-footer p {
-  margin: 0.4rem 0;
-}
-
-/* Lectura de telemetria: etiqueta tecnica (decorativa) + valor real + LED de
-   estado. `.tele` alinea los tres en una fila centrada; en angosto envuelve. */
-.tele {
+/* La consola es una fila de TECLAS. Cada `.tele` es una tecla de panel — misma
+   caja, recorte diagonal (`--recorte-tecla`) y bezel que las de la nav.
+     - `.tele-accion`: tecla-BOTÓN (un <a> la ocupa entera y es el destino).
+     - `.tele` a secas (CREW): DISPLAY del panel — mismo aspecto, sin acción.
+   El footer no tiene dropdowns, así que el recorte va en la propia caja. */
+footer ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
   justify-content: center;
+  align-items: stretch;
+  gap: 0.5rem 0.55rem;
+}
+
+footer .tele {
+  display: flex;
+  align-items: center;
   gap: 0.5rem;
+  border: 1px solid var(--cockpit-bezel);
+  background: linear-gradient(180deg, var(--cockpit-metal-alto), var(--cockpit-metal));
+  clip-path: var(--recorte-tecla);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+/* CREW: display de lectura — barra a lo ancho, en su propia fila, contenido
+   centrado (las dos teclas-boton van debajo). */
+footer .tele:not(.tele-accion) {
+  flex: 1 1 100%;
+  justify-content: center;
+  padding: 0.5rem 0.9rem;
+}
+
+footer .tele-accion > a {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Tecla-botón encendida al hover / foco. */
+footer .tele-accion:hover,
+footer .tele-accion:focus-within {
+  border-color: var(--instrumento-teal);
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--instrumento-teal) 34%, var(--cockpit-metal)),
+    color-mix(in srgb, var(--cockpit-metal) 88%, #000));
+}
+
+footer .tele-accion:hover .tele-v,
+footer .tele-accion:focus-within .tele-v {
+  color: color-mix(in srgb, var(--instrumento-teal) 85%, #fff);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--instrumento-teal) 55%, transparent);
 }
 
 .tele-k {
-  font-size: 0.72rem;
+  flex: none;
+  font-size: 0.68rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--instrumento-teal) 70%, var(--color-texto-atenuado));
+  color: color-mix(in srgb, var(--instrumento-teal) 72%, var(--color-texto-atenuado));
 }
 
 .tele-k::after {
@@ -674,24 +777,9 @@ footer p {
   opacity: 0.6;
 }
 
-footer a {
-  color: var(--color-texto);
-  text-underline-offset: 0.2em;
-}
-
-footer a:hover,
-footer a:focus-visible {
-  color: var(--instrumento-teal);
-}
-
-footer ul {
-  margin: 0.65rem 0 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.4rem;
+.tele-v {
+  color: var(--color-texto-atenuado);
+  transition: color 0.15s ease, text-shadow 0.15s ease;
 }
 
 /* LED de estado reutilizable de la capa cockpit. Verde-teal por defecto; las

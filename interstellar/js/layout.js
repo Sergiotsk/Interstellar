@@ -70,16 +70,18 @@ export function buildFooter() {
   // Pie mínimo: disclaimer + enlaces (créditos y repo). La lista de atribución
   // por asset vive en creditos.html (FR-012, FR-013; contrato assets.md).
   //
-  // Estética "consola inferior" del cockpit (constitución v2.1.0): cada dato se
-  // presenta como una lectura de telemetría — una etiqueta técnica corta
-  // (`<span class="tele-k">`, decorativa: aria-hidden) + el valor real + un LED
-  // de estado (`<span class="led">`, decorativo). El texto y los enlaces siguen
-  // siendo el contenido accesible; las etiquetas y LEDs son sólo el marco visual.
+  // Consola inferior del cockpit (constitución v2.1.0): TODO se presenta como
+  // "tecla" de panel — misma caja con recorte diagonal, bezel y LED que las de
+  // la nav. Cada item lleva una etiqueta técnica corta (`.tele-k`, decorativa),
+  // el valor (`.tele-v`) y un LED (`.led`, decorativo).
+  //   - `.tele-accion`: tecla-BOTÓN — un <a> ocupa toda la caja y es el destino.
+  //   - `.tele` a secas (CREW): DISPLAY del panel — mismo aspecto de tecla pero
+  //     sin acción (no es un enlace; no lleva cursor de puntero).
   return `<footer>
-  <p class="tele"><span class="tele-k" aria-hidden="true">CREW</span> ${escapeHtml(CREDITS)} <span class="led" aria-hidden="true"></span></p>
   <ul>
-    <li class="tele"><span class="tele-k" aria-hidden="true">REF</span> <a href="creditos.html">Créditos y fuentes</a> <span class="led" aria-hidden="true"></span></li>
-    <li class="tele"><span class="tele-k" aria-hidden="true">REPO</span> <a href="${escapeHtml(REPO_URL)}">Repositorio del proyecto</a> <span class="led led-alerta" aria-hidden="true"></span></li>
+    <li class="tele"><span class="tele-k" aria-hidden="true">CREW</span><span class="tele-v">${escapeHtml(CREDITS)}</span><span class="led" aria-hidden="true"></span></li>
+    <li class="tele tele-accion"><a href="creditos.html"><span class="tele-k" aria-hidden="true">REF</span><span class="tele-v">Créditos y fuentes</span><span class="led" aria-hidden="true"></span></a></li>
+    <li class="tele tele-accion"><a href="${escapeHtml(REPO_URL)}"><span class="tele-k" aria-hidden="true">REPO</span><span class="tele-v">Repositorio del proyecto</span><span class="led led-alerta" aria-hidden="true"></span></a></li>
   </ul>
 </footer>`;
 }
