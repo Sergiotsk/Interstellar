@@ -56,6 +56,16 @@ describe('js/layout.js — contrato layout-injection.md', () => {
     assert.ok(toggleIdx < navIdx, 'el toggle va antes del <nav>');
   });
 
+  test('el header incluye la marca "NAV · RANGER" como enlace al inicio', () => {
+    // Antes era un pseudo-elemento (header::after); ahora es un <a> real para
+    // que sea navegable y accesible.
+    assert.match(header, /<a class="cockpit-brand" href="index\.html"[^>]*aria-label="[^"]+"/);
+    assert.ok(header.includes('>NAV<'));
+    assert.ok(header.includes('RANGER'));
+    // Va antes del toggle (extremo izquierdo de la banda).
+    assert.ok(header.indexOf('class="cockpit-brand"') < header.indexOf('class="nav-toggle"'));
+  });
+
   test('hasChildren: true solo en los 4 ejes (FR-003)', () => {
     const axes = NavConfig.items.filter((item) => item.hasChildren);
     assert.equal(axes.length, 4);

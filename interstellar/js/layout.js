@@ -41,17 +41,22 @@ function buildTopLevelItem(item) {
 
 export function buildHeader(navConfig = NavConfig) {
   const items = navConfig.items.map(buildTopLevelItem).join('\n');
+  // Marca "NAV · RANGER": enlace al inicio con aspecto de rotulo de instrumento
+  // en la banda del header. Antes era `header::after` (pseudo, no enlazable); es
+  // un <a> real para que sea navegable y accesible (aria-label da el destino;
+  // el texto visible es tematico). Visible <60rem (en escritorio lo tapa la fila
+  // de nav). El sufijo " · RANGER" se oculta en pantallas muy angostas.
+  //
   // Boton CASE: menu-hamburguesa "girado" a 4 barras VERTICALES (guiño al robot
-  // de la pelicula). Abre/cierra el drawer de navegacion en TODOS los viewports
-  // (ya no hay barra horizontal de escritorio). Las 4 <span> internas son
-  // DECORATIVAS (el <span.case-icon> lleva aria-hidden): el nombre accesible del
-  // control lo da el aria-label; el icono se dibuja por completo con CSS.
-  // Vive FUERA del <nav>
-  // (primer hijo del <header>, antes del <nav>) para que collectDisclosures(nav)
-  // —que consulta `button[aria-controls]` dentro del nav— nunca lo confunda con
-  // un disclosure de submenu. El nav lleva id="nav-principal" (target del
-  // aria-controls y hook del CSS para mostrar/ocultar el drawer en mobile).
+  // de la pelicula). Abre/cierra el drawer de navegacion por debajo de 60rem.
+  // Las 4 <span> internas son DECORATIVAS (el <span.case-icon> lleva
+  // aria-hidden): el nombre accesible del control lo da el aria-label; el icono
+  // se dibuja por completo con CSS. Vive FUERA del <nav> (antes del <nav>) para
+  // que collectDisclosures(nav) —que consulta `button[aria-controls]` dentro del
+  // nav— nunca lo confunda con un disclosure de submenu. El nav lleva
+  // id="nav-principal" (target del aria-controls y hook del CSS del drawer).
   return `<header>
+  <a class="cockpit-brand" href="index.html" aria-label="Ir al inicio"><span>NAV</span><span class="cockpit-brand-ext"> · RANGER</span></a>
   <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="nav-principal" aria-label="Abrir menú de navegación"><span class="case-icon" aria-hidden="true"><span></span><span></span><span></span><span></span></span></button>
   <nav id="nav-principal" aria-label="Navegación principal">
     <ul>

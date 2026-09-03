@@ -67,8 +67,10 @@ header {
 
 /* Banda de instrumentos: fondo del header. Translucida -> en la home se lee
    como un HUD sobre el Hero ("la vista por la ventana"); en el resto, sobre
-   --color-fondo. El boton CASE y el drawer pintan por encima (orden de pintado:
-   ::before primero; .nav-toggle despues en el DOM; el <nav> es posicionado). */
+   --color-fondo. Como este pseudo lleva `backdrop-filter`, crea stacking context
+   y pinta sobre el contenido estatico del header: por eso `.nav-toggle` y
+   `.cockpit-brand` llevan `position: relative; z-index: 1`. El <nav> (drawer) es
+   posicionado y ya queda por encima. */
 header::before {
   content: "";
   position: absolute;
@@ -113,30 +115,41 @@ footer {
   --focus-anillo: var(--instrumento-teal);
 }
 
-/* Rotulo de estacion (decorativo): "instrumento" del lado izquierdo de la banda,
-   despues de los dos LED del mini-panel. Sin markup ni cambios en la nav. Se
-   mantiene visible en telefono (a 320px entra sin chocar con el boton CASE);
-   solo se retira en escritorio, donde la fila de nav ocupa la banda. */
-header::after {
-  content: "NAV \00B7 RANGER";
+/* Marca "NAV · RANGER": ENLACE al inicio con aspecto de rotulo de instrumento,
+   del lado izquierdo de la banda, despues de los dos LED del mini-panel. Antes
+   era `header::after` (pseudo, no enlazable); ahora `<a class="cockpit-brand">`
+   (buildHeader). `z-index` para quedar por encima de `header::before`, que lleva
+   `backdrop-filter` y pinta sobre el contenido estatico (mismo motivo que el
+   boton CASE). Visible en telefono (a 320px entra sin chocar con el boton);
+   se retira en escritorio, donde la fila de nav ocupa la banda. */
+.cockpit-brand {
   position: absolute;
-  left: 2.7rem;
+  left: 2.4rem;
   top: 50%;
   transform: translateY(-50%);
+  z-index: 1;
+  padding: 0.35rem 0.4rem;
   font-family: var(--font-instrumento);
   font-size: 0.7rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
+  text-decoration: none;
   color: color-mix(in srgb, var(--instrumento-teal) 78%, var(--color-texto-atenuado));
   text-shadow: 0 0 8px color-mix(in srgb, var(--instrumento-teal) 42%, transparent);
-  pointer-events: none;
   white-space: nowrap;
+  transition: color 0.15s ease, text-shadow 0.15s ease;
 }
 
-/* A 320px el rótulo completo apretaría contra el botón: se acorta a "NAV". Los
-   dos LED del mini-panel siguen dando la lectura de consola. */
+.cockpit-brand:hover,
+.cockpit-brand:focus-visible {
+  color: color-mix(in srgb, var(--instrumento-teal) 85%, #fff);
+  text-shadow: 0 0 12px color-mix(in srgb, var(--instrumento-teal) 55%, transparent);
+}
+
+/* A ~320px "NAV · RANGER" apretaria contra el boton: queda solo "NAV". Los dos
+   LED del mini-panel siguen dando la lectura de consola. */
 @media (max-width: 22rem) {
-  header::after { content: "NAV"; }
+  .cockpit-brand-ext { display: none; }
 }
 
 /* El <nav> ya NO es una barra en flujo: es el DRAWER. Cerrado por defecto en
@@ -451,8 +464,8 @@ header nav ul ul a {
     display: none;                      /* en escritorio no hay hamburguesa */
   }
 
-  header::after {
-    display: none;                      /* el rotulo cede su lugar a la fila */
+  .cockpit-brand {
+    display: none;                      /* el rotulo/enlace cede su lugar a la fila */
   }
 
   /* Sin los dos LED del mini-panel: en escritorio la fila de nav ocupa la banda
