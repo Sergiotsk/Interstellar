@@ -159,7 +159,7 @@ catálogo en la columna "Fuente").
 
 Orbitron y Exo 2 (variable fonts, subset latin) se sirven LOCAL desde
 `assets/fonts/` (`orbitron-latin-var.woff2` 11,8 KB, `exo2-latin-var.woff2` 40,9 KB)
-via `@font-face` en `css/global.css` (seccion 0). Antes venian de Google Fonts con
+via `@font-face` en `css/variables.css` (seccion 0). Antes venian de Google Fonts con
 un `<link>` en cada `<head>`; se saco para eliminar un request bloqueante de ~780 ms
 y la dependencia de un tercero (PageSpeed). Ambas fuentes son **SIL Open Font License
 1.1** — su redistribucion self-hosted esta permitida. Descargadas del CDN de Google

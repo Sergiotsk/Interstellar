@@ -1,0 +1,101 @@
+/* =============================================================================
+   css/reset.css — Reset y normalizacion entre navegadores (feature 006)
+   -----------------------------------------------------------------------------
+   PRIMERA hoja del sitio. Se carga antes que variables.css, base.css y
+   layout.css (contrato specs/006-reset-css/contracts/hojas-css.md C1).
+
+   Selectores `:where(...)` -> especificidad (0,0,0,0): cualquier regla de las
+   otras hojas (o de un CSS de pagina) sobreescribe SIN `!important` y sin subir
+   especificidad. UNICA excepcion permitida (FR-016): el bloque
+   `@media (prefers-reduced-motion: reduce)`, que usa `*` + `!important`.
+
+   Esta hoja NO impone decisiones de diseno (FR-018): nada de paleta, familias
+   tipograficas ni escalas de tamano. Esos valores viven en variables.css /
+   base.css / layout.css.
+   ========================================================================== */
+
+/* box-sizing heredable y global (FR-007) */
+:where(*, *::before, *::after) {
+  box-sizing: border-box;
+}
+
+/* Reset TOTAL de margenes (FR-008): el espaciado de lectura lo repone base.css */
+:where(*, *::before, *::after) {
+  margin: 0;
+}
+
+/* Normalizacion del root: sin ajuste automatico de tamano de texto en mobile */
+:where(html) {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+:where(body) {
+  min-height: 100vh;
+}
+
+/* Listas sin vinetas ni sangria por defecto (FR-009). El margen ya lo cubre el
+   reset total de arriba. */
+:where(ul, ol) {
+  list-style: none;
+  padding: 0;
+}
+
+/* Media a nivel de bloque y contenida en su caja (FR-010) */
+:where(img, picture, svg, video, canvas) {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Controles de formulario heredan la tipografia del contexto (FR-011) */
+:where(input, button, textarea, select) {
+  font: inherit;
+}
+
+/* Tablas sin dobles bordes ni separacion por defecto (FR-012) */
+:where(table) {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* Enlaces neutros: el estilo del sitio (subrayado, color) lo pone base.css
+   (FR-013) */
+:where(a) {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Botones sin estilo nativo del navegador (FR-014) */
+:where(button) {
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+/* Texto y encabezados: las palabras largas cortan en vez de desbordar (FR-015).
+   Evita scroll horizontal a 320 px. */
+:where(p, li, h1, h2, h3, h4, h5, h6, figcaption, dd) {
+  overflow-wrap: break-word;
+}
+
+/* ---------------------------------------------------------------------------
+   Movimiento reducido — global y agresivo (FR-016)
+   ---------------------------------------------------------------------------
+   UNICA excepcion a la especificidad 0 de esta hoja: usa `*` + `!important`.
+   Neutraliza toda animacion/transicion CSS del sitio de un saque (barra CASE,
+   futuros efectos scroll-driven / Canvas). `0.01ms` (no `0s`) es el patron
+   canonico: no rompe los eventos `animationend` / `transitionend` de los que
+   puede depender un script. El <video> del Hero lo pausa js/layout.js con esta
+   misma media query.
+   --------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

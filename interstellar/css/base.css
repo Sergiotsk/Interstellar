@@ -1,0 +1,103 @@
+/* =============================================================================
+   css/base.css — Estilos base de elementos + espaciado de lectura (feature 006)
+   -----------------------------------------------------------------------------
+   Tercera hoja: se carga despues de reset.css y variables.css, antes de
+   layout.css.
+
+   Contiene los defaults del SITIO sobre elementos pelados (no son reset:
+   imponen tipografia, color, foco y espaciado de lectura). Migracion de la
+   hoja unica anterior (§2 parte "tema", §3 regla `p`, §6 foco y §9
+   scroll-margin de anclas), sin cambios de valor (contrato C4). La unica
+   pieza nueva es el margen inferior de `p` / `ul` / `ol`, que repone lo que el
+   reset total de margenes quito (research.md D3).
+
+   Regla de reparto (research.md D2): selector de elemento o pseudo-clase pelado
+   -> aca; selector con clase o contexto estructural -> layout.css.
+   ========================================================================== */
+
+/* --- Tema base: tipografia y color del cuerpo (de la hoja anterior, §2) --- */
+body {
+  font-family: var(--font-sitio);
+  color: var(--color-texto);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-hero-titulo);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--color-texto);
+}
+
+/* Parrafo: dedup de las 2 reglas `p` de la hoja anterior (§2 `line-height`,
+   §3 `font-family`) en una sola. El `margin-block` es espaciado repuesto (ver
+   el bloque de abajo). */
+p {
+  font-family: var(--font-texto);
+  line-height: 1.6;
+  margin-block: 1em;
+}
+
+/* ---------------------------------------------------------------------------
+   Espaciado vertical de lectura repuesto (research.md D3)
+   ---------------------------------------------------------------------------
+   La hoja anterior NO tenia un `* { margin: 0 }`: solo reseteaba `body`,
+   `h1-h6 { margin-top: 0 }` y `ul, ol { margin-top: 0 }`. El resto del
+   espaciado vertical venia del navegador (UA). css/reset.css ahora hace un
+   reset TOTAL de margenes (FR-008), asi que aca se reponen EXACTAMENTE los
+   valores del UA que estaban vivos, para render identico (FR-004):
+     - `<p>` conservaba el `margin-block` completo (arriba y abajo) -> arriba.
+     - Encabezados y listas: solo `margin-top: 0`, con el `margin-block-end`
+       del UA intacto (distinto por nivel de encabezado).
+   Selectores de elemento pelado -> cualquier clase de contenido los pisa
+   (`section[id] h2`, `.concepto h3`, `.eje-contenido ul`, `.intro p`...). */
+h1 { margin-block-end: 0.67em; }
+h2 { margin-block-end: 0.83em; }
+h3 { margin-block-end: 1em; }
+h4 { margin-block-end: 1.33em; }
+h5 { margin-block-end: 1.67em; }
+h6 { margin-block-end: 2.33em; }
+
+ul, ol { margin-block-end: 1em; }
+
+/* Enlace del sitio: el reset dejo `a` sin decoracion y con `color: inherit`;
+   aca se define el estilo real (de la hoja anterior, §2). */
+a {
+  color: var(--color-texto);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+/* ---------------------------------------------------------------------------
+   Foco visible base (FR-010, SC-005, SC-007) — de la hoja anterior, §6
+   ---------------------------------------------------------------------------
+   Anillo de foco visible en el 100 % de los controles/enlaces. Se usa
+   `:focus-visible` para no mostrar el anillo en clics de raton/desktop.
+   --------------------------------------------------------------------------- */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--focus-anillo);
+  outline-offset: 2px;
+  border-radius: 2px;
+  /* Respaldo de contraste para fondos fotograficos: un anillo oscuro del color
+     de fondo que delimita el anillo naranja y lo hace visible tanto sobre la
+     superficie oscura como sobre el Hero/backdrop (FR-010, SC-006). */
+  box-shadow: 0 0 0 2px var(--color-fondo);
+}
+
+/* ---------------------------------------------------------------------------
+   Compensacion de scroll para destinos ancla (FR-004, FR-021) — de la hoja anterior, §9
+   ---------------------------------------------------------------------------
+   La carga directa de una URL con ancla (ej. mundos.html#gargantua) debe dejar
+   la seccion destino reconocible y usable por debajo del header (caso limite).
+   El header es UNA fila de altura fija en todo viewport (~4.25rem: boton de
+   44px + 0.75rem de padding arriba y abajo). Un unico valor cubre todos los
+   casos con respiro; se elige en el lado seguro (sobre-cubrir deja la seccion
+   visible).
+   --------------------------------------------------------------------------- */
+section[id] {
+  scroll-margin-top: 5.5rem;  /* header de ~4.25rem + respiro, igual en todo viewport */
+}

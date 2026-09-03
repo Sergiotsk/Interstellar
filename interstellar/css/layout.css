@@ -1,150 +1,25 @@
 /* =============================================================================
-   css/global.css — Layout compartido y Hero de inicio (feature 001)
+   css/layout.css — Layout del sitio y componentes compartidos (feature 006)
    -----------------------------------------------------------------------------
-   Hoja de estilo global del sitio. Toda la paleta y todo valor reutilizable
-   vive como custom property en `:root` (constitucion, seccion CSS). Ningun
-   color, fuente ni valor reutilizable queda hardcodeado suelto fuera de `:root`
-   (la unica excepcion: constantes de layout como `margin: 0`, que no son
-   valores de paleta).
+   Cuarta y ultima hoja global: se carga despues de reset.css, variables.css y
+   base.css. Si una pagina pesada lo justifica (minijuegos), suma un 5º <link>
+   propio DESPUES de esta (contrato hojas-css.md C5).
 
-   Nombres de tokens CONTRATADOS en specs/001-shared-layout-hero/contracts/
-   design-tokens.md — no cambiar nombres.
+   Migracion TEXTUAL de la hoja unica anterior — §3 (parte layout), §4, §4b, §5,
+   §7, §8, §10, §11, §12, §13 y §14 — sin cambios de valor (contrato C4). El
+   bloque de movimiento reducido puntual que vivia en §4b se ELIMINO: queda
+   cubierto por el bloque global de css/reset.css (FR-016 / FR-017).
 
-   La tipografia se sirve LOCAL (self-hosted) desde `assets/fonts/` via
-   @font-face aca abajo (seccion 0) — antes venia de Google Fonts con <link>,
-   se saco para eliminar el request bloqueante y la dependencia de terceros
-   (PageSpeed, 2026-09-01). Familias aprobadas (decision T002):
-     - Orbitron  -> titulo del Hero / display  (--font-hero-titulo)
-     - Exo 2     -> sitio, navegacion y texto  (--font-sitio / --font-nav / --font-texto)
-   Ambas son variable fonts (subset latin), SIL OFL 1.1. Cada stack incluye
-   fallback legible si la fuente no carga (caso limite).
-
-   Esta hoja se extiende en tareas posteriores (foco, submenus responsive,
-   Hero, scroll-margin de anclas): aca SOLO base + tokens.
+   Los numeros de seccion se conservan tal cual estaban en la hoja anterior
+   para facilitar la trazabilidad con las features 001-005.
    ========================================================================== */
-
-/* ---------------------------------------------------------------------------
-   0. Fuentes locales (self-hosted, assets/fonts/)
-   ---------------------------------------------------------------------------
-   Variable fonts, subset latin (cubre español: acentos, ñ, «», — ). Un solo
-   woff2 por familia cubre todo el eje de peso. `font-display: swap` -> el texto
-   se ve al toque con el fallback y cambia a la fuente al cargar.
-   --------------------------------------------------------------------------- */
-@font-face {
-  font-family: 'Exo 2';
-  font-style: normal;
-  font-weight: 100 900;
-  font-display: swap;
-  src: url('../assets/fonts/exo2-latin-var.woff2') format('woff2');
-}
-
-@font-face {
-  font-family: 'Orbitron';
-  font-style: normal;
-  font-weight: 400 900;
-  font-display: swap;
-  src: url('../assets/fonts/orbitron-latin-var.woff2') format('woff2');
-}
-
-/* ---------------------------------------------------------------------------
-   1. Tokens de diseno (:root)
-   --------------------------------------------------------------------------- */
-:root {
-
-  /* --- Paleta: espacio (negros y azules profundos) --- */
-  --color-fondo: #0a0e1a;                /* fondo base del sitio (azul noche profundo) */
-  --color-superficie: rgba(20, 28, 49, 0.88); /* superficies: header, nav, footer, tarjetas;
-                                                   con transparencia para superponerse a backdrops */
-
-  /* --- Paleta: Tierra (ocres y dorados terrosos) --- */
-  --color-tierra-ocre: #a8793f;          /* acento de la Tierra: ocre terroso */
-  --color-tierra-oro: #d4a94e;           /* acento de la Tierra: dorado */
-
-  /* --- Paleta: acento unico saturado --- */
-  --color-gargantua: #e8803b;            /* naranja de Gargantua — UNICO color saturado del sitio (FR-017) */
-
-  /* --- Paleta: texto (blanco roto / crema; NUNCA blanco puro) --- */
-  --color-texto: #efe7d6;                /* texto principal: crema */
-  --color-texto-atenuado: #a8a294;       /* textos secundarios (subtitulos, meta): crema atenuado */
-
-  /* --- Paleta: metal del robot CASE (unico acento FRIO del sitio; solo el
-     boton de navegacion en reposo). Gunmetal claro -> se lee como los slabs de
-     CASE y resalta sobre el fondo. Al hover/abrir cambia a --color-gargantua. --- */
-  --color-case: #9aa6b6;
-
-  /* --- Tipografia (self-hosted via @font-face seccion 0 + fallbacks legibles) --- */
-  --font-sitio: 'Exo 2', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-hero-titulo: 'Orbitron', 'Exo 2', system-ui, sans-serif;
-  --font-nav: 'Exo 2', 'Segoe UI', system-ui, sans-serif;
-  --font-texto: 'Exo 2', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-
-  /* --- Foco: anillo visible para el 100 % de controles y enlaces (FR-010) --- */
-  /* Usa el naranja de Gargantua: es el unico acento saturado del sitio (FR-017) */
-  --focus-anillo: var(--color-gargantua);
-
-  /* --- Oscurecimiento de backdrops fotograficos (FR-019) --- */
-  /* Uso: `filter: var(--backdrop-oscurecer);` sobre el fondo fotografico */
-  --backdrop-oscurecer: brightness(0.4);
-}
-
-/* ---------------------------------------------------------------------------
-   2. Reset base
-   --------------------------------------------------------------------------- */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-html {
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
-}
-
-body {
-  margin: 0;
-  min-height: 100vh;
-}
-
-body, button, input, select, textarea {
-  font-family: var(--font-sitio);
-  color: var(--color-texto);
-}
-
-h1, h2, h3, h4, h5, h6 {
-  margin-top: 0;
-  font-family: var(--font-hero-titulo);
-  font-weight: 700;
-  line-height: 1.2;
-  color: var(--color-texto);
-}
-
-p {
-  line-height: 1.6;
-}
-
-ul, ol {
-  margin-top: 0;
-}
-
-a {
-  color: var(--color-texto);
-  text-decoration: underline;
-  text-underline-offset: 0.2em;
-}
-
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
 
 /* ---------------------------------------------------------------------------
    3. Layout base del sitio
    ---------------------------------------------------------------------------
    Cuerpo apilado vertical: header superpuesto/arriba, main en el medio
    (contenido propio de cada pagina, nunca reemplazado) y footer anclado al
-   final. El header del Hero se superpone en tareas posteriores.
+   final. El header del Hero se superpone en §7.
    --------------------------------------------------------------------------- */
 body {
   display: flex;
@@ -157,12 +32,6 @@ body {
 main {
   flex: 1 0 auto;
   width: 100%;
-}
-
-/* Texto del cuerpo con su token (FR-018): los parrafos de lectura usan
-   --font-texto aunque el <body> base siga en --font-sitio. */
-p {
-  font-family: var(--font-texto);
 }
 
 /* ---------------------------------------------------------------------------
@@ -335,6 +204,11 @@ header nav ul ul a {
    reglas base `header nav > ul`, `header nav li` y `header nav > ul > li > a`.
    Foco visible via la regla global de `:focus-visible` (SC-005). Sin overflow
    horizontal a 320px: el panel usa `width: min(22rem, calc(100vw - 1.5rem))`.
+
+   El movimiento reducido lo cubre el bloque global de css/reset.css (FR-016/
+   FR-017): con la preferencia de reducir movimiento activa, la corrida y el
+   rodar de CASE quedan instantaneos (el icono se planta en su pose final) y
+   las transiciones de las barras y del ▼ se anulan.
    --------------------------------------------------------------------------- */
 
 .nav-toggle {
@@ -422,24 +296,6 @@ header nav ul ul a {
 .nav-toggle[aria-expanded='true'] .case-icon span:nth-child(3) { --abre:  20deg; --junta:  3deg; --cruz: -28deg; --dx1: -1px; --dx:  -4px; animation-delay: -0.04s; }
 .nav-toggle[aria-expanded='true'] .case-icon span:nth-child(4) { --abre:  50deg; --junta:  8deg; --cruz:  60deg; --dx1: -4px; --dx: -12px; animation-delay:  0s; }
 
-/* Respeta la preferencia de menos movimiento: las barras y el ▼ cambian de
-   estado sin transicion. */
-@media (prefers-reduced-motion: reduce) {
-  .case-icon span,
-  header nav button {
-    transition: none;
-  }
-  /* Sin la corrida ni el rodar de CASE: el estado abierto se seña solo con el
-     tinte naranja (4 barras verticales, quietas). */
-  .nav-toggle[aria-expanded='true'] .case-icon,
-  .nav-toggle[aria-expanded='true'] .case-icon span {
-    animation: none;
-  }
-  /* El <video> de fondo del Hero lo pausa js/layout.js con esta misma media
-     query; queda visible el poster (hero-gargantua.jpg). */
-}
-
-
 /* ---------------------------------------------------------------------------
    5. Footer (estructura que produce js/layout.js)
    ---------------------------------------------------------------------------
@@ -479,28 +335,7 @@ footer ul {
 }
 
 /* ---------------------------------------------------------------------------
-   6. Foco visible base (FR-010, SC-005, SC-007)
-   ---------------------------------------------------------------------------
-   Anillo de foco visible en el 100 % de los controles/enlaces. Se usa
-   `:focus-visible` para no mostrar el anillo en clics de raton/desktop.
-   --------------------------------------------------------------------------- */
-a:focus-visible,
-button:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible,
-summary:focus-visible {
-  outline: 2px solid var(--focus-anillo);
-  outline-offset: 2px;
-  border-radius: 2px;
-  /* Respaldo de contraste para fondos fotograficos: un anillo oscuro del color
-     de fondo que delimita el anillo naranja y lo hace visible tanto sobre la
-     superficie oscura como sobre el Hero/backdrop (FR-010, SC-006). */
-  box-shadow: 0 0 0 2px var(--color-fondo);
-}
-
-/* ---------------------------------------------------------------------------
-   7. Hero de inicio (T014/T015 — FR-014..FR-016, FR-019, FR-022, SC-003, SC-006)
+   7. Hero de inicio (FR-014..FR-016, FR-019, FR-022, SC-003, SC-006)
    ---------------------------------------------------------------------------
    Seccion de presentacion de la home (`body.home`), UNICO lugar donde el
    header se superpone sobre el contenido. En el resto de las paginas el header
@@ -619,31 +454,12 @@ body.home > header {
 }
 
 /* ---------------------------------------------------------------------------
-   9. Compensacion de scroll para destinos ancla (T023 — FR-004, FR-021)
-   ---------------------------------------------------------------------------
-   La carga directa de una URL con ancla (ej. mundos.html#gargantua) debe dejar
-   la seccion destino reconocible y usable por debajo del header (caso limite).
-   El header esta superpuesto (absolute) solo en la home (body.home), que no
-   tiene secciones con ancla; en las paginas de eje queda en flujo normal. Desde
-   la feature del boton CASE el header es UNA fila de altura fija en todo
-   viewport (~4.25rem: boton de 44px + 0.75rem de padding arriba y abajo), sin
-   barra de nav que envuelva filas. Un unico valor cubre todos los casos con
-   respiro; se elige en el lado seguro (sobre-cubrir deja la seccion visible).
-   --------------------------------------------------------------------------- */
-section[id] {
-  scroll-margin-top: 5.5rem;  /* header de ~4.25rem + respiro, igual en todo viewport */
-}
-
-/* ---------------------------------------------------------------------------
    10. Paginas internas: presentacion coherente de los placeholders
-       (T024/T025 — FR-017..FR-019, HU4-E1, SC-006/SC-007)
+       (FR-017..FR-019, HU4-E1, SC-006/SC-007)
    ---------------------------------------------------------------------------
    Los placeholders y la home leen con la misma base visual: misma paleta desde
    tokens (FR-017), mismas jerarquias tipograficas Orbitron/Exo 2 (FR-018) y
    oscurecimiento de fondos fotograficos con --backdrop-oscurecer (FR-019).
-   No se agrega ningun token nuevo: solo se consumen los del contrato
-   (contracts/design-tokens.md). El unico color saturado que aparece es el
-   naranja de Gargantua (--focus-anillo), FR-017.
    --------------------------------------------------------------------------- */
 body:not(.home) main > section:first-child {
   /* Bloque de presentacion de cada pagina: mismo ritmo visual que el .intro
@@ -705,8 +521,7 @@ section[id] p {
    La Ciencia y El Viaje despues). Cada `section[id]` de contenido puede sumar
    la clase `.eje-con-backdrop` para llevar una imagen de fondo propia,
    oscurecida con `--backdrop-oscurecer` (FR-005), con respaldo de paleta si la
-   imagen no carga (caso limite). Sin custom properties nuevas: solo se
-   consumen las del contrato de la feature 001.
+   imagen no carga (caso limite).
 
    Contrato: specs/002-mundos-content/contracts/mundos-page.md
    --------------------------------------------------------------------------- */
@@ -770,7 +585,6 @@ section[id] p {
    como hijo directo y un <div class="ficha-personaje"> que agrupa el retrato
    (<figure class="ficha-retrato">) y el texto de la ficha. NO usa el patron
    backdrop de la feature 002: el retrato es informativo, sin oscurecimiento.
-   Sin custom properties nuevas.
 
    Contrato: specs/003-personajes-content/contracts/personajes-page.md
    --------------------------------------------------------------------------- */
@@ -872,9 +686,7 @@ section[id] p {
    de concepto lleva la clase `.concepto`; el `section[id]` base solo estiliza
    `h2` y `p`, asi que aca se cubren `h3`, `ul`, `li` y `figure`. La etiqueta de
    rigor (`.rigor`) es un `<span>` inline con el nivel escrito: la distincion
-   entre niveles la da el TEXTO, no el color (FR-016). Sin custom properties
-   nuevas; el unico acento saturado admitido es --color-gargantua, reservado a
-   `.rigor-licencia`.
+   entre niveles la da el TEXTO, no el color (FR-016).
 
    Contrato: specs/004-ciencia-content/contracts/ciencia-page.md
    --------------------------------------------------------------------------- */

@@ -1,25 +1,29 @@
 <!--
 SYNC IMPACT REPORT
-Version change: 1.0.0 -> 1.1.0
-Rationale: Enmienda a la seccion "Restricciones Tecnicas y Convenciones". Se reemplaza el
-hosting: Vercel -> GitHub Pages, con deploy via GitHub Actions en cada push a `main`. El
-sitio pasa a servirse bajo el subpath `/Interstellar/`, por lo que se eleva a regla dura
-la exigencia de rutas internas relativas. Ningun principio (I-VI) cambia; por eso el bump
-es MINOR y no MAJOR.
+Version change: 1.1.0 -> 1.2.0
+Rationale: Enmienda a la seccion "Restricciones Tecnicas y Convenciones". Se reemplaza la
+convencion de CSS: de un unico `css/global.css` a una arquitectura de CUATRO hojas globales
+de responsabilidad unica (`reset.css` -> `variables.css` -> `base.css` -> `layout.css`),
+cargadas como `<link>` independientes en ese orden, sin `@import`. Habilita a la feature
+006-reset-css. Ningun principio (I-VI) cambia; se amplia materialmente una guia -> bump MINOR.
 
 Cambios de esta version:
-  - "Restricciones Tecnicas y Convenciones" -> bloque **Hosting** reescrito (GitHub Pages).
-  - Se agrega referencia a .github/workflows/deploy-pages.yml y al archivo .nojekyll.
+  - "Restricciones Tecnicas y Convenciones" -> bloque **CSS** reescrito (1 hoja -> 4 hojas
+    globales en orden fijo, sin @import; CSS por pagina pesada se suma despues).
+  - "Flujo de Trabajo y Puertas de Calidad" -> Criterios de aceptacion: se agrega el item
+    "las hojas de estilo cargan en el orden definido".
 
 Historial:
   - 1.0.0 (2026-08-27): Primera ratificacion. Principios I-VI y las tres secciones
     definidas a partir de proyecto-interstellar-base.md.
+  - 1.1.0 (2026-08-29): Hosting Vercel -> GitHub Pages (Actions), subpath /Interstellar/,
+    rutas internas relativas como regla dura.
 
 Follow-up / consistencia (fuera del alcance de este comando):
-  - specs/001-shared-layout-hero/quickstart.md y research.md -> mencionan "Vercel" como
-    ejemplo de hosting. Feature 001 ya cerrada; se corrige el texto por prolijidad.
-  - .specify/templates/plan-template.md -> el "Constitution Check" no referencia hosting;
-    no requiere cambios.
+  - specs/001-005 -> quickstart.md / plan.md mencionan `css/global.css`. Features cerradas;
+    se corrige el texto por prolijidad cuando se toque cada archivo.
+  - La feature 006-reset-css materializa esta arquitectura (disuelve `global.css` en las
+    cuatro hojas y actualiza los `<link>` de las 9 paginas).
 
 TODOs deferidos: ninguno.
 -->
@@ -140,10 +144,24 @@ ante un evaluador que sepa del tema.
 (`gargantua.html`, `campo-estrellas.js`, `hero-viaje.css`). Descriptivos por
 responsabilidad, nunca genericos (`quiz.js`, no `script2.js`).
 
-**CSS**: un `css/global.css` de base (variables, reset, header/nav/footer, utilidades) +
-un CSS especifico por pagina pesada cuando haga falta (`css/viaje.css`,
-`css/minijuegos.css`). Toda la paleta y todo valor reutilizable van como **variables CSS**
-en `:root`; nada hardcodeado suelto. Layout con Grid/Flexbox; responsive con media queries.
+**CSS**: **cuatro hojas globales de responsabilidad unica**, cargadas como `<link
+rel="stylesheet">` independientes en el `<head>` de cada pagina, SIEMPRE en este orden y
+sin `@import`:
+
+1. `css/reset.css` — reset y normalizacion entre navegadores. Selectores `:where()` para
+   mantener especificidad 0, de modo que cualquier hoja posterior lo sobreescriba sin
+   `!important`. Unica excepcion: el bloque `@media (prefers-reduced-motion: reduce)`, que
+   PUEDE exceder especificidad y usar `!important`. NO impone decisiones de diseno.
+2. `css/variables.css` — todos los tokens en `:root` (paleta, tipografia, foco, etc.).
+   Toda la paleta y todo valor reutilizable van aca; nada hardcodeado suelto.
+3. `css/base.css` — estilos base de elementos (tipografia de lectura, enlaces, listas) y el
+   espaciado vertical del contenido.
+4. `css/layout.css` — layout del sitio y componentes compartidos (header/nav/drawer, Hero,
+   footer, foco, secciones de eje, galeria, fichas).
+
+Cuando una pagina pesada lo justifique, se suma un CSS propio (`css/viaje.css`,
+`css/minijuegos.css`) cargado **despues** de las cuatro. Layout con Grid/Flexbox; responsive
+con media queries.
 
 **JavaScript**: **ES Modules** (`<script type="module">`, `import`/`export`), un modulo por
 responsabilidad, cargado solo en la pagina que lo usa. Sin variables globales. El header
@@ -206,6 +224,8 @@ volumen de contenido. El umbral se define en esa spec, no se improvisa.
   semantico).
 - **No hay errores en la consola** del navegador.
 - **Links y assets cargan** correctamente (rutas relativas bien resueltas).
+- Las **hojas de estilo cargan en el orden definido** (§ CSS): `reset -> variables -> base
+  -> layout`, y el CSS propio de la pagina despues.
 - Respeta la **paleta y la tipografia** definidas (via variables CSS).
 - Los textos de ciencia estan **verificados contra fuente** y **etiquetados** (Principio VI).
 - Para modulos de logica JS involucrados: sus **tests estan en verde** (Principio V).
@@ -237,4 +257,4 @@ en las specs colgadas si corresponde.
 criterios de aceptacion y los principios antes de considerarse cerrada. El agente reporta
 desvios de forma explicita en vez de resolverlos por su cuenta.
 
-**Version**: 1.1.0 | **Ratified**: 2026-08-27 | **Last Amended**: 2026-08-29
+**Version**: 1.2.0 | **Ratified**: 2026-08-27 | **Last Amended**: 2026-09-02
