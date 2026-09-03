@@ -315,6 +315,27 @@ function initHeroVideo() {
   }
 }
 
+// Indicador de seccion actual (FR: descubribilidad de la nav). Marca con
+// `aria-current="page"` el enlace de NIVEL SUPERIOR cuyo destino es la pagina en
+// curso; el CSS lo resalta (LED fijo + acento) tanto en la barra de escritorio
+// como en el drawer. Solo enlaces directos del <ul> raiz: los destinos anidados
+// apuntan a `pagina.html#ancla` y no deben marcarse como "pagina actual".
+function markCurrentPage(nav) {
+  if (!nav || typeof nav.querySelectorAll !== 'function') {
+    return;
+  }
+  let archivo = (window.location.pathname.split('/').pop() || '').toLowerCase();
+  if (archivo === '') {
+    archivo = 'index.html'; // la raiz del sitio sirve index.html
+  }
+  nav.querySelectorAll(':scope > ul > li > a').forEach((enlace) => {
+    const destino = (enlace.getAttribute('href') || '').split('#')[0].toLowerCase();
+    if (destino === archivo) {
+      enlace.setAttribute('aria-current', 'page');
+    }
+  });
+}
+
 export function init(navConfig = NavConfig) {
   if (typeof document === 'undefined' || !document.body) {
     return;
@@ -331,6 +352,7 @@ export function init(navConfig = NavConfig) {
   const header = document.body.querySelector('header');
   const nav = header && header.querySelector('nav');
   const estado = createSubmenuState();
+  markCurrentPage(nav);
   wireDisclosure(nav, estado);
   wireDrawer(header, nav, estado);
   initHeroVideo();

@@ -226,6 +226,19 @@ header nav > ul > li > a:focus-visible::before {
   box-shadow: 0 0 8px 2px color-mix(in srgb, var(--instrumento-teal) 78%, transparent);
 }
 
+/* Seccion actual (aria-current="page", puesto por layout.js): el enlace de la
+   pagina en curso queda "encendido" — texto pleno + LED fijo al maximo. Vale
+   para el drawer y para la barra de escritorio. */
+header nav > ul > li > a[aria-current='page'] {
+  color: color-mix(in srgb, var(--instrumento-teal) 88%, #fff);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--instrumento-teal) 55%, transparent);
+}
+
+header nav > ul > li > a[aria-current='page']::before {
+  opacity: 1;
+  box-shadow: 0 0 9px 2px color-mix(in srgb, var(--instrumento-teal) 85%, transparent);
+}
+
 /* Control de disclosure del submenu (boton independiente del enlace). Tiene un
    aspecto interactivo sutil (borde, esquinas, transicion) para que se perciba
    como un control que responde al hover/touch, no como texto estatico (BUGFIX
@@ -393,6 +406,120 @@ header nav ul ul a {
 .nav-toggle[aria-expanded='true'] .case-icon span:nth-child(2) { --abre: -18deg; --junta: -3deg; --cruz:  22deg; --dx1:  1px; --dx:   4px; animation-delay: -0.08s; }
 .nav-toggle[aria-expanded='true'] .case-icon span:nth-child(3) { --abre:  20deg; --junta:  3deg; --cruz: -28deg; --dx1: -1px; --dx:  -4px; animation-delay: -0.04s; }
 .nav-toggle[aria-expanded='true'] .case-icon span:nth-child(4) { --abre:  50deg; --junta:  8deg; --cruz:  60deg; --dx1: -4px; --dx: -12px; animation-delay:  0s; }
+
+/* ---------------------------------------------------------------------------
+   4c. Barra de navegacion en escritorio (>= 60rem)
+   ---------------------------------------------------------------------------
+   A partir de 60rem la navegacion "se completa": el <nav> deja de ser drawer y
+   se muestra como una FILA de botones-panel dentro de la banda de instrumentos.
+   El boton CASE y el rotulo `NAV · RANGER` se ocultan (la barra ya es el panel).
+   Los 4 ejes abren su submenu como DROPDOWN flotante: el colapso funcional sigue
+   siendo el atributo `hidden` (layout.js) — hover-open para puntero fino y el
+   boton ▼ para clic/teclado (wireDisclosure); aca solo se POSICIONA el submenu
+   abierto bajo su eje. La estructura del DOM no cambia (misma que produce
+   buildHeader); todo es CSS + el JS que ya existe.
+   --------------------------------------------------------------------------- */
+@media (min-width: 60rem) {
+  /* La banda deja de empujar el boton a la derecha: la fila se centra. */
+  header {
+    justify-content: center;
+  }
+
+  .nav-toggle {
+    display: none;                      /* en escritorio no hay hamburguesa */
+  }
+
+  header::after {
+    display: none;                      /* el rotulo cede su lugar a la fila */
+  }
+
+  /* El <nav> vuelve al flujo: sin panel, sin clip-path, sin caja flotante. */
+  header nav {
+    position: static;
+    display: block;
+    width: auto;
+    max-height: none;
+    overflow: visible;
+    padding: 0;
+    background: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    clip-path: none;
+  }
+
+  header nav > ul {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.1rem 0.15rem;
+  }
+
+  header nav > ul > li {
+    min-height: auto;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+  }
+
+  /* Boton-panel: cada eje como una tecla retroiluminada de la consola. */
+  header nav > ul > li > a {
+    flex: 0 0 auto;
+    min-height: auto;
+    padding: 0.4rem 0.7rem;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+  }
+
+  header nav > ul > li > a::before {
+    width: 6px;
+    height: 6px;
+    margin-right: 0.45rem;
+  }
+
+  header nav > ul > li > a:hover,
+  header nav > ul > li > a:focus-visible,
+  header nav > ul > li > a[aria-current='page'] {
+    border-color: color-mix(in srgb, var(--instrumento-teal) 45%, transparent);
+    background: color-mix(in srgb, var(--instrumento-teal) 8%, transparent);
+  }
+
+  /* El ▼ deja de ser un target tactil de 44px: caret chico pegado al enlace. */
+  header nav button {
+    min-width: auto;
+    min-height: auto;
+    padding: 0.15rem 0.1rem 0.15rem 0;
+    border: 0;
+    background: none;
+    font-size: 0.7rem;
+  }
+
+  /* Submenu = dropdown flotante bajo el eje. `li` ya es position:relative. El
+     atributo `hidden` (layout.js) sigue colapsandolo; esto aplica al abierto. */
+  header nav ul ul {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 30;
+    flex: none;
+    min-width: 13rem;
+    margin-top: 0.4rem;
+    padding: 0.45rem 0.7rem 0.55rem;
+    background: linear-gradient(180deg, var(--cockpit-metal-alto), var(--cockpit-metal));
+    border: 1px solid var(--cockpit-bezel);
+    border-radius: 2px;
+    box-shadow:
+      inset 0 1px 0 var(--cockpit-bezel-brillo),
+      0 0.8rem 1.6rem color-mix(in srgb, #000 62%, transparent);
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+  }
+
+  header nav ul ul a {
+    font-size: 0.78rem;
+    padding: 0.28rem 0;
+  }
+}
 
 /* ---------------------------------------------------------------------------
    5. Footer (estructura que produce js/layout.js)
