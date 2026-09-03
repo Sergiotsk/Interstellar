@@ -6,10 +6,10 @@
 import { NavConfig } from './nav-data.js';
 import { createSubmenuState } from './submenu-state.js';
 
-const CREDITS = 'Interstellar — sitio académico de fan, sin fines de lucro.';
 const REPO_URL = 'https://github.com/Sergiotsk/Interstellar.git';
-// La atribución por asset ya NO vive en el pie: se movió a creditos.html
-// (módulo js/creditos.js). El pie solo enlaza esa página + el repo.
+// El pie es una consola de TECLAS cortas: solo enlaza creditos.html y el repo.
+// El disclaimer completo ("sitio académico de fan, sin fines de lucro") vive en
+// creditos.html; la atribución por asset también (módulo js/creditos.js).
 
 function escapeHtml(value) {
   return String(value)
@@ -77,11 +77,14 @@ export function buildFooter() {
   //   - `.tele-accion`: tecla-BOTÓN — un <a> ocupa toda la caja y es el destino.
   //   - `.tele` a secas (CREW): DISPLAY del panel — mismo aspecto de tecla pero
   //     sin acción (no es un enlace; no lleva cursor de puntero).
+  // Textos CORTOS: cada tecla es un botón, no una frase. El disclaimer completo
+  // ("sitio académico de fan, sin fines de lucro") vive en creditos.html; acá
+  // queda una lectura mínima que conserva la marca.
   return `<footer>
   <ul>
-    <li class="tele"><span class="tele-k" aria-hidden="true">CREW</span><span class="tele-v">${escapeHtml(CREDITS)}</span><span class="led" aria-hidden="true"></span></li>
-    <li class="tele tele-accion"><a href="creditos.html"><span class="tele-k" aria-hidden="true">REF</span><span class="tele-v">Créditos y fuentes</span><span class="led" aria-hidden="true"></span></a></li>
-    <li class="tele tele-accion"><a href="${escapeHtml(REPO_URL)}"><span class="tele-k" aria-hidden="true">REPO</span><span class="tele-v">Repositorio del proyecto</span><span class="led led-alerta" aria-hidden="true"></span></a></li>
+    <li class="tele"><span class="tele-k" aria-hidden="true">CREW</span><span class="tele-v">Interstellar · fan</span><span class="led" aria-hidden="true"></span></li>
+    <li class="tele tele-accion"><a href="creditos.html"><span class="tele-k" aria-hidden="true">REF</span><span class="tele-v">Créditos</span><span class="led" aria-hidden="true"></span></a></li>
+    <li class="tele tele-accion"><a href="${escapeHtml(REPO_URL)}"><span class="tele-k" aria-hidden="true">REPO</span><span class="tele-v">GitHub</span><span class="led led-alerta" aria-hidden="true"></span></a></li>
   </ul>
 </footer>`;
 }
