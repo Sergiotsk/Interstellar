@@ -44,9 +44,12 @@ main {
        |-- ul (solo para los 4 ejes; destinos anidados)
    --------------------------------------------------------------------------- */
 header {
-  /* SIN fondo ni borde: el header se integra con el Hero (home) y con el fondo
-     de cada pagina interna. A la vista queda solo el boton CASE; la superficie
-     la aporta el drawer al abrirse (#nav-principal). */
+  /* Banda superior de instrumentos del cockpit (constitucion v2.1.0). El fondo
+     lo pinta `header::before` (mas abajo): una banda metalica TRANSLUCIDA con
+     grilla fina, borde-bezel inferior y esquinas inferiores recortadas
+     (`clip-path`), como el marco superior de la ventana de la Ranger. Va en el
+     pseudo-elemento —y no en el propio <header>— para que el `clip-path` NO
+     recorte al drawer (`header nav`, hijo posicionado que se sale de la banda). */
   background: transparent;
   /* Fila que sostiene el boton CASE. En la home ademas se superpone al Hero
      (body.home > header, mas abajo); en el resto queda en flujo normal.
@@ -54,12 +57,69 @@ header {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding: 0.75rem 1rem;
+  padding: 0.8rem 1rem 0.95rem;
   /* Apilamiento propio del header en TODAS las paginas (BUGFIX defecto #3): el
      drawer (hijo del header) pinta por encima del contenido de pagina. El
      z-index 20 coincide con el del header superpuesto de la home. */
   position: relative;
   z-index: 20;
+}
+
+/* Banda de instrumentos: fondo del header. Translucida -> en la home se lee
+   como un HUD sobre el Hero ("la vista por la ventana"); en el resto, sobre
+   --color-fondo. El boton CASE y el drawer pintan por encima (orden de pintado:
+   ::before primero; .nav-toggle despues en el DOM; el <nav> es posicionado). */
+header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 22px, rgba(255, 255, 255, 0.025) 22px 23px),
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--cockpit-metal-alto) 94%, transparent),
+      color-mix(in srgb, var(--cockpit-metal) 88%, transparent));
+  backdrop-filter: blur(8px);
+  /* Filo inferior "encendido": bezel teñido de teal + una línea de luz teal
+     inset justo por encima del corte, para que la banda se lea como instrumento
+     y no como una sombra más. */
+  border-bottom: 1px solid color-mix(in srgb, var(--instrumento-teal) 32%, var(--cockpit-bezel));
+  box-shadow:
+    inset 0 1px 0 var(--cockpit-bezel-brillo),
+    inset 0 -2px 6px color-mix(in srgb, var(--instrumento-teal) 14%, transparent),
+    inset 0 -12px 20px rgba(0, 0, 0, 0.42);
+  /* esquinas inferiores cortadas: marco de la ventana de la cabina */
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 20px) 100%, 20px 100%, 0 calc(100% - 12px));
+}
+
+/* En la capa cockpit (header, drawer, footer) el anillo de foco toma el acento
+   de ESA capa —teal, v2.1.0— en vez del naranja de contenido. Sigue siendo un
+   anillo visible y consistente dentro de la capa (FR-010, SC-005): solo se
+   reasigna la custom property que consume la regla global de `:focus-visible`. */
+header,
+footer {
+  --focus-anillo: var(--instrumento-teal);
+}
+
+/* Rotulo de estacion (decorativo): da el "instrumento" del lado izquierdo de la
+   banda sin sumar markup ni tocar la navegacion. Se oculta si no entra. */
+header::after {
+  content: "NAV \00B7 RANGER";
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-instrumento);
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--instrumento-teal) 78%, var(--color-texto-atenuado));
+  text-shadow: 0 0 8px color-mix(in srgb, var(--instrumento-teal) 42%, transparent);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+@media (max-width: 26rem) {
+  header::after { display: none; }   /* en pantallas muy angostas no compite con el boton */
 }
 
 /* El <nav> ya NO es una barra en flujo: es el DRAWER. Cerrado por defecto en
@@ -73,11 +133,18 @@ header nav {
   width: min(22rem, calc(100vw - 1.5rem));
   max-height: calc(100dvh - 100%);
   overflow-y: auto;
-  padding: 0.5rem 0.75rem;
-  background: var(--color-superficie);
-  border: 1px solid color-mix(in srgb, var(--color-texto) 15%, transparent);
-  border-radius: 0.35rem;
-  box-shadow: 0 0.75rem 1.5rem color-mix(in srgb, var(--color-fondo) 60%, transparent);
+  padding: 0.6rem 0.8rem;
+  /* Panel de instrumentos: metal con gradiente, bezel y esquina sup-der cortada
+     (apunta al boton CASE, de donde "sale" el panel). */
+  background:
+    repeating-linear-gradient(90deg, transparent 0 22px, rgba(255, 255, 255, 0.015) 22px 23px),
+    linear-gradient(180deg, var(--cockpit-metal-alto), var(--cockpit-metal));
+  border: 1px solid var(--cockpit-bezel);
+  border-radius: 2px;
+  box-shadow:
+    inset 0 1px 0 var(--cockpit-bezel-brillo),
+    0 0.9rem 1.8rem color-mix(in srgb, #000 65%, transparent);
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
 }
 
 header nav.nav-abierto {
@@ -108,14 +175,19 @@ header nav li {
   min-height: 44px;                 /* target tactil (WCAG 2.5.8) */
 }
 
-/* Enlace del item de nivel superior */
+/* Enlace del item de nivel superior — "boton retroiluminado de panel":
+   tipografia de instrumentos en mayusculas, teal con glow sutil, LED al lado. */
 header nav a {
   display: inline-block;
   padding: 0.5rem 0;
-  font-family: var(--font-nav);
-  font-size: 1.05rem;
-  letter-spacing: 0.04em;
+  font-family: var(--font-instrumento);
+  font-size: 0.95rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   text-decoration: none;
+  color: var(--instrumento-teal);
+  text-shadow: 0 0 6px color-mix(in srgb, var(--instrumento-teal) 42%, transparent);
+  transition: color 0.15s ease, text-shadow 0.15s ease;
 }
 
 /* En el drawer, el enlace superior ocupa el ancho de su fila y tiene alto
@@ -127,8 +199,31 @@ header nav > ul > li > a {
   align-items: center;
 }
 
-header nav a:hover {
-  color: var(--color-tierra-oro);
+/* LED del item de nivel superior: encendido tenue en reposo; al hover/foco se
+   enciende del todo, como un interruptor de panel activado. */
+header nav > ul > li > a::before {
+  content: "";
+  flex: none;
+  width: 7px;
+  height: 7px;
+  margin-right: 0.6rem;
+  border-radius: 50%;
+  background: var(--instrumento-teal);
+  box-shadow: 0 0 6px 1px color-mix(in srgb, var(--instrumento-teal) 55%, transparent);
+  opacity: 0.4;
+  transition: opacity 0.15s ease, box-shadow 0.15s ease;
+}
+
+header nav a:hover,
+header nav a:focus-visible {
+  color: color-mix(in srgb, var(--instrumento-teal) 82%, #fff);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--instrumento-teal) 52%, transparent);
+}
+
+header nav > ul > li > a:hover::before,
+header nav > ul > li > a:focus-visible::before {
+  opacity: 1;
+  box-shadow: 0 0 8px 2px color-mix(in srgb, var(--instrumento-teal) 78%, transparent);
 }
 
 /* Control de disclosure del submenu (boton independiente del enlace). Tiene un
@@ -151,15 +246,15 @@ header nav button {
 }
 
 header nav button:hover {
-  color: var(--color-gargantua);
+  color: var(--instrumento-teal);
 }
 
-/* Estado abierto: el control gira (▼ -> ▲) y se tiñe con el acento, seña de
-   que el submenu esta desplegado y que volver a pulsar/salir lo cierra. */
+/* Estado abierto: el control gira (▼ -> ▲) y se tiñe con el acento de la capa
+   cockpit (teal, v2.1.0), seña de que el submenu esta desplegado. */
 header nav button[aria-expanded='true'] {
   transform: rotate(180deg);
-  color: var(--color-gargantua);
-  border-color: color-mix(in srgb, var(--color-gargantua) 45%, transparent);
+  color: var(--instrumento-teal);
+  border-color: color-mix(in srgb, var(--instrumento-teal) 45%, transparent);
 }
 
 /* Lista anidada de cada eje (submenu). El `hidden` (puesto por layout.js) es el
@@ -185,8 +280,11 @@ header nav ul ul {
 }
 
 header nav ul ul a {
-  font-size: 0.95rem;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
   padding: 0.15rem 0;
+  color: color-mix(in srgb, var(--instrumento-teal) 78%, var(--color-texto-atenuado));
+  text-shadow: none;
   white-space: normal;
   word-break: break-word;   /* etiquetas largas ("dilatacion-temporal") sin desborde a 320px */
   max-width: 100%;
@@ -225,7 +323,7 @@ header nav ul ul a {
 }
 
 .nav-toggle:hover {
-  color: var(--color-gargantua);
+  color: var(--instrumento-teal);
 }
 
 /* Icono CASE: 4 barras VERTICALES (la hamburguesa de 3 lineas horizontales
@@ -252,9 +350,9 @@ header nav ul ul a {
   transition: transform 0.2s ease, background-color 0.18s ease;
 }
 
-/* Abierto: las barras toman el unico acento saturado del sitio (FR-017). */
+/* Abierto: las barras toman el acento de la capa cockpit (teal, v2.1.0). */
 .nav-toggle[aria-expanded='true'] {
-  color: var(--color-gargantua);
+  color: var(--instrumento-teal);
 }
 
 /* CASE al abrir el menu: la marcha rodante del robot en Miller, en dos fases.
@@ -303,16 +401,57 @@ header nav ul ul a {
    enlace al repositorio (FR-012, FR-013).
    --------------------------------------------------------------------------- */
 footer {
-  background: var(--color-superficie);
-  border-top: 1px solid color-mix(in srgb, var(--color-texto) 12%, transparent);
-  padding: 1.5rem 1rem;
+  position: relative;
+  /* Consola inferior del cockpit (constitucion v2.1.0): metal con grilla fina,
+     bezel superior con reflejo y esquinas superiores cortadas (espejo del
+     header). */
+  background:
+    repeating-linear-gradient(90deg, transparent 0 22px, rgba(255, 255, 255, 0.022) 22px 23px),
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--cockpit-metal-alto) 86%, var(--cockpit-bezel)),
+      var(--cockpit-metal));
+  /* Filo superior "encendido" (mismo criterio que el header): el metal del
+     footer casi empata con --color-fondo, así que el borde teñido de teal + la
+     línea de luz teal inset lo despegan del fondo de la página. */
+  border-top: 1px solid color-mix(in srgb, var(--instrumento-teal) 30%, var(--cockpit-bezel));
+  box-shadow:
+    inset 0 2px 6px color-mix(in srgb, var(--instrumento-teal) 14%, transparent),
+    inset 0 -1px 0 var(--cockpit-bezel-brillo),
+    inset 0 12px 22px rgba(0, 0, 0, 0.36);
+  padding: 1.7rem 1rem 1.4rem;
   text-align: center;
-  font-size: 0.9rem;
+  font-family: var(--font-instrumento);
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
   color: var(--color-texto-atenuado);
+  clip-path: polygon(0 12px, 20px 0, calc(100% - 20px) 0, 100% 12px, 100% 100%, 0 100%);
 }
 
 footer p {
-  margin: 0.35rem 0;
+  margin: 0.4rem 0;
+}
+
+/* Lectura de telemetria: etiqueta tecnica (decorativa) + valor real + LED de
+   estado. `.tele` alinea los tres en una fila centrada; en angosto envuelve. */
+.tele {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.tele-k {
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--instrumento-teal) 70%, var(--color-texto-atenuado));
+}
+
+.tele-k::after {
+  content: ":";
+  margin-left: 0.1em;
+  opacity: 0.6;
 }
 
 footer a {
@@ -320,18 +459,58 @@ footer a {
   text-underline-offset: 0.2em;
 }
 
-footer a:hover {
-  color: var(--color-tierra-oro);
+footer a:hover,
+footer a:focus-visible {
+  color: var(--instrumento-teal);
 }
 
 footer ul {
-  margin: 0.5rem 0 0;
+  margin: 0.65rem 0 0;
   padding: 0;
   list-style: none;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.25rem 1rem;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* LED de estado reutilizable de la capa cockpit. Verde-teal por defecto; las
+   variantes cubren estado (ambar) y alerta (rojo, uso puntual). Decorativo:
+   siempre `aria-hidden` en el markup. */
+.led {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--instrumento-teal);
+  box-shadow: 0 0 6px 1px color-mix(in srgb, var(--instrumento-teal) 62%, transparent);
+  vertical-align: middle;
+}
+
+.led-ambar {
+  background: var(--led-ambar);
+  box-shadow: 0 0 6px 1px color-mix(in srgb, var(--led-ambar) 62%, transparent);
+}
+
+.led-alerta {
+  background: var(--led-alerta);
+  box-shadow: 0 0 6px 1px color-mix(in srgb, var(--led-alerta) 62%, transparent);
+}
+
+/* Parpadeo sutil de los LED del pie. El bloque global de reset.css ya anula
+   toda animacion con prefers-reduced-motion; este guard lo hace explicito. */
+@media (prefers-reduced-motion: no-preference) {
+  footer .tele .led {
+    animation: cockpit-led-pulso 2.6s ease-in-out infinite;
+  }
+  footer .tele .led-alerta {
+    animation-duration: 1.4s;
+  }
+}
+
+@keyframes cockpit-led-pulso {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }
 
 /* ---------------------------------------------------------------------------
@@ -373,6 +552,26 @@ body.home > header {
   z-index: 20;                          /* por encima del contenido del Hero */
 }
 
+/* Home sin scroll (decision de sec/inicio): el Hero + el footer entran juntos
+   en una sola pantalla. El <body> ya es flex-column con min-height de viewport
+   (reset.css); aca el Hero deja de forzar su propio 100svh y pasa a TOMAR el
+   alto que sobra tras el footer -> el conjunto ocupa exactamente la pantalla y
+   el footer-consola queda visible sin desplazar. Solo aplica a `body.home`; el
+   resto de las paginas conserva el Hero/among en flujo normal. */
+body.home {
+  min-height: 100svh;
+}
+
+body.home main {
+  display: flex;
+  flex-direction: column;
+}
+
+body.home .hero {
+  min-height: 0;                        /* anula el 100svh/100vh de `.hero` */
+  flex: 1 0 auto;                       /* ocupa el espacio restante del <main> */
+}
+
 /* Backdrop a pantalla completa. Es un <video> decorativo (aria-hidden). Su
    `poster` (hero-gargantua.jpg) cubre el hueco mientras carga y cuando el video
    NO se reproduce (prefers-reduced-motion -> js/layout.js lo pausa). Si la carga
@@ -388,8 +587,11 @@ body.home > header {
   filter: var(--backdrop-oscurecer);    /* oscurece sin depender de una zona clara (FR-019, SC-006) */
 }
 
-/* Titulo + tagline sobre el backdrop: posicionado (y con z-index) para pintar
-   por encima del img absoluto, con reserva vertical superior para no colisionar
+/* Bloque de contenido del Hero sobre el backdrop: titular (h1 + tagline) +
+   introduccion breve (h2 + parrafo, FR-016) integrada AQUI para que el inicio
+   entre en una sola pantalla sin scroll (decision de sec/inicio). La
+   introduccion breve (FR-016) se disolvio en el subtitulo: el Hero queda solo
+   con el titular (h1 + tagline). Reserva vertical superior para no colisionar
    con el header superpuesto. */
 .hero-contenido {
   position: relative;
@@ -412,46 +614,26 @@ body.home > header {
   text-shadow: 0 0 1.5rem var(--color-fondo);
 }
 
+/* Subtitulo del Hero: absorbio la introduccion (antes un <h2> + parrafo). Una
+   sola frase que resume el recorrido; algo mas larga que el tagline original,
+   por eso sube el max-width y el line-height. */
 .hero-tagline {
   margin: 0 auto;
-  max-width: 40rem;
+  max-width: 46rem;
   font-family: var(--font-texto);
-  font-size: clamp(1rem, 2.5vw, 1.4rem);
-  line-height: 1.6;
+  font-size: clamp(1rem, 2.5vw, 1.35rem);
+  line-height: 1.65;
   color: var(--color-texto-atenuado);
   text-shadow: 0 0 1rem var(--color-fondo);
 }
 
 /* ---------------------------------------------------------------------------
-   8. Introduccion (FR-016)
+   8. Introduccion (FR-016) — DISUELTA en el subtitulo del Hero
    ---------------------------------------------------------------------------
-   Bloque breve inmediatamente despues del Hero: explica el caracter
-   cinematografico y educativo del sitio. Fondo y texto desde tokens.
+   El bloque breve dejo de existir como <section> y como <h2>+parrafo: su
+   contenido se resumio en `.hero-tagline` (seccion 7) para que el inicio entre
+   en una sola pantalla sin scroll (decision de sec/inicio). Sin reglas aqui.
    --------------------------------------------------------------------------- */
-.intro {
-  max-width: 60rem;
-  margin: 0 auto;
-  padding: 3.5rem 1.25rem;
-  text-align: center;
-  background-color: var(--color-fondo);
-}
-
-.intro h2 {
-  margin-bottom: 1rem;
-  font-family: var(--font-hero-titulo);
-  font-size: clamp(1.5rem, 4vw, 2.25rem);
-  letter-spacing: 0.05em;
-  color: var(--color-texto);
-}
-
-.intro p {
-  max-width: 42rem;
-  margin: 0 auto;
-  font-family: var(--font-texto);
-  font-size: 1.05rem;
-  line-height: 1.7;
-  color: var(--color-texto);
-}
 
 /* ---------------------------------------------------------------------------
    10. Paginas internas: presentacion coherente de los placeholders

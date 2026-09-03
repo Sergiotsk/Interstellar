@@ -64,11 +64,17 @@ ${items}
 export function buildFooter() {
   // Pie mínimo: disclaimer + enlaces (créditos y repo). La lista de atribución
   // por asset vive en creditos.html (FR-012, FR-013; contrato assets.md).
+  //
+  // Estética "consola inferior" del cockpit (constitución v2.1.0): cada dato se
+  // presenta como una lectura de telemetría — una etiqueta técnica corta
+  // (`<span class="tele-k">`, decorativa: aria-hidden) + el valor real + un LED
+  // de estado (`<span class="led">`, decorativo). El texto y los enlaces siguen
+  // siendo el contenido accesible; las etiquetas y LEDs son sólo el marco visual.
   return `<footer>
-  <p>${escapeHtml(CREDITS)}</p>
+  <p class="tele"><span class="tele-k" aria-hidden="true">CREW</span> ${escapeHtml(CREDITS)} <span class="led" aria-hidden="true"></span></p>
   <ul>
-    <li><a href="creditos.html">Créditos y fuentes</a></li>
-    <li><a href="${escapeHtml(REPO_URL)}">Repositorio del proyecto</a></li>
+    <li class="tele"><span class="tele-k" aria-hidden="true">REF</span> <a href="creditos.html">Créditos y fuentes</a> <span class="led" aria-hidden="true"></span></li>
+    <li class="tele"><span class="tele-k" aria-hidden="true">REPO</span> <a href="${escapeHtml(REPO_URL)}">Repositorio del proyecto</a> <span class="led led-alerta" aria-hidden="true"></span></li>
   </ul>
 </footer>`;
 }

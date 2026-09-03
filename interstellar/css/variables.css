@@ -43,6 +43,18 @@
   src: url('../assets/fonts/orbitron-latin-var.woff2') format('woff2');
 }
 
+/* Share Tech Mono -> UI de instrumentos del cockpit (nav del drawer, lecturas
+   del footer). Monoespaciada, un solo peso (400). Subset latin, SIL OFL 1.1.
+   Hasta que el .woff2 este en assets/fonts/, el stack cae al monospace del
+   sistema (--font-instrumento) sin romper nada. */
+@font-face {
+  font-family: 'Share Tech Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/sharetechmono-latin.woff2') format('woff2');
+}
+
 /* ---------------------------------------------------------------------------
    1. Tokens de diseno (:root)
    --------------------------------------------------------------------------- */
@@ -74,6 +86,26 @@
   --font-hero-titulo: 'Orbitron', 'Exo 2', system-ui, sans-serif;
   --font-nav: 'Exo 2', 'Segoe UI', system-ui, sans-serif;
   --font-texto: 'Exo 2', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* --- Paleta: capa de interfaz de nave (cockpit) — constitucion v2.1.0 ---
+     2º acento saturado, ACOTADO al "chrome" del cockpit (header, footer, drawer,
+     LEDs, instrumentos). NUNCA baja al contenido narrativo: ahi sigue mandando
+     --color-gargantua como unico acento. */
+  --instrumento-teal: #4fd0e0;              /* acento de pantallas/instrumentos (brillante) */
+  --instrumento-pantalla: #0c2529;          /* fondo de "pantalla" apagada, para paneles */
+  --led-ambar: #e0a94a;                     /* LED de estado */
+  --led-alerta: #d0453a;                    /* LED de alerta (uso puntual) */
+
+  /* Metal del cockpit: mas oscuro y menos azul que --color-superficie (que se
+     reserva para tarjetas de contenido). Gradiente claro-oscuro para los bezels. */
+  --cockpit-metal: #12161a;                 /* base de la banda de instrumentos */
+  --cockpit-metal-alto: #1c2226;            /* cara superior del gradiente de panel */
+  --cockpit-bezel: #3d454c;                 /* borde metalico */
+  --cockpit-bezel-brillo: #4a5560;          /* reflejo del bezel (linea clara) */
+
+  /* Tipografia de instrumentos (self-hosted, @font-face seccion 0). Fallback al
+     monospace del sistema mientras el .woff2 no este presente. */
+  --font-instrumento: 'Share Tech Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
 
   /* --- Foco: anillo visible para el 100 % de controles y enlaces (FR-010) --- */
   /* Usa el naranja de Gargantua: es el unico acento saturado del sitio (FR-017) */
