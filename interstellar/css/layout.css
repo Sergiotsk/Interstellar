@@ -625,18 +625,20 @@ header nav ul ul a {
   }
 
   /* El ▼: indicador en la CARA de la tecla — sin caja, del color del eje.
-     `inline-flex` + centrado -> el `rotate(180deg)` del estado abierto pivota
-     limpio y el glifo no "salta" al borde. Right generoso: el ▼ queda lejos del
-     recorte de la esquina inferior-derecha de la tecla. */
+     La caja del <button> envuelve JUSTO al glifo (padding 0) y el aire lo da el
+     `margin` (fuera del box que rota). Así el `rotate(180deg)` del estado
+     abierto es un giro sobre el propio eje: el ▼ no se desplaza de lugar. */
   header nav > ul > li > button {
     position: relative;
     z-index: 1;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    align-self: center;               /* caja del alto del glifo, no estirada por el <li> */
     min-width: auto;
     min-height: auto;
-    padding: 0.5rem 0.8rem 0.5rem 0;
+    padding: 0;
+    margin: 0 0.75rem 0 0.15rem;      /* izq: aire al texto · der: aire al borde de la tecla */
     border: 0;
     background: none;
     clip-path: none;
