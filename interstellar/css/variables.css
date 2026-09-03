@@ -107,6 +107,11 @@
      monospace del sistema mientras el .woff2 no este presente. */
   --font-instrumento: 'Share Tech Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
 
+  /* Recorte diagonal de las "teclas" del cockpit (botones de nav, control ▼):
+     esquina superior-izquierda + inferior-derecha cortadas a 7px. Misma familia
+     angular que las bandas y los paneles del header/footer. */
+  --recorte-tecla: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
+
   /* --- Foco: anillo visible para el 100 % de controles y enlaces (FR-010) --- */
   /* Usa el naranja de Gargantua: es el unico acento saturado del sitio (FR-017) */
   --focus-anillo: var(--color-gargantua);
