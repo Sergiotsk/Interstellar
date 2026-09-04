@@ -1379,3 +1379,198 @@ section[id] p {
   line-height: 1.5;
   color: var(--color-texto-atenuado);
 }
+
+/* ---------------------------------------------------------------------------
+   15. Mundos — hub de tarjetas + paginas de detalle (sec/mundos)
+   ---------------------------------------------------------------------------
+   mundos.html paso a ser un HUB: la intro + `.mundos-grid` con 5 tarjetas que
+   enlazan a `mundos-<slug>.html`. Cada pagina de detalle (`body.mundo-detalle`)
+   reusa `.eje-con-backdrop` para el hero y `section[id]` para los bloques de
+   texto; aca se cubren el hero, la lista de rasgos, el enlace a La Ciencia y la
+   paginacion entre mundos. Capa de CONTENIDO: paleta crema + acento gargantua,
+   nada de teal (ese es el "chrome" del cockpit).
+   --------------------------------------------------------------------------- */
+.mundos-grid {
+  max-width: 60rem;
+  margin: 2.25rem auto 3rem;
+  padding: 0 1.25rem;
+  list-style: none;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+}
+
+.mundos-grid > li {
+  min-width: 0;
+}
+
+.mundo-tarjeta {
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  height: 100%;
+  background: var(--color-superficie);
+  border: 1px solid color-mix(in srgb, var(--color-texto) 12%, transparent);
+  border-radius: 2px;
+  overflow: hidden;
+  text-decoration: none;
+  transition: border-color 0.15s ease;
+}
+
+.mundo-tarjeta:hover,
+.mundo-tarjeta:focus-visible {
+  border-color: var(--color-gargantua);
+}
+
+.mundo-tarjeta img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  filter: var(--backdrop-oscurecer);
+}
+
+.mundo-tarjeta-nombre {
+  padding: 0.8rem 0.9rem 0.2rem;
+  font-family: var(--font-hero-titulo);
+  font-size: 1.1rem;
+  letter-spacing: 0.03em;
+  color: var(--color-texto);
+}
+
+.mundo-tarjeta-teaser {
+  padding: 0 0.9rem 0.95rem;
+  font-family: var(--font-texto);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--color-texto-atenuado);
+}
+
+/* --- Pagina de detalle --- */
+.mundo-volver {
+  max-width: 60rem;
+  margin: 1.5rem auto 0;
+  padding: 0 1.25rem;
+}
+
+.mundo-volver a {
+  font-family: var(--font-nav);
+  font-size: 0.95rem;
+  text-decoration: none;
+  color: var(--color-texto-atenuado);
+}
+
+.mundo-volver a:hover,
+.mundo-volver a:focus-visible {
+  color: var(--color-texto);
+}
+
+/* Hero del mundo: `.eje-con-backdrop` + `.mundo-hero`. Sin el border-top de
+   `section[id]`; el contenido se ancla abajo sobre el backdrop oscurecido. */
+.mundo-hero.eje-con-backdrop {
+  border-top: 0;
+  min-height: 42vh;
+  display: flex;
+  align-items: flex-end;
+  padding-block: 3rem 2.5rem;
+}
+
+.mundo-hero .eje-contenido {
+  padding: 0;
+}
+
+.mundo-hero h1 {
+  margin-bottom: 0.6rem;
+  font-family: var(--font-hero-titulo);
+  font-size: clamp(1.9rem, 5vw, 3.25rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-texto);
+  text-shadow: 0 0 1rem var(--color-fondo);
+}
+
+.mundo-lead {
+  max-width: 42rem;
+  font-family: var(--font-texto);
+  font-size: clamp(1rem, 2.2vw, 1.2rem);
+  line-height: 1.6;
+  color: var(--color-texto);
+  text-shadow: 0 0 0.75rem var(--color-fondo);
+}
+
+/* Lista de "rasgos distintivos": el reset dejo los <ul> sin viñeta; aca se
+   repone el disco para este bloque de contenido. */
+.mundo-detalle #rasgos ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+
+.mundo-detalle #rasgos li {
+  margin: 0.35rem 0;
+  font-family: var(--font-texto);
+  line-height: 1.6;
+  color: var(--color-texto-atenuado);
+}
+
+.mundo-ciencia-enlace {
+  margin-top: 1rem;
+}
+
+.mundo-ciencia-enlace a {
+  font-family: var(--font-nav);
+  font-size: 0.98rem;
+  color: var(--color-tierra-oro);
+  text-decoration: none;
+}
+
+.mundo-ciencia-enlace a:hover,
+.mundo-ciencia-enlace a:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+/* Paginacion anterior / siguiente entre mundos. El <span> vacio del lado sin
+   destino actua de separador para `space-between`. */
+.mundo-paginacion {
+  max-width: 60rem;
+  margin: 2.5rem auto 3.5rem;
+  padding: 1.5rem 1.25rem 0;
+  border-top: 1px solid color-mix(in srgb, var(--color-texto) 12%, transparent);
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.mundo-paginacion a {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  max-width: 47%;
+  text-decoration: none;
+  color: var(--color-texto-atenuado);
+}
+
+.mundo-paginacion a:hover,
+.mundo-paginacion a:focus-visible {
+  color: var(--color-texto);
+}
+
+.mundo-siguiente {
+  margin-left: auto;
+  text-align: right;
+}
+
+.mundo-paginacion-rol {
+  font-family: var(--font-nav);
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.mundo-paginacion-nombre {
+  font-family: var(--font-hero-titulo);
+  font-size: 1.05rem;
+  color: inherit;
+}

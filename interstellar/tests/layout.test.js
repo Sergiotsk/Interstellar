@@ -75,12 +75,14 @@ describe('js/layout.js — contrato layout-injection.md', () => {
     );
   });
 
-  test('21 destinos anidados con href <pagina>.html#<ancla> (FR-005..FR-008)', () => {
+  test('21 destinos anidados con href relativo a pagina (FR-005..FR-008)', () => {
     const items = NavConfig.items.filter((item) => item.hasChildren);
     const children = items.flatMap((item) => item.children);
     assert.equal(children.length, 21);
     for (const child of children) {
-      assert.match(child.href, /^[a-z-]+\.html#[a-z-]+$/);
+      // Los ejes con pagina propia por destino (Mundos -> mundos-<slug>.html)
+      // no llevan ancla; el resto sigue apuntando a <pagina>.html#<ancla>.
+      assert.match(child.href, /^[a-z-]+\.html(#[a-z-]+)?$/);
       assert.ok(header.includes(`href="${escapeHtml(child.href)}"`));
       assert.ok(header.includes(`>${escapeHtml(child.label)}<`));
     }
