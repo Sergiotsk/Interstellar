@@ -2,7 +2,8 @@
 <!-- Mapa del sitio escrito a mano: la navegacion del sitio la inyecta js/layout.js
      en tiempo de ejecucion, por lo que un rastreador que no ejecute JavaScript no
      encuentra enlaces internos desde index.html. Este archivo es el unico indice
-     fiable de las 9 paginas. URLs absolutas con el subpath de GitHub Pages
+     fiable de todas las paginas (9 base + 5 de detalle de mundos). URLs
+     absolutas con el subpath de GitHub Pages
      (constitucion, "Hosting"). Mantener sincronizado con NavConfig (js/nav-data.js). -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
@@ -15,9 +16,44 @@
 
   <url>
     <loc>https://sergiotsk.github.io/Interstellar/mundos.html</loc>
-    <lastmod>2026-08-30</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://sergiotsk.github.io/Interstellar/mundos-tierra.html</loc>
+    <lastmod>2026-09-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://sergiotsk.github.io/Interstellar/mundos-gargantua.html</loc>
+    <lastmod>2026-09-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://sergiotsk.github.io/Interstellar/mundos-miller.html</loc>
+    <lastmod>2026-09-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://sergiotsk.github.io/Interstellar/mundos-mann.html</loc>
+    <lastmod>2026-09-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://sergiotsk.github.io/Interstellar/mundos-tesseract.html</loc>
+    <lastmod>2026-09-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 
   <url>
