@@ -148,13 +148,6 @@ function wireDisclosure(nav, estado) {
     });
   });
 
-  // Cierre sin restaurar foco: para abandonos "suaves" (puro mouse), donde el
-  // foco de teclado no debe ser robado a un boton del header (BUGFIX defecto #2).
-  const dismissSinFoco = () => {
-    estado.dismiss();
-    syncDisclosures(estado, disclosures);
-  };
-
   // Cierre restaurando foco: para cierres por teclado/clic (Escape, focusout,
   // clic fuera), que devuelven el foco al control que estaba abierto (FR-010).
   const dismissConFoco = () => {
@@ -191,28 +184,12 @@ function wireDisclosure(nav, estado) {
     }
   });
 
-  // Abandonar la navegacion con el raton: al salir del area del nav, cerrar la
-  // vista pero SIN restaurar foco (el raton nunca debe robar el foco de teclado).
-  nav.addEventListener('mouseleave', dismissSinFoco);
-
-  // HOVER OPEN (desktop): el submenu debe abrirse al pasar el cursor sobre el eje
-  // (patron clasico de escritorio), restableciendo su descubribilidad (BUGFIX
-  // SC-010). Se limita a dispositivos con hover fino para no afectar al toque.
-  if (
-    typeof window !== 'undefined' &&
-    typeof window.matchMedia === 'function' &&
-    window.matchMedia('(hover: hover) and (pointer: fine)').matches
-  ) {
-    disclosures.forEach(({ button, axisId }) => {
-      const li = button.closest('li');
-      if (li) {
-        li.addEventListener('mouseenter', () => {
-          estado.open(axisId);
-          syncDisclosures(estado, disclosures);
-        });
-      }
-    });
-  }
+  // El submenu se abre y se cierra SOLO por intencion explicita: clic/tecla en el
+  // boton ▼ (toggle, arriba), Escape, seleccion de un destino anidado o clic
+  // fuera de la navegacion. Sin hover-open: cruzar la barra con el raton ya no
+  // despliega nada (evita disparos accidentales y que el menu "persiga" al
+  // cursor). Sin cierre por `mouseleave`: una vez abierto queda abierto hasta un
+  // gesto de cierre, aunque el raton se aleje del area del nav.
 }
 
 /* -----------------------------------------------------------------------------
