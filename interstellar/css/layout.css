@@ -496,8 +496,8 @@ header nav ul ul a {
    se muestra como una FILA de botones-panel dentro de la banda de instrumentos.
    El boton CASE y el rotulo `NAV · RANGER` se ocultan (la barra ya es el panel).
    Los 4 ejes abren su submenu como DROPDOWN flotante: el colapso funcional sigue
-   siendo el atributo `hidden` (layout.js) — hover-open para puntero fino y el
-   boton ▼ para clic/teclado (wireDisclosure); aca solo se POSICIONA el submenu
+   siendo el atributo `hidden` (layout.js) — se alterna por CLIC/tecla en el
+   boton ▼ (wireDisclosure), sin hover-open; aca solo se POSICIONA el submenu
    abierto bajo su eje. La estructura del DOM no cambia (misma que produce
    buildHeader); todo es CSS + el JS que ya existe.
    --------------------------------------------------------------------------- */
@@ -624,26 +624,28 @@ header nav ul ul a {
     box-shadow: 0 0 8px 2px color-mix(in srgb, var(--instrumento-teal) 80%, transparent);
   }
 
-  /* El ▼: indicador en la CARA de la tecla — sin caja, del color del eje.
-     La caja del <button> envuelve JUSTO al glifo (padding 0) y el aire lo da el
-     `margin` (fuera del box que rota). Así el `rotate(180deg)` del estado
-     abierto es un giro sobre el propio eje: el ▼ no se desplaza de lugar. */
+  /* El ▼: indicador en la CARA de la tecla — sin caja visible, del color del eje.
+     Ahora el submenu abre por CLIC en este botón, así que necesita un blanco
+     real: el `padding` SIMÉTRICO agranda el área clickeable (~24px) sin mover el
+     glifo, y como es simétrico el centro no se corre — el `rotate(180deg)` del
+     estado abierto sigue girando sobre el propio eje. El `margin` sólo separa la
+     caja del texto (izq) y del borde de la tecla (der). */
   header nav > ul > li > button {
     position: relative;
     z-index: 1;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    align-self: center;               /* caja del alto del glifo, no estirada por el <li> */
+    align-self: center;               /* caja centrada en el alto del glifo, no estirada por el <li> */
     min-width: auto;
     min-height: auto;
-    padding: 0;
-    margin: 0 0.75rem 0 0.15rem;      /* izq: aire al texto · der: aire al borde de la tecla */
+    padding: 0.4rem 0.45rem;          /* simétrico: hit area cómoda, glifo quieto */
+    margin: 0 0.35rem 0 0;            /* der: aire al borde de la tecla */
     border: 0;
     background: none;
     clip-path: none;
     color: color-mix(in srgb, var(--instrumento-teal) 68%, var(--color-texto-atenuado));
-    font-size: 0.58rem;
+    font-size: 0.62rem;
     line-height: 1;
   }
 
@@ -657,9 +659,7 @@ header nav ul ul a {
 
   /* Submenu = dropdown flotante bajo el eje. `li` ya es position:relative. El
      atributo `hidden` (layout.js) sigue colapsandolo; esto aplica al abierto.
-     SIN `margin-top`: el dropdown arranca pegado a la tecla, sin zona muerta
-     entre medio (antes el cursor cruzaba ese hueco, salia del <nav> y el
-     hover-open se cancelaba). */
+     Arranca pegado a la tecla (`margin-top: 0`). */
   header nav ul ul {
     position: absolute;
     top: 100%;
@@ -675,20 +675,6 @@ header nav ul ul a {
       inset 0 1px 0 var(--cockpit-bezel-brillo),
       0 0.8rem 1.6rem color-mix(in srgb, #000 62%, transparent);
     clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
-  }
-
-  /* Puente de hover: una franja invisible que solapa tecla y dropdown, para que
-     al bajar el cursor no haya ningun pixel "fuera" que dispare el cierre.
-     Va en `li::after` (el ::before es la cara de la tecla). */
-  header nav > ul > li:hover::after,
-  header nav > ul > li:focus-within::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 100%;
-    height: 0.7rem;
-    z-index: 1;
   }
 
   header nav ul ul a {
