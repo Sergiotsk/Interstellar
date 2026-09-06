@@ -185,10 +185,12 @@ Contrato: `specs/006-reset-css/contracts/hojas-css.md`. Orden fijo de `<link>`:
    color, foco, espaciado de lectura). Regla de reparto: selector de elemento o
    pseudo-clase pelada → acá.
 4. **`layout.css`** — layout del sitio y **componentes** (selectores con clase o
-   contexto estructural). ~1400 líneas, numeradas por feature (§3–§14) para
-   trazabilidad con `specs/001`–`005`.
+   contexto estructural). ~1900 líneas, numeradas por feature (§3–§15) para
+   trazabilidad con `specs/001`–`005`. Incluye el **`§15 Cielo`** (campo estelar
+   + estrella fugaz), compartido y opt-in por página (`body.con-cielo`).
 5. *(Opcional)* Una página pesada (p. ej. `minijuegos.html`) puede sumar un 5º
-   `<link>` propio **después** de `layout.css`.
+   `<link>` propio **después** de `layout.css`. `mundos.css` es ese 5º link en las
+   páginas de mundos (hub + fichas de detalle; ya **no** lleva el campo estelar).
 
 ---
 
@@ -406,6 +408,36 @@ Feature 005. Sin segundo color saturado, solo tokens existentes.
 - `.galeria-eje-enlace`: enlace al eje, `--font-nav`, subrayado con
   `text-decoration-color` atenuado que se satura en hover.
 
+### 6.12 Cielo (`.cielo`) — campo estelar + estrella fugaz
+
+`layout.css` §15. Capa de CONTENIDO (crema, nada de teal). `js/layout.js` inyecta
+`<div class="cielo" aria-hidden><i></i><i></i><i></i></div>` como **primer hijo
+del `<body>`**, pero **solo** en las páginas con `class="… con-cielo"`. Va en
+todas **menos** tres: `index` (el `<video>` full-bleed del Hero lo taparía por
+completo), `viaje` (trae escena three.js propia) y `creditos` (mínima). Antes
+vivía en `mundos.css` acotado a `body.mundos-hub`.
+
+- `.cielo`: `position: fixed; inset: 0; z-index: 0; overflow: hidden;
+  pointer-events: none; contain: layout paint`. El `<header>` ya lleva
+  `z-index: 20` en todas las páginas; `body.con-cielo > main, > footer` suben a
+  `z-index: 1` para quedar por encima.
+- **Campo estelar:** dos capas de `box-shadow` (posiciones y brillos irregulares,
+  ~435 estrellas en total). `.cielo::before` lejana (muchas, tenues, `1px`);
+  `.cielo::after` cercana (menos, brillantes, `1.5px`). Cada capa **deriva**
+  (`cielo-deriva-lejos/cerca`, 260s / 170s) y **titila** (`cielo-titileo-lejos/cerca`,
+  11s / 7s) a distinto ritmo. Color `rgba(239, 231, 214, α)` — nunca `#fff`.
+- **Estrella fugaz:** 3 `<i>` con `animation: cielo-fugaz` de duración/demora
+  distintas (14s+3s / 22s+10s / 28s+18s) → irregular, "cada tanto". Cada raya
+  viaja abajo-izquierda vía la propiedad `translate` (el `rotate: -33deg` fijo
+  orienta cabeza + cola) y solo es visible ~1 s por ciclo. La cola es
+  `i::before` (`linear-gradient` crema→transparent), apuntando al revés del viaje.
+- **Mobile (`≤48rem`):** se apaga `.cielo::after` (mitad de estrellas) y la
+  deriva de la capa lejana (queda solo el titileo); una sola fugaz. En celular el
+  efecto casi no se aprecia y `box-shadow` + `translate` de una capa grande es lo
+  caro de pintar.
+- **`prefers-reduced-motion`:** el reset global congela la deriva; las fugaces se
+  **retiran** (`display: none`) para no quedar clavadas a mitad de vuelo.
+
 ---
 
 ## 7. Movimiento
@@ -416,11 +448,15 @@ Feature 005. Sin segundo color saturado, solo tokens existentes.
   - `cockpit-led-pulso` — `opacity: 1 ↔ 0.4`, duraciones desincronizadas
     (1.4s / 1.9s / 2.6s) para que los LEDs no titilen en fase.
   - `case-corre` + `case-rodar` — apertura del menú (ver §6.3).
+  - `cielo-deriva-lejos/cerca` + `cielo-titileo-lejos/cerca` + `cielo-fugaz` —
+    campo estelar y estrella fugaz (ver §6.12). Lentísimas (170–260s la deriva) o
+    intermitentes (la fugaz se ve ~1s cada 14–28s).
 - **`prefers-reduced-motion: reduce`** (bloque global en `reset.css`, `*` +
   `!important`): `animation-duration: 0.01ms`, `animation-iteration-count: 1`,
   `transition-duration: 0.01ms`, `scroll-behavior: auto`. `0.01ms` (no `0s`)
   para no romper los eventos `animationend` / `transitionend`. El `<video>` del
-  Hero lo pausa `js/layout.js` con la misma media query.
+  Hero lo pausa `js/layout.js` con la misma media query; la **estrella fugaz** se
+  oculta con `display: none` (el `iteration-count: 1` la dejaría clavada).
 
 ---
 

@@ -1,7 +1,7 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { NavConfig } from '../js/nav-data.js';
-import { buildHeader, buildFooter, renderLayout, init } from '../js/layout.js';
+import { buildHeader, buildFooter, buildCielo, renderLayout, init } from '../js/layout.js';
 
 function escapeHtml(value) {
   return String(value)
@@ -144,5 +144,36 @@ describe('js/layout.js — contrato layout-injection.md', () => {
     assert.ok(calls[0].html.startsWith('<header>'));
     assert.equal(calls[1].position, 'beforeend');
     assert.ok(calls[1].html.startsWith('<footer>'));
+  });
+
+  test('buildCielo: div decorativo con 3 <i> (las estrellas fugaces)', () => {
+    const cielo = buildCielo();
+    assert.ok(cielo.startsWith('<div class="cielo"'));
+    assert.match(cielo, /aria-hidden="true"/);
+    assert.equal(countMatches(cielo, /<i>/g), 3);
+  });
+
+  test('init: sin `con-cielo` no inyecta cielo; con `con-cielo` lo agrega primero', () => {
+    // Sin classList (DOM de prueba minimo): la guarda evita el cielo -> 2 calls.
+    const sin = [];
+    globalThis.document = {
+      body: { insertAdjacentHTML: (position, html) => sin.push({ position, html }) },
+    };
+    init();
+    assert.equal(sin.length, 2);
+    assert.ok(!sin.some((c) => c.html.includes('class="cielo"')));
+
+    // Con `con-cielo`: 3ra llamada = cielo, en `afterbegin` (queda primer hijo).
+    const con = [];
+    globalThis.document = {
+      body: {
+        classList: { contains: (c) => c === 'con-cielo' },
+        insertAdjacentHTML: (position, html) => con.push({ position, html }),
+      },
+    };
+    init();
+    assert.equal(con.length, 3);
+    assert.equal(con[2].position, 'afterbegin');
+    assert.ok(con[2].html.startsWith('<div class="cielo"'));
   });
 });

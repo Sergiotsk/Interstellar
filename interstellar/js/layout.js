@@ -95,6 +95,14 @@ export function renderLayout(navConfig = NavConfig) {
   };
 }
 
+// Cielo compartido (css/layout.css §15): campo estelar + 3 estrellas fugaces
+// (los <i>). Es puramente decorativo (`aria-hidden`); todo el movimiento vive en
+// CSS. Se inyecta como PRIMER hijo del <body> —detras de header/main/footer— y
+// SOLO en las paginas marcadas con `class="... con-cielo"` (opt-in).
+export function buildCielo() {
+  return '<div class="cielo" aria-hidden="true"><i></i><i></i><i></i></div>';
+}
+
 /* -----------------------------------------------------------------------------
    Disclosure de submenus (T011) — contracts/navigation.md + data-model.md §6.
    La logica de la maquina de estados vive en submenu-state.js (puro); aca solo
@@ -328,6 +336,17 @@ export function init(navConfig = NavConfig) {
   }
   document.body.insertAdjacentHTML('afterbegin', buildHeader(navConfig));
   document.body.insertAdjacentHTML('beforeend', buildFooter());
+
+  // Cielo: solo en paginas `con-cielo`. `afterbegin` lo deja como primer hijo
+  // del body (por detras del header, que ya se inyecto). `classList` puede no
+  // existir en el DOM de prueba: se consulta con guarda.
+  if (
+    document.body.classList &&
+    typeof document.body.classList.contains === 'function' &&
+    document.body.classList.contains('con-cielo')
+  ) {
+    document.body.insertAdjacentHTML('afterbegin', buildCielo());
+  }
 
   // Conecta la interaccion del disclosure. Solo se ejecuta si el DOM de prueba
   // (layout.test.js usa un fake body sin querySelector) expone la API real;
