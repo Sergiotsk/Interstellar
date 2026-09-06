@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab · GSAP + ScrollTrigger</title>
+
+  <!-- Las 4 hojas del sitio: la demo prueba que GSAP convive con la arquitectura real -->
+  <link rel="stylesheet" href="../css/reset.css">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <!-- 5ª hoja: chrome del lab + escenas de esta demo -->
+  <link rel="stylesheet" href="_lab.css">
+  <style>
+    /* Barra de progreso del scroll (arriba, bajo la lab-bar) */
+    .st-progress {
+      position: fixed; left: 0; top: 0; z-index: 9998;
+      height: 3px; width: 100%;
+      background: var(--lab-acento);
+      transform: scaleX(0); transform-origin: 0 50%;
+    }
+
+    .scene {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 6rem 1.25rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .scene h2 {
+      font-family: var(--font-hero-titulo, system-ui);
+      font-size: clamp(1.8rem, 7vw, 4.5rem);
+      letter-spacing: 0.08em; text-transform: uppercase;
+      margin: 0 0 0.6rem;
+    }
+    .scene p { max-width: 34rem; color: var(--lab-atenuado); font-size: 1.05rem; }
+    .scene .st-fx { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+
+    /* Escena 1 — Tierra: polvo que deriva */
+    .s-tierra { background: radial-gradient(120% 90% at 50% 120%, #1a2a1e, #05070f 70%); }
+    .s-tierra .mota {
+      position: absolute; width: 3px; height: 3px; border-radius: 50%;
+      background: color-mix(in srgb, var(--lab-acento) 60%, #fff);
+      opacity: 0.5;
+    }
+
+    /* Escena 2 — Agujero de gusano: esfera que se agranda al scrollear (pin) */
+    .s-gusano { background: radial-gradient(80% 80% at 50% 50%, #0b1330, #05070f 75%); }
+    .s-gusano .esfera {
+      position: absolute; left: 50%; top: 50%;
+      width: 40vmin; height: 40vmin; margin: -20vmin 0 0 -20vmin;
+      border-radius: 50%;
+      background: radial-gradient(circle at 40% 35%, #6fa8ff33, #0a0f24 60%, #000 100%);
+      box-shadow: 0 0 12vmin #2b4cff55, inset 0 0 8vmin #0008;
+    }
+
+    /* Escena 3 — Miller: la ola sube al scrollear (pin) */
+    .s-miller { background: linear-gradient(#0a1430, #061024); }
+    .s-miller .ola {
+      position: absolute; left: -10%; right: -10%; bottom: 0; height: 60vh;
+      background: linear-gradient(#1e4a7a, #0a2a4a);
+      border-radius: 45% 55% 0 0 / 30% 30% 0 0;
+      transform: translateY(80%);
+    }
+
+    /* Escena 4 — Gargantua: disco de acreción que gira + brillo que late (pin) */
+    .s-gargantua { background: radial-gradient(70% 70% at 50% 50%, #140a05, #05070f 75%); }
+    .s-gargantua .disco {
+      position: absolute; left: 50%; top: 50%;
+      width: 62vmin; height: 62vmin; margin: -31vmin 0 0 -31vmin;
+      border-radius: 50%;
+      background: conic-gradient(from 0deg,
+        #e8803b, #ffd8a8, #e8803b, #7a2d10, #e8803b, #ffd8a8, #e8803b);
+      mask: radial-gradient(circle, transparent 34%, #000 35%, #000 60%, transparent 62%);
+      -webkit-mask: radial-gradient(circle, transparent 34%, #000 35%, #000 60%, transparent 62%);
+      filter: blur(1px) saturate(1.1);
+    }
+    .s-gargantua .horizonte {
+      position: absolute; left: 50%; top: 50%;
+      width: 22vmin; height: 22vmin; margin: -11vmin 0 0 -11vmin;
+      border-radius: 50%; background: #000;
+      box-shadow: 0 0 8vmin 2vmin #e8803b55;
+    }
+
+    /* Escena 5 — Tesseract */
+    .s-tesseract {
+      background:
+        linear-gradient(#05070f, #05070f) padding-box,
+        repeating-linear-gradient(0deg, #1b2b55 0 1px, transparent 1px 44px) border-box,
+        repeating-linear-gradient(90deg, #1b2b55 0 1px, transparent 1px 44px) border-box;
+    }
+
+    .reveal { will-change: transform, opacity; }
+  </style>
+</head>
+<body class="lab">
+  <div class="lab-bar">
+    <strong>GSAP + ScrollTrigger</strong>
+    <span class="lab-meta">gsap@3.13.0 (~23 KB) + ScrollTrigger (~7 KB) · ESM pinneado desde esm.sh</span>
+    <a href="index.html">← índice del lab</a>
+  </div>
+  <div class="st-progress" id="progress"></div>
+
+  <main>
+    <section class="scene s-tierra">
+      <div class="st-fx" id="fx-tierra"></div>
+      <h2 class="reveal">Tierra</h2>
+      <p class="reveal">El polvo cubre los campos. La NASA prepara la última expedición.
+        Scrolleá para viajar &mdash; cada tramo se anima al ritmo del scroll.</p>
+    </section>
+
+    <section class="scene s-gusano" id="sc-gusano">
+      <div class="st-fx"><div class="esfera" id="esfera"></div></div>
+      <h2 class="reveal">Agujero de gusano</h2>
+      <p class="reveal">Una esfera de espacio-tiempo cerca de Saturno. La escena queda
+        <em>fija</em> (pin) mientras la atravesás: la distorsión crece con tu scroll.</p>
+    </section>
+
+    <section class="scene s-miller" id="sc-miller">
+      <div class="st-fx"><div class="ola" id="ola"></div></div>
+      <h2 class="reveal">Miller</h2>
+      <p class="reveal">Planeta océano. Cada hora acá son siete años en la Tierra.
+        La ola gigante sube <em>atada a tu scroll</em> (scrub).</p>
+    </section>
+
+    <section class="scene s-gargantua" id="sc-gargantua">
+      <div class="st-fx">
+        <div class="disco" id="disco"></div>
+        <div class="horizonte" id="horizonte"></div>
+      </div>
+      <h2 class="reveal">Gargantua</h2>
+      <p class="reveal">El agujero negro supermasivo. El disco de acreción gira y el
+        brillo late según avanzás. (Placeholder CSS &mdash; la versión de verdad es shader.)</p>
+    </section>
+
+    <section class="scene s-tesseract">
+      <h2 class="reveal">Tesseract</h2>
+      <p class="reveal">El espacio detrás del espacio. Fin de la demo.</p>
+    </section>
+  </main>
+
+  <div class="lab-readout" id="readout">cargando GSAP…</div>
+
+  <script type="module">
+    const readout = document.getElementById('readout');
+    try {
+      const { gsap } = await import('https://esm.sh/gsap@3.13.0');
+      const { ScrollTrigger } = await import('https://esm.sh/gsap@3.13.0/ScrollTrigger');
+      gsap.registerPlugin(ScrollTrigger);
+      readout.textContent = 'GSAP 3.13 + ScrollTrigger OK\nscrolleá ↓';
+
+      // Barra de progreso global — no es animación, es feedback: se mantiene con reduced-motion
+      const bar = document.getElementById('progress');
+      ScrollTrigger.create({
+        start: 0, end: 'max',
+        onUpdate: (self) => { bar.style.transform = `scaleX(${self.progress.toFixed(4)})`; }
+      });
+
+      // Todo lo demás SOLO si el usuario no pidió menos movimiento (gsap.matchMedia)
+      const mm = gsap.matchMedia();
+
+      mm.add('(prefers-reduced-motion: no-preference)', () => {
+        // 1) Reveal on-enter de cada bloque .reveal
+        gsap.utils.toArray('.reveal').forEach((el) => {
+          gsap.from(el, {
+            opacity: 0, y: 40, duration: 0.8, ease: 'power2.out',
+            scrollTrigger: { trigger: el, start: 'top 82%', toggleActions: 'play none none reverse' }
+          });
+        });
+
+        // 2) Tierra — motas de polvo que derivan (creadas al vuelo)
+        const fx = document.getElementById('fx-tierra');
+        for (let i = 0; i < 40; i++) {
+          const m = document.createElement('span');
+          m.className = 'mota';
+          m.style.left = Math.random() * 100 + '%';
+          m.style.top = Math.random() * 100 + '%';
+          fx.appendChild(m);
+          gsap.to(m, {
+            x: (Math.random() - 0.5) * 200, y: (Math.random() - 0.5) * 120,
+            repeat: -1, yoyo: true, duration: 4 + Math.random() * 6, ease: 'sine.inOut'
+          });
+        }
+
+        // 3) Agujero de gusano — PIN + scrub: la esfera crece y rota
+        gsap.to('#esfera', {
+          scale: 3.4, rotate: 120, ease: 'none',
+          scrollTrigger: { trigger: '#sc-gusano', start: 'top top', end: '+=120%', scrub: true, pin: true }
+        });
+
+        // 4) Miller — PIN + scrub: la ola sube
+        gsap.fromTo('#ola', { yPercent: 80 }, {
+          yPercent: -6, ease: 'none',
+          scrollTrigger: { trigger: '#sc-miller', start: 'top top', end: '+=120%', scrub: true, pin: true }
+        });
+
+        // 5) Gargantua — PIN: disco gira infinito + brillo late atado al scroll
+        gsap.to('#disco', { rotate: 360, repeat: -1, duration: 18, ease: 'none' });
+        gsap.fromTo('#horizonte',
+          { boxShadow: '0 0 4vmin 1vmin #e8803b33', scale: 0.9 },
+          {
+            boxShadow: '0 0 16vmin 4vmin #e8803baa', scale: 1.15, ease: 'none',
+            scrollTrigger: { trigger: '#sc-gargantua', start: 'top top', end: '+=140%', scrub: true, pin: true }
+          }
+        );
+
+        return () => { fx.querySelectorAll('.mota').forEach(n => n.remove()); };
+      });
+
+      // FPS
+      let frames = 0, last = performance.now();
+      const tick = (now) => {
+        frames++;
+        if (now - last >= 500) {
+          const fps = Math.round((frames * 1000) / (now - last));
+          readout.innerHTML = `<b>${fps}</b> fps · GSAP 3.13\ntriggers: <b>${ScrollTrigger.getAll().length}</b>`;
+          frames = 0; last = now;
+        }
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    } catch (err) {
+      readout.innerHTML = 'Error cargando GSAP:\n' + (err && err.message || err);
+      console.error(err);
+    }
+  </script>
+</body>
+</html>

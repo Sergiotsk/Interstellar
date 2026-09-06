@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab · Gargantua — OGL (shader)</title>
+  <link rel="stylesheet" href="_lab.css">
+</head>
+<body class="lab">
+  <div class="lab-bar">
+    <strong>Gargantua · OGL</strong>
+    <span class="lab-meta">ogl@1.0.11 (~10 KB) · 1 plano + fragment shader (GLSL a mano)</span>
+    <a href="index.html">← índice</a>
+    <a href="gargantua-three.html">ver versión three.js →</a>
+  </div>
+  <div class="lab-readout" id="readout">cargando OGL…</div>
+
+  <script type="module">
+    const readout = document.getElementById('readout');
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const vertex = /* glsl */`
+      attribute vec2 uv;
+      attribute vec2 position;
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = vec4(position, 0.0, 1.0);
+      }
+    `;
+
+    const fragment = /* glsl */`
+      precision highp float;
+      varying vec2 vUv;
+      uniform float uTime;
+      uniform vec2  uResolution;
+
+      float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+      float noise(vec2 p){
+        vec2 i = floor(p), f = fract(p);
+        f = f * f * (3.0 - 2.0 * f);
+        return mix(mix(hash(i), hash(i + vec2(1,0)), f.x),
+                   mix(hash(i + vec2(0,1)), hash(i + vec2(1,1)), f.x), f.y);
+      }
+      float fbm(vec2 p){
+        float v = 0.0, a = 0.5;
+        for (int i = 0; i < 5; i++){ v += a * noise(p); p *= 2.02; a *= 0.5; }
+        return v;
+      }
+      vec3 starfield(vec2 uv){
+        vec3 c = vec3(0.0);
+        for (float k = 1.0; k <= 3.0; k += 1.0){
+          vec2 g = uv * (60.0 * k);
+          float n = hash(floor(g));
+          float tw = 0.6 + 0.4 * sin(uTime * (0.5 + n) + n * 30.0);
+          c += smoothstep(0.995 - k * 0.001, 1.0, n) * tw / k;
+        }
+        return c * vec3(0.9, 0.95, 1.0);
+      }
+
+      void main(){
+        float aspect = uResolution.x / uResolution.y;
+        vec2 p = (vUv - 0.5) * vec2(aspect, 1.0) * 2.0;
+        float r = length(p);
+        vec2 dir = r > 0.0001 ? p / r : vec2(0.0);
+
+        // Lente gravitacional: el fondo se curva hacia el agujero
+        float bend = 0.16 / (r * r + 0.05);
+        vec2 bgUv = (p - dir * bend) * 0.5 + 0.5;
+        vec3 col = starfield(bgUv + vec2(uTime * 0.003, 0.0));
+
+        // Disco de acrecion: se aplasta en Y -> se lee como elipse (visto de canto)
+        vec2 d = p * vec2(1.0, 2.7);
+        float dr = length(d);
+        float band = smoothstep(0.30, 0.0, abs(dr - 0.60));
+        float ang = atan(d.y, d.x);
+        float flow = fbm(vec2(ang * 2.0 + uTime * 0.15, dr * 7.0 - uTime * 1.1));
+        float doppler = 0.55 + 0.55 * cos(ang - 0.4);          // un lado mas brillante
+        vec3 hot = mix(vec3(0.55, 0.16, 0.03), vec3(1.0, 0.86, 0.6), flow);
+        col = mix(col, hot * 2.4 * doppler, clamp(band * (0.6 + 0.6 * flow), 0.0, 1.0));
+
+        // Horizonte de sucesos
+        col = mix(col, vec3(0.0), smoothstep(0.30, 0.265, r));
+
+        // Halo tenue en el borde del horizonte
+        col += vec3(1.0, 0.55, 0.25) * 0.18 * exp(-5.0 * abs(r - 0.30));
+
+        // Vinieta
+        col *= 1.0 - 0.35 * smoothstep(0.7, 1.6, r);
+
+        gl_FragColor = vec4(pow(col, vec3(0.85)), 1.0);
+      }
+    `;
+
+    try {
+      const { Renderer, Program, Mesh, Triangle } = await import('https://esm.sh/ogl@1.0.11');
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      const renderer = new Renderer({ dpr, antialias: true });
+      const gl = renderer.gl;
+      gl.canvas.className = 'lab-canvas';
+      document.body.appendChild(gl.canvas);
+
+      const program = new Program(gl, {
+        vertex, fragment,
+        uniforms: {
+          uTime: { value: 0 },
+          uResolution: { value: [1, 1] },
+        },
+      });
+      const mesh = new Mesh(gl, { geometry: new Triangle(gl), program });
+
+      function resize() {
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        program.uniforms.uResolution.value = [gl.drawingBufferWidth, gl.drawingBufferHeight];
+      }
+      window.addEventListener('resize', resize);
+      resize();
+
+      let frames = 0, last = performance.now(), t0 = performance.now();
+      function update(now) {
+        requestAnimationFrame(update);
+        program.uniforms.uTime.value = reduce ? 4.0 : (now - t0) * 0.001;
+        renderer.render({ scene: mesh });
+        frames++;
+        if (now - last >= 500) {
+          const fps = Math.round((frames * 1000) / (now - last));
+          readout.innerHTML =
+            `<b>${fps}</b> fps · OGL 1.0.11\ndpr ${dpr} · ${gl.drawingBufferWidth}×${gl.drawingBufferHeight}` +
+            (reduce ? '\n(reduced-motion: frame fijo)' : '');
+          frames = 0; last = now;
+        }
+      }
+      requestAnimationFrame(update);
+    } catch (err) {
+      readout.innerHTML = 'Error cargando OGL:\n' + (err && err.message || err);
+      console.error(err);
+    }
+  </script>
+</body>
+</html>

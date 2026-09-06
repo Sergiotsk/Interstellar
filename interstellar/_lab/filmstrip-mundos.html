@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab · Filmstrip de Mundos (GSAP)</title>
+
+  <link rel="stylesheet" href="../css/reset.css">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="_lab.css">
+  <style>
+    .fs-wrap { max-width: 70rem; margin: 0 auto; padding: 5.5rem 1rem 4rem; }
+    .fs-wrap > h1 { font-family: var(--font-hero-titulo, system-ui); font-size: clamp(1.5rem, 5vw, 2.4rem); margin: 0 0 0.3rem; }
+    .fs-wrap > p.sub { color: var(--lab-atenuado); margin: 0 0 3rem; }
+
+    .mundo { margin: 0 0 3.5rem; }
+    .mundo h2 {
+      font-family: var(--font-hero-titulo, system-ui);
+      font-size: clamp(1.2rem, 3.5vw, 1.75rem);
+      letter-spacing: 0.05em; text-transform: uppercase;
+      margin: 0 0 0.15rem;
+    }
+    .mundo .linea { color: var(--lab-atenuado); font-size: 0.9rem; margin: 0 0 0.9rem; }
+
+    /* --- La tira de celuloide --- */
+    .film {
+      position: relative;
+      height: clamp(200px, 34vh, 340px);
+      overflow: hidden;
+      background: #0b0b0d;                 /* base del celuloide */
+      border-radius: 3px;
+      /* vinieta a los costados: los fotogramas entran y salen suave */
+      -webkit-mask: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+              mask: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+    }
+    .film-track {
+      display: flex;
+      height: 100%;
+      width: max-content;
+      /* perforaciones arriba y abajo: viajan CON la tira */
+      padding-block: 18px;
+      background:
+        repeating-linear-gradient(90deg,
+          transparent 0 14px, #d9d4c4 14px 26px, transparent 26px 44px) top    / auto 11px repeat-x,
+        repeating-linear-gradient(90deg,
+          transparent 0 14px, #d9d4c4 14px 26px, transparent 26px 44px) bottom / auto 11px repeat-x,
+        #050506;
+    }
+    .frame {
+      flex: 0 0 auto;
+      width: clamp(240px, 32vw, 400px);
+      height: 100%;
+      margin-inline: 5px;                  /* separación entre cuadros (base del film) */
+      position: relative;
+      background: #000;
+      overflow: hidden;
+    }
+    .frame img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      /* pátina de celuloide: desaturado cálido, algo de contraste */
+      filter: grayscale(0.14) sepia(0.14) saturate(0.9) contrast(1.09) brightness(0.9);
+    }
+    .frame figcaption {
+      position: absolute; left: 8px; bottom: 8px;
+      font: 500 0.7rem/1.2 ui-monospace, Consolas, monospace;
+      letter-spacing: 0.08em;
+      color: #efe7d6cc;
+      background: #0009; padding: 2px 6px; border-radius: 2px;
+      text-transform: uppercase;
+    }
+    /* grano de película */
+    .film::after {
+      content: ""; position: absolute; inset: 0; pointer-events: none;
+      opacity: 0.35; mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+    /* vinieta general */
+    .film::before {
+      content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 2;
+      box-shadow: inset 0 0 6rem 1.5rem #000c;
+    }
+
+    .hint { color: var(--lab-atenuado); font-size: 0.8rem; margin-top: 0.5rem; }
+  </style>
+</head>
+<body class="lab">
+  <div class="lab-bar">
+    <strong>Filmstrip de Mundos · GSAP</strong>
+    <span class="lab-meta">gsap@3.13.0 + ScrollTrigger · loop infinito, hover = lento, pausa fuera de vista</span>
+    <a href="index.html">← índice</a>
+  </div>
+
+  <div class="fs-wrap">
+    <h1>Tira de celuloide por mundo</h1>
+    <p class="sub">Prototipo para <code>mundos.html</code>: cada sección de mundo suma un
+      &laquo;fílmico&raquo; con fotogramas de esa parte de la trama, que desfila lento.
+      Pasá el mouse por encima para frenarlo. Con <em>reducir movimiento</em> activo no
+      autoavanza (se scrollea a mano).</p>
+
+    <section class="mundo" data-film>
+      <h2>La Tierra</h2>
+      <p class="linea">El polvo mata las cosechas. Cooper deja la granja para buscar un mundo nuevo.</p>
+      <div class="film"><div class="film-track">
+        <figure class="frame"><img src="../assets/img/mundos-tierra-maizal-aereo.jpg" alt="Maizal visto desde el aire"><figcaption>Tierra · 001</figcaption></figure>
+        <figure class="frame"><img src="../assets/img/mundos-tierra-granja.jpg" alt="La granja de los Cooper"><figcaption>Tierra · 002</figcaption></figure>
+        <figure class="frame"><img src="../assets/img/mundos-tierra-tormenta.jpg" alt="Tormenta de polvo"><figcaption>Tierra · 003</figcaption></figure>
+        <figure class="frame"><img src="../assets/img/mundos-tierra-camino.jpg" alt="Camino de tierra entre los campos"><figcaption>Tierra · 004</figcaption></figure>
+        <figure class="frame"><img src="../assets/img/mundos-tierra-abandonada.jpg" alt="Casa abandonada"><figcaption>Tierra · 005</figcaption></figure>
+        <figure class="frame"><img src="../assets/img/mundos-tierra-atardecer.jpg" alt="Atardecer sobre los campos"><figcaption>Tierra · 006</figcaption></figure>
+      </div></div>
+    </section>
+
+    <section class="mundo" data-film>
+      <h2>Planeta de Mann</h2>
+      <p class="linea">Un mundo helado bajo nubes de amoníaco. Mann mintió: no hay nada habitable.</p>
+      <div class="film"><div class="film-track">
+        <figure class="frame"><img src="../assets/img/mundos-mann.jpg" alt="Superficie helada de Mann"><figcaption>Mann · 001</figcaption></figure>
+        <figure class="frame"><img src="../assets/img/mundos-mann-nubes.jpg" alt="Nubes congeladas de Mann"><figcaption>Mann · 002</figcaption></figure>
+        <figure class="frame"><img src="../assets/img/mundos-mann-caminata.jpg" alt="Caminata sobre el hielo"><figcaption>Mann · 003</figcaption></figure>
+        <figure class="frame"><img src="../assets/img/personajes-mann.jpg" alt="El doctor Mann"><figcaption>Mann · 004</figcaption></figure>
+      </div></div>
+    </section>
+
+    <section class="mundo" data-film>
+      <h2>Planeta de Miller</h2>
+      <p class="linea">Océano infinito y olas montañosas. Una hora aquí = siete años en la Tierra.</p>
+      <div class="film"><div class="film-track">
+        <figure class="frame"><img src="../assets/img/mundos-miller.jpg" alt="Planeta océano de Miller"><figcaption>Miller · 001</figcaption></figure>
+        <figure class="frame"><img src="../assets/img/mundos-miller-oceano.jpg" alt="Ola gigante en Miller"><figcaption>Miller · 002</figcaption></figure>
+      </div></div>
+      <p class="hint">↑ Solo 2 fotogramas disponibles para Miller — en la feature real habría que sumar stills.</p>
+    </section>
+  </div>
+
+  <div class="lab-readout" id="readout">cargando GSAP…</div>
+
+  <script type="module">
+    const readout = document.getElementById('readout');
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    try {
+      const { gsap } = await import('https://esm.sh/gsap@3.13.0');
+      const { ScrollTrigger } = await import('https://esm.sh/gsap@3.13.0/ScrollTrigger');
+      gsap.registerPlugin(ScrollTrigger);
+
+      const loops = [];
+      const SPEED = 28; // px/s constante -> ritmo parejo aunque una tira sea más larga
+
+      // Duplicar los cuadros de cada tira ANTES de medir (el loop cierra sin salto:
+      // lo que se ve en x=0 es idéntico a lo que se ve en x=-anchoDeUnJuego)
+      const mundos = [...document.querySelectorAll('[data-film]')];
+      mundos.forEach((m) => { const t = m.querySelector('.film-track'); t.innerHTML += t.innerHTML; });
+
+      // micro-yield para que el DOM duplicado asiente (resuelve aunque la pestaña
+      // esté en segundo plano; el ancho no depende de que carguen las imágenes:
+      // el .frame tiene width por CSS)
+      await new Promise((r) => setTimeout(r, 0));
+
+      mundos.forEach((mundo) => {
+        const track = mundo.querySelector('.film-track');
+        const film = mundo.querySelector('.film');
+        const oneSet = track.getBoundingClientRect().width / 2;  // fuerza reflow sincrónico
+
+        if (reduce) {
+          film.style.overflowX = 'auto';
+          film.style.webkitMask = film.style.mask = 'none';
+          return;
+        }
+
+        const tween = gsap.to(track, {
+          x: -oneSet,
+          duration: oneSet / SPEED,
+          ease: 'none',
+          repeat: -1,
+        });
+        loops.push(tween);
+
+        // Hover -> desacelera suave (no frena de golpe)
+        film.addEventListener('pointerenter', () => gsap.to(tween, { timeScale: 0.12, duration: 0.6, overwrite: true }));
+        film.addEventListener('pointerleave', () => gsap.to(tween, { timeScale: 1, duration: 0.8, overwrite: true }));
+
+        // Solo corre cuando la sección está a la vista (perf con varias tiras)
+        ScrollTrigger.create({
+          trigger: mundo,
+          start: 'top bottom', end: 'bottom top',
+          onToggle: (self) => { self.isActive ? tween.play() : tween.pause(); },
+        });
+      });
+
+      readout.innerHTML = `GSAP 3.13 OK\n<b>${loops.length}</b> tiras` + (reduce ? '\n(reduced-motion: scroll manual)' : '');
+
+      // FPS
+      let f = 0, last = performance.now();
+      const tick = (now) => {
+        f++;
+        if (now - last >= 500) {
+          readout.innerHTML = `<b>${Math.round(f * 1000 / (now - last))}</b> fps · GSAP 3.13\ntiras activas: <b>${loops.filter(t => t.isActive()).length}</b>/${loops.length}`;
+          f = 0; last = now;
+        }
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    } catch (err) {
+      readout.innerHTML = 'Error cargando GSAP:\n' + (err && err.message || err);
+      console.error(err);
+    }
+  </script>
+</body>
+</html>
