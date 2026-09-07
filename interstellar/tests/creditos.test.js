@@ -41,8 +41,9 @@ describe('js/creditos.js — página de créditos y fuentes', () => {
     // honestidad).
     assert.equal(ASSET_CREDITS.length, 52);
     for (const linea of ASSET_CREDITS) {
-      // Cada línea: `<archivo>.jpg — <atribución no vacía>`.
-      assert.match(linea, /^[a-z0-9-]+\.jpg — \S.*$/, `formato inválido: ${linea}`);
+      // Cada línea: `<archivo>.<ext> — <atribución no vacía>` (jpg salvo
+      // terra-orbita.webp, que necesita alpha para recortarse sobre el cielo).
+      assert.match(linea, /^[a-z0-9-]+\.(jpg|webp) — \S.*$/, `formato inválido: ${linea}`);
     }
   });
 

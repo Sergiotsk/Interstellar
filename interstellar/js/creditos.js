@@ -58,7 +58,7 @@ export const ASSET_CREDITS = [
   'ciencia-control-nasa.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',
   'ciencia-agujero-gusano.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',
   'viaje-pilares-de-creacion.jpg — NASA, ESA/Hubble',
-  'terra-orbita-goes.jpg — NASA/NOAA (GOES Project), dominio público',
+  'terra-orbita.webp — NASA/NOAA (GOES Project), dominio público',
   'viaje-endurance.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',
   'viaje-reentrada.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',
   'viaje-tierra-orbita.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',

@@ -230,7 +230,10 @@ body.mundo-detalle main > section.mundo-portada {
   align-items: flex-end;
   overflow: hidden;                 /* capas que escalan fuera de cuadro no dan scroll */
   isolation: isolate;
-  background-color: #04050a;
+  /* Sin background: la orbita es un WebP con transparencia (el planeta recortado)
+     -> por sus zonas transparentes se ve el campo estelar `.cielo` (fixed, detras
+     de main, que no tiene fondo). Los beats 2-5 son fotos `cover` opacas -> tapan
+     el cielo. */
 }
 
 /* Scrim inferior: asegura contraste del titulo/lead sobre las fotos. */
@@ -278,8 +281,8 @@ body.mundo-detalle main > section.mundo-portada {
    pueblo -> la granja sepultada. Solo `--orbita` visible en el estado base;
    el resto lo revela GSAP. Beats 2-5 son fotogramas FILMGRAB (assets de galeria). */
 .mundo-capa--orbita {
-  background-image: url("../assets/img/terra-orbita-goes.jpg");
-  background-size: contain;         /* el disco entero sobre negro */
+  background-image: url("../assets/img/terra-orbita.webp");
+  background-size: contain;         /* el disco entero, sin recortar, sobre el cielo */
 }
 
 .mundo-capa--granja {
