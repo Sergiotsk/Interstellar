@@ -236,9 +236,12 @@ body.mundo-detalle main > section.mundo-portada {
      el cielo. */
 }
 
-/* Scrim inferior: prioridad legibilidad. Zona oscura amplia donde cae el
-   titulo/lead (subidos del borde), difuminada hacia el centro para no matar
-   la foto. */
+/* Scrim inferior: dos funciones.
+   1. Legibilidad: zona oscura amplia donde cae el titulo/lead, difuminada
+      hacia el centro para no matar la foto.
+   2. Transicion al contenido: el borde inferior se funde a `--color-fondo`
+      (el mismo color de las secciones que siguen) -> al soltarse el sticky
+      no hay corte, la ultima foto se desvanece hacia el contenido. */
 .mundo-portada-escena::after {
   content: "";
   position: absolute;
@@ -247,10 +250,11 @@ body.mundo-detalle main > section.mundo-portada {
   pointer-events: none;
   background: linear-gradient(
     to top,
-    rgba(0, 0, 0, 0.82) 0%,
-    rgba(0, 0, 0, 0.55) 20%,
-    rgba(0, 0, 0, 0.2) 40%,
-    transparent 62%
+    var(--color-fondo) 0%,
+    rgba(10, 14, 26, 0.86) 9%,
+    rgba(0, 0, 0, 0.55) 24%,
+    rgba(0, 0, 0, 0.2) 44%,
+    transparent 64%
   );
 }
 
