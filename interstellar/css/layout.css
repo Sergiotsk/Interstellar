@@ -967,7 +967,7 @@ body:not(.home) main > section:first-child h1 {
 }
 
 body:not(.home) main > section:first-child p {
-  max-width: 42rem;
+  max-width: 43rem;
   margin: 0 auto;
   font-family: var(--font-texto);
   font-size: 1.05rem;
