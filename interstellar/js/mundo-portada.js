@@ -96,10 +96,11 @@ async function initMundoPortada() {
       // el texto se va temprano, antes de "bajar" del planeta
       .to([texto, volver], { autoAlpha: 0, y: -40, duration: 0.08 }, 0)
 
-      // 1 · orbita: deriva de unos grados + zoom contenido (el frame es 1280x720,
-      //     mas zoom = blando) y corte rapido al final.
+      // 1 · orbita: el full-disk aguanta bien el zoom (2200px) -> se puede
+      //     "bajar" mas hacia el planeta. Deriva de unos grados (foto plana:
+      //     parallax con vida, no rotacion esferica) y corte rapido al final.
       .to(orbita, { rotation: 5, duration: 0.34 }, 0)
-      .to(orbita, { scale: 1.22, duration: 0.22 }, 0)
+      .to(orbita, { scale: 1.4, duration: 0.22 }, 0)
       .to(orbita, { autoAlpha: 0, ease: 'power2.in', duration: 0.06 }, 0.16)
 
       // 2 · granja: la granja verde; la camara se asienta durante el beat
@@ -142,7 +143,7 @@ async function initMundoPortada() {
     tl
       .to([texto, volver], { autoAlpha: 0, y: -24, duration: 0.16 }, 0)
       // misma deriva + zoom que en escritorio, mas contenida
-      .to(orbita, { rotation: 3, scale: 1.18, duration: 0.34 }, 0)
+      .to(orbita, { rotation: 3, scale: 1.24, duration: 0.34 }, 0)
       .to(orbita, { autoAlpha: 0, ease: 'power2.in', duration: 0.08 }, 0.24)
       .to(maizal, { autoAlpha: 1, duration: 0.08 }, 0.3)
       .to(maizal, { scale: 1, duration: 0.2 }, 0.3)

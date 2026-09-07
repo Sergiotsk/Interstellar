@@ -273,12 +273,13 @@ body.mundo-detalle main > section.mundo-portada {
   will-change: transform, opacity, filter;
 }
 
-/* 5 fotogramas de la pelicula (FILMGRAB) — mismos assets que la galeria.
-   Orden = descenso al colapso: la Tierra desde la nave -> la granja verde ->
-   el maizal aereo -> la tormenta en el pueblo -> la granja sepultada.
-   Solo `--orbita` visible en el estado base; el resto lo revela GSAP. */
+/* 5 capas — descenso al colapso: la Tierra completa desde orbita (full-disk
+   GOES sobre negro) -> la granja verde -> el maizal aereo -> la tormenta en el
+   pueblo -> la granja sepultada. Solo `--orbita` visible en el estado base;
+   el resto lo revela GSAP. Beats 2-5 son fotogramas FILMGRAB (assets de galeria). */
 .mundo-capa--orbita {
-  background-image: url("../assets/img/viaje-tierra-orbita.jpg");
+  background-image: url("../assets/img/terra-orbita-goes.jpg");
+  background-size: contain;         /* el disco entero sobre negro */
 }
 
 .mundo-capa--granja {
