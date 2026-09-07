@@ -285,31 +285,32 @@ body.mundo-detalle main > section.mundo-portada {
 }
 
 /* 5 capas — descenso al colapso: la Tierra completa desde orbita (full-disk
-   GOES sobre negro) -> la granja verde -> el maizal aereo -> la tormenta en el
-   pueblo -> la granja sepultada. Solo `--orbita` visible en el estado base;
-   el resto lo revela GSAP. Beats 2-5 son fotogramas FILMGRAB (assets de galeria). */
+   GOES, recortada sobre el cielo) -> la granja de los Cooper con maizal verde ->
+   el aereo del maizal -> la tormenta en el pueblo -> la granja sepultada.
+   Solo `--orbita` visible en el estado base; el resto lo revela GSAP.
+   Beats 2-5: fotogramas de la pelicula (cap-that.com), 1800px. */
 .mundo-capa--orbita {
   background-image: url("../assets/img/terra-orbita.webp");
   background-size: contain;         /* el disco entero, sin recortar, sobre el cielo */
 }
 
 .mundo-capa--granja {
-  background-image: url("../assets/img/mundos-tierra-granja.jpg");
+  background-image: url("../assets/img/terra-granja.jpg");
   opacity: 0;
 }
 
 .mundo-capa--maizal {
-  background-image: url("../assets/img/mundos-tierra-maizal-aereo.jpg");
+  background-image: url("../assets/img/terra-maizal.jpg");
   opacity: 0;
 }
 
 .mundo-capa--tormenta {
-  background-image: url("../assets/img/mundos-tierra-tormenta.jpg");
+  background-image: url("../assets/img/terra-tormenta.jpg");
   opacity: 0;
 }
 
 .mundo-capa--abandonada {
-  background-image: url("../assets/img/mundos-tierra-abandonada.jpg");
+  background-image: url("../assets/img/terra-abandonada.jpg");
   opacity: 0;
 }
 

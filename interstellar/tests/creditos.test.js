@@ -34,12 +34,13 @@ describe('js/creditos.js — página de créditos y fuentes', () => {
   });
 
   test('cubre el 100 % de los assets descargados del registro (SC-008)', () => {
-    // Sincronía con assets/img/CREDITOS.md: 52 assets con estado `descargado`
-    // (50 de la galeria + hero-gargantua.jpg + terra-orbita-goes.jpg del beat 1
-    // de la portada de Tierra). Licencia clara NASA/ESA/EHT/NOAA + fotogramas de
-    // FILMGRAB. Los `pendiente` NO se listan hasta tener archivo (convención de
-    // honestidad).
-    assert.equal(ASSET_CREDITS.length, 52);
+    // Sincronía con assets/img/CREDITOS.md: 56 assets con estado `descargado`
+    // (50 de la galeria + hero-gargantua.jpg + los 5 de la portada "caída al
+    // polvo" de Tierra: terra-orbita.webp + terra-{granja,maizal,tormenta,
+    // abandonada}.jpg). Licencia clara NASA/ESA/EHT/NOAA + fotogramas de la
+    // película (FILMGRAB / cap-that.com). Los `pendiente` NO se listan hasta
+    // tener archivo (convención de honestidad).
+    assert.equal(ASSET_CREDITS.length, 56);
     for (const linea of ASSET_CREDITS) {
       // Cada línea: `<archivo>.<ext> — <atribución no vacía>` (jpg salvo
       // terra-orbita.webp, que necesita alpha para recortarse sobre el cielo).
