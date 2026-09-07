@@ -15,20 +15,12 @@
   <main>
     <section id="tierra" class="mundo-portada">
       <div class="mundo-portada-escena">
+        <div class="mundo-portada-capas" aria-hidden="true">
+          <div class="mundo-capa mundo-capa--orbita"></div>
+          <div class="mundo-capa mundo-capa--campo"></div>
+          <div class="mundo-capa mundo-capa--tormenta"></div>
+        </div>
         <p class="mundo-volver"><a href="mundos.html">← Todos los mundos</a></p>
-        <svg class="mundo-portada-svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice"
-             role="img" aria-label="La Tierra vista desde el espacio, que se abre en dos mitades">
-          <defs>
-            <clipPath id="portada-mitad-sup"><rect x="0" y="0" width="1200" height="400"/></clipPath>
-            <clipPath id="portada-mitad-inf"><rect x="0" y="400" width="1200" height="400"/></clipPath>
-          </defs>
-          <image class="portada-mitad portada-mitad--sup" href="assets/img/mundos-tierra.jpg"
-                 x="0" y="0" width="1200" height="800" preserveAspectRatio="xMidYMid slice"
-                 clip-path="url(#portada-mitad-sup)"/>
-          <image class="portada-mitad portada-mitad--inf" href="assets/img/mundos-tierra.jpg"
-                 x="0" y="0" width="1200" height="800" preserveAspectRatio="xMidYMid slice"
-                 clip-path="url(#portada-mitad-inf)"/>
-        </svg>
         <div class="mundo-portada-texto eje-contenido">
           <h1>La Tierra</h1>
           <p class="mundo-lead">
