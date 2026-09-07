@@ -199,6 +199,94 @@ body.mundos-hub .mundos-intro p {
   text-shadow: 0 0 0.75rem var(--color-fondo);
 }
 
+/* ---------------------------------------------------------------------------
+   Portada scroll-scrubbed (js/mundo-portada.js, GSAP) — PROTOTIPO en tierra
+   ---------------------------------------------------------------------------
+   El <section id> lleva `.mundo-portada` en vez de `.mundo-hero`: es full-bleed
+   y hace de "riel" de scroll. La escena (`.mundo-portada-escena`) queda `sticky`
+   mientras dura el riel y GSAP abre las dos mitades de la foto (`<clipPath>` SVG)
+   y "entra" por el hueco (scale + fade).
+
+   Estado BASE = hero normal (foto entera, sin transform). Es lo que se ve sin
+   JS, con GSAP caido, con `prefers-reduced-motion` o por debajo de 48rem. El
+   riel alto + el sticky solo se activan en la media query de abajo; GSAP nunca
+   es requisito para leer la pagina.
+   --------------------------------------------------------------------------- */
+/* `body.mundo-detalle main > section.mundo-portada` (0,0,2,3): empata en
+   specificity a `body:not(.home) main > section:first-child` de layout.css y le
+   gana por orden de fuente -> full-bleed, sin la caja de lectura ni el borde. */
+body.mundo-detalle main > section.mundo-portada {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  border-top: 0;
+}
+
+.mundo-portada-escena {
+  position: relative;
+  min-height: 62svh;
+  overflow: hidden;                 /* las mitades que salen de cuadro no dan scroll */
+  isolation: isolate;
+  /* Fondo TRANSPARENTE: al abrirse las mitades, por el hueco se ve el campo
+     estelar (`.cielo`, fixed detras) — "la vista por la ventana". */
+}
+
+/* La foto ocupa toda la escena (cover). El viewBox 1200x800 parte al medio en
+   y=400 -> la costura cae en el centro vertical del cuadro. */
+.mundo-portada-svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.portada-mitad {
+  transform-box: fill-box;          /* los transforms de GSAP, relativos al bbox propio */
+  transform-origin: center;
+  will-change: transform;
+}
+
+.mundo-portada-texto {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: clamp(2rem, 6vh, 5rem);
+  width: min(100% - 2.5rem, 60rem);
+  margin: 0 auto;
+  z-index: 1;
+}
+
+/* Enlace "volver" DENTRO de la escena: overlay arriba-izquierda con halo para
+   despegarse de la foto. Se desvanece con el resto (GSAP). En el estado base
+   (mobile / reduced-motion) queda fijo arriba, legible por el text-shadow. */
+.mundo-portada .mundo-volver {
+  position: absolute;
+  top: clamp(0.75rem, 3vh, 1.5rem);
+  left: 0;
+  right: 0;
+  width: min(100% - 2.5rem, 60rem);
+  margin: 0 auto;
+  z-index: 2;
+  text-shadow: 0 0 0.75rem var(--color-fondo), 0 0 0.35rem var(--color-fondo);
+}
+
+/* Escritorio + movimiento permitido: riel alto y escena clavada mientras GSAP
+   scrubbea. Debajo de 48rem (o con reduced-motion) NO entra: la escena es un
+   hero normal y `js/mundo-portada.js` no arma ninguna animacion. */
+@media (min-width: 48rem) and (prefers-reduced-motion: no-preference) {
+  body.mundo-detalle main > section.mundo-portada {
+    height: 240svh;
+  }
+
+  .mundo-portada-escena {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    min-height: 0;
+  }
+}
+
 /* Lista de "rasgos distintivos": el reset dejo los <ul> sin viñeta; aca se
    repone el disco para este bloque de contenido. */
 .mundo-detalle #rasgos ul {

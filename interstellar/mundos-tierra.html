@@ -13,17 +13,30 @@
 </head>
 <body class="mundo-detalle con-cielo">
   <main>
-    <p class="mundo-volver"><a href="mundos.html">← Todos los mundos</a></p>
-
-    <section id="tierra" class="eje-con-backdrop mundo-hero">
-      <img class="eje-backdrop" alt="" src="assets/img/mundos-tierra.jpg">
-      <div class="eje-contenido">
-        <h1>La Tierra</h1>
-        <p class="mundo-lead">
-          El punto de partida: una Tierra a unas décadas de nosotros, con la
-          agricultura al borde del colapso y la humanidad de espaldas al cielo.
-          Todo lo que pasa después se mide contra este lugar.
-        </p>
+    <section id="tierra" class="mundo-portada">
+      <div class="mundo-portada-escena">
+        <p class="mundo-volver"><a href="mundos.html">← Todos los mundos</a></p>
+        <svg class="mundo-portada-svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice"
+             role="img" aria-label="La Tierra vista desde el espacio, que se abre en dos mitades">
+          <defs>
+            <clipPath id="portada-mitad-sup"><rect x="0" y="0" width="1200" height="400"/></clipPath>
+            <clipPath id="portada-mitad-inf"><rect x="0" y="400" width="1200" height="400"/></clipPath>
+          </defs>
+          <image class="portada-mitad portada-mitad--sup" href="assets/img/mundos-tierra.jpg"
+                 x="0" y="0" width="1200" height="800" preserveAspectRatio="xMidYMid slice"
+                 clip-path="url(#portada-mitad-sup)"/>
+          <image class="portada-mitad portada-mitad--inf" href="assets/img/mundos-tierra.jpg"
+                 x="0" y="0" width="1200" height="800" preserveAspectRatio="xMidYMid slice"
+                 clip-path="url(#portada-mitad-inf)"/>
+        </svg>
+        <div class="mundo-portada-texto eje-contenido">
+          <h1>La Tierra</h1>
+          <p class="mundo-lead">
+            El punto de partida: una Tierra a unas décadas de nosotros, con la
+            agricultura al borde del colapso y la humanidad de espaldas al cielo.
+            Todo lo que pasa después se mide contra este lugar.
+          </p>
+        </div>
       </div>
     </section>
 
@@ -82,5 +95,6 @@
     </nav>
   </main>
   <script type="module" src="js/layout.js"></script>
+  <script type="module" src="js/mundo-portada.js"></script>
 </body>
 </html>
