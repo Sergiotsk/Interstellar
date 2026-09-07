@@ -52,7 +52,7 @@ async function initMundoPortada() {
 
   const base = () => {
     portada.classList.add('is-armed');
-    gsap.set(orbita, { autoAlpha: 1, scale: 1, filter: 'saturate(1) brightness(1)' });
+    gsap.set(orbita, { autoAlpha: 1, scale: 1, rotation: 0, filter: 'saturate(1) brightness(1)' });
     gsap.set(campo, { autoAlpha: 0, scale: 1.22, filter: 'saturate(1) brightness(1)' });
     gsap.set(tormenta, { autoAlpha: 0, scale: 1.12, yPercent: 12 });
   };
@@ -82,11 +82,16 @@ async function initMundoPortada() {
     tl
       // el texto se va temprano, antes de "bajar" del planeta
       .to([texto, volver], { autoAlpha: 0, y: -40, duration: 0.16 }, 0)
-      // la orbita crece y se disuelve: la camara entra en la atmosfera
-      .to(orbita, { scale: 1.18, autoAlpha: 0, ease: 'power1.in', duration: 0.34 }, 0.04)
-      // aparece el maizal y la camara se asienta
-      .to(campo, { autoAlpha: 1, duration: 0.2 }, 0.12)
-      .to(campo, { scale: 1.02, duration: 0.55 }, 0.12)
+      // deriva lenta del globo: unos grados de giro mientras "descendemos".
+      // Es una foto plana: giro corto = parallax con vida, no rotacion esferica.
+      .to(orbita, { rotation: 8, duration: 0.42 }, 0)
+      // la orbita se hunde: zoom profundo. La disolvencia arranca tarde y cae
+      // rapido (power2.in) para un traspaso limpio, sin doble exposicion larga.
+      .to(orbita, { scale: 1.7, duration: 0.42 }, 0)
+      .to(orbita, { autoAlpha: 0, ease: 'power2.in', duration: 0.2 }, 0.2)
+      // aparece el maizal ya casi sin el globo encima y la camara se asienta
+      .to(campo, { autoAlpha: 1, duration: 0.16 }, 0.24)
+      .to(campo, { scale: 1.02, duration: 0.5 }, 0.24)
       // el color se drena mientras se acerca el polvo
       .to(campo, { filter: 'saturate(0.12) brightness(0.68)', duration: 0.34 }, 0.42)
       // la pared de polvo sube desde abajo y traga todo
@@ -114,7 +119,8 @@ async function initMundoPortada() {
 
     tl
       .to([texto, volver], { autoAlpha: 0, y: -24, duration: 0.2 }, 0)
-      .to(orbita, { autoAlpha: 0, duration: 0.3 }, 0.08)
+      // misma deriva + zoom que en escritorio, mas contenida
+      .to(orbita, { rotation: 4, scale: 1.35, autoAlpha: 0, ease: 'power1.in', duration: 0.34 }, 0.06)
       .to(campo, { autoAlpha: 1, duration: 0.3 }, 0.22)
       .to(campo, { filter: 'saturate(0.15) brightness(0.72)', duration: 0.3 }, 0.5)
       .to(tormenta, { autoAlpha: 1, yPercent: 0, duration: 0.4 }, 0.6);

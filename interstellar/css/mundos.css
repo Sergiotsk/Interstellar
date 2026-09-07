@@ -260,8 +260,9 @@ body.mundo-detalle main > section.mundo-portada {
 
 .mundo-capa--orbita {
   background-image: url("../assets/img/terra-orbita-goes.jpg");
-  background-color: #04050a;
-  background-size: contain;         /* el disco entero sobre negro -> lectura "orbita" */
+  background-size: contain;         /* el disco entero -> lectura "orbita" */
+  /* Sin background-color: el negro lo pone la escena. Asi, al desvanecerse la
+     capa, solo se funde el globo y no un rectangulo oscuro sobre el maizal. */
 }
 
 .mundo-capa--campo {
