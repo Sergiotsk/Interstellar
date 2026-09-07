@@ -230,10 +230,10 @@ body.mundo-detalle main > section.mundo-portada {
   align-items: flex-end;
   overflow: hidden;                 /* capas que escalan fuera de cuadro no dan scroll */
   isolation: isolate;
-  background-color: #04050a;        /* base para el letterbox de la orbita */
+  background-color: #04050a;
 }
 
-/* Scrim inferior: asegura contraste del titulo/lead sobre el maizal (claro). */
+/* Scrim inferior: asegura contraste del titulo/lead sobre las fotos. */
 .mundo-portada-escena::after {
   content: "";
   position: absolute;
@@ -241,6 +241,20 @@ body.mundo-detalle main > section.mundo-portada {
   z-index: 1;
   pointer-events: none;
   background: linear-gradient(to bottom, transparent 45%, rgba(0, 0, 0, 0.62) 100%);
+}
+
+/* Grano sobre toda la escena: los fotogramas de FILMGRAB son 1280x720 y al
+   escalarlos quedan blandos; un ruido tenue en `soft-light` los lee como
+   celuloide en vez de imagen pixelada. SVG inline -> 0 bytes de red. */
+.mundo-portada-capas::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.5;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 .mundo-portada-capas {
@@ -258,20 +272,19 @@ body.mundo-detalle main > section.mundo-portada {
   will-change: transform, opacity, filter;
 }
 
+/* Fotogramas de la pelicula (FILMGRAB) — mismos assets que la galeria:
+   #28 la Tierra desde orbita, #22 el maizal aereo, #37 la tormenta en el pueblo. */
 .mundo-capa--orbita {
-  background-image: url("../assets/img/terra-orbita-goes.jpg");
-  background-size: contain;         /* el disco entero -> lectura "orbita" */
-  /* Sin background-color: el negro lo pone la escena. Asi, al desvanecerse la
-     capa, solo se funde el globo y no un rectangulo oscuro sobre el maizal. */
+  background-image: url("../assets/img/viaje-tierra-orbita.jpg");
 }
 
 .mundo-capa--campo {
-  background-image: url("../assets/img/terra-maizal-aereo.jpg");
+  background-image: url("../assets/img/mundos-tierra-maizal-aereo.jpg");
   opacity: 0;                       /* GSAP la revela; base la deja oculta */
 }
 
 .mundo-capa--tormenta {
-  background-image: url("../assets/img/terra-tormenta-dust-bowl.jpg");
+  background-image: url("../assets/img/mundos-tierra-tormenta.jpg");
   opacity: 0;
 }
 
