@@ -22,3 +22,6 @@ interstellar/.specify/extensions/
 # Material fuente crudo de assets (clips, frames de referencia, etc.): local.
 # Los assets FINALES (optimizados) si se versionan en assets/img/.
 interstellar/assets/_source/
+# Volcados completos de galerias FILMGRAB ("download all" del plugin): material
+# de referencia, pesado, local. Los frames que SE usan van optimizados a img/.
+interstellar/assets/photo-gallery-*/

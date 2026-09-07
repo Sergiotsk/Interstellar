@@ -265,26 +265,39 @@ body.mundo-detalle main > section.mundo-portada {
 
 .mundo-capa {
   position: absolute;
-  inset: 0;
+  inset: -2.5%;                     /* sobre-escaneo: los transforms de entrada
+                                       (scale/yPercent) nunca dejan ver un borde */
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
   will-change: transform, opacity, filter;
 }
 
-/* Fotogramas de la pelicula (FILMGRAB) — mismos assets que la galeria:
-   #28 la Tierra desde orbita, #22 el maizal aereo, #37 la tormenta en el pueblo. */
+/* 5 fotogramas de la pelicula (FILMGRAB) — mismos assets que la galeria.
+   Orden = descenso al colapso: la Tierra desde la nave -> la granja verde ->
+   el maizal aereo -> la tormenta en el pueblo -> la granja sepultada.
+   Solo `--orbita` visible en el estado base; el resto lo revela GSAP. */
 .mundo-capa--orbita {
   background-image: url("../assets/img/viaje-tierra-orbita.jpg");
 }
 
-.mundo-capa--campo {
+.mundo-capa--granja {
+  background-image: url("../assets/img/mundos-tierra-granja.jpg");
+  opacity: 0;
+}
+
+.mundo-capa--maizal {
   background-image: url("../assets/img/mundos-tierra-maizal-aereo.jpg");
-  opacity: 0;                       /* GSAP la revela; base la deja oculta */
+  opacity: 0;
 }
 
 .mundo-capa--tormenta {
   background-image: url("../assets/img/mundos-tierra-tormenta.jpg");
+  opacity: 0;
+}
+
+.mundo-capa--abandonada {
+  background-image: url("../assets/img/mundos-tierra-abandonada.jpg");
   opacity: 0;
 }
 
@@ -323,7 +336,7 @@ body.mundo-detalle main > section.mundo-portada .mundo-volver {
 /* Riel + escena clavada: SOLO cuando el JS pudo armar el timeline. Sin `.is-armed`
    (sin JS / GSAP caido / reduced-motion) la seccion mide lo que su contenido. */
 .mundo-portada.is-armed {
-  height: 190svh;                   /* movil: recorrido breve */
+  height: 230svh;                   /* movil: recorrido breve (3 beats) */
 }
 
 .mundo-portada.is-armed .mundo-portada-escena {
@@ -335,7 +348,7 @@ body.mundo-detalle main > section.mundo-portada .mundo-volver {
 
 @media (min-width: 48rem) {
   .mundo-portada.is-armed {
-    height: 320svh;                 /* escritorio: secuencia completa */
+    height: 460svh;                 /* escritorio: los 5 beats */
   }
 }
 
