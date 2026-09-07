@@ -236,14 +236,22 @@ body.mundo-detalle main > section.mundo-portada {
      el cielo. */
 }
 
-/* Scrim inferior: asegura contraste del titulo/lead sobre las fotos. */
+/* Scrim inferior: prioridad legibilidad. Zona oscura amplia donde cae el
+   titulo/lead (subidos del borde), difuminada hacia el centro para no matar
+   la foto. */
 .mundo-portada-escena::after {
   content: "";
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: linear-gradient(to bottom, transparent 45%, rgba(0, 0, 0, 0.62) 100%);
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.82) 0%,
+    rgba(0, 0, 0, 0.55) 20%,
+    rgba(0, 0, 0, 0.2) 40%,
+    transparent 62%
+  );
 }
 
 /* Grano sobre toda la escena: los fotogramas de FILMGRAB son 1280x720 y al
@@ -308,9 +316,29 @@ body.mundo-detalle main > section.mundo-portada {
 .mundo-portada-texto {
   position: relative;              /* dentro del flex: anclado abajo */
   z-index: 3;
-  width: min(100% - 2.5rem, 60rem);
+  width: min(100% - 3rem, 56rem);
   margin: 0 auto;
-  padding-bottom: clamp(1.5rem, 4vh, 3.5rem);
+  padding-bottom: clamp(4rem, 15vh, 9rem);        /* despegado del borde inferior */
+  text-align: center;
+}
+
+/* Titulo y lead de la portada: mas grandes y con halo fuerte. El selector largo
+   (0,0,3,4) le gana a `body:not(.home) main > section:first-child h1|p` de
+   layout.css (0,0,2,4), que si no fija tamano y color atenuado. */
+body.mundo-detalle main > section.mundo-portada .mundo-portada-texto h1 {
+  margin-bottom: 0.5rem;
+  font-size: clamp(2.5rem, 6.5vw, 4.25rem);
+  line-height: 1.04;
+  text-shadow: 0 2px 22px rgba(0, 0, 0, 0.88), 0 0 6px rgba(0, 0, 0, 0.7);
+}
+
+body.mundo-detalle main > section.mundo-portada .mundo-portada-texto .mundo-lead {
+  max-width: 46rem;
+  margin: 0 auto;
+  font-size: clamp(1.1rem, 1.7vw, 1.4rem);
+  line-height: 1.55;
+  color: #fff;
+  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.9), 0 0 5px rgba(0, 0, 0, 0.72);
 }
 
 /* Enlace "volver" DENTRO de la escena: overlay arriba-izquierda con chip oscuro
