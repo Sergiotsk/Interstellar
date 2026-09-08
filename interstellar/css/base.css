@@ -59,6 +59,15 @@ h6 { margin-block-end: 2.33em; }
 
 ul, ol { margin-block-end: 1em; }
 
+/* Concepto destacado dentro de un parrafo (legibilidad, ver Constitucion
+   §Restricciones Tecnicas / Diseno): peso semibold + color pleno, porque el
+   cuerpo va en crema atenuado. No cambia la familia ni el tamano. Exo 2 es
+   variable (100..900), asi que 600 renderiza nativo. */
+strong, b {
+  font-weight: 600;
+  color: var(--color-texto);
+}
+
 /* Enlace del sitio: el reset dejo `a` sin decoracion y con `color: inherit`;
    aca se define el estilo real (de la hoja anterior, §2). */
 a {

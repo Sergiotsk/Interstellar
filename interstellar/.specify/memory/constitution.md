@@ -1,15 +1,22 @@
 <!--
 SYNC IMPACT REPORT
-Version change: 2.0.0 -> 2.1.0
-Rationale: Enmienda a "Restricciones Tecnicas / Diseno". (1) Se admite un SEGUNDO acento
-saturado, acotado por CAPA: el teal/cian de pantallas (`#4fd0e0`) para la capa de interfaz
-de nave (el "chrome" del cockpit: header, footer, LEDs, instrumentos), sin bajar al
-contenido; el naranja de Gargantua sigue siendo el unico acento del contenido narrativo.
-(2) Se corrige un dato ya obsoleto: la tipografia dejo de servirse via Google Fonts
-(`<link>`) el 2026-09-01 y hoy es self-hosted via `@font-face`. Expande guia material sin
-redefinir ningun principio core -> bump MINOR.
+Version change: 2.1.0 -> 2.2.0
+Rationale: Enmienda a "Restricciones Tecnicas / Diseno". Se suma una regla de LEGIBILIDAD
+del cuerpo de texto: (1) los conceptos relevantes de cada parrafo se marcan con `<strong>`
+(semibold + color pleno sobre el crema atenuado del cuerpo); (2) el texto de lectura de
+mas de dos lineas se alinea a la izquierda (borde derecho irregular), nunca centrado ni
+justificado — los titulos cortos, taglines y etiquetas si pueden ir centrados. Expande
+guia material sin redefinir ningun principio core -> bump MINOR.
 
 Cambios de esta version:
+  - "Restricciones Tecnicas / Diseno": nuevo parrafo "Legibilidad del cuerpo" (negritas
+    para conceptos clave con `<strong>`; alineacion a la izquierda de parrafos de mas de
+    dos lineas). Implementado en `css/base.css` (`strong, b`) y `css/layout.css` /
+    `css/mundos.css` (intros de pagina y del hub pasan de `text-align: center` a `left`).
+
+Historial anterior:
+  - 2.1.0 (2026-09-03): Diseno -> segundo acento saturado acotado a la capa de interfaz
+    de nave; tipografia via `@font-face` (se retira Google Fonts). (Detalle abajo.)
   - "Restricciones Tecnicas / Diseno": "el naranja de Gargantua como unico acento saturado"
     -> "dos acentos saturados, uno por capa" (Gargantua = contenido narrativo; teal `#4fd0e0`
     = capa de interfaz de nave / cockpit, no baja al contenido; ambar y rojo = LED de
@@ -30,6 +37,9 @@ Historial:
   - 2.1.0 (2026-09-03): Diseno -> segundo acento saturado acotado a la capa de interfaz
     de nave (teal `#4fd0e0` para el cockpit: header/footer/LEDs); tipografia self-hosted
     (`@font-face`), se retira la mencion a Google Fonts.
+  - 2.2.0 (2026-09-08): Diseno -> regla de legibilidad del cuerpo (negritas `<strong>`
+    para conceptos clave; parrafos de mas de dos lineas alineados a la izquierda, nunca
+    centrados ni justificados).
 
 Follow-up / consistencia (fuera del alcance de este comando):
   - specs/001-005 mencionan reglas del Principio I viejo; features cerradas, no se tocan.
@@ -220,6 +230,13 @@ LED de estado/alerta puntuales dentro de esa capa. Blancos rotos / crema para te
 de blancos puros. Backdrops oscurecidos (`filter: brightness(...)`) para legibilidad.
 Tipografia **self-hosted via `@font-face` desde `assets/fonts/` (woff2 subset latin); sin
 `<link>` a servicios de terceros**. Efectos ambientales sutiles, sin recargar.
+
+**Legibilidad del cuerpo**: los **conceptos relevantes** de cada parrafo se marcan con
+`<strong>` (semibold + color pleno, ya que el cuerpo va en crema atenuado) — con criterio,
+uno o dos por parrafo, no una lista de palabras subrayadas. El texto de lectura de **mas de
+dos lineas se alinea a la izquierda** con borde derecho irregular; **nunca centrado ni
+justificado**. Solo los titulos cortos, taglines de Hero y etiquetas de una linea pueden ir
+centrados.
 
 **Assets**: imagenes locales, referenciadas con rutas relativas, optimizadas a WebP y a
 resoluciones razonables a mano. **Acreditar la fuente de cada imagen es OBLIGATORIO**

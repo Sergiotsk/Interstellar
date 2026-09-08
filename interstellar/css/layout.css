@@ -949,11 +949,12 @@ body.home .hero {
    --------------------------------------------------------------------------- */
 body:not(.home) main > section:first-child {
   /* Bloque de presentacion de cada pagina: mismo ritmo visual que el .intro
-     de la home (HU4-E1, FR-018). */
+     de la home (HU4-E1, FR-018). Texto alineado a la izquierda (legibilidad:
+     los parrafos de varias lineas no se centran; ver Constitucion §Diseno). */
   max-width: 60rem;
   margin: 0 auto;
   padding: 4rem 1.25rem 2rem;
-  text-align: center;
+  text-align: left;
 }
 
 body:not(.home) main > section:first-child h1 {
@@ -968,7 +969,7 @@ body:not(.home) main > section:first-child h1 {
 
 body:not(.home) main > section:first-child p {
   max-width: 43rem;
-  margin: 0 auto;
+  margin: 0;
   font-family: var(--font-texto);
   font-size: 1.05rem;
   line-height: 1.7;
