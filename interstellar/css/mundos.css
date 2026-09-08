@@ -21,7 +21,8 @@ body.mundos-hub .mundos-intro {
   max-width: 46rem;
   margin: 0 auto;
   padding: 4.5rem 1.25rem 2.5rem;
-  text-align: center;
+  text-align: left;                     /* legibilidad: parrafos de varias lineas
+                                          alineados a la izquierda (ver Constitucion) */
 }
 
 body.mundos-hub .mundos-intro h1 {
@@ -386,6 +387,102 @@ body.mundo-detalle main > section.mundo-portada .mundo-volver {
 @media (min-width: 48rem) {
   .mundo-portada.is-armed {
     height: 460svh;                 /* escritorio: los 5 beats */
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Portada "descenso a Gargantua" (js/mundo-portada.js, GSAP) — pagina Gargantua
+   ---------------------------------------------------------------------------
+   Misma mecanica que la Tierra: riel alto + escena `sticky` que solo aparece
+   con `.is-armed`. Seis fotogramas apilados que el scroll encadena — la
+   Endurance frente a Gargantua -> el disco de cerca -> el descenso por el plano
+   del disco -> la Endurance minima contra el disco -> el Ranger con las chispas
+   del roce -> Cooper a la deriva. Al irse el ultimo fotograma queda el negro y
+   el campo de chispas (canvas, ver mas abajo). El riel es mas largo que el de
+   la Tierra. Sin JS / GSAP caido / reduced-motion queda el hero estatico: el
+   primer fotograma + titulo + lead.
+   Beat 1-2: renders del disco (assets propios). Beat 3-6: fotogramas de la
+   pelicula (cap-that.com), 1600px.
+   --------------------------------------------------------------------------- */
+.mundo-capa--gargantua-lejos {
+  background-image: url("../assets/img/mundos-gargantua.jpg");
+}
+
+.mundo-capa--gargantua-disco {
+  background-image: url("../assets/img/ciencia-gargantua.jpg");
+  opacity: 0;
+}
+
+.mundo-capa--gargantua-plano {
+  background-image: url("../assets/img/mundos-gargantua-plano.jpg");
+  opacity: 0;
+}
+
+.mundo-capa--gargantua-endurance {
+  background-image: url("../assets/img/mundos-gargantua-endurance.jpg");
+  opacity: 0;
+}
+
+.mundo-capa--gargantua-ranger {
+  background-image: url("../assets/img/mundos-gargantua-ranger.jpg");
+  opacity: 0;
+}
+
+.mundo-capa--gargantua-deriva {
+  background-image: url("../assets/img/mundos-gargantua-deriva.jpg");
+  opacity: 0;
+}
+
+/* Movil (viewport angosto): los fotogramas panoramicos siguen en `cover` (llenan
+   la pantalla), pero se corre el encuadre a donde esta el sujeto para que el
+   recorte vertical no lo deje afuera. El zoom extra de estos beats se anula en
+   el JS (rama movil) para que no queden todavia mas ampliados. */
+@media (max-width: 47.99rem) {
+  .mundo-capa--gargantua-lejos {
+    background-position: 60% center; /* el borde del agujero + el disco, no el vacio de la izq */
+  }
+  .mundo-capa--gargantua-deriva {
+    background-position: 58% center; /* el casco de Cooper */
+  }
+}
+
+/* Al irse el ultimo fotograma queda el negro (el campo de chispas va encima). */
+.mundo-portada--gargantua .mundo-portada-escena {
+  background: #000;
+}
+
+/* Chispas del cruce: dos <canvas> que dibuja js/mundo-portada.js -> solo existen
+   con la escena armada; sin JS no hay canvas y esto no pinta nada.
+   - `.mundo-chispas-fx` (z-index 3): por DELANTE del fotograma.
+   - `.mundo-chispas-fx--fondo` (z-index 0, primer hijo): por DETRAS de las
+     `.mundo-capa` -> mientras `deriva` es opaco tapa esas chispas (Cooper
+     adelante); al bajar el fotograma a autoAlpha 0.22 asoman -> profundidad. */
+.mundo-chispas-fx {
+  position: absolute;
+  inset: 0;
+  z-index: 3;                            /* sobre el fotograma y el grano */
+  pointer-events: none;
+}
+
+.mundo-chispas-fx--fondo {
+  z-index: 0;                            /* detras de los fotogramas */
+}
+
+.mundo-chispas-fx canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Riel mas largo que el de la Tierra: 6 beats + el ultimo fotograma aguanta.
+   (La regla generica de `.mundo-portada.is-armed` fija 230/460svh para 5.) */
+.mundo-portada--gargantua.is-armed {
+  height: 560svh;                        /* 6 beats + el ultimo fotograma aguanta */
+}
+
+@media (min-width: 48rem) {
+  .mundo-portada--gargantua.is-armed {
+    height: 680svh;
   }
 }
 
