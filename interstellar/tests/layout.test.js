@@ -120,6 +120,23 @@ describe('js/layout.js — contrato layout-injection.md', () => {
     assert.doesNotMatch(footer, /Fuentes del material visual/i);
   });
 
+  test('el pie suma la tecla de Contacto y las de compartir (WhatsApp/Facebook/Compartir)', () => {
+    // Contacto: enlace directo a la página propia.
+    assert.ok(footer.includes('href="contacto.html"'));
+    // WhatsApp y Facebook: enlaces de "share" con la home como destino sin JS.
+    assert.match(footer, /<a href="https:\/\/wa\.me\/\?text=[^"]+" data-share="whatsapp"/);
+    assert.match(footer, /<a href="https:\/\/www\.facebook\.com\/sharer\/sharer\.php\?u=[^"]+" data-share="facebook"/);
+    // "Compartir": <button> (Web Share API) dentro de un <li> oculto hasta que
+    // el JS confirme soporte de navigator.share.
+    assert.match(footer, /<li class="tele tele-accion" data-share-nativo hidden>/);
+    assert.match(footer, /<button type="button" data-share="nativo"/);
+    // Siguen las teclas de créditos y repo; ya NO está el display "Interstellar".
+    assert.ok(footer.includes('href="creditos.html"'));
+    assert.ok(footer.includes('https://github.com/Sergiotsk/Interstellar.git'));
+    assert.doesNotMatch(footer, /<span class="tele-v">Interstellar<\/span>/);
+    assert.doesNotMatch(footer, /class="tele"(?!\s+tele-accion)/); // no quedan teclas-display sin acción
+  });
+
   test('layout.js no lleva datos propios: sin argumento produce el mismo header que con NavConfig', () => {
     assert.equal(buildHeader(), buildHeader(NavConfig));
   });

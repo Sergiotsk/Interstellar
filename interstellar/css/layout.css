@@ -748,13 +748,24 @@ footer .tele:not(.tele-accion) {
   padding: 0.45rem 0.8rem;
 }
 
-footer .tele-accion > a {
+footer .tele-accion > a,
+footer .tele-accion > button {
   display: flex;
   align-items: center;
   gap: 0.45rem;
   padding: 0.45rem 0.8rem;
   text-decoration: none;
   color: inherit;
+}
+
+/* La tecla "Compartir" es un <button> (Web Share API); el resto de las
+   tecla-botón son <a>. Mismo aspecto: hay que apagar el chrome nativo. */
+footer .tele-accion > button {
+  font: inherit;
+  letter-spacing: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
 }
 
 /* Tecla-botón encendida al hover / foco. */
@@ -815,6 +826,30 @@ footer .tele-accion:focus-within .tele-v {
 @keyframes cockpit-led-pulso {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.4; }
+}
+
+/* Mobile: las teclas del pie en una grilla pareja de 3 columnas, en vez del
+   wrap centrado que dejaba filas de ancho irregular. Cada tecla ocupa su celda
+   completa (todo el <a>/<button> es tap target) y el texto va centrado. */
+@media (max-width: 40rem) {
+  footer ul {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.4rem;
+  }
+  footer .tele {
+    align-items: stretch;
+  }
+  footer .tele-accion > a,
+  footer .tele-accion > button {
+    flex: 1;
+    justify-content: center;
+    padding: 0.55rem 0.3rem;
+    gap: 0.3rem;
+  }
+  footer .tele .tele-v {
+    letter-spacing: 0.03em;
+  }
 }
 
 /* ---------------------------------------------------------------------------
@@ -1930,4 +1965,324 @@ body.con-cielo > footer {
 
 @media (prefers-reduced-motion: reduce) {
   .cielo i { display: none; }
+}
+
+/* ---------------------------------------------------------------------------
+   16. Contacto (contacto.html / gracias.html) — "Del otro lado del estante"
+   ---------------------------------------------------------------------------
+   Concepto: Cooper le habla a Murph a traves de la estanteria del tesseract.
+   Desktop: pantalla partida a ancho completo — el visor con la imagen de Cooper
+   mirando desde la biblioteca a la izquierda, la consola del formulario a la
+   derecha; Cooper queda sobre la costura, mirando hacia quien escribe. Mobile:
+   el visor pasa a una banda superior y el formulario debajo.
+   El envio real lo hace Web3Forms (endpoint publico, sin backend): el <form>
+   postea ahi con una access_key. Al enviar (`.is-enviando` en `.contacto-split`,
+   la agrega js/contacto.js) un pulso de luz cruza la costura hacia Cooper y el
+   rotulo de la consola cambia de estado. Todo es MEJORA: sin JS el <form> postea
+   igual y con `prefers-reduced-motion` no hay movimiento.
+   Los campos son "pantallas" (fondo --instrumento-pantalla, borde bezel, foco
+   teal) y el boton de envio es una tecla (recorte diagonal), como pie y nav.
+   --------------------------------------------------------------------------- */
+.form-contacto {
+  max-width: 42rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.form-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0;
+}
+
+.form-campo label {
+  font-family: var(--font-instrumento);
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-texto-atenuado);
+}
+
+.form-opcional {
+  text-transform: none;
+  letter-spacing: 0.02em;
+  opacity: 0.7;
+}
+
+/* Trampa anti-bot de Web3Forms: un campo señuelo que las personas no ven y los
+   bots suelen completar. Si llega marcado, Web3Forms descarta el envío. */
+.hp-campo {
+  display: none;
+}
+
+.form-contacto input,
+.form-contacto textarea {
+  font-family: var(--font-texto);
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--color-texto);
+  background: var(--instrumento-pantalla);
+  border: 1px solid var(--cockpit-bezel);
+  border-radius: 2px;
+  padding: 0.6rem 0.7rem;
+  width: 100%;
+}
+
+.form-contacto textarea {
+  resize: vertical;
+  min-height: 7rem;
+}
+
+.form-contacto input:focus,
+.form-contacto textarea:focus {
+  border-color: var(--instrumento-teal);
+  outline: none;
+}
+
+.form-contacto button[type="submit"] {
+  align-self: flex-start;
+  font-family: var(--font-instrumento);
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-texto);
+  background: linear-gradient(180deg, var(--cockpit-metal-alto), var(--cockpit-metal));
+  border: 1px solid var(--cockpit-bezel);
+  clip-path: var(--recorte-tecla);
+  padding: 0.7rem 1.4rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.form-contacto button[type="submit"]:hover,
+.form-contacto button[type="submit"]:focus-visible {
+  border-color: var(--instrumento-teal);
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--instrumento-teal) 30%, var(--cockpit-metal)),
+    color-mix(in srgb, var(--cockpit-metal) 88%, #000));
+  color: color-mix(in srgb, var(--instrumento-teal) 85%, #fff);
+}
+
+.form-nota {
+  margin: 0;
+  font-family: var(--font-instrumento);
+  font-size: 0.95rem;
+  color: var(--instrumento-teal);
+  border-left: 2px solid var(--instrumento-teal);
+  padding-left: 0.8rem;
+}
+
+.form-nota[data-estado="ok"] {
+  color: color-mix(in srgb, var(--instrumento-teal) 88%, #fff);
+}
+
+.form-nota[data-estado="error"] {
+  color: var(--led-alerta);
+  border-left-color: var(--led-alerta);
+}
+
+.form-nota a {
+  color: inherit;
+}
+
+.form-nota.is-typing {
+  animation: contacto-tipeo 820ms steps(34, end);
+}
+
+@keyframes contacto-tipeo {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+
+/* --- Pantalla partida: visor + consola --------------------------------------
+   `.contacto-split` es hijo directo de <main> (no es un <section>), asi que
+   ninguna de las reglas de "paginas internas" (§10) lo encajona: ocupa el ancho
+   completo del <main>, que es el del viewport. */
+.contacto-split {
+  position: relative;
+  width: 100%;
+}
+
+/* Costura: capa sobre todo el split donde corre el pulso de luz al enviar. */
+.contacto-costura {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.contacto-costura::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -42%;
+  width: 42%;
+  opacity: 0;
+  background: linear-gradient(90deg,
+    transparent,
+    color-mix(in srgb, var(--color-tierra-oro) 55%, transparent),
+    transparent);
+}
+
+.contacto-split.is-enviando .contacto-costura::before {
+  animation: contacto-cruce 1600ms ease-in-out;
+}
+
+/* El mensaje viaja desde la consola (izquierda) hacia Cooper (visor, derecha). */
+@keyframes contacto-cruce {
+  0%   { left: -42%; opacity: 0; }
+  18%  { opacity: 0.9; }
+  100% { left: 100%; opacity: 0; }
+}
+
+/* Visor: la imagen de Cooper mirando desde la biblioteca. */
+.contacto-visor {
+  position: relative;
+  overflow: hidden;
+  background: #000;
+}
+
+.contacto-visor img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 82% center;   /* Cooper cerca del borde interno del visor, mirando hacia la consola */
+  filter: brightness(0.62) contrast(1.05);
+}
+
+/* Viñeta que funde la foto con el lado oscuro de la consola (a su izquierda). */
+.contacto-visor::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(270deg,
+    transparent 52%,
+    color-mix(in srgb, var(--color-fondo) 65%, transparent) 80%,
+    var(--color-fondo) 100%);
+}
+
+/* Panel: encabezado + consola del formulario. */
+.contacto-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 3.25rem 1.5rem 3rem;
+}
+
+.contacto-encabezado h1 {
+  font-family: var(--font-hero-titulo);
+  font-size: clamp(1.75rem, 5vw, 3rem);
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-texto);
+  margin-bottom: 0.75rem;
+}
+
+.contacto-encabezado p {
+  max-width: 43rem;
+  margin: 0 0 0.6rem;
+  font-family: var(--font-texto);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--color-texto-atenuado);
+}
+
+/* La consola: el formulario como panel de instrumento (bezel + metal + esquina
+   recortada, mismo lenguaje que las teclas de la nav y el pie). */
+.contacto-consola {
+  position: relative;
+  max-width: 34rem;
+  border: 1px solid var(--cockpit-bezel);
+  background:
+    repeating-linear-gradient(90deg, transparent 0 22px, rgba(255, 255, 255, 0.02) 22px 23px),
+    linear-gradient(180deg, var(--cockpit-metal-alto), var(--cockpit-metal));
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+  padding: 1.4rem 1.4rem 1.6rem;
+}
+
+.consola-rotulo {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0 0 1.2rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--cockpit-bezel);
+  font-family: var(--font-instrumento);
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-texto-atenuado);
+}
+
+.contacto-split.is-enviando .consola-rotulo { color: var(--led-ambar); }
+.contacto-split.is-enviado .consola-rotulo,
+.contacto-split.is-recibido .consola-rotulo {
+  color: color-mix(in srgb, var(--instrumento-teal) 90%, #fff);
+}
+.contacto-split.is-error .consola-rotulo { color: var(--led-alerta); }
+
+.contacto-split.is-enviando .consola-rotulo .led { background: var(--led-ambar); box-shadow: 0 0 6px 1px color-mix(in srgb, var(--led-ambar) 62%, transparent); }
+.contacto-split.is-error .consola-rotulo .led { background: var(--led-alerta); box-shadow: 0 0 6px 1px color-mix(in srgb, var(--led-alerta) 62%, transparent); }
+
+/* Enlace de vuelta en gracias.html. */
+.contacto-volver {
+  margin: 1.1rem 0 0;
+  font-family: var(--font-instrumento);
+  font-size: 0.85rem;
+}
+
+/* Campos congelados mientras el mensaje "cruza". */
+.contacto-split.is-enviando .form-contacto,
+.contacto-split.is-enviado .form-contacto {
+  opacity: 0.5;
+  transition: opacity 240ms ease;
+}
+.contacto-split.is-enviando .form-contacto {
+  pointer-events: none;
+}
+.contacto-split.is-enviando .form-contacto input,
+.contacto-split.is-enviando .form-contacto textarea {
+  border-color: var(--instrumento-teal);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contacto-split.is-enviando .contacto-costura::before,
+  .form-nota.is-typing {
+    animation: none;
+  }
+}
+
+/* Desktop: pantalla partida en dos mitades, a ancho completo del viewport. */
+@media (min-width: 60rem) {
+  .contacto-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: calc(100svh - 4.25rem);   /* menos la banda del header */
+  }
+  .contacto-panel {
+    justify-content: center;
+    padding-inline: clamp(1.5rem, 4vw, 4rem);
+  }
+}
+
+/* Mobile / tablet angosta: el visor es una banda superior y el form va debajo.
+   El DOM lleva la consola primero (orden de lectura y foco), asi que aca se
+   reordena con flex para que la imagen quede arriba. */
+@media (max-width: 59.99rem) {
+  .contacto-split {
+    display: flex;
+    flex-direction: column;
+  }
+  .contacto-visor {
+    order: -1;
+    height: 42svh;
+    min-height: 240px;
+  }
 }

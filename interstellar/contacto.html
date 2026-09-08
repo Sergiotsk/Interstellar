@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+    content="Formulario de contacto del sitio: escribinos sobre un error, una sugerencia o una duda del proyecto. Sitio académico de fan sobre Interstellar, sin fines de lucro.">
+  <title>Contacto | Interstellar</title>
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+</head>
+
+<body class="contacto">
+  <main>
+    <div class="contacto-split">
+      <div class="contacto-panel">
+        <div class="contacto-encabezado">
+          <h1>Contacto</h1>
+          <p>
+            ¿Encontraste un <strong>error</strong>, tenés una
+            <strong>sugerencia</strong> o una duda sobre el proyecto? Escribime.
+            Este es un <strong>sitio académico de fan</strong> sobre
+            <em>Interstellar</em>, sin fines de lucro.
+          </p>
+          <p>
+            El mensaje <strong>se envía de este lado</strong> y viaja hasta un
+            correo en otra dimensión del tesseract, <strong>la respuesta puede tardar</strong>.
+          </p>
+        </div>
+
+        <div class="contacto-consola" id="formulario">
+          <p class="consola-rotulo" data-rotulo>
+            <span class="led" aria-hidden="true"></span>
+            <span data-rotulo-texto>Canal abierto</span>
+          </p>
+          <form class="form-contacto" data-form-contacto action="https://api.web3forms.com/submit" method="POST">
+            <input type="hidden" name="access_key" value="d58b9403-0d56-4d4c-9a55-14783d4e5972">
+            <input type="hidden" name="from_name" value="Sitio Interstellar">
+            <!-- Solo aplica al envío sin JS (POST nativo): Web3Forms redirige acá.
+                 Con JS resolvemos inline y este campo se ignora. -->
+            <input type="hidden" name="redirect" value="https://sergiotsk.github.io/Interstellar/gracias.html">
+            <label class="hp-campo" aria-hidden="true">
+              No completes este campo
+              <input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off">
+            </label>
+
+            <p class="form-campo">
+              <label for="cto-nombre">Nombre</label>
+              <input type="text" id="cto-nombre" name="name" autocomplete="name" required>
+            </p>
+            <p class="form-campo">
+              <label for="cto-email">Tu correo <span class="form-opcional">(opcional)</span></label>
+              <input type="email" id="cto-email" name="email" autocomplete="email" inputmode="email">
+            </p>
+            <p class="form-campo">
+              <label for="cto-asunto">Asunto <span class="form-opcional">(opcional)</span></label>
+              <input type="text" id="cto-asunto" name="subject" autocomplete="off">
+            </p>
+            <p class="form-campo">
+              <label for="cto-mensaje">Mensaje</label>
+              <textarea id="cto-mensaje" name="message" rows="6" required></textarea>
+            </p>
+            <p class="form-acciones">
+              <button type="submit">Enviar mensaje</button>
+            </p>
+            <p class="form-nota" data-form-nota hidden aria-live="polite"></p>
+          </form>
+        </div>
+      </div>
+
+      <div class="contacto-visor">
+        <img src="assets/img/ciencia-teseracto-biblioteca.jpg"
+          alt="Cooper, dentro del tesseract, mira a través de la estantería hacia la habitación de Murph"
+          fetchpriority="high">
+      </div>
+
+      <div class="contacto-costura" aria-hidden="true"></div>
+    </div>
+  </main>
+  <script type="module" src="js/layout.js"></script>
+  <script type="module" src="js/contacto.js"></script>
+</body>
+
+</html>

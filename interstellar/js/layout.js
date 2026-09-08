@@ -7,7 +7,10 @@ import { NavConfig } from './nav-data.js';
 import { createSubmenuState } from './submenu-state.js';
 
 const REPO_URL = 'https://github.com/Sergiotsk/Interstellar.git';
-// El pie es una consola de TECLAS cortas: solo enlaza creditos.html y el repo.
+const SITE_URL = 'https://sergiotsk.github.io/Interstellar/';
+// El pie es una consola de TECLAS cortas: enlaza creditos.html, el repo, la
+// página de contacto y suma teclas para compartir el sitio (WhatsApp/Facebook
+// como enlaces de "share"; "Compartir" usa la Web Share API, solo si existe).
 // El disclaimer completo ("sitio académico de fan, sin fines de lucro") vive en
 // creditos.html; la atribución por asset también (módulo js/creditos.js).
 
@@ -70,18 +73,24 @@ export function buildFooter() {
   // Pie mínimo: disclaimer + enlaces (créditos y repo). La lista de atribución
   // por asset vive en creditos.html (FR-012, FR-013; contrato assets.md).
   //
-  // Consola inferior del cockpit (constitución v2.1.0): TODO se presenta como
+  // Consola inferior del cockpit (constitución v2.1.0): cada entrada es una
   // "tecla" de panel — misma caja con recorte diagonal, bezel y LED que las de
   // la nav. Cada tecla es UNA palabra (`.tele-v`) + un LED (`.led`, decorativo),
-  // sin etiqueta previa. El LED va a la izquierda (como en la nav).
-  //   - `.tele-accion`: tecla-BOTÓN — un <a> ocupa toda la caja y es el destino
-  //     (`aria-label` da el destino sin sumar texto visible).
-  //   - `.tele` a secas: DISPLAY del panel — mismo aspecto de tecla pero sin
-  //     acción (no es un enlace; no lleva cursor de puntero). El disclaimer
-  //     completo vive en creditos.html; acá "Interstellar" alcanza como marca.
+  // sin etiqueta previa. El LED va a la izquierda (como en la nav). Todas son
+  // `.tele-accion`: tecla-BOTÓN — un <a> (o <button>) ocupa toda la caja y es el
+  // destino (`aria-label` da el destino sin sumar texto visible). El disclaimer
+  // completo vive en creditos.html.
+  // WhatsApp y Facebook: sin JS comparten la home; wireFooterShare() los sube a
+  // la página actual. La tecla "Compartir" (Web Share API) nace oculta y solo la
+  // muestra el JS si navigator.share existe.
+  const waFallback = `https://wa.me/?text=${encodeURIComponent(`Interstellar — ${SITE_URL}`)}`;
+  const fbFallback = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(SITE_URL)}`;
   return `<footer>
   <ul>
-    <li class="tele"><span class="led" aria-hidden="true"></span><span class="tele-v">Interstellar</span></li>
+    <li class="tele tele-accion"><a href="contacto.html" aria-label="Formulario de contacto"><span class="led" aria-hidden="true"></span><span class="tele-v">Contacto</span></a></li>
+    <li class="tele tele-accion"><a href="${escapeHtml(waFallback)}" data-share="whatsapp" target="_blank" rel="noopener" aria-label="Compartir el sitio en WhatsApp"><span class="led" aria-hidden="true"></span><span class="tele-v">WhatsApp</span></a></li>
+    <li class="tele tele-accion"><a href="${escapeHtml(fbFallback)}" data-share="facebook" target="_blank" rel="noopener" aria-label="Compartir el sitio en Facebook"><span class="led" aria-hidden="true"></span><span class="tele-v">Facebook</span></a></li>
+    <li class="tele tele-accion" data-share-nativo hidden><button type="button" data-share="nativo" aria-label="Compartir el sitio"><span class="led led-ambar" aria-hidden="true"></span><span class="tele-v">Compartir</span></button></li>
     <li class="tele tele-accion"><a href="creditos.html" aria-label="Créditos y fuentes"><span class="led" aria-hidden="true"></span><span class="tele-v">Créditos</span></a></li>
     <li class="tele tele-accion"><a href="${escapeHtml(REPO_URL)}" aria-label="Repositorio en GitHub"><span class="led led-alerta" aria-hidden="true"></span><span class="tele-v">GitHub</span></a></li>
   </ul>
@@ -309,6 +318,43 @@ function initHeroVideo() {
   }
 }
 
+// Compartir desde el pie. WhatsApp y Facebook son enlaces a sus URLs de "share":
+// sin JS comparten la home; aca se actualizan a la pagina actual (`location.href`).
+// El boton "Compartir" usa la Web Share API (`navigator.share`) y SOLO se muestra
+// si el navegador la soporta —tipico en movil—: abre la bandeja nativa del
+// sistema, el unico camino real para compartir a Instagram desde una web (no
+// existe una URL de "share" de Instagram). Inofensivo si el pie no esta.
+function wireFooterShare(footer) {
+  if (!footer || typeof footer.querySelector !== 'function') {
+    return;
+  }
+  const url = window.location.href;
+  const titulo = document.title || 'Interstellar';
+
+  const wa = footer.querySelector('a[data-share="whatsapp"]');
+  if (wa) {
+    wa.href = `https://wa.me/?text=${encodeURIComponent(`${titulo} — ${url}`)}`;
+  }
+  const fb = footer.querySelector('a[data-share="facebook"]');
+  if (fb) {
+    fb.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+  }
+
+  const nativoLi = footer.querySelector('[data-share-nativo]');
+  const nativoBtn = footer.querySelector('button[data-share="nativo"]');
+  if (
+    nativoLi &&
+    nativoBtn &&
+    typeof navigator !== 'undefined' &&
+    typeof navigator.share === 'function'
+  ) {
+    nativoLi.hidden = false;
+    nativoBtn.addEventListener('click', () => {
+      navigator.share({ title: titulo, url }).catch(() => {});
+    });
+  }
+}
+
 // Indicador de seccion actual (FR: descubribilidad de la nav). Marca con
 // `aria-current="page"` el enlace de NIVEL SUPERIOR cuyo destino es la pagina en
 // curso; el CSS lo resalta (LED fijo + acento) tanto en la barra de escritorio
@@ -360,6 +406,7 @@ export function init(navConfig = NavConfig) {
   markCurrentPage(nav);
   wireDisclosure(nav, estado);
   wireDrawer(header, nav, estado);
+  wireFooterShare(document.body.querySelector('footer'));
   initHeroVideo();
 }
 
