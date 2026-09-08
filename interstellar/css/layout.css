@@ -2286,3 +2286,147 @@ body.con-cielo > footer {
     min-height: 240px;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   17. Aviso de spoiler (js/layout.js `initSpoilerAviso`)
+   ---------------------------------------------------------------------------
+   Señal para quien no vio la película: el sitio comenta la trama completa,
+   final incluido. En la primera visita `js/layout.js` pone `body.spoiler-alerta`
+   —los LED del header (cada ítem de nav + los dos del mini-panel de la marca)
+   pasan a rojo `--led-alerta` y parpadean como baliza—, inyecta un rótulo
+   "SPOILERS" en la banda y una tira de aviso bajo el header con un botón
+   "Ya la vi". Al confirmar se guarda en localStorage y todo vuelve a teal.
+   El rojo es de uso puntual (constitución): acá dura solo hasta el "Ya la vi".
+   Con `prefers-reduced-motion` no hay parpadeo, solo el color.
+   --------------------------------------------------------------------------- */
+
+/* --- LED de los ítems de nav en alerta (barra y drawer) --- */
+body.spoiler-alerta header nav > ul > li > a::before {
+  background: var(--led-alerta);
+  box-shadow: 0 0 6px 1px color-mix(in srgb, var(--led-alerta) 58%, transparent);
+  opacity: 0.85;
+}
+
+body.spoiler-alerta header nav > ul > li > a:hover::before,
+body.spoiler-alerta header nav > ul > li > a:focus-visible::before,
+body.spoiler-alerta header nav > ul > li > a[aria-current='page']::before {
+  opacity: 1;
+  box-shadow: 0 0 9px 2px color-mix(in srgb, var(--led-alerta) 82%, transparent);
+}
+
+/* --- LED del mini-panel de la marca en alerta (SYS + PWR, los dos rojos) --- */
+body.spoiler-alerta .cockpit-brand::before,
+body.spoiler-alerta .cockpit-brand::after {
+  background: var(--led-alerta);
+  box-shadow: 0 0 6px 1px color-mix(in srgb, var(--led-alerta) 62%, transparent);
+}
+
+/* --- Parpadeo de baliza: más marcado que el titileo normal, < 1 Hz (sin
+   riesgo fotosensible). El reset global ya anula animaciones con
+   prefers-reduced-motion; este guard lo hace explícito. --- */
+@media (prefers-reduced-motion: no-preference) {
+  body.spoiler-alerta header nav > ul > li > a::before,
+  body.spoiler-alerta .cockpit-brand::before,
+  body.spoiler-alerta .cockpit-brand::after {
+    animation: spoiler-baliza 1.2s ease-in-out infinite;
+  }
+}
+
+@keyframes spoiler-baliza {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.28; }
+}
+
+/* --- Micro-rótulo "SPOILERS" en la banda del header. Se inyecta solo en
+   estado de alerta. En escritorio ocupa el hueco izquierdo de la banda (la
+   marca está oculta); en mobile la marca vuelve y el rótulo cede su lugar —el
+   aviso de abajo y los LED rojos ya comunican. --- */
+.spoiler-rotulo {
+  display: none;
+}
+
+.spoiler-rotulo .led {
+  flex: none;
+}
+
+@media (min-width: 60rem) {
+  body.spoiler-alerta .spoiler-rotulo {
+    position: absolute;
+    left: 1.25rem;
+    top: 50%;
+    z-index: 2;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0.5rem;
+    font-family: var(--font-instrumento);
+    font-size: 0.68rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: color-mix(in srgb, var(--led-alerta) 82%, var(--color-texto));
+    text-shadow: 0 0 8px color-mix(in srgb, var(--led-alerta) 40%, transparent);
+  }
+}
+
+/* --- La tira de aviso, inyectada como hermano siguiente del <header> --- */
+.spoiler-aviso {
+  position: relative;
+  z-index: 21;   /* sobre el cielo fijo (z 0) y el ::before del header */
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem 1rem;
+  padding: 0.5rem 1rem;
+  background:
+    var(--cockpit-metal)
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--led-alerta) 20%, var(--cockpit-metal)),
+      color-mix(in srgb, var(--led-alerta) 9%, var(--cockpit-metal)));
+  border-bottom: 1px solid color-mix(in srgb, var(--led-alerta) 45%, var(--cockpit-bezel));
+  font-family: var(--font-instrumento);
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+  line-height: 1.4;
+  color: var(--color-texto);
+  text-align: center;
+}
+
+.spoiler-aviso b {
+  color: color-mix(in srgb, var(--led-alerta) 82%, #fff);
+  letter-spacing: 0.06em;
+}
+
+.spoiler-aviso button {
+  flex: none;
+  font-family: var(--font-instrumento);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-texto);
+  background: linear-gradient(180deg, var(--cockpit-metal-alto), var(--cockpit-metal));
+  border: 1px solid color-mix(in srgb, var(--led-alerta) 50%, var(--cockpit-bezel));
+  clip-path: var(--recorte-tecla);
+  padding: 0.4rem 0.95rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.spoiler-aviso button:hover,
+.spoiler-aviso button:focus-visible {
+  border-color: var(--led-alerta);
+  color: color-mix(in srgb, var(--led-alerta) 78%, #fff);
+}
+
+/* En la home el header flota sobre el Hero (`position: absolute`) para que este
+   ocupe la pantalla exacta sin scroll. Mientras el aviso de spoiler está activo,
+   el header vuelve al flujo: header + tira + Hero + footer apilan natural (la
+   home admite un pelín de scroll en ese estado transitorio). Al descartar, se
+   quita `spoiler-alerta` y la home recupera su "sin scroll".
+   `relative` (no `static`): el header vuelve al flujo pero sigue siendo el
+   contenedor posicionado de `.cockpit-brand` (que va `position: absolute`). */
+body.home.spoiler-alerta > header {
+  position: relative;
+}

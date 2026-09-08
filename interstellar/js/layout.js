@@ -355,6 +355,69 @@ function wireFooterShare(footer) {
   }
 }
 
+// Aviso de spoiler (css/layout.css §17). El sitio comenta la trama completa
+// —final incluido— en casi todas las paginas. En la primera visita se pone
+// `body.spoiler-alerta` (los LED del header pasan a rojo y parpadean), se inyecta
+// un rotulo "SPOILERS" en la banda y una tira de aviso debajo del header con un
+// boton "Ya la vi". Al confirmar se guarda en localStorage y todo vuelve a teal.
+// `localStorage` puede tirar (modo privado): las lecturas/escrituras van en
+// try/catch y si falla, el aviso simplemente aparece cada vez.
+const SPOILER_KEY = 'interstellar:spoiler-ack';
+
+function spoilerReconocido() {
+  try {
+    return localStorage.getItem(SPOILER_KEY) === '1';
+  } catch (_) {
+    return false;
+  }
+}
+
+function guardarSpoilerReconocido() {
+  try {
+    localStorage.setItem(SPOILER_KEY, '1');
+  } catch (_) {
+    /* modo privado / storage bloqueado: se vuelve a mostrar la proxima vez */
+  }
+}
+
+function initSpoilerAviso(header) {
+  if (!header || typeof header.insertAdjacentHTML !== 'function' || !document.body) {
+    return;
+  }
+  if (spoilerReconocido()) {
+    return;
+  }
+
+  document.body.classList.add('spoiler-alerta');
+  header.insertAdjacentHTML(
+    'afterbegin',
+    '<span class="spoiler-rotulo" aria-hidden="true"><span class="led led-alerta"></span>Spoilers</span>',
+  );
+  header.insertAdjacentHTML(
+    'afterend',
+    '<div class="spoiler-aviso" role="alert">' +
+      '<span><b>⚠ Spoilers:</b> este sitio comenta la trama completa, incluido el final.</span>' +
+      '<button type="button" data-spoiler-ok>Ya la vi</button>' +
+      '</div>',
+  );
+
+  const rotulo = header.querySelector('.spoiler-rotulo');
+  const aviso = document.body.querySelector('.spoiler-aviso');
+  const boton = aviso && aviso.querySelector('[data-spoiler-ok]');
+  if (boton) {
+    boton.addEventListener('click', () => {
+      guardarSpoilerReconocido();
+      document.body.classList.remove('spoiler-alerta');
+      if (rotulo) {
+        rotulo.remove();
+      }
+      if (aviso) {
+        aviso.remove();
+      }
+    });
+  }
+}
+
 // Indicador de seccion actual (FR: descubribilidad de la nav). Marca con
 // `aria-current="page"` el enlace de NIVEL SUPERIOR cuyo destino es la pagina en
 // curso; el CSS lo resalta (LED fijo + acento) tanto en la barra de escritorio
@@ -407,6 +470,7 @@ export function init(navConfig = NavConfig) {
   wireDisclosure(nav, estado);
   wireDrawer(header, nav, estado);
   wireFooterShare(document.body.querySelector('footer'));
+  initSpoilerAviso(header);
   initHeroVideo();
 }
 
