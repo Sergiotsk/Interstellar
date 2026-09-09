@@ -54,8 +54,14 @@ construye solo con:
   va un elemento semántico es un defecto que bloquea la aceptación.
 - **CSS puro** — variables CSS para toda la paleta y los valores reutilizables,
   Grid/Flexbox para el layout, media queries para responsive.
-- **JavaScript vanilla (ES6+)** — escrito a mano como **ES Modules**, un módulo
-  por responsabilidad, sin variables globales.
+- **JavaScript vanilla (ES6+)** — **ES Modules** planos, un módulo por
+  responsabilidad, sin variables globales.
+
+> **"Vanilla" es una restricción _técnica_, no sobre quién teclea.** Quiere decir
+> HTML/CSS/JS directo: sin el modelo de componentes / JSX de ningún framework y
+> sin transpilación. El código lo generan **agentes de codificación bajo dirección
+> del alumno** (ver _Libertades_ y _Metodología_ más abajo); lo que la cátedra
+> evalúa es esa dirección y que cada pieza se pueda explicar y defender.
 
 **Prohibido:**
 
