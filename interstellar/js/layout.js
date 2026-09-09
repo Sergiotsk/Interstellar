@@ -420,9 +420,16 @@ function initSpoilerAviso(header) {
         if (rotulo) rotulo.remove();
         if (aviso) aviso.remove();
       };
+      const sinMovimiento =
+        typeof matchMedia === 'function' &&
+        matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (sinMovimiento) {
+        cerrar(); // sin animacion de retraccion -> se quita al toque
+        return;
+      }
       aviso.classList.add('spoiler-aviso--retrae');
       aviso.addEventListener('animationend', cerrar, { once: true });
-      setTimeout(cerrar, 600);
+      setTimeout(cerrar, 1800); // respaldo: > que la animacion de 1.5s
     });
   }
 }

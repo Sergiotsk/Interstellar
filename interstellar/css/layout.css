@@ -2442,29 +2442,43 @@ body.spoiler-alerta .cockpit-brand-linea::before {
   }
 }
 
-/* --- La tira de aviso, inyectada como hermano siguiente del <header>.
-   z-index 19 (POR DEBAJO del header, z 20): asi puede "desplegarse desde el
-   header" —arranca oculta detras de la banda (`translateY(-100%)`) y baja hasta
-   su lugar, asomando primero por las esquinas recortadas del bezel. Al
-   reconocer el aviso, `.spoiler-aviso--retrae` la sube de vuelta y el JS la
-   quita. Con prefers-reduced-motion el reset global anula las animaciones: la
-   tira aparece y desaparece sin deslizar. --- */
+/* --- El panel de aviso, inyectado como hermano siguiente del <header>. NO va a
+   todo el ancho: es un modulo centrado (`width: min(...)`) que BAJA DESDE EL
+   TABLERO. z-index 19 (POR DEBAJO del header, z 20): arranca oculto detras de la
+   banda (`translateY(-100%)`) y baja hasta su lugar, asomando primero por el
+   filo del bezel. Sin filo arriba (`border-top: 0`) y esquinas inferiores
+   recortadas -> se lee como una compuerta que sale de la consola. Al reconocer
+   el aviso, `.spoiler-aviso--retrae` lo sube de vuelta LENTO (1.5s) y el JS lo
+   quita. Con prefers-reduced-motion el reset global anula las animaciones: el
+   panel aparece y desaparece sin deslizar. --- */
 .spoiler-aviso {
   position: relative;
   z-index: 19;
+  width: min(100% - 2rem, 52rem);
+  margin-inline: auto;
   animation: spoiler-desplegar 0.5s cubic-bezier(0.16, 0.84, 0.28, 1) both;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   gap: 0.5rem 1rem;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 1.4rem 0.6rem;
   background:
     var(--cockpit-metal)
     linear-gradient(180deg,
-      color-mix(in srgb, var(--led-alerta) 20%, var(--cockpit-metal)),
+      color-mix(in srgb, var(--led-alerta) 22%, var(--cockpit-metal)),
       color-mix(in srgb, var(--led-alerta) 9%, var(--cockpit-metal)));
-  border-bottom: 1px solid color-mix(in srgb, var(--led-alerta) 45%, var(--cockpit-bezel));
+  border: 1px solid color-mix(in srgb, var(--led-alerta) 42%, var(--cockpit-bezel));
+  border-top: 0;                        /* pegado al tablero: sale de la banda */
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--led-alerta) 20%, transparent),
+    0 0.7rem 1.5rem color-mix(in srgb, #000 52%, transparent);
+  /* esquinas inferiores cortadas: cara de compuerta del panel */
+  clip-path: polygon(
+    0 0, 100% 0,
+    100% calc(100% - 11px), calc(100% - 20px) 100%,
+    20px 100%, 0 calc(100% - 11px)
+  );
   font-family: var(--font-instrumento);
   font-size: 0.78rem;
   letter-spacing: 0.03em;
@@ -2507,12 +2521,17 @@ body.spoiler-alerta .cockpit-brand-linea::before {
 }
 
 @keyframes spoiler-retrae {
-  from { transform: translateY(0); opacity: 1; }
-  to   { transform: translateY(-100%); opacity: 0; }
+  from { transform: translateY(0); opacity: 1; margin-bottom: 0; }
+  70%  { opacity: 1; }
+  /* `margin-bottom` negativo -> el <main> sube EN SINCRO con el panel; al
+     quitarse del DOM ya no hay salto de layout. */
+  to   { transform: translateY(-100%); opacity: 0; margin-bottom: -3rem; }
 }
 
+/* Salida MUCHO mas lenta que la entrada: el panel se guarda despacio en la
+   consola. Arranca casi quieto y acelera al final (ease-in). */
 .spoiler-aviso--retrae {
-  animation: spoiler-retrae 0.42s cubic-bezier(0.5, 0, 0.9, 0.35) forwards;
+  animation: spoiler-retrae 1.5s cubic-bezier(0.62, 0, 0.8, 0.2) forwards;
 }
 
 /* --- "Check del tablero": mientras el aviso esta activo, TODAS las luces de la
