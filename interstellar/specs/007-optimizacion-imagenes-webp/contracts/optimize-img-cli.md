@@ -10,7 +10,7 @@ node tools/optimize-img.mjs --all      [--dry-run] [--force]
 ```
 
 (Opcional: `package.json` puede exponer `"scripts": { "optimize": "node tools/optimize-img.mjs" }`
-→ `npm run optimize -- <seccion>`.)
+→ `pnpm optimize <seccion>`.)
 
 ### Argumentos
 

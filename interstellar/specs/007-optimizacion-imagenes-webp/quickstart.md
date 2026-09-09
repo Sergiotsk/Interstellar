@@ -7,7 +7,7 @@ contratos en [contracts/](./contracts/).
 
 ```bash
 cd interstellar
-npm install            # instala sharp (devDependency, pinneada)
+pnpm install           # instala sharp (devDependency, pinneada)
 ```
 
 - `assets/_source/` sigue gitignored: si tenés originales crudos de una sección, ponelos en

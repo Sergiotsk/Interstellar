@@ -26,11 +26,11 @@ sección. US3 = créditos/docs. Trabajo en `main`, un commit chico por tarea o g
 
 **Purpose**: dejar el proyecto listo para tener un script de tooling.
 
-- [X] T001 Agregar `sharp` como `devDependencies` (versión exacta pinneada) en `package.json`, y `"scripts": { "optimize": "node tools/optimize-img.mjs" }`. Correr `npm install` y verificar que `node -e "require('sharp')"` (o `import`) resuelve.
+- [X] T001 Agregar `sharp` como `devDependencies` (versión exacta pinneada) en `package.json`, y `"scripts": { "optimize": "node tools/optimize-img.mjs" }`. Correr `pnpm install` y verificar que `node -e "require('sharp')"` (o `import`) resuelve.
 - [X] T002 [P] Crear el directorio `tools/` con un `tools/README.md` de una línea (qué es: scripts de mantenimiento del repo, corren local, NO en CI).
 - [X] T003 [P] Confirmar en `.gitignore` que `assets/_source/` sigue ignorado y que `assets/img/*.webp` NO está ignorado (los derivados se versionan). Sin cambios si ya está bien; documentar en el commit.
 
-**Checkpoint**: `npm install` OK, `sharp` disponible, `tools/` existe.
+**Checkpoint**: `pnpm install` OK, `sharp` disponible, `tools/` existe.
 
 ---
 
@@ -139,7 +139,7 @@ reflow al cargar; sin `loading=lazy` arriba del fold; consola limpia; `node --te
 ## Phase 6: Polish & Cross-Cutting
 
 - [ ] T030 [P] Correr `node tools/optimize-img.mjs --all` y confirmar `git status` limpio (idempotencia global, SC-005).
-- [ ] T031 [P] Verificar el deploy: `.github/workflows/deploy-pages.yml` NO referencia `tools/` ni `npm run`; publica `assets/` tal cual (FR-014, SC-008).
+- [ ] T031 [P] Verificar el deploy: `.github/workflows/deploy-pages.yml` NO referencia `tools/` ni scripts de `package.json` (`pnpm`/`npm run`); publica `assets/` tal cual (FR-014, SC-008).
 - [ ] T032 Pasada visual final en navegador de todas las páginas migradas: sin 404 de imágenes, sin errores de consola, sin reflow; medir peso total de `assets/img/` antes/después y anotarlo en el commit final.
 - [ ] T033 [P] Actualizar `DESIGN.md` si documenta reglas de imágenes (añadir el patrón `<picture>` + tabla de anchos) — omitir si no aplica.
 - [ ] T034 Ejecutar el `quickstart.md` de punta a punta sobre una sección como smoke final.

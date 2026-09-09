@@ -169,7 +169,7 @@ cualquier servidor estático.
 ```bash
 cd interstellar
 python -m http.server 8000
-# o: npx serve .
+# o: pnpm dlx serve .
 ```
 
 Y abrir <http://localhost:8000>. Servir por HTTP (no abrir los `.html` con
@@ -183,18 +183,22 @@ runner nativo de Node (≥ 20):
 
 ```bash
 cd interstellar
-npm test
+pnpm test
 ```
 
 La capa presentacional (HTML, CSS, animaciones visuales) no se testea con
 framework: se valida contra los criterios de aceptación de la constitución.
 
+> El gestor de paquetes es **pnpm** (fijado en `package.json` →
+> `packageManager`). El lockfile es `pnpm-lock.yaml`. `pnpm test` no instala nada
+> —solo corre `node --test`—, así que no necesitás `pnpm install` para los tests.
+
 ### Optimizar imágenes
 
 ```bash
 cd interstellar
-npm install          # trae sharp (devDependency de tooling)
-npm run optimize
+pnpm install         # trae sharp (devDependency de tooling)
+pnpm optimize
 ```
 
 ---
