@@ -17,10 +17,14 @@ Cambios de esta version:
     de framework/preprocesador.
   - "Restricciones Tecnicas / Assets": "optimizadas a WebP ... a mano" -> la optimizacion a
     WebP + el resize PUEDEN hacerse con un script local cuyos resultados (`.webp` + fallback
-    `.jpg`) se commitean y se sirven tal cual; "a mano" deja de ser obligatorio. Originales
-    sin optimizar versionados en `assets/_source/img/`.
-  - "Restricciones Tecnicas / Estructura de carpetas": se suman `/assets/_source` (originales
-    versionados) y `/tools` (scripts de mantenimiento del repo, Node ESM, corren local).
+    en el formato original) se commitean y se sirven tal cual; "a mano" deja de ser
+    obligatorio. Se sirve WebP con respaldo (queda sin efecto la nota "solo JPEG" de
+    `assets/img/CREDITOS.md`, 2026-08-28). Los originales sin optimizar NO se versionan
+    (siguen locales / gitignored, politica existente); para imagenes sin original guardado,
+    la version servida actual es la fuente.
+  - "Restricciones Tecnicas / Estructura de carpetas": se suma `/tools` (scripts de
+    mantenimiento del repo, Node ESM, corren local) y se documenta `/assets/_source`
+    (originales, LOCAL / gitignored).
 
 Historial anterior:
   - 2.2.0 (2026-09-08): Diseno -> regla de legibilidad del cuerpo (negritas `<strong>` para
@@ -54,8 +58,9 @@ Historial:
     centrados ni justificados).
   - 2.3.0 (2026-09-08): Principio I + Assets -> se habilita un pipeline local/offline de
     optimizacion de imagenes (script en `tools/`, devDependencies de tooling como sharp);
-    "sin paso de build" queda acotado al deploy; `assets/_source/` y `tools/` sumados a la
-    estructura de carpetas.
+    "sin paso de build" queda acotado al deploy; se sirve WebP con respaldo; `/tools` sumado
+    a la estructura de carpetas, `/assets/_source` documentado (LOCAL / gitignored). Los
+    originales NO se versionan.
 
 Follow-up / consistencia (fuera del alcance de este comando):
   - specs/001-005 mencionan reglas del Principio I viejo; features cerradas, no se tocan.
@@ -221,7 +226,8 @@ ante un evaluador que sepa del tema.
 /js/vendor        -> librerias de terceros vendorizadas (`<lib>@<version>/`)
 /tools            -> scripts de mantenimiento del repo (Node ESM, corren local, NO en CI)
 /assets/img       -> imagenes optimizadas que se sirven (locales, rutas relativas)
-/assets/_source   -> originales sin optimizar, versionados; entrada de los scripts de `tools/`
+/assets/_source   -> originales sin optimizar; LOCAL, gitignored (ver .gitignore). Entrada
+                     opcional de los scripts de `tools/`; no todas las imagenes tienen original
 /assets/fonts     -> tipografias self-hosted (solo si no alcanza con Google Fonts)
 ```
 
@@ -273,12 +279,16 @@ dos lineas se alinea a la izquierda** con borde derecho irregular; **nunca centr
 justificado**. Solo los titulos cortos, taglines de Hero y etiquetas de una linea pueden ir
 centrados.
 
-**Assets**: imagenes locales, referenciadas con rutas relativas, optimizadas a WebP y a
-resoluciones razonables. La optimizacion (conversion a WebP + resize) PUEDE hacerse a mano
-o con un **script local de `tools/`** cuyos resultados (`.webp` + fallback `.jpg`) se
-commitean y se sirven tal cual; el original sin optimizar se versiona en
-`assets/_source/img/`. Se prefiere el script por reproducibilidad. **Acreditar la fuente de
-cada imagen es OBLIGATORIO** (NASA/ESA lo exigen; el resto queda prolijo).
+**Assets**: imagenes locales, referenciadas con rutas relativas, optimizadas a resoluciones
+razonables. La optimizacion (resize + conversion) PUEDE hacerse a mano o con un **script
+local de `tools/`** cuyos resultados se commitean y se sirven tal cual; se prefiere el
+script por reproducibilidad. Se sirve **WebP con un respaldo** en el formato original
+(deja sin efecto la nota "solo JPEG" de `assets/img/CREDITOS.md` del 2026-08-28). Los
+originales sin optimizar NO se versionan: siguen locales (`assets/_source/`, gitignored); si
+una imagen no tiene original guardado, la version servida actual es su fuente y se acepta
+una unica recompresion. **Acreditar la fuente de cada imagen es OBLIGATORIO** (NASA/ESA lo
+exigen; el resto queda prolijo); los derivados de una imagen (p. ej. su `.webp`) heredan el
+credito del original y NO se listan por separado.
 
 **Baseline**: navegadores evergreen, ultimas 2 versiones. Sin polyfills.
 
