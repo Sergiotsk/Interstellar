@@ -83,7 +83,7 @@ Unidad de aplicación incremental. Una sección se migra de una sola vez, en un 
 
 | `seccion` | Archivos de marcado | Nº aprox. de imágenes |
 |---|---|---|
-| `mundos-portada` | `css/mundos.css` (portada scroll de `mundos-tierra.html` / `mundos-gargantua.html`) | ~10 (solo `background-image`; sin `<img>` propios) |
+| `mundos-portada` | `css/mundos.css` (portada scroll de `mundos-tierra` / `mundos-gargantua` / `mundos-miller` / `mundos-mann` / `mundos-tesseract`) | 29 (solo `background-image`; sin `<img>` propios). Scope ampliado el 2026-09-09: Miller/Mann/Tesseract se rehicieron después del plan. |
 | `galeria` | `galeria.html` | 50 |
 | `filmstrip-tierra` | `mundos-tierra.html` | 20 |
 | `filmstrip-gargantua` | `mundos-gargantua.html` | 15 |

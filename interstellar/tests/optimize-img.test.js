@@ -86,6 +86,19 @@ describe('tools/optimize-img.lib.mjs — lógica pura del pipeline (feature 007)
       }
     });
 
+    test('mundos-portada incluye los backdrops de Miller/Mann/Tesseract, todos backdrop-mundo (scope ampliado 2026-09-09)', () => {
+      const entradas = sectionConfig('mundos-portada');
+      const nombres = entradas.map((e) => e.logicalName);
+      for (const n of ['mundos-miller-arribo', 'mundos-mann-hielo', 'mundos-tesseract-reticula']) {
+        assert.ok(nombres.includes(n), `falta ${n} en mundos-portada`);
+      }
+      for (const e of entradas) {
+        if (/^mundos-(miller|mann|tesseract)-/.test(e.logicalName)) {
+          assert.equal(e.context, 'backdrop-mundo', `${e.logicalName} debería ser backdrop-mundo`);
+        }
+      }
+    });
+
     test('sección desconocida lanza', () => {
       assert.throws(() => sectionConfig('inexistente'), /secci[oó]n/i);
     });

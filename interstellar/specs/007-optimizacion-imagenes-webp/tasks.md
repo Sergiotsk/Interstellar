@@ -83,12 +83,18 @@ reflow al cargar; sin `loading=lazy` arriba del fold; consola limpia; `node --te
 
 ### mundos-portada (backdrops de CSS — sección CSS-only)
 
-> La portada scroll vive en `mundos-tierra.html` y `mundos-gargantua.html` (`.mundo-portada*`
-> + `js/mundo-portada.js`) y usa **solo `background-image` + canvas**, sin `<img>` propios.
+> La portada scroll vive en `mundos-tierra`, `mundos-gargantua`, `mundos-miller`, `mundos-mann`
+> y `mundos-tesseract` (`.mundo-portada*` + `js/mundo-portada.js`) y usa **solo
+> `background-image` + canvas**, sin `<img>` propios.
 > Los `<img>` de `mundos.html` son las tarjetas del hub → sección `mundos-hub` (T022).
+>
+> **Scope ampliado (2026-09-09):** el `SECTION_MAP['mundos-portada']` original (2026-09-08)
+> solo cubría Tierra + Gargantúa (10 backdrops). Miller/Mann/Tesseract se rehicieron después
+> del plan y suman 19 backdrops más → sección ampliada a **29**. `BACKDROP_MUNDO` +
+> `SECTION_MAP` en `optimize-img.lib.mjs` actualizados, con test en `optimize-img.test.js`.
 
-- [ ] T015 [US2] Con los derivados ya generados por T014, en `css/mundos.css` cambiar cada `background-image: url("../assets/img/<n>.jpg")` de la portada scroll (`terra-granja`, `terra-maizal`, `terra-tormenta`, `terra-abandonada`, `mundos-gargantua`, `ciencia-gargantua`, `mundos-gargantua-plano`, `mundos-gargantua-endurance`, `mundos-gargantua-ranger`, `mundos-gargantua-deriva`) a `.webp`. Verificar en el navegador que la portada se ve igual.
-- [ ] T016 [US2] Confirmar que `mundos-portada` no tiene `<img>` que migrar: revisar `mundos-tierra.html` y `mundos-gargantua.html` — la portada es `background-image` + `<canvas>`, sin `<img>`. Si apareciera alguno, envolverlo en `<picture>` con los atributos del checklist; si no, marcar la tarea como N/A.
+- [X] T015 [US2] En `css/mundos.css`, migrar los **29** `background-image: url("../assets/img/<n>.jpg")` de la portada scroll a `.webp`: Tierra/Gargantúa (`terra-granja`, `terra-maizal`, `terra-tormenta`, `terra-abandonada`, `mundos-gargantua`, `ciencia-gargantua`, `mundos-gargantua-{plano,endurance,ranger,deriva}`) + Miller (`mundos-miller-{arribo,vadeo,rasante,ola,impacto,muro,cabina}`) + Mann (`mundos-mann-{hielo,superficie,mann,engano,docking,tunel}`) + Tesseract (`mundos-tesseract-{reticula,caida,estante,empuje,mensaje,murph}`). Derivados generados por `node tools/optimize-img.mjs mundos-portada` (−49% en los 19 nuevos; 2ª corrida ⇒ `git status` limpio). Pendiente: verificación visual en navegador de las 5 páginas.
+- [ ] T016 [US2] Confirmar que `mundos-portada` no tiene `<img>` que migrar: revisar `mundos-tierra/gargantua/miller/mann/tesseract.html` — la portada es `background-image` + `<canvas>`, sin `<img>`. Si apareciera alguno, envolverlo en `<picture>` con los atributos del checklist; si no, marcar la tarea como N/A.
 
 ### galeria (50 `<img>`, ya tienen `loading`/`width`/`height`)
 

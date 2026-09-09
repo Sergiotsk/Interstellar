@@ -300,22 +300,22 @@ body.mundo-detalle main > section.mundo-portada {
 }
 
 .mundo-capa--granja {
-  background-image: url("../assets/img/terra-granja.jpg");
+  background-image: url("../assets/img/terra-granja.webp");
   opacity: 0;
 }
 
 .mundo-capa--maizal {
-  background-image: url("../assets/img/terra-maizal.jpg");
+  background-image: url("../assets/img/terra-maizal.webp");
   opacity: 0;
 }
 
 .mundo-capa--tormenta {
-  background-image: url("../assets/img/terra-tormenta.jpg");
+  background-image: url("../assets/img/terra-tormenta.webp");
   opacity: 0;
 }
 
 .mundo-capa--abandonada {
-  background-image: url("../assets/img/terra-abandonada.jpg");
+  background-image: url("../assets/img/terra-abandonada.webp");
   opacity: 0;
 }
 
@@ -405,31 +405,31 @@ body.mundo-detalle main > section.mundo-portada .mundo-volver {
    pelicula (cap-that.com), 1600px.
    --------------------------------------------------------------------------- */
 .mundo-capa--gargantua-lejos {
-  background-image: url("../assets/img/mundos-gargantua.jpg");
+  background-image: url("../assets/img/mundos-gargantua.webp");
 }
 
 .mundo-capa--gargantua-disco {
-  background-image: url("../assets/img/ciencia-gargantua.jpg");
+  background-image: url("../assets/img/ciencia-gargantua.webp");
   opacity: 0;
 }
 
 .mundo-capa--gargantua-plano {
-  background-image: url("../assets/img/mundos-gargantua-plano.jpg");
+  background-image: url("../assets/img/mundos-gargantua-plano.webp");
   opacity: 0;
 }
 
 .mundo-capa--gargantua-endurance {
-  background-image: url("../assets/img/mundos-gargantua-endurance.jpg");
+  background-image: url("../assets/img/mundos-gargantua-endurance.webp");
   opacity: 0;
 }
 
 .mundo-capa--gargantua-ranger {
-  background-image: url("../assets/img/mundos-gargantua-ranger.jpg");
+  background-image: url("../assets/img/mundos-gargantua-ranger.webp");
   opacity: 0;
 }
 
 .mundo-capa--gargantua-deriva {
-  background-image: url("../assets/img/mundos-gargantua-deriva.jpg");
+  background-image: url("../assets/img/mundos-gargantua-deriva.webp");
   opacity: 0;
 }
 
@@ -499,36 +499,36 @@ body.mundo-detalle main > section.mundo-portada .mundo-volver {
    Beats: fotogramas de la pelicula (cap-that.com), 1800px.
    --------------------------------------------------------------------------- */
 .mundo-capa--miller-arribo {
-  background-image: url("../assets/img/mundos-miller-arribo.jpg");
+  background-image: url("../assets/img/mundos-miller-arribo.webp");
 }
 
 .mundo-capa--miller-vadeo {
-  background-image: url("../assets/img/mundos-miller-vadeo.jpg");
+  background-image: url("../assets/img/mundos-miller-vadeo.webp");
   opacity: 0;
 }
 
 .mundo-capa--miller-rasante {
-  background-image: url("../assets/img/mundos-miller-rasante.jpg");
+  background-image: url("../assets/img/mundos-miller-rasante.webp");
   opacity: 0;
 }
 
 .mundo-capa--miller-ola {
-  background-image: url("../assets/img/mundos-miller-ola.jpg");
+  background-image: url("../assets/img/mundos-miller-ola.webp");
   opacity: 0;
 }
 
 .mundo-capa--miller-impacto {
-  background-image: url("../assets/img/mundos-miller-impacto.jpg");
+  background-image: url("../assets/img/mundos-miller-impacto.webp");
   opacity: 0;
 }
 
 .mundo-capa--miller-muro {
-  background-image: url("../assets/img/mundos-miller-muro.jpg");
+  background-image: url("../assets/img/mundos-miller-muro.webp");
   opacity: 0;
 }
 
 .mundo-capa--miller-cabina {
-  background-image: url("../assets/img/mundos-miller-cabina.jpg");
+  background-image: url("../assets/img/mundos-miller-cabina.webp");
   opacity: 0;
 }
 
@@ -602,31 +602,31 @@ body.mundo-detalle main > section.mundo-portada .mundo-volver {
    Fotogramas de la pelicula (cap-that.com), 1800px.
    --------------------------------------------------------------------------- */
 .mundo-capa--mann-hielo {
-  background-image: url("../assets/img/mundos-mann-hielo.jpg");
+  background-image: url("../assets/img/mundos-mann-hielo.webp");
 }
 
 .mundo-capa--mann-superficie {
-  background-image: url("../assets/img/mundos-mann-superficie.jpg");
+  background-image: url("../assets/img/mundos-mann-superficie.webp");
   opacity: 0;
 }
 
 .mundo-capa--mann-mann {
-  background-image: url("../assets/img/mundos-mann-mann.jpg");
+  background-image: url("../assets/img/mundos-mann-mann.webp");
   opacity: 0;
 }
 
 .mundo-capa--mann-engano {
-  background-image: url("../assets/img/mundos-mann-engano.jpg");
+  background-image: url("../assets/img/mundos-mann-engano.webp");
   opacity: 0;
 }
 
 .mundo-capa--mann-docking {
-  background-image: url("../assets/img/mundos-mann-docking.jpg");
+  background-image: url("../assets/img/mundos-mann-docking.webp");
   opacity: 0;
 }
 
 .mundo-capa--mann-tunel {
-  background-image: url("../assets/img/mundos-mann-tunel.jpg");
+  background-image: url("../assets/img/mundos-mann-tunel.webp");
   opacity: 0;
 }
 
@@ -699,31 +699,31 @@ body.mundo-detalle main > section.mundo-portada .mundo-volver {
    Fotogramas de la pelicula (cap-that.com), 1800px.
    --------------------------------------------------------------------------- */
 .mundo-capa--tesseract-reticula {
-  background-image: url("../assets/img/mundos-tesseract-reticula.jpg");
+  background-image: url("../assets/img/mundos-tesseract-reticula.webp");
 }
 
 .mundo-capa--tesseract-caida {
-  background-image: url("../assets/img/mundos-tesseract-caida.jpg");
+  background-image: url("../assets/img/mundos-tesseract-caida.webp");
   opacity: 0;
 }
 
 .mundo-capa--tesseract-estante {
-  background-image: url("../assets/img/mundos-tesseract-estante.jpg");
+  background-image: url("../assets/img/mundos-tesseract-estante.webp");
   opacity: 0;
 }
 
 .mundo-capa--tesseract-empuje {
-  background-image: url("../assets/img/mundos-tesseract-empuje.jpg");
+  background-image: url("../assets/img/mundos-tesseract-empuje.webp");
   opacity: 0;
 }
 
 .mundo-capa--tesseract-mensaje {
-  background-image: url("../assets/img/mundos-tesseract-mensaje.jpg");
+  background-image: url("../assets/img/mundos-tesseract-mensaje.webp");
   opacity: 0;
 }
 
 .mundo-capa--tesseract-murph {
-  background-image: url("../assets/img/mundos-tesseract-murph.jpg");
+  background-image: url("../assets/img/mundos-tesseract-murph.webp");
   opacity: 0;
 }
 

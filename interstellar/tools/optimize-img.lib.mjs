@@ -70,11 +70,20 @@ export function webpConviene(webpBytes, respaldoBytes) {
 // galería nueva, subirlo a max(su contexto, 'galeria-ampliada').
 
 const BACKDROP_MUNDO = new Set([
-  // portada scroll en css/mundos.css
+  // portada scroll en css/mundos.css — Tierra + Gargantúa
   'terra-granja', 'terra-maizal', 'terra-tormenta', 'terra-abandonada',
   'mundos-gargantua', 'ciencia-gargantua',
   'mundos-gargantua-plano', 'mundos-gargantua-endurance',
   'mundos-gargantua-ranger', 'mundos-gargantua-deriva',
+  // portada scroll en css/mundos.css — Miller / Mann / Tesseract (páginas
+  // rehechas después del plan; scope ampliado 2026-09-09)
+  'mundos-miller-arribo', 'mundos-miller-vadeo', 'mundos-miller-rasante',
+  'mundos-miller-ola', 'mundos-miller-impacto', 'mundos-miller-muro',
+  'mundos-miller-cabina',
+  'mundos-mann-hielo', 'mundos-mann-superficie', 'mundos-mann-mann',
+  'mundos-mann-engano', 'mundos-mann-docking', 'mundos-mann-tunel',
+  'mundos-tesseract-reticula', 'mundos-tesseract-caida', 'mundos-tesseract-estante',
+  'mundos-tesseract-empuje', 'mundos-tesseract-mensaje', 'mundos-tesseract-murph',
   // heros de mundo (hub + fichas de detalle)
   'mundos-tierra', 'mundos-miller', 'mundos-mann', 'mundos-tesseract',
   // heros de sección
@@ -110,6 +119,14 @@ export const SECTION_MAP = Object.freeze({
       'mundos-gargantua', 'ciencia-gargantua',
       'mundos-gargantua-plano', 'mundos-gargantua-endurance',
       'mundos-gargantua-ranger', 'mundos-gargantua-deriva',
+      // Miller / Mann / Tesseract (scope ampliado 2026-09-09)
+      'mundos-miller-arribo', 'mundos-miller-vadeo', 'mundos-miller-rasante',
+      'mundos-miller-ola', 'mundos-miller-impacto', 'mundos-miller-muro',
+      'mundos-miller-cabina',
+      'mundos-mann-hielo', 'mundos-mann-superficie', 'mundos-mann-mann',
+      'mundos-mann-engano', 'mundos-mann-docking', 'mundos-mann-tunel',
+      'mundos-tesseract-reticula', 'mundos-tesseract-caida', 'mundos-tesseract-estante',
+      'mundos-tesseract-empuje', 'mundos-tesseract-mensaje', 'mundos-tesseract-murph',
     ]),
   },
   'mundos-hub': {
