@@ -528,12 +528,13 @@ header nav ul ul a {
    --------------------------------------------------------------------------- */
 @media (min-width: 60rem) {
   /* La banda deja de empujar el boton a la derecha: la fila se centra. En
-     escritorio la banda gana alto (~96px): las teclas dejan de leerse como
-     enlaces y pasan a leerse como botones de un tablero de comandos, y a la
-     izquierda entra la placa de marca de dos lineas (Interstellar / NAV·RANGER). */
+     escritorio la banda gana alto (~106px, +10% sobre el contenido sin
+     agrandarlo — solo mas aire): las teclas se leen como botones de un tablero
+     de comandos, y a la izquierda entra la placa de marca de dos lineas
+     (Interstellar / NAV·RANGER). */
   header {
     justify-content: center;
-    padding-block: 1.5rem 1.65rem;
+    padding-block: 1.8rem 1.95rem;
   }
 
   /* Esquinas inferiores mas marcadas: el marco de la ventana de la Ranger se
@@ -775,7 +776,9 @@ footer {
     inset 0 2px 6px color-mix(in srgb, var(--instrumento-teal) 14%, transparent),
     inset 0 -1px 0 var(--cockpit-bezel-brillo),
     inset 0 12px 22px rgba(0, 0, 0, 0.36);
-  padding: 1.7rem 1rem 1.4rem;
+  /* +20% de alto sobre la version anterior (1.7/1.4rem), sin tocar el contenido:
+     la consola inferior gana presencia a la par del header. */
+  padding: 2.25rem 1rem 1.85rem;
   text-align: center;
   font-family: var(--font-instrumento);
   font-size: 0.82rem;
