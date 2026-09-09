@@ -8,7 +8,15 @@
 //     un canvas de chispas que salen disparadas del centro hacia afuera
 //     acelerando (avance a velocidad, como Cooper cayendo) y DISMINUYEN a medida
 //     que scrolleas. Riel mas largo que la Tierra.
-// En ambas la camara "baja" atada al scroll y suelta el sticky sobre el
+//   - Miller -> "el amerizaje": siete fotogramas (plano abierto del Ranger y el
+//     pecio -> por la ventana del Ranger -> la camara al ras del oceano -> Doyle
+//     corre del muro de agua -> Doyle mira los restos zarandeados -> el muro
+//     BAJANDO sobre el Ranger volcado -> Brand quebrada).
+//     Encima, un reloj que cuenta los años que se pierden
+//     afuera mientras bajas: 0 -> 23 (una hora ahi = siete años arriba). El
+//     reloj es a Miller lo que las chispas a Gargantua: solo aparece con la
+//     escena armada.
+// En las tres la camara "baja" atada al scroll y suelta el sticky sobre el
 // contenido de la pagina.
 //
 // Libreria: GSAP 3.13 + ScrollTrigger (Constitucion v2.0.0, Principio I:
@@ -52,6 +60,8 @@ async function initMundoPortada() {
     escenaTierra(gsap, mm, portada);
   } else if (portada.querySelector('.mundo-capa--gargantua-lejos')) {
     escenaGargantua(gsap, mm, portada);
+  } else if (portada.querySelector('.mundo-capa--miller-arribo')) {
+    escenaMiller(gsap, mm, portada);
   }
 }
 
@@ -443,6 +453,143 @@ function escenaGargantua(gsap, mm, portada) {
 
     return cleanup(tl, paradas);
   });
+}
+
+// --- Miller: el amerizaje, 7 fotogramas + reloj de la dilatacion -------------
+function escenaMiller(gsap, mm, portada) {
+  const arribo = portada.querySelector('.mundo-capa--miller-arribo');
+  const vadeo = portada.querySelector('.mundo-capa--miller-vadeo');
+  const rasante = portada.querySelector('.mundo-capa--miller-rasante');
+  const ola = portada.querySelector('.mundo-capa--miller-ola');
+  const impacto = portada.querySelector('.mundo-capa--miller-impacto');
+  const muro = portada.querySelector('.mundo-capa--miller-muro');
+  const cabina = portada.querySelector('.mundo-capa--miller-cabina');
+  const texto = portada.querySelector('.mundo-portada-texto');
+  const volver = portada.querySelector('.mundo-volver');
+  const reloj = portada.querySelector('.mundo-reloj');
+  const relojNum = portada.querySelector('[data-reloj]');
+  const capas = [arribo, vadeo, rasante, ola, impacto, muro, cabina];
+  if (capas.some((c) => !c)) {
+    return; // DOM inesperado -> hero estatico
+  }
+
+  // Estado inicial: solo el primer fotograma; el resto oculto con su transform
+  // de entrada preparado. `scale` > 1 en las capas que "empujan" la camara; la
+  // ola entra hundida (yPercent) para TREPAR con el scroll; el muro entra alto
+  // para BAJAR encima del Ranger.
+  const base = () => {
+    portada.classList.add('is-armed');
+    gsap.set(arribo, { autoAlpha: 1, scale: 1, rotation: 0 });
+    gsap.set(vadeo, { autoAlpha: 0, scale: 1.14 });
+    gsap.set(rasante, { autoAlpha: 0, scale: 1.16, yPercent: -3 });
+    gsap.set(ola, { autoAlpha: 0, scale: 1.14, xPercent: 3 });
+    gsap.set(impacto, { autoAlpha: 0, scale: 1.12, filter: 'brightness(1) saturate(1)' });
+    gsap.set(muro, { autoAlpha: 0, scale: 1, yPercent: -8 });
+    gsap.set(cabina, { autoAlpha: 0, scale: 1.12 });
+    if (reloj) gsap.set(reloj, { autoAlpha: 0, scale: 1 });
+    if (relojNum) relojNum.textContent = '0';
+  };
+
+  const cleanup = (tl) => () => {
+    if (tl.scrollTrigger) tl.scrollTrigger.kill();
+    tl.kill();
+    portada.classList.remove('is-armed');
+    gsap.set([...capas, texto, volver], { clearProps: 'all' });
+    if (reloj) gsap.set(reloj, { clearProps: 'all' });
+    if (relojNum) relojNum.textContent = '0';
+  };
+
+  // Beat = fade-in corto + asentamiento del transform + fade-out corto. Mismo
+  // criterio que Gargantua: crossfades de 0.05 para que casi todo el scroll se
+  // vea UN fotograma. `pos` = entrada en el timeline normalizado 0..1.
+  const beat = (tl, capa, pos, extra) => {
+    tl.to(capa, { autoAlpha: 1, duration: 0.05 }, pos)
+      .to(capa, { scale: 1, yPercent: 0, xPercent: 0, duration: 0.11, ...extra }, pos);
+  };
+  const salida = (tl, capa, pos) =>
+    tl.to(capa, { autoAlpha: 0, ease: 'power2.in', duration: 0.05 }, pos);
+
+  // El reloj de la dilatacion: un proxy 0..23 que el scrub arrastra y vuelca al
+  // <span>. Arranca al dejar el planeta y se clava en 23 cerca del final (una
+  // hora en Miller = siete años arriba; la parada les costo veintitres).
+  const contador = (tl, movil) => {
+    if (!reloj || !relojNum) return;
+    const proxy = { v: 0 };
+    tl.to(reloj, { autoAlpha: 0.92, duration: 0.06 }, movil ? 0.14 : 0.1);
+    tl.to(
+      proxy,
+      {
+        v: 23,
+        ease: 'none',
+        duration: 0.76,
+        onUpdate: () => { relojNum.textContent = String(Math.round(proxy.v)); },
+      },
+      0.12,
+    );
+    // golpe seco cuando el muro cae sobre el Ranger: el costo se siente
+    tl.to(reloj, { scale: 1.18, duration: 0.06 }, 0.62)
+      .to(reloj, { scale: 1, duration: 0.1 }, 0.68);
+  };
+
+  // Construye los 7 beats sobre `tl`. `amp` (0..1) atenua los zooms para movil.
+  const coreografia = (tl, amp) => {
+    tl
+      // el texto se va temprano, antes de "bajar" al agua
+      .to([texto, volver], { autoAlpha: 0, y: -40 * amp, duration: 0.07 }, 0)
+      // 1 · arribo: plano abierto (Ranger + pecio + exploradores); push-in + deriva
+      .to(arribo, { scale: 1 + 0.2 * amp, duration: 0.34 }, 0)
+      .to(arribo, { rotation: 1.4 * amp, duration: 0.34 }, 0);
+    salida(tl, arribo, 0.11);
+
+    // 2 · vadeo: por la ventana del Ranger, el pecio, las figuras en el agua
+    beat(tl, vadeo, 0.11);
+    salida(tl, vadeo, 0.22);
+
+    // 3 · rasante: la camara al ras del agua, el Ranger corre sobre la superficie
+    beat(tl, rasante, 0.22, { xPercent: -4 * amp });
+    salida(tl, rasante, 0.35);
+
+    // 4 · ola: Doyle corre hacia camara con el muro de agua ya levantandose
+    //     detras. Push-in con urgencia + sacudida corta (no "trepa": eso es el muro).
+    tl.to(ola, { autoAlpha: 1, duration: 0.05 }, 0.35);
+    tl.to(ola, { scale: 1, xPercent: 0, ease: 'power2.out', duration: 0.13 }, 0.35);
+    tl.to(ola, { xPercent: -2.5 * amp, duration: 0.04 }, 0.41).to(ola, { xPercent: 0, duration: 0.04 }, 0.46);
+    salida(tl, ola, 0.52);
+
+    // 5 · impacto: Doyle mira los restos zarandeados, la ola ya detras; sacudida + blanqueo
+    beat(tl, impacto, 0.52);
+    tl.to(impacto, { filter: 'brightness(1.14) saturate(0.74)', duration: 0.1 }, 0.54);
+    tl.to(impacto, { xPercent: 2, duration: 0.04 }, 0.52).to(impacto, { xPercent: 0, duration: 0.04 }, 0.58);
+    salida(tl, impacto, 0.63);
+
+    // 6 · muro: el Ranger volcado y la pared de agua tapando el cuadro. Entra alto
+    //     y BAJA creciendo -> se siente que se viene encima. Aguanta.
+    tl.to(muro, { autoAlpha: 1, duration: 0.05 }, 0.63);
+    tl.to(muro, { yPercent: 4, scale: 1.12 + 0.08 * amp, ease: 'power1.in', duration: 0.16 }, 0.63);
+    salida(tl, muro, 0.79);
+
+    // 7 · cabina: Brand quebrada tras perder a Doyle -> el costo, hecho cara.
+    //     AGUANTA y se disuelve LENTO hasta casi el final del riel -> nunca queda
+    //     pantalla vacia esperando que suelte el sticky.
+    beat(tl, cabina, 0.79);
+    tl.to(cabina, { scale: 1 + 0.09 * amp, ease: 'power1.inOut', duration: 0.24 }, 0.82);
+    tl.to(cabina, { autoAlpha: 0.22, ease: 'power1.in', duration: 0.14 }, 0.88);
+  };
+
+  const armar = (amp, movil) => () => {
+    base();
+    const tl = gsap.timeline({
+      scrollTrigger: { trigger: portada, start: 'top top', end: 'bottom bottom', scrub: 0.5 },
+      defaults: { ease: 'none' },
+    });
+    coreografia(tl, amp);
+    contador(tl, movil);
+    return cleanup(tl);
+  };
+
+  // Escritorio: zooms plenos. Movil: `cover` ya amplia en vertical -> `amp` 0.5.
+  mm.add('(min-width: 48rem) and (prefers-reduced-motion: no-preference)', armar(1, false));
+  mm.add('(max-width: 47.99rem) and (prefers-reduced-motion: no-preference)', armar(0.5, true));
 }
 
 if (typeof document !== 'undefined') {

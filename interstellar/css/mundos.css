@@ -486,6 +486,110 @@ body.mundo-detalle main > section.mundo-portada .mundo-volver {
   }
 }
 
+/* ---------------------------------------------------------------------------
+   Portada "el amerizaje" (js/mundo-portada.js, GSAP) — pagina Miller
+   ---------------------------------------------------------------------------
+   Misma mecanica que Tierra y Gargantua: riel alto + escena `sticky` que solo
+   aparece con `.is-armed`. Seis fotogramas apilados que el scroll encadena —
+   los dos exploradores en el agua somera -> un explorador solo -> la camara al
+   ras del oceano -> la ola-montaña que TREPA con el scroll -> el agua barriendo
+   el Ranger -> la cabina en la huida. Encima, el reloj de la dilatacion (ver
+   `.mundo-reloj`). Sin JS / GSAP caido / reduced-motion queda el hero estatico:
+   el primer fotograma + titulo + lead, sin reloj.
+   Beats: fotogramas de la pelicula (cap-that.com), 1800px.
+   --------------------------------------------------------------------------- */
+.mundo-capa--miller-arribo {
+  background-image: url("../assets/img/mundos-miller-arribo.jpg");
+}
+
+.mundo-capa--miller-vadeo {
+  background-image: url("../assets/img/mundos-miller-vadeo.jpg");
+  opacity: 0;
+}
+
+.mundo-capa--miller-rasante {
+  background-image: url("../assets/img/mundos-miller-rasante.jpg");
+  opacity: 0;
+}
+
+.mundo-capa--miller-ola {
+  background-image: url("../assets/img/mundos-miller-ola.jpg");
+  opacity: 0;
+}
+
+.mundo-capa--miller-impacto {
+  background-image: url("../assets/img/mundos-miller-impacto.jpg");
+  opacity: 0;
+}
+
+.mundo-capa--miller-muro {
+  background-image: url("../assets/img/mundos-miller-muro.jpg");
+  opacity: 0;
+}
+
+.mundo-capa--miller-cabina {
+  background-image: url("../assets/img/mundos-miller-cabina.jpg");
+  opacity: 0;
+}
+
+/* Los exteriores de Miller se filmaron con una paleta muy lavada (cielo pálido,
+   mar gris, sin sol). Un empujón leve de contraste/saturación los despega sin
+   traicionar el tono. `--miller-impacto` queda afuera: el JS le anima su propio
+   `filter` (blanqueo) y un filter en CSS lo pisaría. */
+.mundo-portada--miller .mundo-capa:not(.mundo-capa--miller-impacto) {
+  filter: saturate(1.08) contrast(1.1) brightness(0.97);
+}
+
+/* Movil: se corre el encuadre al sujeto para que el recorte vertical de `cover`
+   no lo deje afuera. */
+@media (max-width: 47.99rem) {
+  .mundo-capa--miller-arribo {
+    background-position: 60% center;
+  }
+  .mundo-capa--miller-cabina {
+    background-position: 66% center;
+  }
+}
+
+/* Reloj de la dilatacion temporal: overlay arriba-derecha que cuenta los años
+   perdidos afuera mientras "bajas" (0 -> 23). Es a Miller lo que el campo de
+   chispas a Gargantua: lo prende y lo anima js/mundo-portada.js, asi que solo
+   existe con la escena armada. Sin `.is-armed` no se muestra. */
+.mundo-reloj {
+  position: absolute;
+  top: clamp(0.75rem, 3vh, 1.5rem);
+  right: clamp(1rem, 4vw, 2.75rem);
+  z-index: 3;
+  margin: 0;
+  font: 500 clamp(0.82rem, 1.3vw, 1rem) / 1 var(--font-instrumento);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-texto);
+  text-shadow: 0 0 0.7rem #000, 0 1px 3px #000;
+  opacity: 0;                        /* GSAP lo sube al armar la escena */
+}
+
+.mundo-portada--miller:not(.is-armed) .mundo-reloj {
+  display: none;
+}
+
+.mundo-reloj-num {
+  font-size: 1.4em;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Riel: 7 beats (la ola + el muro sobre el Ranger aguantan tramos largos). */
+.mundo-portada--miller.is-armed {
+  height: 640svh;
+}
+
+@media (min-width: 48rem) {
+  .mundo-portada--miller.is-armed {
+    height: 800svh;
+  }
+}
+
 /* Lista de "rasgos distintivos": el reset dejo los <ul> sin viñeta; aca se
    repone el disco para este bloque de contenido. */
 .mundo-detalle #rasgos ul {
