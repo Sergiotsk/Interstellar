@@ -502,9 +502,22 @@ header nav ul ul a {
    buildHeader); todo es CSS + el JS que ya existe.
    --------------------------------------------------------------------------- */
 @media (min-width: 60rem) {
-  /* La banda deja de empujar el boton a la derecha: la fila se centra. */
+  /* La banda deja de empujar el boton a la derecha: la fila se centra. En
+     escritorio la banda gana alto: las teclas dejan de leerse como enlaces y
+     pasan a leerse como botones de consola (mas cerca de un tablero real). */
   header {
     justify-content: center;
+    padding-block: 1.1rem 1.25rem;
+  }
+
+  /* Esquinas inferiores mas marcadas: el marco de la ventana de la Ranger se
+     nota mas a este alto. */
+  header::before {
+    clip-path: polygon(
+      0 0, 100% 0,
+      100% calc(100% - 16px), calc(100% - 30px) 100%,
+      30px 100%, 0 calc(100% - 16px)
+    );
   }
 
   .nav-toggle {
@@ -512,7 +525,7 @@ header nav ul ul a {
   }
 
   .cockpit-brand {
-    display: none;                      /* el rotulo/enlace —con sus dos LED— cede su lugar a la fila */
+    display: none;                      /* 60-68rem: sin lugar para la placa; vuelve mas abajo */
   }
 
   /* El <nav> vuelve al flujo: sin panel, sin clip-path, sin caja flotante. */
@@ -535,7 +548,7 @@ header nav ul ul a {
     flex-wrap: wrap;
     justify-content: center;
     align-items: stretch;
-    gap: 0.5rem 0.55rem;                /* separacion real entre teclas */
+    gap: 0.4rem 0.3rem;                 /* teclas mas juntas -> lee como un panel, no una fila de links */
   }
 
   /* La TECLA es el <li> ENTERO: dentro viven el enlace del eje y su ▼, como una
@@ -558,6 +571,9 @@ header nav ul ul a {
     inset: 0;
     z-index: 0;
     border: 1px solid var(--cockpit-bezel);
+    /* filo superior encendido en cada tecla, como la propia banda: a este alto
+       cada celda se lee como una cara de panel con volumen. */
+    box-shadow: inset 0 1px 0 var(--cockpit-bezel-brillo);
     background: linear-gradient(180deg, var(--cockpit-metal-alto), var(--cockpit-metal));
     clip-path: var(--recorte-tecla);
     transition: border-color 0.15s ease, background 0.15s ease;
@@ -580,7 +596,8 @@ header nav ul ul a {
     z-index: 2;
   }
 
-  /* Enlace del eje: cara de la tecla, sin caja propia. */
+  /* Enlace del eje: cara de la tecla, sin caja propia. Mas alto de tecla y un
+     pelin mas de cuerpo -> boton, no link. */
   header nav > ul > li > a {
     position: relative;
     z-index: 1;
@@ -589,12 +606,13 @@ header nav ul ul a {
     border: 0;
     background: none;
     clip-path: none;
-    padding: 0.5rem 0.15rem 0.5rem 0.85rem;   /* right chico: el ▼ va casi pegado */
+    padding: 0.74rem 0.15rem 0.74rem 0.95rem;   /* right chico: el ▼ va casi pegado */
+    font-size: 1rem;
   }
 
   /* Ejes sin ▼ (Inicio, Galeria, Minijuegos, Trailer): padding derecho pleno. */
   header nav > ul > li:not(:has(> button)) > a {
-    padding-right: 0.85rem;
+    padding-right: 0.95rem;
   }
 
   header nav > ul > li > a:hover,
@@ -604,9 +622,9 @@ header nav ul ul a {
   }
 
   header nav > ul > li > a::before {
-    width: 6px;
-    height: 6px;
-    margin-right: 0.5rem;
+    width: 7px;
+    height: 7px;
+    margin-right: 0.6rem;
   }
 
   /* Texto + LED encendidos junto con la tecla. */
@@ -680,6 +698,30 @@ header nav ul ul a {
   header nav ul ul a {
     font-size: 0.78rem;
     padding: 0.28rem 0;
+  }
+}
+
+/* A partir de ~1090px ya hay lugar para la placa NAV·RANGER a la izquierda de
+   la banda sin apretar la fila de teclas: vuelve, con sus dos LED (SYS/PWR), y
+   se reserva aire simetrico en el <ul> para que la fila siga centrada de
+   verdad. Debajo de este ancho la banda queda solo con las teclas.
+   EXCEPCION `body.spoiler-alerta`: ese hueco izquierdo lo ocupa `.spoiler-rotulo`
+   (ver mas abajo), asi que ahi la placa sigue oculta hasta descartar el aviso. */
+@media (min-width: 68rem) {
+  body:not(.spoiler-alerta) .cockpit-brand {
+    display: block;
+    left: clamp(1.75rem, 4vw, 3rem);
+    font-size: 0.78rem;
+  }
+
+  body:not(.spoiler-alerta) .cockpit-brand::before,
+  body:not(.spoiler-alerta) .cockpit-brand::after {
+    width: 8px;
+    height: 8px;
+  }
+
+  body:not(.spoiler-alerta) header nav > ul {
+    padding-inline: 6.5rem;
   }
 }
 
