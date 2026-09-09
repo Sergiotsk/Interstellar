@@ -7,15 +7,13 @@
 //   - pausa cuando la tira sale de vista (ScrollTrigger)
 //
 // Librería: GSAP 3.13 + ScrollTrigger (Constitucion v2.0.0, Principio I:
-// libreria acotada sin build). Mismo criterio de `js/mundo-portada.js`: import
-// desde esm.sh con version fija; antes de cerrar la feature se vendoriza a
-// js/vendor/gsap@3.13.0/ (ver js/vendor/README.md).
+// libreria acotada sin build). Mismo criterio de `js/mundo-portada.js`:
+// VENDORIZADA en js/vendor/gsap@3.13.0/ e importada por ruta relativa, sin
+// depender de un CDN en runtime (ver js/vendor/README.md).
 //
-// Degradado: sin JS / GSAP caido / prefers-reduced-motion -> la tira queda
+// Degradado: sin JS / GSAP no carga / prefers-reduced-motion -> la tira queda
 // estatica con scroll horizontal manual (`overflow-x: auto` y sin mascara).
 // GSAP solo MEJORA; nunca es requisito para ver los fotogramas.
-
-const GSAP_VER = '3.13.0';
 
 // Ritmo base del desfile, en px/s. Constante exportada: es parte del contrato
 // del componente (los tests la usan para validar la duracion del loop).
@@ -66,12 +64,12 @@ async function initFilmstrip() {
     return;
   }
 
-  // 3) GSAP caido (offline / CDN) -> mismo trato que reduced-motion.
+  // 3) GSAP no carga -> mismo trato que reduced-motion.
   let gsap;
   let ScrollTrigger;
   try {
-    ({ gsap } = await import(`https://esm.sh/gsap@${GSAP_VER}`));
-    ({ ScrollTrigger } = await import(`https://esm.sh/gsap@${GSAP_VER}/ScrollTrigger`));
+    ({ gsap } = await import('./vendor/gsap@3.13.0/gsap.mjs'));
+    ({ ScrollTrigger } = await import('./vendor/gsap@3.13.0/ScrollTrigger.mjs'));
   } catch (err) {
     console.warn('[filmstrip] no se pudo cargar GSAP; tira con scroll manual.', err);
     tracks.forEach(({ tira }) => modoManual(tira));

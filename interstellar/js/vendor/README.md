@@ -14,9 +14,12 @@ js/vendor/<lib>@<version>/<archivos ESM>
   que un upgrade sea explícito y revisable en el diff.
 - Solo se copian los archivos **ESM** que se importan (y sus dependencias
   internas). Nada de `dist/` entero si no hace falta.
-- Se importan por **ruta relativa** desde los módulos propios:
+- Se importan por **ruta relativa** desde los módulos propios. Para un módulo que
+  vive directo en `js/` la ruta es `./vendor/…`; desde un `js/<subcarpeta>/` sería
+  `../vendor/…`:
   ```js
-  import { gsap } from '../vendor/gsap@3.13.0/gsap.min.js';
+  // desde js/mundo-portada.js
+  const { gsap } = await import('./vendor/gsap@3.13.0/gsap.mjs');
   ```
 - Se cargan **solo en la(s) página(s) que los usan** (nunca en un `<script>`
   global si una sola página lo necesita). Lo pesado (three, Pixi, Phaser) va con
@@ -37,6 +40,31 @@ justificar el motivo en su spec y asumir ese CDN como dependencia de runtime.
 
 ## Contenido actual
 
-_(vacío — todavía no se vendorizó ninguna librería)_
+### `gsap@3.13.0/`
 
-Ver `docs/10-aprendizaje/03-librerias/` para las fichas de cada candidata.
+| Archivo | Qué es | Peso |
+|---|---|---|
+| `gsap.mjs` | core de GSAP (tween/timeline/matchMedia + eases + CSSPlugin) | ~69 KB (~24 KB gzip) |
+| `ScrollTrigger.mjs` | plugin ScrollTrigger (scrub, pin, toggle por viewport) | ~43 KB (~13 KB gzip) |
+
+- **Problema que resuelve**: animación atada al scroll (portadas de mundos
+  *scroll-scrubbed*) y loop con `timeScale` + pausa por visibilidad (tira de
+  celuloide). Reescribir `matchMedia` + scrub + pin + cleanup con
+  `IntersectionObserver` a mano sería frágil y mucho más código.
+- **Dónde carga**: solo en las 5 páginas de mundos (`mundos-*.html`), con
+  `import()` dinámico **después** del primer paint, desde `js/mundo-portada.js` y
+  `js/filmstrip.js`. Nunca global.
+- **Degradación**: si el `import()` falla, ambos módulos caen a su estado base
+  (hero estático / tira con scroll manual). GSAP solo MEJORA.
+
+**Origen (reproducible):** build ESM `es2022` de esm.sh, versión fijada —
+
+```
+curl -sL https://esm.sh/gsap@3.13.0/es2022/gsap.mjs          -o gsap.mjs
+curl -sL https://esm.sh/gsap@3.13.0/es2022/ScrollTrigger.mjs -o ScrollTrigger.mjs
+```
+
+Cada archivo es un bundle autocontenido (cero imports internos). Único retoque: se
+quitó la línea final `//# sourceMappingURL=…` (el `.map` no se versiona). GSAP se
+distribuye bajo su [Standard License](https://gsap.com/standard-license) (gratis
+para este uso).

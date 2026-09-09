@@ -31,17 +31,14 @@
 // contenido de la pagina.
 //
 // Libreria: GSAP 3.13 + ScrollTrigger (Constitucion v2.0.0, Principio I:
-// libreria acotada sin build). FASE PROTOTIPO -> import desde esm.sh con version
-// fija; antes de cerrar la feature se vendoriza a js/vendor/gsap@3.13.0/ y se
-// pasa a ruta relativa (ver js/vendor/README.md).
+// libreria acotada sin build). VENDORIZADA en js/vendor/gsap@3.13.0/ e importada
+// por ruta relativa: no depende de un CDN en runtime (ver js/vendor/README.md).
 //
-// Degradado: sin JS / GSAP caido / prefers-reduced-motion -> el CSS deja la
+// Degradado: sin JS / GSAP no carga / prefers-reduced-motion -> el CSS deja la
 // portada como un hero estatico (primer plano a pantalla completa + titulo +
 // lead). El riel alto y el sticky solo se activan si este modulo agrega
 // `.is-armed`, cosa que hace UNICAMENTE cuando logro construir el timeline.
 // GSAP solo MEJORA; nunca es requisito para leer la pagina.
-
-const GSAP_VER = '3.13.0';
 
 async function initMundoPortada() {
   const portada = document.querySelector('.mundo-portada');
@@ -52,10 +49,10 @@ async function initMundoPortada() {
   let gsap;
   let ScrollTrigger;
   try {
-    ({ gsap } = await import(`https://esm.sh/gsap@${GSAP_VER}`));
-    ({ ScrollTrigger } = await import(`https://esm.sh/gsap@${GSAP_VER}/ScrollTrigger`));
+    ({ gsap } = await import('./vendor/gsap@3.13.0/gsap.mjs'));
+    ({ ScrollTrigger } = await import('./vendor/gsap@3.13.0/ScrollTrigger.mjs'));
   } catch (err) {
-    // CDN caido / offline: la portada queda en su estado base (hero estatico).
+    // GSAP no disponible: la portada queda en su estado base (hero estatico).
     console.warn('[mundo-portada] no se pudo cargar GSAP; portada estatica.', err);
     return;
   }
