@@ -2,105 +2,114 @@
 <!-- Mapa del sitio escrito a mano: la navegacion del sitio la inyecta js/layout.js
      en tiempo de ejecucion, por lo que un rastreador que no ejecute JavaScript no
      encuentra enlaces internos desde index.html. Este archivo es el unico indice
-     fiable de todas las paginas (9 base + 5 de detalle de mundos). URLs
-     absolutas con el subpath de GitHub Pages
-     (constitucion, "Hosting"). Mantener sincronizado con NavConfig (js/nav-data.js). -->
+     fiable de todas las paginas (10 base + 5 de detalle de mundos). URLs
+     absolutas con el subpath de GitHub Pages (constitucion, "Hosting").
+     Mantener sincronizado con NavConfig (js/nav-data.js). `gracias.html` queda
+     afuera a proposito: es la confirmacion post-envio del formulario, no una
+     pagina para indexar. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
   <url>
     <loc>https://sergiotsk.github.io/Interstellar/index.html</loc>
-    <lastmod>2026-08-30</lastmod>
+    <lastmod>2026-09-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
 
   <url>
     <loc>https://sergiotsk.github.io/Interstellar/mundos.html</loc>
-    <lastmod>2026-09-03</lastmod>
+    <lastmod>2026-09-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://sergiotsk.github.io/Interstellar/mundos-tierra.html</loc>
-    <lastmod>2026-09-03</lastmod>
+    <lastmod>2026-09-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
     <loc>https://sergiotsk.github.io/Interstellar/mundos-gargantua.html</loc>
-    <lastmod>2026-09-03</lastmod>
+    <lastmod>2026-09-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
     <loc>https://sergiotsk.github.io/Interstellar/mundos-miller.html</loc>
-    <lastmod>2026-09-03</lastmod>
+    <lastmod>2026-09-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
     <loc>https://sergiotsk.github.io/Interstellar/mundos-mann.html</loc>
-    <lastmod>2026-09-03</lastmod>
+    <lastmod>2026-09-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
     <loc>https://sergiotsk.github.io/Interstellar/mundos-tesseract.html</loc>
-    <lastmod>2026-09-03</lastmod>
+    <lastmod>2026-09-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
     <loc>https://sergiotsk.github.io/Interstellar/personajes.html</loc>
-    <lastmod>2026-08-30</lastmod>
+    <lastmod>2026-09-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://sergiotsk.github.io/Interstellar/ciencia.html</loc>
-    <lastmod>2026-08-30</lastmod>
+    <lastmod>2026-09-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://sergiotsk.github.io/Interstellar/viaje.html</loc>
-    <lastmod>2026-08-30</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://sergiotsk.github.io/Interstellar/galeria.html</loc>
-    <lastmod>2026-08-30</lastmod>
+    <lastmod>2026-09-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <url>
+    <loc>https://sergiotsk.github.io/Interstellar/contacto.html</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
     <loc>https://sergiotsk.github.io/Interstellar/minijuegos.html</loc>
-    <lastmod>2026-08-30</lastmod>
+    <lastmod>2026-09-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
 
   <url>
     <loc>https://sergiotsk.github.io/Interstellar/trailer.html</loc>
-    <lastmod>2026-08-30</lastmod>
+    <lastmod>2026-09-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
 
   <url>
     <loc>https://sergiotsk.github.io/Interstellar/creditos.html</loc>
-    <lastmod>2026-08-30</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
