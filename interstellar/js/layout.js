@@ -44,11 +44,14 @@ function buildTopLevelItem(item) {
 
 export function buildHeader(navConfig = NavConfig) {
   const items = navConfig.items.map(buildTopLevelItem).join('\n');
-  // Marca "NAV · RANGER": enlace al inicio con aspecto de rotulo de instrumento
-  // en la banda del header. Antes era `header::after` (pseudo, no enlazable); es
-  // un <a> real para que sea navegable y accesible (aria-label da el destino;
-  // el texto visible es tematico). Visible <60rem (en escritorio lo tapa la fila
-  // de nav). El sufijo " · RANGER" se oculta en pantallas muy angostas.
+  // Marca del header: enlace al inicio con aspecto de placa de instrumento en la
+  // banda. Antes era `header::after` (pseudo, no enlazable); es un <a> real para
+  // que sea navegable y accesible (aria-label da el destino). Dos lineas:
+  //   1. `.cockpit-marca` -> "Interstellar" (la marca).
+  //   2. `.cockpit-brand-linea` -> los dos LED (SYS/PWR) + "NAV · RANGER".
+  // Visible <60rem (en escritorio la fila de nav ocupa el centro; la placa
+  // vuelve a la izquierda a partir de ~68rem, salvo con el aviso de spoiler
+  // activo). El sufijo " · RANGER" se oculta en pantallas muy angostas.
   //
   // Boton CASE: menu-hamburguesa "girado" a 4 barras VERTICALES (guiño al robot
   // de la pelicula). Abre/cierra el drawer de navegacion por debajo de 60rem.
@@ -59,7 +62,7 @@ export function buildHeader(navConfig = NavConfig) {
   // nav— nunca lo confunda con un disclosure de submenu. El nav lleva
   // id="nav-principal" (target del aria-controls y hook del CSS del drawer).
   return `<header>
-  <a class="cockpit-brand" href="index.html" aria-label="Ir al inicio"><span>NAV</span><span class="cockpit-brand-ext"> · RANGER</span></a>
+  <a class="cockpit-brand" href="index.html" aria-label="Interstellar — ir al inicio"><span class="cockpit-marca">Interstellar</span><span class="cockpit-brand-linea"><span>NAV</span><span class="cockpit-brand-ext"> · RANGER</span></span></a>
   <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="nav-principal" aria-label="Abrir menú de navegación"><span class="case-icon" aria-hidden="true"><span></span><span></span><span></span><span></span></span></button>
   <nav id="nav-principal" aria-label="Navegación principal">
     <ul>
