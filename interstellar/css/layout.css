@@ -106,60 +106,85 @@ footer {
   --focus-anillo: var(--instrumento-teal);
 }
 
-/* Marca "NAV · RANGER": ENLACE al inicio con aspecto de rotulo de instrumento,
-   al extremo izquierdo de la banda. Antes era `header::after` (pseudo, no
-   enlazable); ahora `<a class="cockpit-brand">` (buildHeader). Sus dos
-   pseudo-elementos son los LED del mini-panel (SYS teal + PWR ámbar), a la
-   izquierda del texto: circulos reales con halo `box-shadow`, que TITILAN como
-   los del footer. `z-index` para quedar por encima de `header::before` (lleva
-   `backdrop-filter`, mismo motivo que el boton CASE). Visible en telefono
-   (a 320px entra sin chocar con el boton); se retira en escritorio junto con sus
-   LED, donde la fila de nav ocupa la banda. */
+/* Placa de marca: ENLACE al inicio con aspecto de rotulo de instrumento, al
+   extremo izquierdo de la banda. Antes era `header::after` (pseudo, no
+   enlazable); ahora `<a class="cockpit-brand">` (buildHeader). Dos lineas:
+     1. `.cockpit-marca`      -> "Interstellar" (la marca, tipografia de titulo).
+     2. `.cockpit-brand-linea` -> los dos LED (SYS teal + PWR ambar) + "NAV ·
+        RANGER"; los LED son pseudo-elementos con halo `box-shadow` que TITILAN
+        como los del footer.
+   `z-index` para quedar por encima de `header::before` (lleva `backdrop-filter`,
+   mismo motivo que el boton CASE). Visible en telefono (a 320px entra sin chocar
+   con el boton); en escritorio la fila de nav ocupa el centro y la placa vuelve
+   a la izquierda a partir de ~68rem (salvo con el aviso de spoiler activo). */
 .cockpit-brand {
   position: absolute;
   left: 3rem;
   top: 50%;
   transform: translateY(-50%);
   z-index: 1;
-  padding: 0.35rem 0.4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.12rem;
+  padding: 0.3rem 0.4rem;
   font-family: var(--font-instrumento);
-  font-size: 0.7rem;
-  letter-spacing: 0.22em;
   text-transform: uppercase;
   text-decoration: none;
-  color: color-mix(in srgb, var(--instrumento-teal) 78%, var(--color-texto-atenuado));
-  text-shadow: 0 0 8px color-mix(in srgb, var(--instrumento-teal) 42%, transparent);
   white-space: nowrap;
   transition: color 0.15s ease, text-shadow 0.15s ease;
 }
 
-/* Los dos LED del mini-panel, a la izquierda del rotulo. Mismo tratamiento que
-   `.led` del footer (nucleo + halo `box-shadow`). */
-.cockpit-brand::before,
-.cockpit-brand::after {
+/* Linea 1: la marca. Tipografia de titulo y un punto mas clara que el rotulo.
+   `position: relative` para anclar su LED (pseudo). */
+.cockpit-marca {
+  position: relative;
+  font-family: var(--font-hero-titulo);
+  font-size: 0.7rem;
+  letter-spacing: 0.32em;
+  color: color-mix(in srgb, var(--color-texto) 76%, var(--instrumento-teal));
+  text-shadow: 0 0 8px color-mix(in srgb, var(--instrumento-teal) 28%, transparent);
+}
+
+/* Linea 2: el rotulo de instrumento. `position: relative` para anclar su LED. */
+.cockpit-brand-linea {
+  position: relative;
+  font-size: 0.64rem;
+  letter-spacing: 0.22em;
+  color: color-mix(in srgb, var(--instrumento-teal) 78%, var(--color-texto-atenuado));
+  text-shadow: 0 0 8px color-mix(in srgb, var(--instrumento-teal) 42%, transparent);
+}
+
+/* Un LED por linea, a la izquierda de cada palabra: (•) INTERSTELLAR sobre
+   (•) NAV · RANGER. Mismo tratamiento que `.led` del footer (nucleo + halo
+   `box-shadow`); los dos dots quedan alineados en vertical. */
+.cockpit-marca::before,
+.cockpit-brand-linea::before {
   content: "";
   position: absolute;
+  left: -1.4rem;
   top: 50%;
   width: 7px;
   height: 7px;
   border-radius: 50%;
   transform: translateY(-50%);
+  transition: background 0.4s ease, box-shadow 0.4s ease;
 }
 
-.cockpit-brand::before {   /* SYS — teal */
-  left: -1.9rem;
+.cockpit-marca::before {          /* SYS — teal, junto a la marca */
   background: var(--instrumento-teal);
   box-shadow: 0 0 6px 1px color-mix(in srgb, var(--instrumento-teal) 62%, transparent);
 }
 
-.cockpit-brand::after {    /* PWR — ámbar */
-  left: -1.15rem;
+.cockpit-brand-linea::before {    /* PWR — ámbar, junto al rotulo */
   background: var(--led-ambar);
   box-shadow: 0 0 6px 1px color-mix(in srgb, var(--led-ambar) 62%, transparent);
 }
 
-.cockpit-brand:hover,
-.cockpit-brand:focus-visible {
+.cockpit-brand:hover .cockpit-marca,
+.cockpit-brand:focus-visible .cockpit-marca,
+.cockpit-brand:hover .cockpit-brand-linea,
+.cockpit-brand:focus-visible .cockpit-brand-linea {
   color: color-mix(in srgb, var(--instrumento-teal) 85%, #fff);
   text-shadow: 0 0 12px color-mix(in srgb, var(--instrumento-teal) 55%, transparent);
 }
@@ -168,8 +193,8 @@ footer {
    El reset global ya anula animaciones con prefers-reduced-motion; el guard lo
    hace explicito. Reusa @keyframes cockpit-led-pulso (definido en el footer). */
 @media (prefers-reduced-motion: no-preference) {
-  .cockpit-brand::before { animation: cockpit-led-pulso 2.6s ease-in-out infinite; }
-  .cockpit-brand::after { animation: cockpit-led-pulso 1.9s ease-in-out infinite; }
+  .cockpit-marca::before { animation: cockpit-led-pulso 2.6s ease-in-out infinite; }
+  .cockpit-brand-linea::before { animation: cockpit-led-pulso 1.9s ease-in-out infinite; }
 }
 
 /* A ~320px "NAV · RANGER" apretaria contra el boton: queda solo "NAV". Los dos
@@ -272,7 +297,7 @@ header nav > ul > li > a::before {
   background: var(--instrumento-teal);
   box-shadow: 0 0 6px 1px color-mix(in srgb, var(--instrumento-teal) 55%, transparent);
   opacity: 0.4;
-  transition: opacity 0.15s ease, box-shadow 0.15s ease;
+  transition: opacity 0.15s ease, background 0.4s ease, box-shadow 0.4s ease;
 }
 
 header nav a:hover,
@@ -502,9 +527,24 @@ header nav ul ul a {
    buildHeader); todo es CSS + el JS que ya existe.
    --------------------------------------------------------------------------- */
 @media (min-width: 60rem) {
-  /* La banda deja de empujar el boton a la derecha: la fila se centra. */
+  /* La banda deja de empujar el boton a la derecha: la fila se centra. En
+     escritorio la banda gana alto (~106px, +10% sobre el contenido sin
+     agrandarlo — solo mas aire): las teclas se leen como botones de un tablero
+     de comandos, y a la izquierda entra la placa de marca de dos lineas
+     (Interstellar / NAV·RANGER). */
   header {
     justify-content: center;
+    padding-block: 1.8rem 1.95rem;
+  }
+
+  /* Esquinas inferiores mas marcadas: el marco de la ventana de la Ranger se
+     nota mas a este alto. */
+  header::before {
+    clip-path: polygon(
+      0 0, 100% 0,
+      100% calc(100% - 18px), calc(100% - 34px) 100%,
+      34px 100%, 0 calc(100% - 18px)
+    );
   }
 
   .nav-toggle {
@@ -512,7 +552,7 @@ header nav ul ul a {
   }
 
   .cockpit-brand {
-    display: none;                      /* el rotulo/enlace —con sus dos LED— cede su lugar a la fila */
+    display: none;                      /* 60-68rem: sin lugar para la placa; vuelve mas abajo */
   }
 
   /* El <nav> vuelve al flujo: sin panel, sin clip-path, sin caja flotante. */
@@ -535,7 +575,7 @@ header nav ul ul a {
     flex-wrap: wrap;
     justify-content: center;
     align-items: stretch;
-    gap: 0.5rem 0.55rem;                /* separacion real entre teclas */
+    gap: 0.4rem 0.3rem;                 /* teclas mas juntas -> lee como un panel, no una fila de links */
   }
 
   /* La TECLA es el <li> ENTERO: dentro viven el enlace del eje y su ▼, como una
@@ -558,6 +598,9 @@ header nav ul ul a {
     inset: 0;
     z-index: 0;
     border: 1px solid var(--cockpit-bezel);
+    /* filo superior encendido en cada tecla, como la propia banda: a este alto
+       cada celda se lee como una cara de panel con volumen. */
+    box-shadow: inset 0 1px 0 var(--cockpit-bezel-brillo);
     background: linear-gradient(180deg, var(--cockpit-metal-alto), var(--cockpit-metal));
     clip-path: var(--recorte-tecla);
     transition: border-color 0.15s ease, background 0.15s ease;
@@ -580,7 +623,8 @@ header nav ul ul a {
     z-index: 2;
   }
 
-  /* Enlace del eje: cara de la tecla, sin caja propia. */
+  /* Enlace del eje: cara de la tecla, sin caja propia. Mas alto de tecla y un
+     pelin mas de cuerpo -> boton, no link. */
   header nav > ul > li > a {
     position: relative;
     z-index: 1;
@@ -589,12 +633,13 @@ header nav ul ul a {
     border: 0;
     background: none;
     clip-path: none;
-    padding: 0.5rem 0.15rem 0.5rem 0.85rem;   /* right chico: el ▼ va casi pegado */
+    padding: 0.82rem 0.15rem 0.82rem 0.95rem;   /* right chico: el ▼ va casi pegado */
+    font-size: 1rem;
   }
 
   /* Ejes sin ▼ (Inicio, Galeria, Minijuegos, Trailer): padding derecho pleno. */
   header nav > ul > li:not(:has(> button)) > a {
-    padding-right: 0.85rem;
+    padding-right: 0.95rem;
   }
 
   header nav > ul > li > a:hover,
@@ -604,9 +649,9 @@ header nav ul ul a {
   }
 
   header nav > ul > li > a::before {
-    width: 6px;
-    height: 6px;
-    margin-right: 0.5rem;
+    width: 7px;
+    height: 7px;
+    margin-right: 0.6rem;
   }
 
   /* Texto + LED encendidos junto con la tecla. */
@@ -683,6 +728,30 @@ header nav ul ul a {
   }
 }
 
+/* A partir de ~1200px ya hay lugar para la placa de marca (Interstellar /
+   NAV·RANGER) a la izquierda de la banda sin apretar la fila de teclas: vuelve,
+   con sus dos LED (SYS/PWR), y se reserva aire simetrico en el <ul> para que la
+   fila siga centrada de verdad. Debajo de este ancho la banda queda solo con
+   las teclas. EXCEPCION `body.spoiler-alerta`: ese hueco izquierdo lo ocupa
+   `.spoiler-rotulo` (ver mas abajo), asi que ahi la placa sigue oculta hasta
+   descartar el aviso. */
+@media (min-width: 75rem) {
+  body:not(.spoiler-alerta) .cockpit-brand {
+    display: flex;                     /* revierte el display:none de 60-75rem; la placa es flex-column */
+    left: clamp(1.75rem, 4vw, 3rem);
+  }
+
+  body:not(.spoiler-alerta) .cockpit-marca::before,
+  body:not(.spoiler-alerta) .cockpit-brand-linea::before {
+    width: 8px;
+    height: 8px;
+  }
+
+  body:not(.spoiler-alerta) header nav > ul {
+    padding-inline: 9.5rem;            /* aire para la placa de marca (la linea "Interstellar" es la mas ancha) */
+  }
+}
+
 /* ---------------------------------------------------------------------------
    5. Footer (estructura que produce js/layout.js)
    ---------------------------------------------------------------------------
@@ -707,7 +776,9 @@ footer {
     inset 0 2px 6px color-mix(in srgb, var(--instrumento-teal) 14%, transparent),
     inset 0 -1px 0 var(--cockpit-bezel-brillo),
     inset 0 12px 22px rgba(0, 0, 0, 0.36);
-  padding: 1.7rem 1rem 1.4rem;
+  /* +20% de alto sobre la version anterior (1.7/1.4rem), sin tocar el contenido:
+     la consola inferior gana presencia a la par del header. */
+  padding: 2.25rem 1rem 1.85rem;
   text-align: center;
   font-family: var(--font-instrumento);
   font-size: 0.82rem;
@@ -800,6 +871,9 @@ footer .tele-accion:focus-within .tele-v {
   background: var(--instrumento-teal);
   box-shadow: 0 0 6px 1px color-mix(in srgb, var(--instrumento-teal) 62%, transparent);
   vertical-align: middle;
+  /* al reconocer el spoiler, el rojo vuelve a teal con un fundido (el "check"
+     que se despeja) en vez de un corte seco. */
+  transition: background 0.4s ease, box-shadow 0.4s ease;
 }
 
 .led-ambar {
@@ -2314,9 +2388,10 @@ body.spoiler-alerta header nav > ul > li > a[aria-current='page']::before {
   box-shadow: 0 0 9px 2px color-mix(in srgb, var(--led-alerta) 82%, transparent);
 }
 
-/* --- LED del mini-panel de la marca en alerta (SYS + PWR, los dos rojos) --- */
-body.spoiler-alerta .cockpit-brand::before,
-body.spoiler-alerta .cockpit-brand::after {
+/* --- Los dos LED de la placa en alerta (uno por linea, los dos rojos). En
+   escritorio la placa esta oculta con el aviso activo; esto aplica en mobile. --- */
+body.spoiler-alerta .cockpit-marca::before,
+body.spoiler-alerta .cockpit-brand-linea::before {
   background: var(--led-alerta);
   box-shadow: 0 0 6px 1px color-mix(in srgb, var(--led-alerta) 62%, transparent);
 }
@@ -2326,8 +2401,8 @@ body.spoiler-alerta .cockpit-brand::after {
    prefers-reduced-motion; este guard lo hace explícito. --- */
 @media (prefers-reduced-motion: no-preference) {
   body.spoiler-alerta header nav > ul > li > a::before,
-  body.spoiler-alerta .cockpit-brand::before,
-  body.spoiler-alerta .cockpit-brand::after {
+  body.spoiler-alerta .cockpit-marca::before,
+  body.spoiler-alerta .cockpit-brand-linea::before {
     animation: spoiler-baliza 1.2s ease-in-out infinite;
   }
 }
@@ -2370,22 +2445,45 @@ body.spoiler-alerta .cockpit-brand::after {
   }
 }
 
-/* --- La tira de aviso, inyectada como hermano siguiente del <header> --- */
+/* --- El panel de aviso, inyectado DENTRO del <header>. CUELGA del tablero
+   (`position: absolute; top: 100%`, centrado) y FLOTA sobre el contenido: no
+   reserva un bloque, no tapa el fondo alrededor. `z-index: -1` -> mientras esta
+   recogido (`translateY(-100%)`) queda DETRAS de la banda (`header::before`) y
+   baja asomando por el filo del bezel. Sin filo arriba (`border-top: 0`) y
+   esquinas inferiores recortadas -> compuerta que sale de la consola. Al
+   reconocerlo, `.spoiler-aviso--retrae` lo sube LENTO (1.5s) y el JS lo quita.
+   Con prefers-reduced-motion el reset global anula las animaciones: aparece y
+   desaparece sin deslizar (queda en su transform base, centrado). --- */
 .spoiler-aviso {
-  position: relative;
-  z-index: 21;   /* sobre el cielo fijo (z 0) y el ::before del header */
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  z-index: -1;
+  width: min(100vw - 2rem, 52rem);
+  transform: translateX(-50%);
+  animation: spoiler-desplegar 0.5s cubic-bezier(0.16, 0.84, 0.28, 1) both;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   gap: 0.5rem 1rem;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 1.4rem 0.6rem;
   background:
     var(--cockpit-metal)
     linear-gradient(180deg,
-      color-mix(in srgb, var(--led-alerta) 20%, var(--cockpit-metal)),
+      color-mix(in srgb, var(--led-alerta) 22%, var(--cockpit-metal)),
       color-mix(in srgb, var(--led-alerta) 9%, var(--cockpit-metal)));
-  border-bottom: 1px solid color-mix(in srgb, var(--led-alerta) 45%, var(--cockpit-bezel));
+  border: 1px solid color-mix(in srgb, var(--led-alerta) 42%, var(--cockpit-bezel));
+  border-top: 0;                        /* pegado al tablero: sale de la banda */
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--led-alerta) 20%, transparent),
+    0 0.7rem 1.5rem color-mix(in srgb, #000 52%, transparent);
+  /* esquinas inferiores cortadas: cara de compuerta del panel */
+  clip-path: polygon(
+    0 0, 100% 0,
+    100% calc(100% - 11px), calc(100% - 20px) 100%,
+    20px 100%, 0 calc(100% - 11px)
+  );
   font-family: var(--font-instrumento);
   font-size: 0.78rem;
   letter-spacing: 0.03em;
@@ -2418,6 +2516,41 @@ body.spoiler-alerta .cockpit-brand::after {
 .spoiler-aviso button:focus-visible {
   border-color: var(--led-alerta);
   color: color-mix(in srgb, var(--led-alerta) 78%, #fff);
+}
+
+/* Despliegue / retraccion del panel de aviso, atado al header. Mantienen el
+   `translateX(-50%)` (centrado) y solo mueven Y. */
+@keyframes spoiler-desplegar {
+  from { transform: translate(-50%, -100%); opacity: 0; }
+  60%  { opacity: 1; }
+  to   { transform: translate(-50%, 0); opacity: 1; }
+}
+
+@keyframes spoiler-retrae {
+  from { transform: translate(-50%, 0); opacity: 1; }
+  70%  { opacity: 1; }
+  to   { transform: translate(-50%, -100%); opacity: 0; }
+}
+
+/* Salida MUCHO mas lenta que la entrada: el panel se guarda despacio en la
+   consola. Arranca casi quieto y acelera al final (ease-in). */
+.spoiler-aviso--retrae {
+  animation: spoiler-retrae 1.5s cubic-bezier(0.62, 0, 0.8, 0.2) forwards;
+}
+
+/* --- "Check del tablero": mientras el aviso esta activo, TODAS las luces de la
+   consola inferior (footer) tambien pasan a rojo y parpadean como baliza, igual
+   que las del header. Al reconocerlo, las transiciones de `.led` las llevan de
+   vuelta a teal. --- */
+body.spoiler-alerta footer .tele .led {
+  background: var(--led-alerta);
+  box-shadow: 0 0 6px 1px color-mix(in srgb, var(--led-alerta) 62%, transparent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  body.spoiler-alerta footer .tele .led {
+    animation: spoiler-baliza 1.2s ease-in-out infinite;
+  }
 }
 
 /* En la home el header flota sobre el Hero (`position: absolute`) para que este

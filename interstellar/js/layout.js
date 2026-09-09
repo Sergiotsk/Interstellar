@@ -44,11 +44,14 @@ function buildTopLevelItem(item) {
 
 export function buildHeader(navConfig = NavConfig) {
   const items = navConfig.items.map(buildTopLevelItem).join('\n');
-  // Marca "NAV · RANGER": enlace al inicio con aspecto de rotulo de instrumento
-  // en la banda del header. Antes era `header::after` (pseudo, no enlazable); es
-  // un <a> real para que sea navegable y accesible (aria-label da el destino;
-  // el texto visible es tematico). Visible <60rem (en escritorio lo tapa la fila
-  // de nav). El sufijo " · RANGER" se oculta en pantallas muy angostas.
+  // Marca del header: enlace al inicio con aspecto de placa de instrumento en la
+  // banda. Antes era `header::after` (pseudo, no enlazable); es un <a> real para
+  // que sea navegable y accesible (aria-label da el destino). Dos lineas:
+  //   1. `.cockpit-marca` -> "Interstellar" (la marca).
+  //   2. `.cockpit-brand-linea` -> los dos LED (SYS/PWR) + "NAV · RANGER".
+  // Visible <60rem (en escritorio la fila de nav ocupa el centro; la placa
+  // vuelve a la izquierda a partir de ~68rem, salvo con el aviso de spoiler
+  // activo). El sufijo " · RANGER" se oculta en pantallas muy angostas.
   //
   // Boton CASE: menu-hamburguesa "girado" a 4 barras VERTICALES (guiño al robot
   // de la pelicula). Abre/cierra el drawer de navegacion por debajo de 60rem.
@@ -59,7 +62,7 @@ export function buildHeader(navConfig = NavConfig) {
   // nav— nunca lo confunda con un disclosure de submenu. El nav lleva
   // id="nav-principal" (target del aria-controls y hook del CSS del drawer).
   return `<header>
-  <a class="cockpit-brand" href="index.html" aria-label="Ir al inicio"><span>NAV</span><span class="cockpit-brand-ext"> · RANGER</span></a>
+  <a class="cockpit-brand" href="index.html" aria-label="Interstellar — ir al inicio"><span class="cockpit-marca">Interstellar</span><span class="cockpit-brand-linea"><span>NAV</span><span class="cockpit-brand-ext"> · RANGER</span></span></a>
   <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="nav-principal" aria-label="Abrir menú de navegación"><span class="case-icon" aria-hidden="true"><span></span><span></span><span></span><span></span></span></button>
   <nav id="nav-principal" aria-label="Navegación principal">
     <ul>
@@ -393,8 +396,11 @@ function initSpoilerAviso(header) {
     'afterbegin',
     '<span class="spoiler-rotulo" aria-hidden="true"><span class="led led-alerta"></span>Spoilers</span>',
   );
+  // DENTRO del <header> (no como hermano): asi el panel CUELGA del tablero
+  // (`position: absolute; top: 100%`) y flota sobre el contenido en vez de
+  // reservar un bloque full-width que lo empuja hacia abajo.
   header.insertAdjacentHTML(
-    'afterend',
+    'beforeend',
     '<div class="spoiler-aviso" role="alert">' +
       '<span><b>⚠ Spoilers:</b> este sitio comenta la trama completa, incluido el final.</span>' +
       '<button type="button" data-spoiler-ok>Ya la vi</button>' +
@@ -402,18 +408,31 @@ function initSpoilerAviso(header) {
   );
 
   const rotulo = header.querySelector('.spoiler-rotulo');
-  const aviso = document.body.querySelector('.spoiler-aviso');
+  const aviso = header.querySelector('.spoiler-aviso');
   const boton = aviso && aviso.querySelector('[data-spoiler-ok]');
   if (boton) {
     boton.addEventListener('click', () => {
       guardarSpoilerReconocido();
+      // "Check del tablero": al reconocerlo, las luces vuelven a la normalidad
+      // AL INSTANTE (quitar la clase deja que las transiciones de color hagan el
+      // rojo -> teal/ambar) y el panel de aviso se RETRAE hacia el header antes
+      // de quitarse del DOM. `animationend` cierra; el timeout es el respaldo
+      // para prefers-reduced-motion (sin animacion, no dispara `animationend`).
       document.body.classList.remove('spoiler-alerta');
-      if (rotulo) {
-        rotulo.remove();
+      const cerrar = () => {
+        if (rotulo) rotulo.remove();
+        if (aviso) aviso.remove();
+      };
+      const sinMovimiento =
+        typeof matchMedia === 'function' &&
+        matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (sinMovimiento) {
+        cerrar(); // sin animacion de retraccion -> se quita al toque
+        return;
       }
-      if (aviso) {
-        aviso.remove();
-      }
+      aviso.classList.add('spoiler-aviso--retrae');
+      aviso.addEventListener('animationend', cerrar, { once: true });
+      setTimeout(cerrar, 1800); // respaldo: > que la animacion de 1.5s
     });
   }
 }
