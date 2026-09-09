@@ -129,7 +129,7 @@ reflow al cargar; sin `loading=lazy` arriba del fold; consola limpia; `node --te
 `.webp`; el doc de aprendizaje ya no dice "sin pipeline / solo JPEG".
 
 - [ ] T027 [P] [US3] En `assets/img/CREDITOS.md`: actualizar la nota/enmienda del 2026-08-28 ("solo JPEG, sin WebP") → "se sirve WebP con respaldo vía `tools/optimize-img.mjs` (feature 007)"; aclarar que los `.webp` derivados heredan el crédito del original y no se listan.
-- [ ] T028 [P] [US3] En `docs/10-aprendizaje/01-optimizacion-imagenes-web.md`: actualizar la sección "Formatos" y la nota final "srcset / `<picture>` … Fuera de alcance" → ahora el proyecto tiene pipeline local (`sharp`) y sirve `<picture>`/WebP; enlazar `specs/007-...`.
+- [X] T028 [P] [US3] En `docs/10-aprendizaje/01-optimizacion-imagenes-web.md`: actualizar la sección "Formatos" y la nota final "srcset / `<picture>` … Fuera de alcance" → ahora el proyecto tiene pipeline local (`sharp`) y sirve `<picture>`/WebP; enlazar `specs/007-...`.
 - [ ] T029 [US3] Correr `node --test` y confirmar verde; confirmar que `js/creditos.js` / `tests/creditos.test.js` NO necesitaron cambios (ningún test escanea `assets/img/`).
 
 **Checkpoint**: registro de créditos coherente, documentación actualizada.
