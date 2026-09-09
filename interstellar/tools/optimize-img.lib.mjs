@@ -48,6 +48,17 @@ export function weightDelta(bytesAntes, bytesDespues) {
   return { pct, pasaMinimo: pct >= 25 };
 }
 
+// --- webpConviene ------------------------------------------------------------
+// Guard: un .webp solo se escribe si es ESTRICTAMENTE más liviano que su
+// respaldo (mismo ancho, mismo contenido). Si empata o pesa más, no es una
+// optimización — servir dos archivos para entregar el más grande es peor que
+// no tener webp. Pasó con imágenes de mucho grano / ya muy comprimidas.
+export function webpConviene(webpBytes, respaldoBytes) {
+  if (!Number.isFinite(respaldoBytes) || respaldoBytes <= 0) return false;
+  if (!Number.isFinite(webpBytes) || webpBytes <= 0) return false;
+  return webpBytes < respaldoBytes;
+}
+
 // --- Contexto canónico por archivo -------------------------------------------
 // Regla (D2-A, acordada 2026-09-08): un archivo se procesa UNA vez, con el ancho
 // de su USO MÁS EXIGENTE. Mapa explícito de los archivos de secciones estables;

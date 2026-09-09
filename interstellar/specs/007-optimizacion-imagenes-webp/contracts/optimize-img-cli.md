@@ -38,8 +38,27 @@ En `assets/img/` (versionado), por cada fuente:
 
 | Archivo | Cuándo |
 |---|---|
-| `<nombreLogico>.webp` | siempre |
 | `<nombreLogico>.<extOriginal>` | siempre (respaldo; para backdrops de CSS queda disponible aunque el CSS no lo use) |
+| `<nombreLogico>.webp` | solo si es **estrictamente más liviano** que el respaldo (ver *Guard WebP*) |
+| `<nombreLogico>.nowebp` | marcador vacío, cuando el `.webp` NO conviene y se descarta |
+
+### Guard WebP
+
+Un `.webp` se escribe **únicamente si le gana en peso a su respaldo** (`webpBytes < respaldoBytes`).
+Servir dos archivos para terminar entregando el más pesado es peor que no tener WebP; pasa con
+imágenes de mucho grano o ya muy comprimidas.
+
+Si el `.webp` empata o pesa más:
+
+- NO se escribe el `.webp`; se borra cualquier `.webp` previo que hubiera quedado.
+- Se escribe un marcador vacío `<nombreLogico>.nowebp` (versionado). Sirve para la idempotencia
+  —el archivo ya pasó por el pipeline— y para que la migración de marcado sepa que esa imagen
+  se queda en `<img src=".jpg">` sin envolver en `<picture>`.
+- En el reporte de consola la imagen sale con flag `⚠` y la nota
+  `webp descartado: <KB> ≥ respaldo <KB>`.
+
+`--force` reevalúa el guard (puede convertir un `.nowebp` en `.webp` o viceversa si cambian los
+parámetros de `sharp`).
 
 Parámetros (de `research.md` R2):
 - WebP: `quality` 74 (backdrops/fotos) u 80 (retratos), `effort` 5, sin metadata.
@@ -52,9 +71,9 @@ Parámetros (de `research.md` R2):
 - **Idempotencia** (SC-005): segundo run sin tocar fuentes ⇒ `git status` limpio.
   - Fuente en `assets/_source/`: salida determinista (misma fuente + params + versión de
     `sharp`); el script compara buffers y solo escribe si cambió.
-  - Fuente = el propio `assets/img/<n>.<ext>` (no hay original): una vez que existe
-    `<n>.webp`, el archivo se **saltea** (re-encodear sería pérdida generacional). `--force`
-    para regenerar.
+  - Fuente = el propio `assets/img/<n>.<ext>` (no hay original): una vez que existe un derivado
+    —`<n>.webp` **o** el marcador `<n>.nowebp`— el archivo se **saltea** (re-encodear sería
+    pérdida generacional). `--force` para regenerar.
 - **Aislamiento**: solo escribe dentro de `assets/img/`. No toca `*.html`, `css/`, `tests/`,
   ni imágenes de otras secciones.
 - **Sin red**: no descarga nada.
@@ -71,7 +90,9 @@ Parámetros (de `research.md` R2):
 
 ## Salida por consola
 
-- Por imagen: `nombreLogico  <ancho_fuente>→<ancho_salida>  <bytes_antes> → <bytes_despues> (−NN%)`.
+- Por imagen: `<flag> nombreLogico  <ancho_fuente>→<ancho_salida>  <bytes_antes> → <bytes_despues> (−NN%)`.
+  - `flag`: `·` escribió algo · `=` sin cambios (idempotente) · `⚠` WebP descartado por el guard
+    (agrega la nota `webp descartado: <KB> ≥ respaldo <KB>`).
 - Al final: total de la sección antes/después, % de reducción, y si supera el tope de peso
   conocido de esa sección (warning, no error).
 - `--dry-run` antepone `[dry]` y no escribe.

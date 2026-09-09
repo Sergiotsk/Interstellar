@@ -4,7 +4,7 @@
 //       node tools/optimize-img.mjs --all       [--dry-run] [--force]
 // Contrato: specs/007-optimizacion-imagenes-webp/contracts/optimize-img-cli.md
 
-import { readFile, writeFile, access, stat } from 'node:fs/promises';
+import { readFile, writeFile, access, stat, rm } from 'node:fs/promises';
 import { constants as FS } from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
@@ -17,6 +17,7 @@ import {
   deriveOutputs,
   weightDelta,
   webpQuality,
+  webpConviene,
 } from './optimize-img.lib.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
@@ -118,12 +119,18 @@ async function processSection(section, dryRun, force) {
       continue;
     }
     const { webp, fallback } = deriveOutputs(logicalName, src.format);
+    const webpPath = path.join(IMG_DIR, webp);
+    const nowebpPath = path.join(IMG_DIR, `${logicalName}.nowebp`);
 
     // Idempotencia (SC-005): si la fuente es el propio assets/img/ (no hay
-    // original en _source/) y el .webp ya existe, la imagen ya se optimizó una
-    // vez. Re-encodear recomprimiría (pérdida generacional) y el árbol nunca se
-    // estabilizaría → se saltea salvo --force.
-    if (!src.fromSource && !force && (await exists(path.join(IMG_DIR, webp)))) {
+    // original en _source/) y ya existe un derivado (el .webp, o el marcador
+    // .nowebp si el webp se descartó por no convenir), la imagen ya pasó por el
+    // pipeline. Re-encodear recomprimiría (pérdida generacional) y el árbol
+    // nunca se estabilizaría → se saltea salvo --force.
+    if (
+      !src.fromSource && !force &&
+      ((await exists(webpPath)) || (await exists(nowebpPath)))
+    ) {
       console.log(`  = ${logicalName.padEnd(34)} ya optimizada (--force para regenerar)`);
       skipped++;
       continue;
@@ -142,21 +149,43 @@ async function processSection(section, dryRun, force) {
       continue;
     }
 
-    const w = await maybeWrite(path.join(IMG_DIR, webp), bufs.webpBuf, dryRun);
-    // Para backdrops de CSS el respaldo se genera igual (queda disponible) pero
-    // el CSS no lo referencia.
+    // El respaldo (jpg/png) se escribe siempre. Para backdrops de CSS queda
+    // disponible aunque el CSS apunte al .webp.
     const f = await maybeWrite(path.join(IMG_DIR, fallback), bufs.fallbackBuf, dryRun);
 
-    const afterBytes = kind === 'css' ? w.bytes : Math.max(w.bytes, f.bytes);
+    // Guard: el .webp solo se escribe si le gana en peso a su respaldo. Si no
+    // conviene, se escribe un marcador .nowebp (para la idempotencia y para que
+    // la migración de markup sepa apuntar al .jpg) y se borra cualquier .webp
+    // viejo que hubiera quedado.
+    const vale = webpConviene(bufs.webpBuf.length, bufs.fallbackBuf.length);
+    let w;
+    if (vale) {
+      w = await maybeWrite(webpPath, bufs.webpBuf, dryRun);
+      if (!dryRun && (await exists(nowebpPath))) await rm(nowebpPath);
+    } else {
+      const habiaWebp = await exists(webpPath);
+      if (!dryRun) {
+        if (habiaWebp) await rm(webpPath);
+        await writeFile(nowebpPath, '');
+      }
+      w = { wrote: false, bytes: 0, descartado: true, habiaWebp };
+    }
+
+    const afterBytes = w.descartado
+      ? f.bytes
+      : (kind === 'css' ? w.bytes : Math.max(w.bytes, f.bytes));
     before += beforeBytes;
     after += afterBytes;
-    if (w.wrote || f.wrote) changed++;
+    if (w.wrote || f.wrote || w.descartado) changed++;
 
     const d = weightDelta(beforeBytes, afterBytes);
-    const flag = w.wrote || f.wrote ? '·' : '=';
+    const flag = w.descartado ? '⚠' : (w.wrote || f.wrote ? '·' : '=');
+    const nota = w.descartado
+      ? `  webp descartado: ${fmtKB(bufs.webpBuf.length)} ≥ respaldo ${fmtKB(bufs.fallbackBuf.length)}`
+      : '';
     console.log(
       `  ${flag} ${logicalName.padEnd(34)} ${String(bufs.meta.width).padStart(4)}→${String(bufs.outWidth).padEnd(4)}  ` +
-      `${fmtKB(beforeBytes).padStart(9)} → ${fmtKB(afterBytes).padStart(9)}  (${d.pct >= 0 ? '−' : '+'}${Math.abs(d.pct)}%)`,
+      `${fmtKB(beforeBytes).padStart(9)} → ${fmtKB(afterBytes).padStart(9)}  (${d.pct >= 0 ? '−' : '+'}${Math.abs(d.pct)}%)${nota}`,
     );
   }
 

@@ -7,6 +7,7 @@ import {
   deriveOutputs,
   sectionConfig,
   weightDelta,
+  webpConviene,
 } from '../tools/optimize-img.lib.mjs';
 
 describe('tools/optimize-img.lib.mjs — lógica pura del pipeline (feature 007)', () => {
@@ -114,6 +115,24 @@ describe('tools/optimize-img.lib.mjs — lógica pura del pipeline (feature 007)
 
     test('bytesAntes 0 → pct 0 (sin división por cero)', () => {
       assert.deepEqual(weightDelta(0, 0), { pct: 0, pasaMinimo: false });
+    });
+  });
+
+  describe('webpConviene(webpBytes, respaldoBytes)', () => {
+    test('webp más liviano que el respaldo → true (aporta, se escribe)', () => {
+      assert.equal(webpConviene(600, 1000), true);
+      assert.equal(webpConviene(1, 2), true);
+    });
+
+    test('webp igual o más pesado que el respaldo → false (no es optimización)', () => {
+      assert.equal(webpConviene(1000, 1000), false);
+      assert.equal(webpConviene(1201, 1000), false);
+    });
+
+    test('respaldo sin tamaño válido → false (no se puede establecer beneficio)', () => {
+      assert.equal(webpConviene(500, 0), false);
+      assert.equal(webpConviene(500, -1), false);
+      assert.equal(webpConviene(500, NaN), false);
     });
   });
 });

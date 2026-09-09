@@ -137,6 +137,11 @@ entradas por los derivados.
 - **Re-ejecución parcial**: correr el pipeline para una sección no debe alterar los
   archivos de otra sección.
 - **Original más chico que el ancho objetivo**: nunca se agranda.
+- **El WebP no le gana al respaldo**: si el `.webp` derivado empata o pesa más que su respaldo
+  JPEG/PNG (pasa con imágenes de mucho grano o ya muy comprimidas), NO se sirve: tener dos
+  archivos para entregar el más pesado es peor que uno solo. El pipeline descarta el `.webp`,
+  deja un marcador `.nowebp` versionado y esa imagen se queda como `<img src=".jpg">` sin
+  `<picture>`.
 
 ## Requirements *(mandatory)*
 
