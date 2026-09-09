@@ -168,6 +168,7 @@ footer {
   height: 7px;
   border-radius: 50%;
   transform: translateY(-50%);
+  transition: background 0.4s ease, box-shadow 0.4s ease;
 }
 
 .cockpit-marca::before {          /* SYS — teal, junto a la marca */
@@ -296,7 +297,7 @@ header nav > ul > li > a::before {
   background: var(--instrumento-teal);
   box-shadow: 0 0 6px 1px color-mix(in srgb, var(--instrumento-teal) 55%, transparent);
   opacity: 0.4;
-  transition: opacity 0.15s ease, box-shadow 0.15s ease;
+  transition: opacity 0.15s ease, background 0.4s ease, box-shadow 0.4s ease;
 }
 
 header nav a:hover,
@@ -867,6 +868,9 @@ footer .tele-accion:focus-within .tele-v {
   background: var(--instrumento-teal);
   box-shadow: 0 0 6px 1px color-mix(in srgb, var(--instrumento-teal) 62%, transparent);
   vertical-align: middle;
+  /* al reconocer el spoiler, el rojo vuelve a teal con un fundido (el "check"
+     que se despeja) en vez de un corte seco. */
+  transition: background 0.4s ease, box-shadow 0.4s ease;
 }
 
 .led-ambar {
@@ -2438,10 +2442,17 @@ body.spoiler-alerta .cockpit-brand-linea::before {
   }
 }
 
-/* --- La tira de aviso, inyectada como hermano siguiente del <header> --- */
+/* --- La tira de aviso, inyectada como hermano siguiente del <header>.
+   z-index 19 (POR DEBAJO del header, z 20): asi puede "desplegarse desde el
+   header" —arranca oculta detras de la banda (`translateY(-100%)`) y baja hasta
+   su lugar, asomando primero por las esquinas recortadas del bezel. Al
+   reconocer el aviso, `.spoiler-aviso--retrae` la sube de vuelta y el JS la
+   quita. Con prefers-reduced-motion el reset global anula las animaciones: la
+   tira aparece y desaparece sin deslizar. --- */
 .spoiler-aviso {
   position: relative;
-  z-index: 21;   /* sobre el cielo fijo (z 0) y el ::before del header */
+  z-index: 19;
+  animation: spoiler-desplegar 0.5s cubic-bezier(0.16, 0.84, 0.28, 1) both;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -2486,6 +2497,37 @@ body.spoiler-alerta .cockpit-brand-linea::before {
 .spoiler-aviso button:focus-visible {
   border-color: var(--led-alerta);
   color: color-mix(in srgb, var(--led-alerta) 78%, #fff);
+}
+
+/* Despliegue / retraccion del panel de aviso, atado al header. */
+@keyframes spoiler-desplegar {
+  from { transform: translateY(-100%); opacity: 0; }
+  60%  { opacity: 1; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes spoiler-retrae {
+  from { transform: translateY(0); opacity: 1; }
+  to   { transform: translateY(-100%); opacity: 0; }
+}
+
+.spoiler-aviso--retrae {
+  animation: spoiler-retrae 0.42s cubic-bezier(0.5, 0, 0.9, 0.35) forwards;
+}
+
+/* --- "Check del tablero": mientras el aviso esta activo, TODAS las luces de la
+   consola inferior (footer) tambien pasan a rojo y parpadean como baliza, igual
+   que las del header. Al reconocerlo, las transiciones de `.led` las llevan de
+   vuelta a teal. --- */
+body.spoiler-alerta footer .tele .led {
+  background: var(--led-alerta);
+  box-shadow: 0 0 6px 1px color-mix(in srgb, var(--led-alerta) 62%, transparent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  body.spoiler-alerta footer .tele .led {
+    animation: spoiler-baliza 1.2s ease-in-out infinite;
+  }
 }
 
 /* En la home el header flota sobre el Hero (`position: absolute`) para que este

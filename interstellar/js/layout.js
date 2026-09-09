@@ -410,13 +410,19 @@ function initSpoilerAviso(header) {
   if (boton) {
     boton.addEventListener('click', () => {
       guardarSpoilerReconocido();
+      // "Check del tablero": al reconocerlo, las luces vuelven a la normalidad
+      // AL INSTANTE (quitar la clase deja que las transiciones de color hagan el
+      // rojo -> teal/ambar) y el panel de aviso se RETRAE hacia el header antes
+      // de quitarse del DOM. `animationend` cierra; el timeout es el respaldo
+      // para prefers-reduced-motion (sin animacion, no dispara `animationend`).
       document.body.classList.remove('spoiler-alerta');
-      if (rotulo) {
-        rotulo.remove();
-      }
-      if (aviso) {
-        aviso.remove();
-      }
+      const cerrar = () => {
+        if (rotulo) rotulo.remove();
+        if (aviso) aviso.remove();
+      };
+      aviso.classList.add('spoiler-aviso--retrae');
+      aviso.addEventListener('animationend', cerrar, { once: true });
+      setTimeout(cerrar, 600);
     });
   }
 }
