@@ -32,7 +32,7 @@ Determina el ancho de salida. Valor fijo por categoría (ver `research.md` R3).
 | `contexto` | `anchoObjetivo` (px) | Dónde |
 |---|---|---|
 | `poster-hero` | 1280 | `index.html` `poster=` |
-| `backdrop-mundo` | 2560 | `<img>` de backdrop en `mundos*.html` + `background-image` en `css/mundos.css` |
+| `backdrop-mundo` | 2560 | `<img>` de mundo en `mundos.html` (tarjetas del hub) y `mundos-{mann,miller,tesseract}.html`; `background-image` de la portada scroll en `css/mundos.css` |
 | `galeria-miniatura` | 800 | grid de `galeria.html` |
 | `galeria-ampliada` | 1600 | lightbox / enlace de `galeria.html` |
 | `filmstrip-frame` | 900 | tira de celuloide (`mundos-tierra.html`, `mundos-gargantua.html`) |
@@ -67,7 +67,7 @@ Unidad de aplicación incremental. Una sección se migra de una sola vez, en un 
 
 | `seccion` | Archivos de marcado | Nº aprox. de imágenes |
 |---|---|---|
-| `mundos-portada` | `css/mundos.css`, `mundos.html` (backdrops) | ~15 (CSS + `<img>`) |
+| `mundos-portada` | `css/mundos.css` (portada scroll de `mundos-tierra.html` / `mundos-gargantua.html`) | ~10 (solo `background-image`; sin `<img>` propios) |
 | `galeria` | `galeria.html` | 50 |
 | `filmstrip-tierra` | `mundos-tierra.html` | 20 |
 | `filmstrip-gargantua` | `mundos-gargantua.html` | 15 |

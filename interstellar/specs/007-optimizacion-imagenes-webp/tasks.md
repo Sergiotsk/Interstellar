@@ -80,34 +80,38 @@ reflow al cargar; sin `loading=lazy` arriba del fold; consola limpia; `node --te
 > se corrió aún), después migrar el marcado, después verificar contra el checklist de
 > `contracts/picture-markup.md`.
 
-### mundos-portada (backdrops CSS + `<img>` de `mundos.html`)
+### mundos-portada (backdrops de CSS — sección CSS-only)
 
-- [ ] T015 [US2] En `css/mundos.css`, cambiar cada `background-image: url("../assets/img/<n>.jpg")` de la portada scroll (`terra-granja`, `terra-maizal`, `terra-tormenta`, `terra-abandonada`, `mundos-gargantua`, `ciencia-gargantua`, `mundos-gargantua-plano`, `mundos-gargantua-endurance`, `mundos-gargantua-ranger`, `mundos-gargantua-deriva`) a `.webp`.
-- [ ] T016 [US2] En `mundos.html`, envolver los `<img>` de backdrop en `<picture><source type="image/webp">…</picture>` con `width`/`height`/`decoding="async"`; `loading="lazy"` salvo el primero visible. Verificar checklist.
+> La portada scroll vive en `mundos-tierra.html` y `mundos-gargantua.html` (`.mundo-portada*`
+> + `js/mundo-portada.js`) y usa **solo `background-image` + canvas**, sin `<img>` propios.
+> Los `<img>` de `mundos.html` son las tarjetas del hub → sección `mundos-hub` (T022).
+
+- [ ] T015 [US2] Con los derivados ya generados por T014, en `css/mundos.css` cambiar cada `background-image: url("../assets/img/<n>.jpg")` de la portada scroll (`terra-granja`, `terra-maizal`, `terra-tormenta`, `terra-abandonada`, `mundos-gargantua`, `ciencia-gargantua`, `mundos-gargantua-plano`, `mundos-gargantua-endurance`, `mundos-gargantua-ranger`, `mundos-gargantua-deriva`) a `.webp`. Verificar en el navegador que la portada se ve igual.
+- [ ] T016 [US2] Confirmar que `mundos-portada` no tiene `<img>` que migrar: revisar `mundos-tierra.html` y `mundos-gargantua.html` — la portada es `background-image` + `<canvas>`, sin `<img>`. Si apareciera alguno, envolverlo en `<picture>` con los atributos del checklist; si no, marcar la tarea como N/A.
 
 ### galeria (50 `<img>`, ya tienen `loading`/`width`/`height`)
 
 - [ ] T017 [US2] Ejecutar `node tools/optimize-img.mjs galeria`; verificar peso total bajo el tope de la feature 005 y −25% vs. estado previo. Commit de derivados.
 - [ ] T018 [US2] En `galeria.html`, envolver los 50 `<img>` en `<picture>` con `<source type="image/webp">`, conservando `alt`/`width`/`height`/`loading="lazy"`; agregar `decoding="async"`.
-- [ ] T019 [US2] En `galeria.html`, a la PRIMERA imagen visible: quitar `loading="lazy"` y agregar `fetchpriority="high"` (una sola).
+- [ ] T019 [US2] En `galeria.html`, al **primer `<img>` en orden de DOM del grid** (`.galeria-grid > li:first-child img`): quitar `loading="lazy"` y agregar `fetchpriority="high"`. Solo ese; el resto queda con `loading="lazy"`.
 
 ### filmstrips
 
-- [ ] T020 [US2] Ejecutar el pipeline para `filmstrip-tierra` y `filmstrip-gargantua`; commit de derivados.
+- [ ] T020 [US2] Ejecutar el pipeline para `filmstrip-tierra` y `filmstrip-gargantua`; verificar en el reporte del script −25% vs. estado previo por cada tira y anotarlo en el commit; commit de derivados.
 - [ ] T021 [US2] En `mundos-tierra.html` (20 `<img>`) y `mundos-gargantua.html` (15 `<img>`), envolver en `<picture>`; agregar `width`/`height` (hoy no los tienen) + `decoding="async"`; `loading="lazy"` en todos (están bajo el fold). Verificar que la tira (`js/filmstrip.js`) sigue animando.
 
 ### mundos-hub + fichas de mundos
 
-- [ ] T022 [US2] Ejecutar el pipeline para `mundos-hub`; migrar `<img>` de `mundos.html` (hub, 5) y de `mundos-mann.html` / `mundos-miller.html` / `mundos-tesseract.html` (1 c/u) a `<picture>` + `width`/`height`/`decoding`/`lazy`. Commit.
+- [ ] T022 [US2] Ejecutar el pipeline para `mundos-hub` (verificar −25% en el reporte); migrar `<img>` de `mundos.html` (tarjetas del hub, 5) y de `mundos-mann.html` / `mundos-miller.html` / `mundos-tesseract.html` (1 c/u) a `<picture>` + `width`/`height`/`decoding`/`lazy`. **Conservar `alt=""`** en las tarjetas (son decorativas: tienen texto hermano). Commit.
 
 ### personajes (6 `<img>`, HOY sin `width`/`height`/`loading`)
 
-- [ ] T023 [US2] Ejecutar el pipeline para `personajes`; commit de derivados.
+- [ ] T023 [US2] Ejecutar el pipeline para `personajes`; verificar −25% vs. estado previo en el reporte y anotarlo en el commit; commit de derivados.
 - [ ] T024 [US2] En `personajes.html`, envolver los 6 retratos en `<picture>`; agregar `alt` con sentido donde falte, `width`/`height` (medir intrínsecos del respaldo), `decoding="async"`, `loading="lazy"` a los que estén bajo el fold. Verificar `.ficha-retrato` (float en desktop) sin regresión.
 
 ### ciencia + contacto + gracias
 
-- [ ] T025 [US2] Ejecutar el pipeline para `ciencia` y `contacto`; migrar el `<img>` de `ciencia.html`, `contacto.html` y `gracias.html` a `<picture>` + atributos. Commit.
+- [ ] T025 [US2] Ejecutar el pipeline para `ciencia` y `contacto` (verificar −25% en el reporte); migrar el `<img>` de `ciencia.html`, `contacto.html` y `gracias.html` a `<picture>` + atributos (`width`/`height`/`decoding`/`lazy`, `alt` con sentido). Commit.
 
 ### hero (solo poster)
 
