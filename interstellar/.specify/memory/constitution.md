@@ -1,20 +1,32 @@
 <!--
 SYNC IMPACT REPORT
-Version change: 2.1.0 -> 2.2.0
-Rationale: Enmienda a "Restricciones Tecnicas / Diseno". Se suma una regla de LEGIBILIDAD
-del cuerpo de texto: (1) los conceptos relevantes de cada parrafo se marcan con `<strong>`
-(semibold + color pleno sobre el crema atenuado del cuerpo); (2) el texto de lectura de
-mas de dos lineas se alinea a la izquierda (borde derecho irregular), nunca centrado ni
-justificado — los titulos cortos, taglines y etiquetas si pueden ir centrados. Expande
-guia material sin redefinir ningun principio core -> bump MINOR.
+Version change: 2.2.0 -> 2.3.0
+Rationale: Enmienda a "Principio I" y a "Restricciones Tecnicas / Assets + Estructura de
+carpetas". Habilita un pipeline LOCAL y OFFLINE de optimizacion de imagenes (script en
+`tools/`, dependencias de tooling solo-desarrollo como sharp) sin tocar el "sin build" del
+pipeline de publicacion. Expande guia material, no redefine ningun principio core -> bump
+MINOR.
 
 Cambios de esta version:
-  - "Restricciones Tecnicas / Diseno": nuevo parrafo "Legibilidad del cuerpo" (negritas
-    para conceptos clave con `<strong>`; alineacion a la izquierda de parrafos de mas de
-    dos lineas). Implementado en `css/base.css` (`strong, b`) y `css/layout.css` /
-    `css/mundos.css` (intros de pagina y del hub pasan de `text-align: center` a `left`).
+  - "Principio I / Sin paso de build": se aclara que "sin paso de build" acota al pipeline
+    de PUBLICACION (GitHub Actions publica tal cual). Un script de mantenimiento que corre
+    local, fuera de CI, con outputs commiteados, NO es un paso de build y esta permitido.
+  - "Principio I": nuevo parrafo "Dependencias de tooling (solo desarrollo)" -> se permite
+    un set acotado de devDependencies (p. ej. sharp para procesar imagenes) que NO se
+    envian al navegador ni participan del runtime del sitio; no relajan ninguna prohibicion
+    de framework/preprocesador.
+  - "Restricciones Tecnicas / Assets": "optimizadas a WebP ... a mano" -> la optimizacion a
+    WebP + el resize PUEDEN hacerse con un script local cuyos resultados (`.webp` + fallback
+    `.jpg`) se commitean y se sirven tal cual; "a mano" deja de ser obligatorio. Originales
+    sin optimizar versionados en `assets/_source/img/`.
+  - "Restricciones Tecnicas / Estructura de carpetas": se suman `/assets/_source` (originales
+    versionados) y `/tools` (scripts de mantenimiento del repo, Node ESM, corren local).
 
 Historial anterior:
+  - 2.2.0 (2026-09-08): Diseno -> regla de legibilidad del cuerpo (negritas `<strong>` para
+    conceptos clave; parrafos de mas de dos lineas alineados a la izquierda, nunca centrados
+    ni justificados). Implementado en `css/base.css` (`strong, b`) y `css/layout.css` /
+    `css/mundos.css`.
   - 2.1.0 (2026-09-03): Diseno -> segundo acento saturado acotado a la capa de interfaz
     de nave; tipografia via `@font-face` (se retira Google Fonts). (Detalle abajo.)
   - "Restricciones Tecnicas / Diseno": "el naranja de Gargantua como unico acento saturado"
@@ -40,11 +52,16 @@ Historial:
   - 2.2.0 (2026-09-08): Diseno -> regla de legibilidad del cuerpo (negritas `<strong>`
     para conceptos clave; parrafos de mas de dos lineas alineados a la izquierda, nunca
     centrados ni justificados).
+  - 2.3.0 (2026-09-08): Principio I + Assets -> se habilita un pipeline local/offline de
+    optimizacion de imagenes (script en `tools/`, devDependencies de tooling como sharp);
+    "sin paso de build" queda acotado al deploy; `assets/_source/` y `tools/` sumados a la
+    estructura de carpetas.
 
 Follow-up / consistencia (fuera del alcance de este comando):
   - specs/001-005 mencionan reglas del Principio I viejo; features cerradas, no se tocan.
   - La primera feature que sume una libreria crea `js/vendor/` y fija el patron
     `<lib>@<version>/`.
+  - La enmienda 2.3.0 la ejerce la feature 007 (optimizacion de imagenes + `<picture>`/WebP).
 
 TODOs deferidos: ninguno.
 -->
@@ -86,6 +103,22 @@ VENDORIZAN** en `js/vendor/<lib>@<version>/` antes de cerrar la feature, para no
 un CDN en runtime. Una libreria que se deja como ESM pinneado desde CDN en produccion tiene
 que explicar el motivo en su spec y asumir ese CDN como dependencia de runtime. Los
 archivos que se escriben o vendorizan son los que se sirven.
+
+"Sin paso de build" acota al **pipeline de publicacion**: GitHub Actions publica los
+archivos del repo tal cual, sin transformarlos. Un **script de mantenimiento del repo** que
+corre en la maquina del desarrollador, FUERA de CI, y cuyos resultados se commitean y se
+sirven sin cambios (p. ej. optimizar imagenes a WebP), NO es un paso de build: no hay build
+en el deploy y "lo que se lee en el repo es lo que corre" sigue valiendo. Estos scripts
+viven en `tools/` (Node ESM).
+
+**Dependencias de tooling (solo desarrollo)**: se permite un conjunto acotado de
+`devDependencies` en `package.json` para alimentar esos scripts de `tools/` — por ejemplo
+**sharp** para procesar imagenes. NO se envian al navegador, NO participan del runtime del
+sitio y NO se despliegan. Son distintas de las "librerias de terceros" de este principio
+(que son de runtime en el browser: animacion, canvas, juego, audio, particulas) y NO
+relajan ninguna prohibicion: siguen vetados los frameworks de app/UI, los frameworks CSS y
+los preprocesadores, tambien como tooling. Toda devDependency de tooling se justifica en la
+spec de la feature que la introduce (que hace, por que no alcanza con Node/plataforma).
 
 **Dependencias externas por red permitidas**: fuentes (Google Fonts via `<link>` o
 self-hosted), embeds de video via `<iframe>` (YouTube), y CDN de ESM solo durante el
@@ -186,7 +219,9 @@ ante un evaluador que sepa del tema.
 /css              -> hojas de estilo
 /js               -> modulos JavaScript propios
 /js/vendor        -> librerias de terceros vendorizadas (`<lib>@<version>/`)
-/assets/img       -> imagenes (locales, rutas relativas)
+/tools            -> scripts de mantenimiento del repo (Node ESM, corren local, NO en CI)
+/assets/img       -> imagenes optimizadas que se sirven (locales, rutas relativas)
+/assets/_source   -> originales sin optimizar, versionados; entrada de los scripts de `tools/`
 /assets/fonts     -> tipografias self-hosted (solo si no alcanza con Google Fonts)
 ```
 
@@ -239,8 +274,11 @@ justificado**. Solo los titulos cortos, taglines de Hero y etiquetas de una line
 centrados.
 
 **Assets**: imagenes locales, referenciadas con rutas relativas, optimizadas a WebP y a
-resoluciones razonables a mano. **Acreditar la fuente de cada imagen es OBLIGATORIO**
-(NASA/ESA lo exigen; el resto queda prolijo).
+resoluciones razonables. La optimizacion (conversion a WebP + resize) PUEDE hacerse a mano
+o con un **script local de `tools/`** cuyos resultados (`.webp` + fallback `.jpg`) se
+commitean y se sirven tal cual; el original sin optimizar se versiona en
+`assets/_source/img/`. Se prefiere el script por reproducibilidad. **Acreditar la fuente de
+cada imagen es OBLIGATORIO** (NASA/ESA lo exigen; el resto queda prolijo).
 
 **Baseline**: navegadores evergreen, ultimas 2 versiones. Sin polyfills.
 
@@ -326,4 +364,4 @@ en las specs colgadas si corresponde.
 criterios de aceptacion y los principios antes de considerarse cerrada. El agente reporta
 desvios de forma explicita en vez de resolverlos por su cuenta.
 
-**Version**: 2.1.0 | **Ratified**: 2026-08-27 | **Last Amended**: 2026-09-03
+**Version**: 2.3.0 | **Ratified**: 2026-08-27 | **Last Amended**: 2026-09-08
