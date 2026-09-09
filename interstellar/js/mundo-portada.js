@@ -16,7 +16,13 @@
 //     afuera mientras bajas: 0 -> 23 (una hora ahi = siete años arriba). El
 //     reloj es a Miller lo que las chispas a Gargantua: solo aparece con la
 //     escena armada.
-// En las tres la camara "baja" atada al scroll y suelta el sticky sobre el
+//   - Mann -> "el señuelo": seis fotogramas (vista cenital del hielo -> dos
+//     figuras en las crestas -> el doctor Mann -> la traicion, Cooper boca
+//     abajo con el visor rajado -> aproximacion a la Endurance -> caida por el
+//     tunel de acoplamiento). Encima, una baliza SEÑAL: HABITABLE que se
+//     CORROMPE a ENGAÑO (verde -> rojo, con glitch) en cuanto el scroll llega
+//     a la traicion. La baliza es a Mann lo que el reloj a Miller.
+// En las cuatro la camara "baja" atada al scroll y suelta el sticky sobre el
 // contenido de la pagina.
 //
 // Libreria: GSAP 3.13 + ScrollTrigger (Constitucion v2.0.0, Principio I:
@@ -62,6 +68,8 @@ async function initMundoPortada() {
     escenaGargantua(gsap, mm, portada);
   } else if (portada.querySelector('.mundo-capa--miller-arribo')) {
     escenaMiller(gsap, mm, portada);
+  } else if (portada.querySelector('.mundo-capa--mann-hielo')) {
+    escenaMann(gsap, mm, portada);
   }
 }
 
@@ -588,6 +596,136 @@ function escenaMiller(gsap, mm, portada) {
   };
 
   // Escritorio: zooms plenos. Movil: `cover` ya amplia en vertical -> `amp` 0.5.
+  mm.add('(min-width: 48rem) and (prefers-reduced-motion: no-preference)', armar(1, false));
+  mm.add('(max-width: 47.99rem) and (prefers-reduced-motion: no-preference)', armar(0.5, true));
+}
+
+// --- Mann: el señuelo, 6 fotogramas + baliza de habitabilidad ---------------
+function escenaMann(gsap, mm, portada) {
+  const hielo = portada.querySelector('.mundo-capa--mann-hielo');
+  const superficie = portada.querySelector('.mundo-capa--mann-superficie');
+  const mann = portada.querySelector('.mundo-capa--mann-mann');
+  const engano = portada.querySelector('.mundo-capa--mann-engano');
+  const docking = portada.querySelector('.mundo-capa--mann-docking');
+  const tunel = portada.querySelector('.mundo-capa--mann-tunel');
+  const texto = portada.querySelector('.mundo-portada-texto');
+  const volver = portada.querySelector('.mundo-volver');
+  const baliza = portada.querySelector('.mundo-baliza');
+  const balizaEstado = portada.querySelector('[data-baliza]');
+  const capas = [hielo, superficie, mann, engano, docking, tunel];
+  if (capas.some((c) => !c)) {
+    return; // DOM inesperado -> hero estatico
+  }
+
+  // Estado inicial: solo la cenital del hielo; el resto oculto con su transform
+  // de entrada. `engano` entra con un tiron (yPercent) para el corte seco de la
+  // traicion; `tunel` entra girado para la caida sin gravedad.
+  const base = () => {
+    portada.classList.add('is-armed');
+    gsap.set(hielo, { autoAlpha: 1, scale: 1, rotation: 0, xPercent: 0 });
+    gsap.set(superficie, { autoAlpha: 0, scale: 1.14 });
+    gsap.set(mann, { autoAlpha: 0, scale: 1.12 });
+    gsap.set(engano, { autoAlpha: 0, scale: 1.18, yPercent: 6, filter: 'brightness(1) contrast(1)' });
+    gsap.set(docking, { autoAlpha: 0, scale: 1.12 });
+    gsap.set(tunel, { autoAlpha: 0, scale: 1.16, rotation: -5 });
+    if (baliza) gsap.set(baliza, { autoAlpha: 0, x: 0 });
+    if (baliza) baliza.classList.remove('is-mentira');
+    if (balizaEstado) balizaEstado.textContent = 'Habitable';
+  };
+
+  const cleanup = (tl) => () => {
+    if (tl.scrollTrigger) tl.scrollTrigger.kill();
+    tl.kill();
+    portada.classList.remove('is-armed');
+    gsap.set([...capas, texto, volver], { clearProps: 'all' });
+    if (baliza) {
+      gsap.set(baliza, { clearProps: 'all' });
+      baliza.classList.remove('is-mentira');
+    }
+    if (balizaEstado) balizaEstado.textContent = 'Habitable';
+  };
+
+  const beat = (tl, capa, pos, extra) => {
+    tl.to(capa, { autoAlpha: 1, duration: 0.05 }, pos)
+      .to(capa, { scale: 1, yPercent: 0, xPercent: 0, rotation: 0, duration: 0.12, ...extra }, pos);
+  };
+  const salida = (tl, capa, pos) =>
+    tl.to(capa, { autoAlpha: 0, ease: 'power2.in', duration: 0.05 }, pos);
+
+  // La baliza: un proxy 0..1 que el scrub arrastra. Cuando pasa 0.5 (la
+  // traicion) conmuta la lectura HABITABLE -> ENGAÑO y prende `.is-mentira`
+  // (verde -> rojo). onUpdate = funciona en los dos sentidos del scroll.
+  const balizaSenal = (tl, movil) => {
+    if (!baliza || !balizaEstado) return;
+    tl.to(baliza, { autoAlpha: 0.92, duration: 0.06 }, movil ? 0.14 : 0.1);
+    const proxy = { v: 0 };
+    tl.to(
+      proxy,
+      {
+        v: 1,
+        duration: 0.02,
+        onUpdate: () => {
+          const mentira = proxy.v > 0.5;
+          baliza.classList.toggle('is-mentira', mentira);
+          balizaEstado.textContent = mentira ? 'Engaño' : 'Habitable';
+        },
+      },
+      0.45,
+    );
+    // glitch corto al conmutar
+    tl.to(baliza, { x: 5, duration: 0.02 }, 0.45)
+      .to(baliza, { x: -4, duration: 0.02 }, 0.47)
+      .to(baliza, { x: 0, duration: 0.03 }, 0.49)
+      .to(baliza, { autoAlpha: 0.35, duration: 0.02 }, 0.45)
+      .to(baliza, { autoAlpha: 0.92, duration: 0.05 }, 0.5);
+  };
+
+  // Construye los 6 beats sobre `tl`. `amp` (0..1) atenua los zooms en movil.
+  const coreografia = (tl, amp) => {
+    tl
+      .to([texto, volver], { autoAlpha: 0, y: -40 * amp, duration: 0.07 }, 0)
+      // 1 · hielo: cenital del paramo blanco; push-in lento + deriva minima
+      .to(hielo, { scale: 1 + 0.16 * amp, duration: 0.4 }, 0)
+      .to(hielo, { xPercent: -3 * amp, duration: 0.4 }, 0);
+    salida(tl, hielo, 0.14);
+
+    // 2 · superficie: dos figuras en las crestas de hielo
+    beat(tl, superficie, 0.14);
+    salida(tl, superficie, 0.28);
+
+    // 3 · mann: el doctor Mann, el mas condecorado -> el que miente
+    beat(tl, mann, 0.28);
+    salida(tl, mann, 0.42);
+
+    // 4 · engano: la traicion. Corte seco (entra con tiron) + oscurecimiento.
+    tl.to(engano, { autoAlpha: 1, duration: 0.04 }, 0.42);
+    tl.to(engano, { yPercent: 0, scale: 1, ease: 'power2.out', duration: 0.1 }, 0.42);
+    tl.to(engano, { filter: 'brightness(0.88) contrast(1.18)', duration: 0.1 }, 0.44);
+    tl.to(engano, { xPercent: 1.5, duration: 0.03 }, 0.43).to(engano, { xPercent: 0, duration: 0.03 }, 0.47);
+    salida(tl, engano, 0.58);
+
+    // 5 · docking: la aproximacion a la Endurance; leve push (nos acercamos)
+    beat(tl, docking, 0.58, { scale: 1.06 });
+    salida(tl, docking, 0.72);
+
+    // 6 · tunel: la caida por el tunel de acoplamiento. AGUANTA girando lento y
+    //     se disuelve a un fantasma hasta que suelta el sticky (sin negro vacio).
+    beat(tl, tunel, 0.72, { rotation: 0 });
+    tl.to(tunel, { rotation: -3 * amp, scale: 1.08, ease: 'power1.inOut', duration: 0.3 }, 0.76);
+    tl.to(tunel, { autoAlpha: 0.22, ease: 'power1.in', duration: 0.16 }, 0.86);
+  };
+
+  const armar = (amp, movil) => () => {
+    base();
+    const tl = gsap.timeline({
+      scrollTrigger: { trigger: portada, start: 'top top', end: 'bottom bottom', scrub: 0.5 },
+      defaults: { ease: 'none' },
+    });
+    coreografia(tl, amp);
+    balizaSenal(tl, movil);
+    return cleanup(tl);
+  };
+
   mm.add('(min-width: 48rem) and (prefers-reduced-motion: no-preference)', armar(1, false));
   mm.add('(max-width: 47.99rem) and (prefers-reduced-motion: no-preference)', armar(0.5, true));
 }

@@ -590,6 +590,103 @@ body.mundo-detalle main > section.mundo-portada .mundo-volver {
   }
 }
 
+/* ---------------------------------------------------------------------------
+   Portada "el señuelo" (js/mundo-portada.js, GSAP) — pagina Mann
+   ---------------------------------------------------------------------------
+   Misma mecanica: riel + escena `sticky` que solo aparece con `.is-armed`.
+   Seis fotogramas que el scroll encadena — la vista cenital del hielo -> dos
+   figuras en las crestas -> el doctor Mann -> la traicion (Cooper boca abajo,
+   visor rajado) -> la aproximacion a la Endurance -> la caida por el tunel de
+   acoplamiento. Encima, una baliza que marca SEÑAL: HABITABLE y se corrompe a
+   ENGAÑO en cuanto el scroll llega a la traicion.
+   Fotogramas de la pelicula (cap-that.com), 1800px.
+   --------------------------------------------------------------------------- */
+.mundo-capa--mann-hielo {
+  background-image: url("../assets/img/mundos-mann-hielo.jpg");
+}
+
+.mundo-capa--mann-superficie {
+  background-image: url("../assets/img/mundos-mann-superficie.jpg");
+  opacity: 0;
+}
+
+.mundo-capa--mann-mann {
+  background-image: url("../assets/img/mundos-mann-mann.jpg");
+  opacity: 0;
+}
+
+.mundo-capa--mann-engano {
+  background-image: url("../assets/img/mundos-mann-engano.jpg");
+  opacity: 0;
+}
+
+.mundo-capa--mann-docking {
+  background-image: url("../assets/img/mundos-mann-docking.jpg");
+  opacity: 0;
+}
+
+.mundo-capa--mann-tunel {
+  background-image: url("../assets/img/mundos-mann-tunel.jpg");
+  opacity: 0;
+}
+
+/* La paleta de Mann es blanco de hielo, casi sin color: un grade frio la lleva
+   al limite sin volverla monocroma. `docking` y `tunel` quedan afuera — pasan
+   en el negro del espacio y el JS les toca su propio filter en el remate. */
+.mundo-portada--mann .mundo-capa:not(.mundo-capa--mann-docking):not(.mundo-capa--mann-tunel) {
+  filter: saturate(0.88) contrast(1.12) brightness(1.03);
+}
+
+@media (max-width: 47.99rem) {
+  .mundo-capa--mann-mann {
+    background-position: 35% center;
+  }
+  .mundo-capa--mann-engano {
+    background-position: 42% center;
+  }
+}
+
+/* Baliza de habitabilidad: overlay arriba-derecha con lectura de instrumento.
+   Arranca `SEÑAL HABITABLE` (verde); el JS le agrega `.is-mentira` y la pasa a
+   `ENGAÑO` (rojo) cuando el scroll llega a la traicion. Es a Mann lo que el
+   reloj a Miller: solo aparece con la escena armada. */
+.mundo-baliza {
+  position: absolute;
+  top: clamp(0.75rem, 3vh, 1.5rem);
+  right: clamp(1rem, 4vw, 2.75rem);
+  z-index: 3;
+  margin: 0;
+  font: 500 clamp(0.72rem, 1.15vw, 0.9rem) / 1 var(--font-instrumento);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-texto);
+  text-shadow: 0 0 0.7rem #000, 0 1px 3px #000;
+  opacity: 0;                        /* GSAP lo sube al armar la escena */
+}
+
+.mundo-portada--mann:not(.is-armed) .mundo-baliza {
+  display: none;
+}
+
+.mundo-baliza-estado {
+  font-weight: 700;
+  color: #6bd88c;                    /* verde "apto" */
+}
+
+.mundo-baliza.is-mentira .mundo-baliza-estado {
+  color: #e8564a;                    /* rojo — la señal era falsa */
+}
+
+.mundo-portada--mann.is-armed {
+  height: 560svh;
+}
+
+@media (min-width: 48rem) {
+  .mundo-portada--mann.is-armed {
+    height: 700svh;
+  }
+}
+
 /* Lista de "rasgos distintivos": el reset dejo los <ul> sin viñeta; aca se
    repone el disco para este bloque de contenido. */
 .mundo-detalle #rasgos ul {
