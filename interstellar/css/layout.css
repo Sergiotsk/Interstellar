@@ -2442,20 +2442,22 @@ body.spoiler-alerta .cockpit-brand-linea::before {
   }
 }
 
-/* --- El panel de aviso, inyectado como hermano siguiente del <header>. NO va a
-   todo el ancho: es un modulo centrado (`width: min(...)`) que BAJA DESDE EL
-   TABLERO. z-index 19 (POR DEBAJO del header, z 20): arranca oculto detras de la
-   banda (`translateY(-100%)`) y baja hasta su lugar, asomando primero por el
-   filo del bezel. Sin filo arriba (`border-top: 0`) y esquinas inferiores
-   recortadas -> se lee como una compuerta que sale de la consola. Al reconocer
-   el aviso, `.spoiler-aviso--retrae` lo sube de vuelta LENTO (1.5s) y el JS lo
-   quita. Con prefers-reduced-motion el reset global anula las animaciones: el
-   panel aparece y desaparece sin deslizar. --- */
+/* --- El panel de aviso, inyectado DENTRO del <header>. CUELGA del tablero
+   (`position: absolute; top: 100%`, centrado) y FLOTA sobre el contenido: no
+   reserva un bloque, no tapa el fondo alrededor. `z-index: -1` -> mientras esta
+   recogido (`translateY(-100%)`) queda DETRAS de la banda (`header::before`) y
+   baja asomando por el filo del bezel. Sin filo arriba (`border-top: 0`) y
+   esquinas inferiores recortadas -> compuerta que sale de la consola. Al
+   reconocerlo, `.spoiler-aviso--retrae` lo sube LENTO (1.5s) y el JS lo quita.
+   Con prefers-reduced-motion el reset global anula las animaciones: aparece y
+   desaparece sin deslizar (queda en su transform base, centrado). --- */
 .spoiler-aviso {
-  position: relative;
-  z-index: 19;
-  width: min(100% - 2rem, 52rem);
-  margin-inline: auto;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  z-index: -1;
+  width: min(100vw - 2rem, 52rem);
+  transform: translateX(-50%);
   animation: spoiler-desplegar 0.5s cubic-bezier(0.16, 0.84, 0.28, 1) both;
   display: flex;
   flex-wrap: wrap;
@@ -2513,19 +2515,18 @@ body.spoiler-alerta .cockpit-brand-linea::before {
   color: color-mix(in srgb, var(--led-alerta) 78%, #fff);
 }
 
-/* Despliegue / retraccion del panel de aviso, atado al header. */
+/* Despliegue / retraccion del panel de aviso, atado al header. Mantienen el
+   `translateX(-50%)` (centrado) y solo mueven Y. */
 @keyframes spoiler-desplegar {
-  from { transform: translateY(-100%); opacity: 0; }
+  from { transform: translate(-50%, -100%); opacity: 0; }
   60%  { opacity: 1; }
-  to   { transform: translateY(0); opacity: 1; }
+  to   { transform: translate(-50%, 0); opacity: 1; }
 }
 
 @keyframes spoiler-retrae {
-  from { transform: translateY(0); opacity: 1; margin-bottom: 0; }
+  from { transform: translate(-50%, 0); opacity: 1; }
   70%  { opacity: 1; }
-  /* `margin-bottom` negativo -> el <main> sube EN SINCRO con el panel; al
-     quitarse del DOM ya no hay salto de layout. */
-  to   { transform: translateY(-100%); opacity: 0; margin-bottom: -3rem; }
+  to   { transform: translate(-50%, -100%); opacity: 0; }
 }
 
 /* Salida MUCHO mas lenta que la entrada: el panel se guarda despacio en la

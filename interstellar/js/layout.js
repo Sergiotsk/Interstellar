@@ -396,8 +396,11 @@ function initSpoilerAviso(header) {
     'afterbegin',
     '<span class="spoiler-rotulo" aria-hidden="true"><span class="led led-alerta"></span>Spoilers</span>',
   );
+  // DENTRO del <header> (no como hermano): asi el panel CUELGA del tablero
+  // (`position: absolute; top: 100%`) y flota sobre el contenido en vez de
+  // reservar un bloque full-width que lo empuja hacia abajo.
   header.insertAdjacentHTML(
-    'afterend',
+    'beforeend',
     '<div class="spoiler-aviso" role="alert">' +
       '<span><b>⚠ Spoilers:</b> este sitio comenta la trama completa, incluido el final.</span>' +
       '<button type="button" data-spoiler-ok>Ya la vi</button>' +
@@ -405,7 +408,7 @@ function initSpoilerAviso(header) {
   );
 
   const rotulo = header.querySelector('.spoiler-rotulo');
-  const aviso = document.body.querySelector('.spoiler-aviso');
+  const aviso = header.querySelector('.spoiler-aviso');
   const boton = aviso && aviso.querySelector('[data-spoiler-ok]');
   if (boton) {
     boton.addEventListener('click', () => {
