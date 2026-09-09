@@ -1,1 +1,12 @@
-{"name": "interstellar", "private": true, "type": "module"}
+{
+  "name": "interstellar",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "optimize": "node tools/optimize-img.mjs"
+  },
+  "devDependencies": {
+    "sharp": "0.35.4"
+  }
+}

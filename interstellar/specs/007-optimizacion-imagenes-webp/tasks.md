@@ -26,9 +26,9 @@ sección. US3 = créditos/docs. Trabajo en `main`, un commit chico por tarea o g
 
 **Purpose**: dejar el proyecto listo para tener un script de tooling.
 
-- [ ] T001 Agregar `sharp` como `devDependencies` (versión exacta pinneada) en `package.json`, y `"scripts": { "optimize": "node tools/optimize-img.mjs" }`. Correr `npm install` y verificar que `node -e "require('sharp')"` (o `import`) resuelve.
-- [ ] T002 [P] Crear el directorio `tools/` con un `tools/README.md` de una línea (qué es: scripts de mantenimiento del repo, corren local, NO en CI).
-- [ ] T003 [P] Confirmar en `.gitignore` que `assets/_source/` sigue ignorado y que `assets/img/*.webp` NO está ignorado (los derivados se versionan). Sin cambios si ya está bien; documentar en el commit.
+- [X] T001 Agregar `sharp` como `devDependencies` (versión exacta pinneada) en `package.json`, y `"scripts": { "optimize": "node tools/optimize-img.mjs" }`. Correr `npm install` y verificar que `node -e "require('sharp')"` (o `import`) resuelve.
+- [X] T002 [P] Crear el directorio `tools/` con un `tools/README.md` de una línea (qué es: scripts de mantenimiento del repo, corren local, NO en CI).
+- [X] T003 [P] Confirmar en `.gitignore` que `assets/_source/` sigue ignorado y que `assets/img/*.webp` NO está ignorado (los derivados se versionan). Sin cambios si ya está bien; documentar en el commit.
 
 **Checkpoint**: `npm install` OK, `sharp` disponible, `tools/` existe.
 
@@ -39,10 +39,10 @@ sección. US3 = créditos/docs. Trabajo en `main`, un commit chico por tarea o g
 **Purpose**: la lógica pura del pipeline (config de secciones, anchos, nombres de salida),
 con TDD. Es lo que consume el CLI y lo que se testea.
 
-- [ ] T004 [P] Escribir tests que FALLAN para `resolveTargetWidth(context, sourceWidth)` en `tests/optimize-img.test.js`: devuelve `min(anchoObjetivo[context], sourceWidth)`; tabla = poster-hero 1280 / backdrop-mundo 2560 / galeria-miniatura 800 / galeria-ampliada 1600 / filmstrip-frame 900 / retrato-personaje 720; `context` desconocido lanza.
-- [ ] T005 [P] Escribir tests que FALLAN para `deriveOutputs(logicalName, sourceFormat)` en `tests/optimize-img.test.js`: devuelve `{ webp: "<logicalName>.webp", fallback: "<logicalName>.<ext>" }`; `svg` → lanza / se marca ignorada.
-- [ ] T006 [P] Escribir tests que FALLAN para `sectionConfig(section)` en `tests/optimize-img.test.js`: devuelve la lista `{ logicalName, context, kind: "img"|"css" }` de esa sección (según data-model.md §Sección); sección desconocida lanza; `--all` no es una sección.
-- [ ] T007 [P] Escribir tests que FALLAN para `weightDelta(bytesAntes, bytesDespues)` en `tests/optimize-img.test.js`: devuelve `{ pct, pasaMinimo: pct >= 25 }`.
+- [X] T004 [P] Escribir tests que FALLAN para `resolveTargetWidth(context, sourceWidth)` en `tests/optimize-img.test.js`: devuelve `min(anchoObjetivo[context], sourceWidth)`; tabla = poster-hero 1280 / backdrop-mundo 2560 / galeria-miniatura 800 / galeria-ampliada 1600 / filmstrip-frame 900 / retrato-personaje 720; `context` desconocido lanza.
+- [X] T005 [P] Escribir tests que FALLAN para `deriveOutputs(logicalName, sourceFormat)` en `tests/optimize-img.test.js`: devuelve `{ webp: "<logicalName>.webp", fallback: "<logicalName>.<ext>" }`; `svg` → lanza / se marca ignorada.
+- [X] T006 [P] Escribir tests que FALLAN para `sectionConfig(section)` en `tests/optimize-img.test.js`: devuelve la lista `{ logicalName, context, kind: "img"|"css" }` de esa sección (según data-model.md §Sección); sección desconocida lanza; `--all` no es una sección.
+- [X] T007 [P] Escribir tests que FALLAN para `weightDelta(bytesAntes, bytesDespues)` en `tests/optimize-img.test.js`: devuelve `{ pct, pasaMinimo: pct >= 25 }`.
 - [ ] T008 Implementar `tools/optimize-img.lib.mjs` (ES module, funciones puras exportadas: `TARGET_WIDTHS`, `SECTION_MAP`, `resolveTargetWidth`, `deriveOutputs`, `sectionConfig`, `weightDelta`) hasta que T004–T007 pasen (`node --test` — NO `node --test tests/`, roto en Node 25.9.0).
 - [ ] T009 Poblar `SECTION_MAP` en `tools/optimize-img.lib.mjs` con las secciones y sus imágenes reales: recorrer `*.html` y `css/mundos.css`, listar cada imagen raster por `logicalName`, asignarle `context` y `kind`. Ajustar T006 si el conteo real difiere.
 
