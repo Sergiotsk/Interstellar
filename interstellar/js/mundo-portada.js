@@ -22,7 +22,12 @@
 //     tunel de acoplamiento). Encima, una baliza SEÑAL: HABITABLE que se
 //     CORROMPE a ENGAÑO (verde -> rojo, con glitch) en cuanto el scroll llega
 //     a la traicion. La baliza es a Mann lo que el reloj a Miller.
-// En las cuatro la camara "baja" atada al scroll y suelta el sticky sobre el
+//   - Tesseract -> "el pasillo del tiempo": seis fotogramas (la reticula
+//     infinita de estanterias -> la caida por la estructura -> detras del
+//     estante -> Cooper tensandose -> la vista cenital del cuarto -> Murph
+//     adulta entendiendo). Encima, un tren de morse que ENCIENDE sus grupos
+//     (S T A Y) en orden con el scroll y se decodifica en la palabra al final.
+// En las cinco la camara "baja" atada al scroll y suelta el sticky sobre el
 // contenido de la pagina.
 //
 // Libreria: GSAP 3.13 + ScrollTrigger (Constitucion v2.0.0, Principio I:
@@ -70,6 +75,8 @@ async function initMundoPortada() {
     escenaMiller(gsap, mm, portada);
   } else if (portada.querySelector('.mundo-capa--mann-hielo')) {
     escenaMann(gsap, mm, portada);
+  } else if (portada.querySelector('.mundo-capa--tesseract-reticula')) {
+    escenaTesseract(gsap, mm, portada);
   }
 }
 
@@ -723,6 +730,127 @@ function escenaMann(gsap, mm, portada) {
     });
     coreografia(tl, amp);
     balizaSenal(tl, movil);
+    return cleanup(tl);
+  };
+
+  mm.add('(min-width: 48rem) and (prefers-reduced-motion: no-preference)', armar(1, false));
+  mm.add('(max-width: 47.99rem) and (prefers-reduced-motion: no-preference)', armar(0.5, true));
+}
+
+// --- Tesseract: el pasillo del tiempo, 6 fotogramas + tren de morse ---------
+function escenaTesseract(gsap, mm, portada) {
+  const reticula = portada.querySelector('.mundo-capa--tesseract-reticula');
+  const caida = portada.querySelector('.mundo-capa--tesseract-caida');
+  const estante = portada.querySelector('.mundo-capa--tesseract-estante');
+  const empuje = portada.querySelector('.mundo-capa--tesseract-empuje');
+  const mensaje = portada.querySelector('.mundo-capa--tesseract-mensaje');
+  const murph = portada.querySelector('.mundo-capa--tesseract-murph');
+  const texto = portada.querySelector('.mundo-portada-texto');
+  const volver = portada.querySelector('.mundo-volver');
+  const morse = portada.querySelector('.mundo-morse');
+  const grupos = [...portada.querySelectorAll('.mundo-morse-g')];
+  const palabra = portada.querySelector('[data-morse-palabra]');
+  const capas = [reticula, caida, estante, empuje, mensaje, murph];
+  if (capas.some((c) => !c)) {
+    return; // DOM inesperado -> hero estatico
+  }
+
+  // Estado inicial: solo la reticula; el resto oculto con su transform de
+  // entrada. `caida` entra girada (la caida sin gravedad por la estructura).
+  const base = () => {
+    portada.classList.add('is-armed');
+    gsap.set(reticula, { autoAlpha: 1, scale: 1, rotation: 0, xPercent: 0 });
+    gsap.set(caida, { autoAlpha: 0, scale: 1.2, rotation: 5 });
+    gsap.set(estante, { autoAlpha: 0, scale: 1.14 });
+    gsap.set(empuje, { autoAlpha: 0, scale: 1.12 });
+    gsap.set(mensaje, { autoAlpha: 0, scale: 1.14 });
+    gsap.set(murph, { autoAlpha: 0, scale: 1.1 });
+    if (morse) gsap.set(morse, { autoAlpha: 0 });
+    grupos.forEach((g) => gsap.set(g, { autoAlpha: 0.26 }));
+    if (palabra) gsap.set(palabra, { autoAlpha: 0 });
+  };
+
+  const cleanup = (tl) => () => {
+    if (tl.scrollTrigger) tl.scrollTrigger.kill();
+    tl.kill();
+    portada.classList.remove('is-armed');
+    gsap.set([...capas, texto, volver], { clearProps: 'all' });
+    if (morse) gsap.set([morse, ...grupos, palabra].filter(Boolean), { clearProps: 'all' });
+  };
+
+  const beat = (tl, capa, pos, extra) => {
+    tl.to(capa, { autoAlpha: 1, duration: 0.05 }, pos)
+      .to(capa, { scale: 1, yPercent: 0, xPercent: 0, rotation: 0, duration: 0.12, ...extra }, pos);
+  };
+  const salida = (tl, capa, pos) =>
+    tl.to(capa, { autoAlpha: 0, ease: 'power2.in', duration: 0.05 }, pos);
+
+  // El tren de morse (S T A Y). Un proxy 0..4 que el scrub arrastra; cada grupo
+  // se enciende cuando el proxy pasa su indice. Al final asoma la palabra
+  // decodificada y el tren baja de intensidad (transmision cerrada).
+  const morseTren = (tl, movil) => {
+    if (!morse || grupos.length === 0) return;
+    tl.to(morse, { autoAlpha: 0.9, duration: 0.06 }, movil ? 0.14 : 0.1);
+    const proxy = { v: 0 };
+    tl.to(
+      proxy,
+      {
+        v: grupos.length,
+        ease: 'none',
+        duration: 0.6,
+        onUpdate: () => {
+          grupos.forEach((g, i) => { g.style.opacity = proxy.v > i + 0.5 ? '1' : '0.26'; });
+        },
+      },
+      0.14,
+    );
+    if (palabra) {
+      tl.to(palabra, { autoAlpha: 1, duration: 0.06 }, 0.8);
+      tl.to(grupos, { autoAlpha: 0.5, duration: 0.08 }, 0.82);
+    }
+  };
+
+  // Construye los 6 beats sobre `tl`. `amp` (0..1) atenua los zooms en movil.
+  const coreografia = (tl, amp) => {
+    tl
+      .to([texto, volver], { autoAlpha: 0, y: -40 * amp, duration: 0.07 }, 0)
+      // 1 · reticula: la estructura infinita; push-in lento + leve rotacion
+      .to(reticula, { scale: 1 + 0.16 * amp, duration: 0.36 }, 0)
+      .to(reticula, { rotation: -1.5 * amp, duration: 0.36 }, 0);
+    salida(tl, reticula, 0.14);
+
+    // 2 · caida: la caida sin gravedad — entra girada y se endereza
+    beat(tl, caida, 0.14, { rotation: 0 });
+    salida(tl, caida, 0.28);
+
+    // 3 · estante: detras de la estanteria, la habitacion por los hilos
+    beat(tl, estante, 0.28);
+    salida(tl, estante, 0.42);
+
+    // 4 · empuje: Cooper tensandose contra el estante; push-in + sacudida corta
+    beat(tl, empuje, 0.42, { scale: 1.08 });
+    tl.to(empuje, { xPercent: 1.5 * amp, duration: 0.03 }, 0.46).to(empuje, { xPercent: 0, duration: 0.03 }, 0.5);
+    salida(tl, empuje, 0.56);
+
+    // 5 · mensaje: la vista cenital del cuarto — el instante que intenta cambiar
+    beat(tl, mensaje, 0.56);
+    salida(tl, mensaje, 0.72);
+
+    // 6 · murph: Murph adulta frente al estante, entendiendo. AGUANTA y se
+    //     disuelve a un fantasma hasta que suelta el sticky (sin negro vacio).
+    beat(tl, murph, 0.72);
+    tl.to(murph, { scale: 1 + 0.06 * amp, ease: 'power1.inOut', duration: 0.28 }, 0.76);
+    tl.to(murph, { autoAlpha: 0.22, ease: 'power1.in', duration: 0.16 }, 0.86);
+  };
+
+  const armar = (amp, movil) => () => {
+    base();
+    const tl = gsap.timeline({
+      scrollTrigger: { trigger: portada, start: 'top top', end: 'bottom bottom', scrub: 0.5 },
+      defaults: { ease: 'none' },
+    });
+    coreografia(tl, amp);
+    morseTren(tl, movil);
     return cleanup(tl);
   };
 

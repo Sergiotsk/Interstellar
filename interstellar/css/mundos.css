@@ -687,6 +687,111 @@ body.mundo-detalle main > section.mundo-portada .mundo-volver {
   }
 }
 
+/* ---------------------------------------------------------------------------
+   Portada "el pasillo del tiempo" (js/mundo-portada.js, GSAP) — pagina Tesseract
+   ---------------------------------------------------------------------------
+   El tesseract no es un planeta: es la reticula donde el tiempo se recorre como
+   un espacio. Seis fotogramas que el scroll encadena — la reticula infinita de
+   estanterias -> la caida por la estructura -> detras del estante, la
+   habitacion por los hilos -> Cooper tensandose contra el estante -> la vista
+   cenital del cuarto (el mensaje) -> Murph adulta entendiendo. Encima, un tren
+   de morse que TRANSMITE mientras scrolleas y se decodifica en STAY al final.
+   Fotogramas de la pelicula (cap-that.com), 1800px.
+   --------------------------------------------------------------------------- */
+.mundo-capa--tesseract-reticula {
+  background-image: url("../assets/img/mundos-tesseract-reticula.jpg");
+}
+
+.mundo-capa--tesseract-caida {
+  background-image: url("../assets/img/mundos-tesseract-caida.jpg");
+  opacity: 0;
+}
+
+.mundo-capa--tesseract-estante {
+  background-image: url("../assets/img/mundos-tesseract-estante.jpg");
+  opacity: 0;
+}
+
+.mundo-capa--tesseract-empuje {
+  background-image: url("../assets/img/mundos-tesseract-empuje.jpg");
+  opacity: 0;
+}
+
+.mundo-capa--tesseract-mensaje {
+  background-image: url("../assets/img/mundos-tesseract-mensaje.jpg");
+  opacity: 0;
+}
+
+.mundo-capa--tesseract-murph {
+  background-image: url("../assets/img/mundos-tesseract-murph.jpg");
+  opacity: 0;
+}
+
+/* Paleta del tesseract: negro con luz ambar del cuarto. Un grade que ahonda los
+   negros y calienta apenas el ambar. */
+.mundo-portada--tesseract .mundo-capa {
+  filter: contrast(1.12) saturate(1.06) brightness(0.96);
+}
+
+@media (max-width: 47.99rem) {
+  .mundo-capa--tesseract-estante {
+    background-position: 60% center;
+  }
+  .mundo-capa--tesseract-mensaje {
+    background-position: 45% center;
+  }
+}
+
+/* El tren de morse: overlay arriba-derecha. Los cuatro grupos (S T A Y) entran
+   apagados y el JS los ENCIENDE en orden con el scroll; al final asoma la
+   palabra decodificada. Solo con la escena armada. */
+.mundo-morse {
+  position: absolute;
+  top: clamp(0.75rem, 3vh, 1.5rem);
+  right: clamp(1rem, 4vw, 2.75rem);
+  z-index: 3;
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  font: 500 clamp(0.8rem, 1.3vw, 1rem) / 1 var(--font-instrumento);
+  letter-spacing: 0.1em;
+  color: var(--color-texto);
+  text-shadow: 0 0 0.7rem #000, 0 1px 3px #000;
+  opacity: 0;                        /* GSAP lo sube al armar la escena */
+}
+
+.mundo-portada--tesseract:not(.is-armed) .mundo-morse {
+  display: none;
+}
+
+.mundo-morse-tren {
+  display: inline-flex;
+  gap: 0.5rem;
+}
+
+.mundo-morse-g {
+  opacity: 0.26;                     /* GSAP los sube de a uno */
+}
+
+.mundo-morse-palabra {
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-tierra-oro);
+  opacity: 0;                        /* GSAP la revela al final */
+}
+
+.mundo-portada--tesseract.is-armed {
+  height: 560svh;
+}
+
+@media (min-width: 48rem) {
+  .mundo-portada--tesseract.is-armed {
+    height: 700svh;
+  }
+}
+
 /* Lista de "rasgos distintivos": el reset dejo los <ul> sin viñeta; aca se
    repone el disco para este bloque de contenido. */
 .mundo-detalle #rasgos ul {
