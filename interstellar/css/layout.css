@@ -135,8 +135,10 @@ footer {
   transition: color 0.15s ease, text-shadow 0.15s ease;
 }
 
-/* Linea 1: la marca. Tipografia de titulo y un punto mas clara que el rotulo. */
+/* Linea 1: la marca. Tipografia de titulo y un punto mas clara que el rotulo.
+   `position: relative` para anclar su LED (pseudo). */
 .cockpit-marca {
+  position: relative;
   font-family: var(--font-hero-titulo);
   font-size: 0.7rem;
   letter-spacing: 0.32em;
@@ -144,8 +146,7 @@ footer {
   text-shadow: 0 0 8px color-mix(in srgb, var(--instrumento-teal) 28%, transparent);
 }
 
-/* Linea 2: el rotulo de instrumento con sus dos LED. `position: relative` para
-   que los LED (pseudos) se anclen a ESTA linea y no a toda la placa. */
+/* Linea 2: el rotulo de instrumento. `position: relative` para anclar su LED. */
 .cockpit-brand-linea {
   position: relative;
   font-size: 0.64rem;
@@ -154,12 +155,14 @@ footer {
   text-shadow: 0 0 8px color-mix(in srgb, var(--instrumento-teal) 42%, transparent);
 }
 
-/* Los dos LED del mini-panel, a la izquierda del rotulo. Mismo tratamiento que
-   `.led` del footer (nucleo + halo `box-shadow`). */
-.cockpit-brand-linea::before,
-.cockpit-brand-linea::after {
+/* Un LED por linea, a la izquierda de cada palabra: (•) INTERSTELLAR sobre
+   (•) NAV · RANGER. Mismo tratamiento que `.led` del footer (nucleo + halo
+   `box-shadow`); los dos dots quedan alineados en vertical. */
+.cockpit-marca::before,
+.cockpit-brand-linea::before {
   content: "";
   position: absolute;
+  left: -1.4rem;
   top: 50%;
   width: 7px;
   height: 7px;
@@ -167,14 +170,12 @@ footer {
   transform: translateY(-50%);
 }
 
-.cockpit-brand-linea::before {   /* SYS — teal */
-  left: -1.9rem;
+.cockpit-marca::before {          /* SYS — teal, junto a la marca */
   background: var(--instrumento-teal);
   box-shadow: 0 0 6px 1px color-mix(in srgb, var(--instrumento-teal) 62%, transparent);
 }
 
-.cockpit-brand-linea::after {    /* PWR — ámbar */
-  left: -1.15rem;
+.cockpit-brand-linea::before {    /* PWR — ámbar, junto al rotulo */
   background: var(--led-ambar);
   box-shadow: 0 0 6px 1px color-mix(in srgb, var(--led-ambar) 62%, transparent);
 }
@@ -191,8 +192,8 @@ footer {
    El reset global ya anula animaciones con prefers-reduced-motion; el guard lo
    hace explicito. Reusa @keyframes cockpit-led-pulso (definido en el footer). */
 @media (prefers-reduced-motion: no-preference) {
-  .cockpit-brand-linea::before { animation: cockpit-led-pulso 2.6s ease-in-out infinite; }
-  .cockpit-brand-linea::after { animation: cockpit-led-pulso 1.9s ease-in-out infinite; }
+  .cockpit-marca::before { animation: cockpit-led-pulso 2.6s ease-in-out infinite; }
+  .cockpit-brand-linea::before { animation: cockpit-led-pulso 1.9s ease-in-out infinite; }
 }
 
 /* A ~320px "NAV · RANGER" apretaria contra el boton: queda solo "NAV". Los dos
@@ -738,8 +739,8 @@ header nav ul ul a {
     left: clamp(1.75rem, 4vw, 3rem);
   }
 
-  body:not(.spoiler-alerta) .cockpit-brand-linea::before,
-  body:not(.spoiler-alerta) .cockpit-brand-linea::after {
+  body:not(.spoiler-alerta) .cockpit-marca::before,
+  body:not(.spoiler-alerta) .cockpit-brand-linea::before {
     width: 8px;
     height: 8px;
   }
@@ -2380,9 +2381,10 @@ body.spoiler-alerta header nav > ul > li > a[aria-current='page']::before {
   box-shadow: 0 0 9px 2px color-mix(in srgb, var(--led-alerta) 82%, transparent);
 }
 
-/* --- LED del mini-panel de la marca en alerta (SYS + PWR, los dos rojos) --- */
-body.spoiler-alerta .cockpit-brand-linea::before,
-body.spoiler-alerta .cockpit-brand-linea::after {
+/* --- Los dos LED de la placa en alerta (uno por linea, los dos rojos). En
+   escritorio la placa esta oculta con el aviso activo; esto aplica en mobile. --- */
+body.spoiler-alerta .cockpit-marca::before,
+body.spoiler-alerta .cockpit-brand-linea::before {
   background: var(--led-alerta);
   box-shadow: 0 0 6px 1px color-mix(in srgb, var(--led-alerta) 62%, transparent);
 }
@@ -2392,8 +2394,8 @@ body.spoiler-alerta .cockpit-brand-linea::after {
    prefers-reduced-motion; este guard lo hace explícito. --- */
 @media (prefers-reduced-motion: no-preference) {
   body.spoiler-alerta header nav > ul > li > a::before,
-  body.spoiler-alerta .cockpit-brand-linea::before,
-  body.spoiler-alerta .cockpit-brand-linea::after {
+  body.spoiler-alerta .cockpit-marca::before,
+  body.spoiler-alerta .cockpit-brand-linea::before {
     animation: spoiler-baliza 1.2s ease-in-out infinite;
   }
 }
