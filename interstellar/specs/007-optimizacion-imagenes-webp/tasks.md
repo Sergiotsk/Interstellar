@@ -43,8 +43,8 @@ con TDD. Es lo que consume el CLI y lo que se testea.
 - [X] T005 [P] Escribir tests que FALLAN para `deriveOutputs(logicalName, sourceFormat)` en `tests/optimize-img.test.js`: devuelve `{ webp: "<logicalName>.webp", fallback: "<logicalName>.<ext>" }`; `svg` → lanza / se marca ignorada.
 - [X] T006 [P] Escribir tests que FALLAN para `sectionConfig(section)` en `tests/optimize-img.test.js`: devuelve la lista `{ logicalName, context, kind: "img"|"css" }` de esa sección (según data-model.md §Sección); sección desconocida lanza; `--all` no es una sección.
 - [X] T007 [P] Escribir tests que FALLAN para `weightDelta(bytesAntes, bytesDespues)` en `tests/optimize-img.test.js`: devuelve `{ pct, pasaMinimo: pct >= 25 }`.
-- [ ] T008 Implementar `tools/optimize-img.lib.mjs` (ES module, funciones puras exportadas: `TARGET_WIDTHS`, `SECTION_MAP`, `resolveTargetWidth`, `deriveOutputs`, `sectionConfig`, `weightDelta`) hasta que T004–T007 pasen (`node --test` — NO `node --test tests/`, roto en Node 25.9.0).
-- [ ] T009 Poblar `SECTION_MAP` en `tools/optimize-img.lib.mjs` con las secciones y sus imágenes reales: recorrer `*.html` y `css/mundos.css`, listar cada imagen raster por `logicalName`, asignarle `context` y `kind`. Ajustar T006 si el conteo real difiere.
+- [X] T008 Implementar `tools/optimize-img.lib.mjs` (ES module, funciones puras exportadas: `TARGET_WIDTHS`, `SECTION_MAP`, `resolveTargetWidth`, `deriveOutputs`, `sectionConfig`, `weightDelta`) hasta que T004–T007 pasen (`node --test` — NO `node --test tests/`, roto en Node 25.9.0).
+- [X] T009 Poblar `SECTION_MAP` en `tools/optimize-img.lib.mjs` con las secciones y sus imágenes reales: recorrer `*.html` y `css/mundos.css`, listar cada imagen raster por `logicalName`, asignarle `context` y `kind`. Ajustar T006 si el conteo real difiere.
 
 **Checkpoint**: `node --test` en verde; la lógica de config/anchos/nombres está cerrada.
 
@@ -58,11 +58,11 @@ respaldo redimensionados, es idempotente y no toca nada más.
 **Independent Test**: correr el comando para `mundos-portada`, ver los derivados nuevos con
 peso menor, correr de nuevo y comprobar `git status` limpio.
 
-- [ ] T010 [US1] Implementar el CLI `tools/optimize-img.mjs` según `contracts/optimize-img-cli.md`: parsea `<seccion>|--all` + `--dry-run`; para cada imagen de `sectionConfig`, resuelve la fuente (`assets/_source/img/<seccion>/<n>.<ext>` si existe, si no `assets/img/<n>.<ext>`); usa `optimize-img.lib.mjs` para ancho y nombres.
-- [ ] T011 [US1] Implementar el procesamiento `sharp` en `tools/optimize-img.mjs`: `resize({ width, withoutEnlargement: true })`; `.webp({ quality: 74, effort: 5 })` (80 para `retrato-personaje`); respaldo `.jpeg({ mozjpeg: true, quality: 78, progressive: true })` o `.png({ palette: true })` si tiene alfa; sin `withMetadata()`.
-- [ ] T012 [US1] Implementar idempotencia en `tools/optimize-img.mjs`: generar a buffer, comparar con el archivo existente, escribir SOLO si difiere; `--dry-run` no escribe.
-- [ ] T013 [US1] Implementar el reporte de consola y exit codes (0/1/2/3) según el contrato: por imagen `nombre  <wSrc>→<wOut>  <bytesAntes> → <bytesDespues> (−NN%)`; total de sección + warning si supera el tope conocido.
-- [ ] T014 [US1] Ejecutar `node tools/optimize-img.mjs mundos-portada` y validar: derivados creados, peso de los 5 backdrops de `mundos.html` ≤ 1,2 MB y cada uno ≤ 250 KB (FR-013), segunda corrida ⇒ `git status --porcelain assets/img/` vacío (SC-005). Commit de los derivados.
+- [X] T010 [US1] Implementar el CLI `tools/optimize-img.mjs` según `contracts/optimize-img-cli.md`: parsea `<seccion>|--all` + `--dry-run`; para cada imagen de `sectionConfig`, resuelve la fuente (`assets/_source/img/<seccion>/<n>.<ext>` si existe, si no `assets/img/<n>.<ext>`); usa `optimize-img.lib.mjs` para ancho y nombres.
+- [X] T011 [US1] Implementar el procesamiento `sharp` en `tools/optimize-img.mjs`: `resize({ width, withoutEnlargement: true })`; `.webp({ quality: 74, effort: 5 })` (80 para `retrato-personaje`); respaldo `.jpeg({ mozjpeg: true, quality: 78, progressive: true })` o `.png({ palette: true })` si tiene alfa; sin `withMetadata()`.
+- [X] T012 [US1] Implementar idempotencia en `tools/optimize-img.mjs`: generar a buffer, comparar con el archivo existente, escribir SOLO si difiere; `--dry-run` no escribe.
+- [X] T013 [US1] Implementar el reporte de consola y exit codes (0/1/2/3) según el contrato: por imagen `nombre  <wSrc>→<wOut>  <bytesAntes> → <bytesDespues> (−NN%)`; total de sección + warning si supera el tope conocido.
+- [X] T014 [US1] Ejecutar `node tools/optimize-img.mjs mundos-portada` y validar: derivados creados, peso de los 5 backdrops de `mundos.html` ≤ 1,2 MB y cada uno ≤ 250 KB (FR-013), segunda corrida ⇒ `git status --porcelain assets/img/` vacío (SC-005). Commit de los derivados.
 
 **Checkpoint**: el pipeline funciona de punta a punta sobre una sección real.
 

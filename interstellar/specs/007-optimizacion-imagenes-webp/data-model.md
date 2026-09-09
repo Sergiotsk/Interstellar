@@ -40,6 +40,22 @@ Determina el ancho de salida. Valor fijo por categoría (ver `research.md` R3).
 
 **Regla**: `anchoSalida = min(anchoObjetivo, dimensiones.ancho)` — nunca agranda.
 
+**Contexto por archivo, no por sección** (D2-A, acordado 2026-09-08): un archivo se
+procesa UNA vez, con el ancho de su **uso más exigente**. `galeria.html` reutiliza los
+mismos archivos que el resto del sitio (≈19/50); un retrato que también aparece en la
+galería toma el mayor de los dos anchos. Implementado en `contextForImage()` de
+`tools/optimize-img.lib.mjs` (mapa explícito `BACKDROP_MUNDO` / `RETRATO_PERSONAJE` +
+prefijo `mundos-{tierra,gargantua}-` → `filmstrip-frame`; resto → `galeria-ampliada`).
+Consecuencia: optimizar una sección puede tocar archivos compartidos con otra (p. ej.
+`mundos-portada` recomprime `mundos-gargantua.jpg`, que además es `<img>` en el hub y la
+galería). El marcado de cada sección se migra igual por separado.
+
+**Idempotencia** (SC-005): la mayoría del material NO tiene original en `assets/_source/`
+(gitignored, decisión 1B). Si la fuente es el propio `assets/img/<n>.<ext>` y ya existe
+`<n>.webp`, el pipeline **saltea** ese archivo (re-encodear sería pérdida generacional y el
+árbol nunca se estabilizaría). `--force` regenera. Si hay original en `assets/_source/`, se
+reprocesa siempre (determinista desde el pristino).
+
 ---
 
 ## Entidad: Derivados servibles

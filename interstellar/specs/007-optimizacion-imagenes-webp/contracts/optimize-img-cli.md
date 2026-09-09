@@ -5,8 +5,8 @@ Script Node ESM de mantenimiento del repo. Corre **local**, nunca en CI.
 ## Invocación
 
 ```bash
-node tools/optimize-img.mjs <seccion> [--dry-run]
-node tools/optimize-img.mjs --all      [--dry-run]
+node tools/optimize-img.mjs <seccion> [--dry-run] [--force]
+node tools/optimize-img.mjs --all      [--dry-run] [--force]
 ```
 
 (Opcional: `package.json` puede exponer `"scripts": { "optimize": "node tools/optimize-img.mjs" }`
@@ -19,6 +19,7 @@ node tools/optimize-img.mjs --all      [--dry-run]
 | `<seccion>` | uno de `<seccion>` \| `--all` | Nombre de sección del data-model (`mundos-portada`, `galeria`, `filmstrip-tierra`, `filmstrip-gargantua`, `mundos-hub`, `personajes`, `ciencia`, `contacto`, `hero`). |
 | `--all` | — | Procesa todas las secciones. |
 | `--dry-run` | no | Lista qué archivos generaría/actualizaría y el delta de peso, **sin escribir**. |
+| `--force` | no | Regenera aunque el `.webp` ya exista (para re-tunear parámetros). Sin `--force`, un archivo cuya fuente es el propio `assets/img/` y ya tiene `.webp` se **saltea** (idempotencia). |
 
 ## Entradas
 
@@ -48,9 +49,12 @@ Parámetros (de `research.md` R2):
 
 ## Garantías
 
-- **Idempotencia**: con la misma fuente, los mismos parámetros y la misma versión de
-  `sharp`, la salida es byte-idéntica. El script compara contra el archivo existente y
-  **solo escribe si cambió**. ⇒ segundo run sin tocar fuentes ⇒ `git status` limpio (SC-005).
+- **Idempotencia** (SC-005): segundo run sin tocar fuentes ⇒ `git status` limpio.
+  - Fuente en `assets/_source/`: salida determinista (misma fuente + params + versión de
+    `sharp`); el script compara buffers y solo escribe si cambió.
+  - Fuente = el propio `assets/img/<n>.<ext>` (no hay original): una vez que existe
+    `<n>.webp`, el archivo se **saltea** (re-encodear sería pérdida generacional). `--force`
+    para regenerar.
 - **Aislamiento**: solo escribe dentro de `assets/img/`. No toca `*.html`, `css/`, `tests/`,
   ni imágenes de otras secciones.
 - **Sin red**: no descarga nada.
