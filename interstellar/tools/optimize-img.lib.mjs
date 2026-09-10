@@ -15,8 +15,12 @@ export const TARGET_WIDTHS = Object.freeze({
 
 // Calidad WebP por contexto: los retratos son informativos (no van oscurecidos),
 // el resto tolera compresión más agresiva (backdrops con brightness(0.4)).
+// `poster-hero` baja aún más: el <video> lo tapa en ~1 s y de fondo es un agujero
+// negro sobre espacio (casi todo gradientes oscuros). q52 le saca ~12 KiB al LCP.
 export function webpQuality(context) {
-  return context === 'retrato-personaje' ? 80 : 74;
+  if (context === 'retrato-personaje') return 80;
+  if (context === 'poster-hero') return 52;
+  return 74;
 }
 
 // --- resolveTargetWidth ------------------------------------------------------

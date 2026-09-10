@@ -26,8 +26,12 @@
          sec/inicio): sin <h2> ni parrafo aparte -> el inicio entra en una sola
          pantalla sin scroll y el subtitulo del <h1> resume el recorrido. -->
     <section class="hero" aria-labelledby="hero-titulo">
+      <!-- preload="metadata": el video de fondo pesa ~2.2 MB por formato; con
+           preload="auto" el navegador se lo bajaba entero apenas cargaba la home
+           (la pagina del LCP) y peleaba el critical path. El poster cubre el hueco
+           y el autoplay igual arranca al tener datos suficientes. -->
       <video class="hero-backdrop" poster="assets/img/hero-gargantua.webp"
-             autoplay muted loop playsinline preload="auto" aria-hidden="true">
+             autoplay muted loop playsinline preload="metadata" aria-hidden="true">
         <source src="assets/img/hero-fondo.webm" type="video/webm">
         <source src="assets/img/hero-fondo.mp4" type="video/mp4">
       </video>
