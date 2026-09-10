@@ -1,8 +1,10 @@
 # DESIGN.md — Núcleo de diseño del sitio Interstellar
 
 > Documento portable del sistema de diseño. Consolida lo que hoy vive disperso en
-> `css/variables.css`, `css/base.css`, `css/layout.css`, `css/reset.css`, los
-> contratos de `specs/` y `proyecto-interstellar-base.md`.
+> `css/reset.css`, `css/variables.css`, `css/base.css`, `css/layout.css` (+ las
+> hojas de página `mundos.css` / `cielo.css` / `personajes.css` / `ciencia.css` /
+> `galeria.css` / `contacto.css`), los contratos de `specs/` y
+> `proyecto-interstellar-base.md`.
 >
 > **Uso previsto:** llevar el "core" del diseño a herramientas externas
 > (Claude Design u otras) para plantear mejoras sin necesidad de leer todo el CSS.
@@ -184,13 +186,16 @@ Contrato: `specs/006-reset-css/contracts/hojas-css.md`. Orden fijo de `<link>`:
 3. **`base.css`** — defaults del sitio sobre **elementos pelados** (tipografía,
    color, foco, espaciado de lectura). Regla de reparto: selector de elemento o
    pseudo-clase pelada → acá.
-4. **`layout.css`** — layout del sitio y **componentes** (selectores con clase o
-   contexto estructural). ~1900 líneas, numeradas por feature (§3–§15) para
-   trazabilidad con `specs/001`–`005`. Incluye el **`§15 Cielo`** (campo estelar
-   + estrella fugaz), compartido y opt-in por página (`body.con-cielo`).
-5. *(Opcional)* Una página pesada (p. ej. `minijuegos.html`) puede sumar un 5º
-   `<link>` propio **después** de `layout.css`. `mundos.css` es ese 5º link en las
-   páginas de mundos (hub + fichas de detalle; ya **no** lleva el campo estelar).
+4. **`layout.css`** — layout del sitio y **componentes** compartidos por TODAS las
+   páginas (header, footer, hero de la home, placeholders de página, aviso de
+   spoiler). ~1300 líneas. Las secciones page-specific §11–§16 se movieron a
+   hojas de 5º nivel el 2026-09-10 (contrato C6): `mundos.css` (+§11 eje-backdrop),
+   `cielo.css` (§15 campo estelar, opt-in `body.con-cielo`, en 11 páginas),
+   `personajes.css`, `ciencia.css`, `galeria.css`, `contacto.css`.
+5. *(Opcional, por página)* Un `<link>` propio **después** de `layout.css`, solo
+   en las páginas que lo usan. Orden: hoja de área (`mundos.css` / `personajes.css`
+   / …) y `cielo.css` al final. `index.html`, `creditos.html` y `viaje.html` cargan
+   solo las 4 hojas base.
 
 ---
 
@@ -410,12 +415,14 @@ Feature 005. Sin segundo color saturado, solo tokens existentes.
 
 ### 6.12 Cielo (`.cielo`) — campo estelar + estrella fugaz
 
-`layout.css` §15. Capa de CONTENIDO (crema, nada de teal). `js/layout.js` inyecta
+`css/cielo.css` (era `layout.css` §15 hasta el 2026-09-10; contrato C6). Capa de
+CONTENIDO (crema, nada de teal). `js/layout.js` inyecta
 `<div class="cielo" aria-hidden><i></i><i></i><i></i></div>` como **primer hijo
-del `<body>`**, pero **solo** en las páginas con `class="… con-cielo"`. Va en
-todas **menos** tres: `index` (el `<video>` full-bleed del Hero lo taparía por
-completo), `viaje` (trae escena three.js propia) y `creditos` (mínima). Antes
-vivía en `mundos.css` acotado a `body.mundos-hub`.
+del `<body>`**, pero **solo** en las páginas con `class="… con-cielo"` — las
+mismas 11 que enlazan `cielo.css`. Va en todas **menos** tres: `index` (el
+`<video>` full-bleed del Hero lo taparía por completo), `viaje` (trae escena
+three.js propia) y `creditos` (mínima). Antes vivía en `mundos.css` acotado a
+`body.mundos-hub`.
 
 - `.cielo`: `position: fixed; inset: 0; z-index: 0; overflow: hidden;
   pointer-events: none; contain: layout paint`. El `<header>` ya lleva

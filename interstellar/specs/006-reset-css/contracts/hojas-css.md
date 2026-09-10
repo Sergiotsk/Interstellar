@@ -32,7 +32,8 @@ for p in index mundos personajes ciencia viaje galeria trailer minijuegos credit
   echo "== $p =="; rg -n 'rel="stylesheet"' "$p.html"
 done
 ```
-Cada salida debe ser exactamente las 4 líneas, en orden. Cero apariciones de `global.css`.
+Cada salida debe empezar con esas 4 líneas, en ese orden. Cero apariciones de `global.css`.
+Algunas páginas suman un 5º/6º `<link>` **después** de `layout.css` (ver C6).
 
 ---
 
@@ -112,3 +113,25 @@ JS vanilla), el patrón es:
 
 **Esta feature (006) NO crea ninguna hoja de página** — solo fija este contrato para que las
 features de minijuegos lo sigan.
+
+---
+
+## C6 — Hojas de página en uso (2026-09-10)
+
+`css/layout.css` había quedado en 96 KiB tras la migración textual de la 006: arrastraba CSS
+page-specific que hacía render-blocking en las 17 páginas. Aplicando C5, las secciones §11–§16
+se movieron a hojas propias (cut-paste textual, cero cambio de valor). `layout.css` → **54 KiB**.
+
+| Hoja | Contenido (era §) | Se enlaza en |
+|------|-------------------|--------------|
+| `css/mundos.css` | Hub + detalle de Mundos **+ §11 eje-backdrop** (prepuesto) | `mundos.html`, `mundos-*.html` (6) |
+| `css/cielo.css` | §15 campo estelar + estrella fugaz | las 11 páginas `body.con-cielo` |
+| `css/personajes.css` | §12 ficha de personaje | `personajes.html` |
+| `css/ciencia.css` | §13 concepto + etiqueta de rigor | `ciencia.html` |
+| `css/galeria.css` | §14 galería | `galeria.html` |
+| `css/contacto.css` | §16 contacto / gracias | `contacto.html`, `gracias.html` |
+
+Orden en el `<head>`: las 4 hojas de C1, luego (si aplica) `mundos.css` / hoja de página, y
+`cielo.css` al final. `index.html`, `creditos.html` y `viaje.html` quedan con las 4 hojas
+solas. Todas las hojas nuevas cumplen C5 (tokens de `variables.css`, sin `@import`, ruta
+relativa, especificidad libre gracias al reset 0).
