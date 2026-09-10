@@ -96,6 +96,11 @@ reflow al cargar; sin `loading=lazy` arriba del fold; consola limpia; `node --te
 - [X] T015 [US2] En `css/mundos.css`, migrar los **29** `background-image: url("../assets/img/<n>.jpg")` de la portada scroll a `.webp`: Tierra/Gargantúa (`terra-granja`, `terra-maizal`, `terra-tormenta`, `terra-abandonada`, `mundos-gargantua`, `ciencia-gargantua`, `mundos-gargantua-{plano,endurance,ranger,deriva}`) + Miller (`mundos-miller-{arribo,vadeo,rasante,ola,impacto,muro,cabina}`) + Mann (`mundos-mann-{hielo,superficie,mann,engano,docking,tunel}`) + Tesseract (`mundos-tesseract-{reticula,caida,estante,empuje,mensaje,murph}`). Derivados generados por `node tools/optimize-img.mjs mundos-portada` (−49% en los 19 nuevos; 2ª corrida ⇒ `git status` limpio). Pendiente: verificación visual en navegador de las 5 páginas.
 - [X] T016 [US2] N/A confirmado: la portada scroll de las 5 páginas es `background-image` + `<canvas>`, sin `<img>` propios. Los `<img>` de esas páginas son filmstrip (T021 / pendiente Miller-Mann-Tesseract) o tarjetas del hub (T022).
 
+> **DIFERIDO al backlog (2026-09-09).** T017–T034 quedan para otra sesión. Lo hecho
+> (guard webp, `mundos-portada` 29, filmstrips tierra/gargantúa/mann/miller/tesseract, hub,
+> hero) está en `main` y verificado en browser. Detalle y contexto en
+> `docs/00-backlog/BACKLOG.md` → Pendientes 🟡 "Feature 007 — cola pendiente".
+
 ### galeria (50 `<img>`, ya tienen `loading`/`width`/`height`)
 
 - [ ] T017 [US2] Ejecutar `node tools/optimize-img.mjs galeria`; verificar peso total bajo el tope de la feature 005 y −25% vs. estado previo. Commit de derivados.
