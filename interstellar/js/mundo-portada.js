@@ -162,7 +162,9 @@ function escenaTierra(gsap, mm, portada) {
     return cleanup(tl);
   });
 
-  // --- Movil: version breve, 3 beats (orbita -> maizal -> tormenta) ---
+  // --- Movil: los mismos 5 beats que escritorio (antes eran 3 y se saltaba la
+  //     granja verde y la granja sepultada — el remate de la secuencia), con un
+  //     zoom de entrada mas contenido. Riel algo mas corto (ver mundos.css). ---
   mm.add('(max-width: 47.99rem) and (prefers-reduced-motion: no-preference)', () => {
     base();
 
@@ -176,16 +178,33 @@ function escenaTierra(gsap, mm, portada) {
       defaults: { ease: 'none' },
     });
 
+    // Mismas posiciones normalizadas que escritorio (0.16 / 0.38 / 0.58 / 0.78);
+    // solo se contiene la deriva y el zoom de la orbita para no ampliar de mas.
     tl
-      .to([texto, volver], { autoAlpha: 0, y: -24, duration: 0.16 }, 0)
-      // misma deriva + zoom que en escritorio, mas contenida
-      .to(orbita, { rotation: 3, scale: 1.24, duration: 0.34 }, 0)
-      .to(orbita, { autoAlpha: 0, ease: 'power2.in', duration: 0.08 }, 0.24)
-      .to(maizal, { autoAlpha: 1, duration: 0.08 }, 0.3)
-      .to(maizal, { scale: 1, duration: 0.2 }, 0.3)
-      .to(maizal, { filter: 'saturate(0.35) brightness(0.8)', duration: 0.16 }, 0.5)
-      .to(tormenta, { autoAlpha: 1, duration: 0.08 }, 0.66)
-      .to(tormenta, { yPercent: 0, scale: 1, duration: 0.18 }, 0.66);
+      .to([texto, volver], { autoAlpha: 0, y: -24, duration: 0.08 }, 0)
+
+      // 1 · orbita
+      .to(orbita, { rotation: 3, duration: 0.34 }, 0)
+      .to(orbita, { scale: 1.24, duration: 0.22 }, 0)
+      .to(orbita, { autoAlpha: 0, ease: 'power2.in', duration: 0.06 }, 0.16)
+
+      // 2 · granja
+      .to(granja, { autoAlpha: 1, duration: 0.06 }, 0.16)
+      .to(granja, { scale: 1, duration: 0.2 }, 0.16)
+
+      // 3 · maizal
+      .to(maizal, { autoAlpha: 1, duration: 0.06 }, 0.38)
+      .to(maizal, { scale: 1, duration: 0.2 }, 0.38)
+      .to(maizal, { filter: 'saturate(0.4) brightness(0.85)', duration: 0.12 }, 0.46)
+
+      // 4 · tormenta
+      .to(tormenta, { autoAlpha: 1, duration: 0.06 }, 0.58)
+      .to(tormenta, { yPercent: 0, scale: 1, duration: 0.16 }, 0.6)
+
+      // 5 · abandonada: la granja sepultada, muerta
+      .to(abandonada, { autoAlpha: 1, duration: 0.06 }, 0.78)
+      .to(abandonada, { scale: 1, duration: 0.16 }, 0.78)
+      .to(abandonada, { scale: 1.04, duration: 0.06 }, 0.94);
 
     return cleanup(tl);
   });

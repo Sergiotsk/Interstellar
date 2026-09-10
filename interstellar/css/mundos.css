@@ -374,7 +374,7 @@ body.mundo-detalle main > section.mundo-portada .mundo-volver {
 /* Riel + escena clavada: SOLO cuando el JS pudo armar el timeline. Sin `.is-armed`
    (sin JS / GSAP caido / reduced-motion) la seccion mide lo que su contenido. */
 .mundo-portada.is-armed {
-  height: 230svh;                   /* movil: recorrido breve (3 beats) */
+  height: 380svh;                   /* movil: los 5 beats, riel mas corto que escritorio */
 }
 
 .mundo-portada.is-armed .mundo-portada-escena {
@@ -475,7 +475,7 @@ body.mundo-detalle main > section.mundo-portada .mundo-volver {
 }
 
 /* Riel mas largo que el de la Tierra: 6 beats + el ultimo fotograma aguanta.
-   (La regla generica de `.mundo-portada.is-armed` fija 230/460svh para 5.) */
+   (La regla generica de `.mundo-portada.is-armed` fija 380/460svh para 5.) */
 .mundo-portada--gargantua.is-armed {
   height: 560svh;                        /* 6 beats + el ultimo fotograma aguanta */
 }
