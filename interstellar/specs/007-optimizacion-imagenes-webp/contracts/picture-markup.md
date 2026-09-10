@@ -39,13 +39,15 @@ Reglas:
 
 ## 2. Poster del `<video>` del hero (sin `<picture>`)
 
-El atributo `poster` no admite `<picture>`. Se deja apuntando al archivo optimizado:
+El atributo `poster` no admite `<picture>`, pero SÍ admite un `.webp` directo (la baseline
+evergreen del proyecto lo soporta y el sitio ya sirve WebP en todos los backdrops de CSS):
 ```html
-<video ... poster="assets/img/hero-gargantua.jpg"> ... </video>
+<video ... poster="assets/img/hero-gargantua.webp"> ... </video>
 ```
-El pipeline lo trata como contexto `poster-hero` (ancho ≤ 1280). Se genera
-`hero-gargantua.webp` como subproducto pero el `poster` no lo usa. El `poster` no admite
-`fetchpriority`; su carga la gobierna el `<video autoplay>`. No se agrega `<link rel="preload">`.
+El pipeline lo trata como contexto `poster-hero` (ancho ≤ 1280). El `poster` apunta al
+`.webp` (es el LCP de `index.html`); el `.jpg` de respaldo queda en `assets/img/` sin
+referenciar. El `poster` no admite `fetchpriority`; su carga la gobierna el
+`<video autoplay>`. No se agrega `<link rel="preload">`.
 
 ## 3. Fondo de CSS (`background-image`)
 

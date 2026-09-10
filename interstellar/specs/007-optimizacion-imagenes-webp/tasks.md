@@ -129,7 +129,7 @@ reflow al cargar; sin `loading=lazy` arriba del fold; consola limpia; `node --te
 
 ### hero (solo poster)
 
-- [X] T026 [US2] `hero-gargantua` procesado por el pipeline (contexto `poster-hero`, 1024×576) y commiteado con el filmstrip de Gargantúa (`7fb5708`). `index.html` sigue con `poster="assets/img/hero-gargantua.jpg"` sin `<picture>` (el atributo no lo admite) — sin cambios en el HTML, correcto por contrato §2.
+- [X] T026 [US2] `hero-gargantua` procesado por el pipeline (contexto `poster-hero`, 1024×576) y commiteado con el filmstrip de Gargantúa (`7fb5708`). `index.html`: `poster="assets/img/hero-gargantua.webp"` (48,8 KiB vs 63,9 del jpg; es el LCP de la home). El `.jpg` de respaldo queda sin referenciar. Ajuste post-PageSpeed 2026-09-09; contrato §2 actualizado.
 
 **Checkpoint**: todas las secciones sirven WebP con respaldo; sin regresiones visuales.
 
