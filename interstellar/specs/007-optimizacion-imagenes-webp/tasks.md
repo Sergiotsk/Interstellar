@@ -94,7 +94,7 @@ reflow al cargar; sin `loading=lazy` arriba del fold; consola limpia; `node --te
 > `SECTION_MAP` en `optimize-img.lib.mjs` actualizados, con test en `optimize-img.test.js`.
 
 - [X] T015 [US2] En `css/mundos.css`, migrar los **29** `background-image: url("../assets/img/<n>.jpg")` de la portada scroll a `.webp`: Tierra/Gargantúa (`terra-granja`, `terra-maizal`, `terra-tormenta`, `terra-abandonada`, `mundos-gargantua`, `ciencia-gargantua`, `mundos-gargantua-{plano,endurance,ranger,deriva}`) + Miller (`mundos-miller-{arribo,vadeo,rasante,ola,impacto,muro,cabina}`) + Mann (`mundos-mann-{hielo,superficie,mann,engano,docking,tunel}`) + Tesseract (`mundos-tesseract-{reticula,caida,estante,empuje,mensaje,murph}`). Derivados generados por `node tools/optimize-img.mjs mundos-portada` (−49% en los 19 nuevos; 2ª corrida ⇒ `git status` limpio). Pendiente: verificación visual en navegador de las 5 páginas.
-- [ ] T016 [US2] Confirmar que `mundos-portada` no tiene `<img>` que migrar: revisar `mundos-tierra/gargantua/miller/mann/tesseract.html` — la portada es `background-image` + `<canvas>`, sin `<img>`. Si apareciera alguno, envolverlo en `<picture>` con los atributos del checklist; si no, marcar la tarea como N/A.
+- [X] T016 [US2] N/A confirmado: la portada scroll de las 5 páginas es `background-image` + `<canvas>`, sin `<img>` propios. Los `<img>` de esas páginas son filmstrip (T021 / pendiente Miller-Mann-Tesseract) o tarjetas del hub (T022).
 
 ### galeria (50 `<img>`, ya tienen `loading`/`width`/`height`)
 
@@ -104,12 +104,14 @@ reflow al cargar; sin `loading=lazy` arriba del fold; consola limpia; `node --te
 
 ### filmstrips
 
-- [ ] T020 [US2] Ejecutar el pipeline para `filmstrip-tierra` y `filmstrip-gargantua`; verificar en el reporte del script −25% vs. estado previo por cada tira y anotarlo en el commit; commit de derivados.
-- [ ] T021 [US2] En `mundos-tierra.html` (20 `<img>`) y `mundos-gargantua.html` (15 `<img>`), envolver en `<picture>`; agregar `width`/`height` (hoy no los tienen) + `decoding="async"`; `loading="lazy"` en todos (están bajo el fold). Verificar que la tira (`js/filmstrip.js`) sigue animando.
+- [X] T020 [US2] Pipeline de `filmstrip-tierra` + `filmstrip-gargantua` ejecutado; derivados commiteados (`92992be`, `7fb5708`). Idempotente en 2ª corrida.
+- [X] T021 [US2] `mundos-tierra.html` (20 `<img>`) y `mundos-gargantua.html` (15) migrados a `<picture>` + `<source type="image/webp">` + `width`/`height` intrínsecos + `decoding="async"` + `loading="lazy"` en todos. `css/mundos.css`: regla `.mundo-film-frame picture { display:block; height:100% }` (el `<picture>` no debe meter caja intermedia). `js/filmstrip.js` opera sobre `[data-film]`/`.mundo-film-track`, no toca `<img>` → sin cambios. Commit `815cf36`. **Pendiente: verificación visual en navegador.**
+
+> **Filmstrips de Miller/Mann/Tesseract — FUERA DE ALCANCE del plan original.** `mundos-mann.html` (12 frames), `mundos-miller.html` (16), `mundos-tesseract.html` (10) tienen `<img>` de filmstrip que NO están en el `SECTION_MAP` y no tienen derivados `.webp`. Requieren secciones nuevas (`filmstrip-mann` / `-miller` / `-tesseract`) en `optimize-img.lib.mjs` + pipeline + migración. Tarea nueva a agregar (T035+).
 
 ### mundos-hub + fichas de mundos
 
-- [ ] T022 [US2] Ejecutar el pipeline para `mundos-hub` (verificar −25% en el reporte); migrar `<img>` de `mundos.html` (tarjetas del hub, 5) y de `mundos-mann.html` / `mundos-miller.html` / `mundos-tesseract.html` (1 c/u) a `<picture>` + `width`/`height`/`decoding`/`lazy`. **Conservar `alt=""`** en las tarjetas (son decorativas: tienen texto hermano). Commit.
+- [X] T022 [US2] Pipeline de `mundos-hub` ejecutado; derivados commiteados (`ff0bb48`). `mundos.html`: las 5 tarjetas del hub migradas a `<picture>` + `<source type="image/webp">` + `width`/`height` + `decoding="async"`, `alt=""` conservado (decorativas). 1ª tarjeta (Tierra) con `fetchpriority="high"` sin `lazy` (candidata LCP), resto `loading="lazy"`. Commit `815cf36`. Las tarjetas no necesitan regla CSS: su `<img>` es `position:absolute`. **NOTA:** el "1 c/u" de `mundos-mann/miller/tesseract.html` del enunciado original ya no aplica — esas páginas se rehicieron y su hero es `background-image`, no `<img>`; sus únicos `<img>` son filmstrip (ver nota T021).
 
 ### personajes (6 `<img>`, HOY sin `width`/`height`/`loading`)
 
@@ -122,7 +124,7 @@ reflow al cargar; sin `loading=lazy` arriba del fold; consola limpia; `node --te
 
 ### hero (solo poster)
 
-- [ ] T026 [US2] Ejecutar `node tools/optimize-img.mjs hero`; verificar que `hero-gargantua.jpg` queda ≤ 1280 px y con menos peso; `index.html` sigue apuntando con `poster="assets/img/hero-gargantua.jpg"` (sin `<picture>`, sin `fetchpriority` — lo maneja el `<video autoplay>`). Commit si cambió.
+- [X] T026 [US2] `hero-gargantua` procesado por el pipeline (contexto `poster-hero`, 1024×576) y commiteado con el filmstrip de Gargantúa (`7fb5708`). `index.html` sigue con `poster="assets/img/hero-gargantua.jpg"` sin `<picture>` (el atributo no lo admite) — sin cambios en el HTML, correcto por contrato §2.
 
 **Checkpoint**: todas las secciones sirven WebP con respaldo; sin regresiones visuales.
 
