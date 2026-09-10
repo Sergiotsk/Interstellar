@@ -99,6 +99,19 @@ describe('tools/optimize-img.lib.mjs — lógica pura del pipeline (feature 007)
       }
     });
 
+    test('filmstrip-{mann,miller,tesseract}: frames propios → filmstrip-frame; los que comparten nombre con un backdrop → backdrop-mundo (D2-A)', () => {
+      const casos = {
+        'filmstrip-mann': { propio: 'mundos-mann-retrato', backdrop: 'mundos-mann-hielo' },
+        'filmstrip-miller': { propio: 'mundos-miller-pizarra', backdrop: 'mundos-miller-arribo' },
+        'filmstrip-tesseract': { propio: 'mundos-tesseract-negro', backdrop: 'mundos-tesseract-reticula' },
+      };
+      for (const [sec, { propio, backdrop }] of Object.entries(casos)) {
+        const ctx = Object.fromEntries(sectionConfig(sec).map((e) => [e.logicalName, e.context]));
+        assert.equal(ctx[propio], 'filmstrip-frame', `${propio} debería ser filmstrip-frame`);
+        assert.equal(ctx[backdrop], 'backdrop-mundo', `${backdrop} debería ser backdrop-mundo`);
+      }
+    });
+
     test('sección desconocida lanza', () => {
       assert.throws(() => sectionConfig('inexistente'), /secci[oó]n/i);
     });

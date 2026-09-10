@@ -99,7 +99,7 @@ export function contextForImage(logicalName) {
   if (logicalName === 'hero-gargantua') return 'poster-hero';
   if (BACKDROP_MUNDO.has(logicalName)) return 'backdrop-mundo';
   if (RETRATO_PERSONAJE.has(logicalName)) return 'retrato-personaje';
-  if (/^mundos-(tierra|gargantua)-/.test(logicalName)) return 'filmstrip-frame';
+  if (/^mundos-(tierra|gargantua|miller|mann|tesseract)-/.test(logicalName)) return 'filmstrip-frame';
   return 'galeria-ampliada';
 }
 
@@ -153,6 +153,38 @@ export const SECTION_MAP = Object.freeze({
       'mundos-gargantua-nave', 'mundos-gargantua-amelia', 'mundos-gargantua-cooper',
       'mundos-gargantua-disco-cerca', 'mundos-gargantua-ranger', 'mundos-gargantua-chispas',
       'mundos-gargantua-caida', 'mundos-gargantua-deriva', 'hero-gargantua',
+    ]),
+  },
+  // Filmstrips de las páginas rehechas después del plan (T035, 2026-09-09).
+  // Los frames que comparten nombre con un backdrop de `mundos-portada` caen en
+  // 'backdrop-mundo' vía contextForImage (D2-A) y el pipeline los saltea acá.
+  'filmstrip-mann': {
+    markup: ['mundos-mann.html'],
+    images: img([
+      'mundos-mann-hielo', 'mundos-mann-superficie', 'mundos-mann-brand',
+      'mundos-mann-mann', 'mundos-mann-retrato', 'mundos-mann-engano',
+      'mundos-mann-escarcha', 'mundos-mann-caido', 'mundos-mann-endurance',
+      'mundos-mann-docking', 'mundos-mann-tunel', 'mundos-mann-cabina',
+    ]),
+  },
+  'filmstrip-miller': {
+    markup: ['mundos-miller.html'],
+    images: img([
+      'mundos-miller-endurance', 'mundos-miller-pizarra', 'mundos-miller-ranger',
+      'mundos-miller-descenso', 'mundos-miller-rasante', 'mundos-miller-arribo',
+      'mundos-miller-cooper-casco', 'mundos-miller-doyle', 'mundos-miller-ola',
+      'mundos-miller-impacto', 'mundos-miller-muro', 'mundos-miller-doyle-escotilla',
+      'mundos-miller-cabina', 'mundos-miller-brand-restos', 'mundos-miller-regreso',
+      'mundos-miller-romilly',
+    ]),
+  },
+  'filmstrip-tesseract': {
+    markup: ['mundos-tesseract.html'],
+    images: img([
+      'mundos-tesseract-horizonte', 'mundos-tesseract-profil', 'mundos-tesseract-negro',
+      'mundos-tesseract-caida', 'mundos-tesseract-lattice2', 'mundos-tesseract-reticula',
+      'mundos-tesseract-estante', 'mundos-tesseract-empuje', 'mundos-tesseract-mensaje',
+      'mundos-tesseract-murph',
     ]),
   },
   personajes: {
