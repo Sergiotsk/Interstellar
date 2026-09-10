@@ -2553,13 +2553,11 @@ body.spoiler-alerta footer .tele .led {
   }
 }
 
-/* En la home el header flota sobre el Hero (`position: absolute`) para que este
-   ocupe la pantalla exacta sin scroll. Mientras el aviso de spoiler está activo,
-   el header vuelve al flujo: header + tira + Hero + footer apilan natural (la
-   home admite un pelín de scroll en ese estado transitorio). Al descartar, se
-   quita `spoiler-alerta` y la home recupera su "sin scroll".
-   `relative` (no `static`): el header vuelve al flujo pero sigue siendo el
-   contenedor posicionado de `.cockpit-brand` (que va `position: absolute`). */
-body.home.spoiler-alerta > header {
-  position: relative;
-}
+/* En la home el header SIEMPRE flota sobre el Hero (`body.home > header` ->
+   `position: absolute`), también con el aviso de spoiler activo. La tira
+   `.spoiler-aviso` ya cuelga del tablero (`position: absolute; top: 100%;
+   z-index: -1`) y flota sobre el contenido sin reservar bloque — igual que en el
+   resto de páginas. Antes había acá un `body.home.spoiler-alerta > header {
+   position: relative }` que devolvía el header al flujo en la primera visita:
+   como la clase la agrega js/layout.js POST-paint, el header pasaba de 0 px a
+   ~104 px in-flow -> ~0.133 CLS (y otro salto al tocar "Ya la vi"). Se quitó. */
