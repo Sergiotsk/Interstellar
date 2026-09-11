@@ -652,6 +652,12 @@ body.mundo-detalle main > section.mundo-portada .mundo-volver {
   .mundo-capa--miller-cabina {
     background-position: 66% center;
   }
+  .mundo-capa--miller-vadeo {
+    background-position: 70% center;  /* los exploradores estan a la derecha */
+  }
+  .mundo-capa--miller-impacto {
+    background-position: 74% center;  /* el astronauta esta a la derecha */
+  }
 }
 
 /* Reloj de la dilatacion temporal: overlay arriba-derecha que cuenta los años
@@ -741,6 +747,9 @@ body.mundo-detalle main > section.mundo-portada .mundo-volver {
 }
 
 @media (max-width: 47.99rem) {
+  .mundo-capa--mann-hielo {
+    background-position: 72% center;  /* el anillo del campamento esta a la derecha */
+  }
   .mundo-capa--mann-mann {
     background-position: 35% center;
   }
@@ -837,6 +846,9 @@ body.mundo-detalle main > section.mundo-portada .mundo-volver {
 }
 
 @media (max-width: 47.99rem) {
+  .mundo-capa--tesseract-reticula {
+    background-position: 70% center;  /* Cooper trepando esta a la derecha */
+  }
   .mundo-capa--tesseract-estante {
     background-position: 60% center;
   }
