@@ -329,20 +329,6 @@ body.mundo-detalle main > section.mundo-portada {
   );
 }
 
-/* Grano sobre toda la escena: los fotogramas de FILMGRAB son 1280x720 y al
-   escalarlos quedan blandos; un ruido tenue en `soft-light` los lee como
-   celuloide en vez de imagen pixelada. SVG inline -> 0 bytes de red. */
-.mundo-portada-capas::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  opacity: 0.5;
-  mix-blend-mode: soft-light;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
 .mundo-portada-capas {
   position: absolute;
   inset: 0;
@@ -359,6 +345,31 @@ body.mundo-detalle main > section.mundo-portada {
   will-change: transform, opacity, filter;
 }
 
+/* Grano POR CAPA (no por escena): los fotogramas de FILMGRAB son 1280x720 y al
+   escalarlos quedan blandos; un ruido tenue en `soft-light` los lee como
+   celuloide en vez de imagen pixelada. SVG inline -> 0 bytes de red.
+   BUGFIX 2026-09-11: antes vivía en `.mundo-portada-capas::after` (un overlay
+   a nivel de escena). `will-change` en `.mundo-capa` crea su propio stacking
+   context -> el `mix-blend-mode` de un overlay de escena solo puede mezclarse
+   con lo pintado DENTRO del stacking context de `<main>` (que cielo.css eleva
+   con `z-index: 1` para quedar sobre `.cielo`). En `--orbita`, cuyo WebP es
+   transparente fuera del disco (para que se vea `.cielo` detrás), no había
+   nada dentro de ese grupo con qué mezclar el grano ahí -> se pintaba casi sin
+   mezclar, como un velo GRIS opaco encima del campo estelar. Poniendo el grano
+   en el `::after` de CADA `.mundo-capa` (que ya es su propio stacking context
+   por el `will-change` de arriba) se mezcla siempre con el fondo de ESA capa
+   nada más — igual que antes en los beats opacos, y en `--orbita` con nada que
+   tapar donde es transparente. */
+.mundo-capa::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
 /* 5 capas — descenso al colapso: la Tierra completa desde orbita (full-disk
    GOES, recortada sobre el cielo) -> la granja de los Cooper con maizal verde ->
    el aereo del maizal -> la tormenta en el pueblo -> la granja sepultada.
@@ -367,6 +378,20 @@ body.mundo-detalle main > section.mundo-portada {
 .mundo-capa--orbita {
   background-image: url("../assets/img/terra-orbita.webp");
   background-size: contain;         /* el disco entero, sin recortar, sobre el cielo */
+}
+
+/* El grano de esta capa se recorta a la silueta del planeta (mismo WebP como
+   máscara de alpha): fuera del disco no hay nada que pintar -> se ve `.cielo`
+   sin ningún velo encima (ver bugfix arriba). */
+.mundo-capa--orbita::after {
+  mask-image: url("../assets/img/terra-orbita.webp");
+  -webkit-mask-image: url("../assets/img/terra-orbita.webp");
+  mask-size: contain;
+  -webkit-mask-size: contain;
+  mask-position: center;
+  -webkit-mask-position: center;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
 }
 
 .mundo-capa--granja {
