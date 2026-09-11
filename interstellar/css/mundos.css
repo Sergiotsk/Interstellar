@@ -268,6 +268,10 @@ body.mundos-hub .mundos-intro p {
   line-height: 1.6;
   color: var(--color-texto);
   text-shadow: 0 0 0.75rem var(--color-fondo);
+  text-align: left;                 /* parrafo de varias lineas: no se centra
+                                        (legibilidad, ver Constitucion §Diseno) */
+  text-wrap: pretty;                /* evita palabras huerfanas en el ultimo
+                                        renglon; sin soporte, cae al wrap normal */
 }
 
 /* ---------------------------------------------------------------------------
@@ -440,6 +444,10 @@ body.mundo-detalle main > section.mundo-portada .mundo-portada-texto .mundo-lead
   line-height: 1.55;
   color: #fff;
   text-shadow: 0 1px 14px rgba(0, 0, 0, 0.9), 0 0 5px rgba(0, 0, 0, 0.72);
+  text-align: left;                 /* el h1 de arriba sigue centrado (titulo de
+                                        impacto); el parrafo de varias lineas no
+                                        (legibilidad) */
+  text-wrap: pretty;                /* sin palabras huerfanas en el ultimo renglon */
 }
 
 /* Enlace "volver" DENTRO de la escena: overlay arriba-izquierda con chip oscuro
