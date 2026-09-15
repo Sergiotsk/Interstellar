@@ -1,7 +1,579 @@
 /* Ficha de personaje con retrato en linea (personajes.html)
    Extraido de css/layout.css (seccion 12) el 2026-09-10. Hoja de 5o nivel
    segun el contrato 006 C5: se enlaza con un <link> DESPUES de layout.css,
-   solo en las paginas que la usan. Cut-paste textual, sin cambio de valor. */
+   solo en las paginas que la usan. Cut-paste textual, sin cambio de valor.
+
+   Ampliada por la feature 008 (specs/008-personajes-visual): rediseño
+   visual de Personajes — portada en mosaico, hero full-bleed, galería de
+   escenas y visor Nav-Ranger. Secciones nuevas agregadas al final del
+   archivo, sin tocar la ficha del contrato 003 de arriba (sigue vigente
+   para los personajes en patrón "degradado" — ver FR-009). */
+
+/* ===========================================================================
+   PORTADA (feature 008, User Story 1)
+   ---------------------------------------------------------------------------
+   Reemplaza la intro de texto plano de personajes.html por un mosaico de los
+   6 personajes, clickeables, a pantalla casi completa. El <h1>Personajes</h1>
+   de esta sección es el UNICO <h1> de toda la página (contrato 008 C1).
+
+   `.galeria-grid` de acá abajo es una PORTACION TEXTUAL de css/galeria.css
+   (misma regla, sin cambio de valor) — NO se linkea css/galeria.css desde
+   esta página: cada hoja de 5o nivel queda aislada a su propia página
+   (contrato 006 C5, ver research.md §6b de la feature 008). Solo se le suma
+   el overlay de nombre/rol, que es exclusivo de este mosaico.
+   --------------------------------------------------------------------------- */
+.portada-tripulacion {
+  min-height: 92svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* --- .galeria-grid: portado 1:1 de css/galeria.css --- */
+.portada-tripulacion .galeria-grid {
+  list-style: none;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+}
+
+.portada-tripulacion .galeria-grid > li {
+  min-width: 0;
+}
+
+.portada-tripulacion .galeria-grid figure {
+  margin: 0;
+  position: relative;                /* ancla el overlay de nombre/rol */
+}
+
+.portada-tripulacion .galeria-grid figure > a {
+  display: block;
+  background: var(--color-superficie);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.portada-tripulacion .galeria-grid img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  filter: brightness(0.78);          /* deja legible el overlay de nombre/rol */
+  transition: filter 0.15s ease;
+}
+
+.portada-tripulacion .galeria-grid a:hover img,
+.portada-tripulacion .galeria-grid a:focus-visible img {
+  filter: brightness(0.95);
+}
+
+/* --- overlay de nombre/rol: puntual de la portada, NO parte de .galeria-grid --- */
+.portada-tripulacion .galeria-grid figcaption {
+  position: absolute;
+  inset: auto 0 0 0;
+  z-index: 1;
+  margin: 0;
+  padding: 0.6rem 0.75rem;
+  pointer-events: none;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.75), transparent);
+}
+
+.portada-tripulacion .galeria-grid figcaption strong {
+  display: block;
+  font-family: var(--font-hero-titulo);
+  font-size: 1rem;
+  color: var(--color-texto);
+}
+
+.portada-tripulacion .galeria-grid figcaption span {
+  display: block;
+  font-family: var(--font-instrumento);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-gargantua);
+}
+
+/* ===========================================================================
+   HERO FULL-BLEED (feature 008, User Story 2)
+   ---------------------------------------------------------------------------
+   Solo para los personajes en patrón "completo" (hoy: Cooper y Murph — ver
+   FR-009 / data-model.md). Reemplaza el <figure class="ficha-retrato"> chico
+   por una imagen de fondo casi a pantalla completa + scrim + ficha apoyada
+   abajo. Mismo PRINCIPIO que .mundo-portada-escena (css/mundos.css): min-height
+   svh + flex align-items:flex-end + scrim degradado + isolation. NO se copian
+   las clases .mundo-portada-*/.mundo-capa-* (esas son especificas del
+   descenso multi-capa de Tierra/Gargantua, con su propio GSAP) — acá el hero
+   es una sola imagen estática, sin animación (portado de
+   spikes/personajes-galeria-vertical.html).
+   --------------------------------------------------------------------------- */
+/* `section[id]:has(> .personaje-hero)` (0,0,2,1) le gana a `section[id]`
+   (0,0,1,0) de layout.css por specificity -> full-bleed, sin la caja de
+   lectura de 60rem ni el borde superior. Mismo criterio que
+   `body.mundo-detalle main > section.mundo-portada` en css/mundos.css, pero
+   con :has() en vez de una clase nueva en el <section> (ya se usa :has() en
+   esta misma hoja, ver .ficha-retrato:not(:has(img)) arriba). */
+section[id]:has(> .personaje-hero) {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  border-top: 0;
+}
+
+.personaje-hero {
+  position: relative;
+  min-height: 92svh;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.personaje-hero-img-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+}
+
+.personaje-hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: brightness(0.88);
+}
+
+.personaje-hero::before {
+  /* scrim: legibilidad del texto inferior, mismo criterio que .mundo-portada-escena::after */
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(to top,
+    rgba(0, 0, 0, 0.88) 0%, rgba(0, 0, 0, 0.6) 28%, rgba(0, 0, 0, 0.15) 58%, transparent 78%);
+}
+
+.personaje-hero-ficha {
+  position: relative;
+  max-width: 40rem;
+  padding: clamp(2rem, 6vw, 4rem) clamp(1.25rem, 5vw, 4rem) clamp(3rem, 9vw, 6rem);
+}
+
+.personaje-hero-ficha h2 {
+  margin: 0 0 0.4rem;
+  font-family: var(--font-hero-titulo);
+  font-size: clamp(2rem, 6vw, 3.25rem);
+  color: var(--color-texto);
+  text-shadow: 0 2px 22px rgba(0, 0, 0, 0.88);
+}
+
+.personaje-hero-rol {
+  font-family: var(--font-instrumento);
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-gargantua);
+  margin: 0 0 1.1rem;
+}
+
+.personaje-hero-ficha p {
+  color: var(--color-texto-atenuado);
+  line-height: 1.75;
+}
+
+/* Bloque de texto suelto "Quién es" (entre el hero y la galería) — se reusa
+   también DENTRO de .personaje-cierre para "Su papel en la historia" +
+   "Rasgos distintivos" (ver bloque CIERRE + VISOR más abajo). */
+.personaje-texto {
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: clamp(2rem, 6vw, 3.5rem) 1.25rem;
+  text-align: left;
+}
+
+.personaje-texto h3 {
+  margin: 0 0 0.5rem;
+}
+
+.personaje-texto h3:not(:first-child) {
+  margin-top: 1.5rem;
+}
+
+.personaje-texto p,
+.personaje-texto li {
+  color: var(--color-texto-atenuado);
+  line-height: 1.7;
+}
+
+.personaje-texto ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+/* ===========================================================================
+   GALERIA DE ESCENAS — riel-tira (feature 008, User Story 3)
+   ---------------------------------------------------------------------------
+   Portado 1:1 de spikes/personajes-galeria-vertical.html (v6, ya validado).
+   Panel de texto/datos arriba (30% de la pantalla) + tira de fotogramas abajo
+   (70%), ambos dentro de un riel con scroll horizontal atado a scroll
+   vertical (riel + sticky + scrub con GSAP/ScrollTrigger — mismo mecanismo
+   que js/mundo-portada.js). El texto de arriba cambia en corte duro según
+   qué fotograma está activo en la tira — se lee frame a frame, "estilo
+   stop-motion". Degradado sin JS/GSAP/reduced-motion: sin `body.js-armado`,
+   texto y tira quedan en flujo normal (la tira es scrolleable a mano).
+   --------------------------------------------------------------------------- */
+.riel-tira {
+  position: relative;
+}
+
+body.js-armado .riel-tira.is-armada {
+  height: var(--riel-alto-t);
+}
+
+.riel-tira-vista {
+  display: flex;
+  flex-direction: column;
+}
+
+body.js-armado .riel-tira.is-armada .riel-tira-vista {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+/* -- Panel de datos: 30% de la pantalla -- */
+.tira-datos {
+  position: relative;
+  background: var(--color-superficie);
+}
+
+body.js-armado .riel-tira.is-armada .tira-datos {
+  height: 30%;
+  overflow: hidden;
+}
+
+.tira-datos-item {
+  padding: clamp(1.5rem, 5vw, 4rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.9rem;
+  max-width: 46rem;
+  margin: 0 auto;
+}
+
+body.js-armado .riel-tira.is-armada .tira-datos-item {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  max-width: none;
+}
+
+body.js-armado .riel-tira.is-armada .tira-datos-item.activa {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+body.js-armado .riel-tira.is-armada .tira-datos-item > * {
+  max-width: 46rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.tira-datos-label {
+  font-family: var(--font-instrumento);
+  font-size: 0.8rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-gargantua);
+  margin: 0;
+}
+
+.tira-datos-item h3 {
+  margin: 0;
+  font-size: clamp(1.35rem, 3.2vw, 2.1rem);
+}
+
+.tira-datos-item p {
+  color: var(--color-texto-atenuado);
+  line-height: 1.75;
+  margin: 0;
+}
+
+.tira-datos-dato {
+  margin-top: 0.5rem;
+  padding: 0.9rem 1.15rem;
+  border-left: 3px solid var(--color-gargantua);
+  background: color-mix(in srgb, var(--color-gargantua) 8%, transparent);
+  font-family: var(--font-texto);
+  font-size: 0.9rem;
+  color: var(--color-texto);
+}
+
+.tira-datos-dato strong {
+  color: var(--color-gargantua);
+  font-family: var(--font-instrumento);
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+/* -- Tira de fotogramas: SIEMPRE abajo, bloque grande (70%) -- */
+.tira-fotogramas {
+  position: relative;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x proximity;
+  background: var(--color-fondo);
+  border-top: 1px solid color-mix(in srgb, var(--color-texto) 15%, transparent);
+  height: 55vh; /* fallback / no-JS */
+}
+
+body.js-armado .riel-tira.is-armada .tira-fotogramas {
+  height: 70%;
+  scroll-snap-type: none;
+  overflow-x: hidden;
+}
+
+.tira-pista {
+  display: flex;
+  gap: 1rem;
+  height: 100%;
+  align-items: center;
+  padding: 0 1.25rem;
+}
+
+.tira-frame {
+  flex: 0 0 auto;
+  height: calc(100% - 2rem);
+  margin: 1rem 0;
+  aspect-ratio: 3 / 2;
+  scroll-snap-align: center;
+  position: relative;
+  overflow: hidden;
+  background: var(--color-fondo);
+  border: 2px solid transparent;
+  transition: border-color 0.15s ease, opacity 0.15s ease;
+  opacity: 0.55;
+}
+
+.tira-frame.activa {
+  border-color: var(--color-gargantua);
+  opacity: 1;
+}
+
+.tira-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: brightness(0.85);
+}
+
+.tira-progreso {
+  position: absolute;
+  top: 0.6rem;
+  right: 1rem;
+  z-index: 2;
+  font-family: var(--font-instrumento);
+  font-size: 0.75rem;
+  color: var(--instrumento-teal);
+  opacity: 0.85;
+  display: none;
+}
+
+body.js-armado .riel-tira.is-armada .tira-progreso {
+  display: block;
+}
+
+/* Mobile (≤48rem): el fotograma calculaba su ancho a partir de la altura
+   (aspect-ratio 3:2 sobre el 70% de la pantalla) — en una pantalla angosta
+   eso da un ancho MAYOR que el viewport y desborda. Acá se lo topea por
+   ancho en vez de por alto, y se achica texto/padding en general. */
+@media (max-width: 48rem) {
+  .tira-datos-item {
+    padding: 1.25rem 1.25rem;
+    gap: 0.6rem;
+  }
+
+  .tira-datos-label {
+    font-size: 0.7rem;
+  }
+
+  .tira-datos-item h3 {
+    font-size: 1.15rem;
+  }
+
+  .tira-datos-item p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .tira-datos-dato {
+    padding: 0.65rem 0.85rem;
+    font-size: 0.8rem;
+  }
+
+  .tira-frame {
+    max-width: calc(100vw - 2.5rem); /* tope real: nunca más ancho que la pantalla */
+    aspect-ratio: 4 / 3;             /* menos panorámico: cabe mejor en el alto disponible */
+  }
+}
+
+/* ===========================================================================
+   CIERRE + VISOR NAV-RANGER (feature 008, User Story 4)
+   ---------------------------------------------------------------------------
+   Portado 1:1 de spikes/personajes-galeria-vertical.html (v6). "Su papel en
+   la historia" + "Rasgos distintivos" (.personaje-texto, reusa las reglas de
+   arriba sin cambios propios) en fila junto al visor Nav-Ranger. El visor
+   NO es la tira de celuloide de #en-celuloide/js/filmstrip.js (mecanismo
+   distinto): cicla fotogramas por reemplazo in-situ (setInterval), no por
+   desplazamiento continuo.
+   --------------------------------------------------------------------------- */
+.personaje-cierre {
+  max-width: 74rem;
+  margin: 0 auto;
+  padding: clamp(3rem, 8vw, 5rem) 1.25rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: center;
+}
+
+@media (max-width: 48rem) {
+  .personaje-cierre {
+    grid-template-columns: 1fr;
+  }
+}
+
+.personaje-cierre > .personaje-texto {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-visor-bloque {
+  margin: 0;
+  padding: 0;
+}
+
+@media (max-width: 48rem) {
+  .nav-visor-bloque {
+    margin-top: 1.5rem;
+  }
+}
+
+.nav-visor {
+  position: relative;
+  padding: clamp(1rem, 5vw, 1.5rem);
+  background: linear-gradient(180deg, var(--cockpit-metal-alto), var(--cockpit-metal));
+  border: 1px solid var(--cockpit-bezel);
+  border-radius: 0.2rem;
+  box-shadow: inset 0 1px 0 var(--cockpit-bezel-brillo), 0 12px 24px rgba(0, 0, 0, 0.5);
+}
+
+.nav-visor-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0 0.25rem 0.5rem;
+  font-family: var(--font-instrumento);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--instrumento-teal);
+}
+
+.nav-visor-cabecera .nav-visor-rec::before {
+  content: "●";
+  margin-right: 0.35em;
+  color: var(--color-gargantua);
+  animation: nav-visor-parpadeo 1.4s steps(2, jump-none) infinite;
+}
+
+@keyframes nav-visor-parpadeo {
+  50% {
+    opacity: 0.15;
+  }
+}
+
+.nav-visor-pantalla {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #000;
+  padding: 0.5rem;
+  border: 1px solid color-mix(in srgb, var(--instrumento-teal) 30%, var(--cockpit-bezel));
+}
+
+.nav-visor-frame {
+  position: absolute;
+  inset: 0.5rem;
+  width: calc(100% - 1rem);
+  height: calc(100% - 1rem);
+  object-fit: cover;
+  display: block;
+  opacity: 0;
+  filter: brightness(0.9) saturate(0.85) contrast(1.05);
+}
+
+.nav-visor-frame.is-activo {
+  opacity: 1;
+}
+
+.nav-visor-pantalla::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.35) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+  mix-blend-mode: multiply;
+}
+
+.nav-visor-pantalla::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  width: 14px;
+  height: 14px;
+  border-top: 1px solid var(--instrumento-teal);
+  border-right: 1px solid var(--instrumento-teal);
+  opacity: 0.7;
+}
+
+.nav-visor-pie {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0.25rem 0;
+  font-family: var(--font-instrumento);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: color-mix(in srgb, var(--instrumento-teal) 70%, var(--color-texto-atenuado));
+}
+
+/* .ficha-reparto (hereda estilo del contrato 003 sin cambios, ver bloque de
+   arriba) queda como <p> suelto, hijo directo de una section full-bleed en
+   las fichas "completo" — le devolvemos su propia caja de lectura. */
+section[id]:has(> .personaje-hero) > .ficha-reparto {
+  max-width: 42rem;
+  margin: 0 auto clamp(2rem, 6vw, 3.5rem);
+  padding: 0 1.25rem;
+}
+
+/* ===========================================================================
+   FICHA DEGRADADA (contrato 003, sin cambios) — ver debajo
+   =========================================================================== */
 
 /* ---------------------------------------------------------------------------
    12. Ficha de personaje con retrato en linea (feature 003 — personajes-content)
