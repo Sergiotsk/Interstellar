@@ -34,17 +34,16 @@ describe('js/creditos.js — página de créditos y fuentes', () => {
   });
 
   test('cubre el 100 % de los assets descargados del registro (SC-008)', () => {
-    // Sincronía con assets/img/CREDITOS.md: 115 assets con estado `descargado`
-    // (108 previos + 7 netos: `personajes-profesor-brand-nasa/-lab/-lecho`,
-    // 3 escenas de galería curadas del volcado local;
-    // `personajes-profesor-brand-visor-01/02/03`, tramo "La confesión"
-    // [fotogramas 06618-06620, el lecho de muerte] para el visor Nav-Ranger; y
-    // `personajes-profesor-brand-hero.jpg`, recorte sin letterbox del still
-    // existente para el hero full-bleed [feature 008, US5/T026]).
+    // Sincronía con assets/img/CREDITOS.md: 121 assets con estado `descargado`
+    // (115 previos + 6 netos: `personajes-tars.jpg`/`personajes-case.jpg`, 2
+    // escenas de galería curadas del volcado local (TARS y CASE a bordo del
+    // Endurance, misma secuencia); y `personajes-tars-case-visor-01..04.jpg`,
+    // tramo "A bordo" [fotogramas 04618-04621] para el visor Nav-Ranger
+    // [feature 008, US5 — completa los 6 personajes de la portada]).
     // Licencia clara NASA/ESA/EHT/NOAA + fotogramas de la película (FILMGRAB /
     // cap-that.com). Los `pendiente` NO se listan hasta tener archivo
     // (convención de honestidad).
-    assert.equal(ASSET_CREDITS.length, 115);
+    assert.equal(ASSET_CREDITS.length, 121);
     for (const linea of ASSET_CREDITS) {
       // Cada línea: `<archivo>.<ext> — <atribución no vacía>` (jpg salvo
       // terra-orbita.webp, que necesita alpha para recortarse sobre el cielo).

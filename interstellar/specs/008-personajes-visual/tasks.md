@@ -230,7 +230,14 @@ se cura material — sin tocar código nuevo, solo reusar lo de US2-US4.
   (no tenían fila propia pese a usarse ya en `mundos-mann.html`) como para los
   8 fotogramas del visor. Mann queda con el patrón completo, igual que Cooper
   y Murph.
-- [ ] T028 [US5] Ídem para `#tars-case`.
+- [X] T028 [US5] Ídem para `#tars-case` — patrón completo (hero + galería +
+  visor). Hero reusa `personajes-tars-case.jpg` de la feature 003 (sin
+  letterbox, no requirió recorte). Sin stills reusables previos para la
+  galería: se curaron 2 escenas del volcado (TARS y CASE, ambas de la misma
+  secuencia a bordo del Endurance, fotogramas 04600/04620) — solo 2 en vez de
+  3, sin mínimo estricto (data-model.md) — + un tramo de 4 fotogramas
+  consecutivos (04618-04621) para el visor de TARS. Cierra US5: los 6
+  personajes de la portada quedan en patrón `completo`.
 - [ ] T029 [US5] Validar Escenario 4 de `quickstart.md` para los personajes ya migrados en
   T025-T028 (o confirmar que los que sigan sin curar permanecen correctamente degradados).
 
