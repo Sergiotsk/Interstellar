@@ -77,7 +77,7 @@ el campo `Personaje.patron`:
 | `murph` | 4 | Sí (≥2) | Pendiente de curar | `completo` (galería) — visor pendiente de curación real |
 | `brand` | 2 | No (insuficiente) | No | `degradado` |
 | `profesor-brand` | 1 | No | No | `degradado` |
-| `mann` | 5 (4 reusados de `mundos-mann.html`) | Sí (3) | No | `completo` (hero + galería) — visor pendiente de curación real |
+| `mann` | 5 (4 reusados de `mundos-mann.html`) | Sí (3) | Sí (2 tramos, 8 frames) | `completo` (hero + galería + visor) |
 | `tars-case` | 1 | No | No | `degradado` |
 
 La curación real de tramos de visor (elegir frames del volcado, optimizar, nombrar) es trabajo

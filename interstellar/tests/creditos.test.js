@@ -34,14 +34,15 @@ describe('js/creditos.js — página de créditos y fuentes', () => {
   });
 
   test('cubre el 100 % de los assets descargados del registro (SC-008)', () => {
-    // Sincronía con assets/img/CREDITOS.md: 97 assets con estado `descargado`
-    // (93 previos + 4 netos: `mundos-mann-retrato/-mann/-engano/-docking`,
-    // fotogramas del filmstrip de mundos-mann.html reusados en personajes.html
-    // #mann [feature 008, US5] que nunca habían tenido fila de crédito propia).
+    // Sincronía con assets/img/CREDITOS.md: 105 assets con estado `descargado`
+    // (97 previos + 8 netos: `personajes-mann-visor-01` a `-08`, 2 tramos de 4
+    // fotogramas consecutivos del volcado local — "El mejor de nosotros"
+    // [07900-07903] y "La confesión al borde del abismo" [07945-07948] —
+    // curados para el visor Nav-Ranger de Mann [feature 008, US5/T027]).
     // Licencia clara NASA/ESA/EHT/NOAA + fotogramas de la película (FILMGRAB /
     // cap-that.com). Los `pendiente` NO se listan hasta tener archivo
     // (convención de honestidad).
-    assert.equal(ASSET_CREDITS.length, 97);
+    assert.equal(ASSET_CREDITS.length, 105);
     for (const linea of ASSET_CREDITS) {
       // Cada línea: `<archivo>.<ext> — <atribución no vacía>` (jpg salvo
       // terra-orbita.webp, que necesita alpha para recortarse sobre el cielo).

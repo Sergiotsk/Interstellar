@@ -207,11 +207,16 @@ se cura material — sin tocar código nuevo, solo reusar lo de US2-US4.
 - [X] T027 [US5] Ídem para `#mann` — DESVÍO: se reusaron stills ya curados de
   `mundos-mann.html` (`mundos-mann-retrato/-mann/-engano/-docking.jpg`) en vez
   de curar fotogramas nuevos del volcado, mismo criterio que T011/T012. Hero +
-  galería de 3 escenas completos; **el visor Nav-Ranger queda pendiente**
-  (necesita tramos de fotogramas CONSECUTIVOS del volcado crudo, no stills
-  sueltos — no hay ese material curado todavía para Mann). Filas de crédito
-  nuevas en `CREDITOS.md` + `js/creditos.js` para los 4 stills reusados (no
-  tenían fila propia pese a usarse ya en `mundos-mann.html`).
+  galería de 3 escenas + **visor Nav-Ranger completos**: 2 tramos de 4
+  fotogramas consecutivos curados del volcado local — "El mejor de nosotros"
+  (07900-07903, Mann conversando con Cooper en su llegada) y "La confesión al
+  borde del abismo" (07945-07948, la confrontación en el glaciar) — guardados
+  como `personajes-mann-visor-01.jpg` a `-08.jpg` (recorte centrado a 2.31:1 +
+  resize 900px vía `sharp`, mismo criterio que Cooper/Murph). Filas de crédito
+  nuevas en `CREDITOS.md` + `js/creditos.js`, tanto para los 4 stills reusados
+  (no tenían fila propia pese a usarse ya en `mundos-mann.html`) como para los
+  8 fotogramas del visor. Mann queda con el patrón completo, igual que Cooper
+  y Murph.
 - [ ] T028 [US5] Ídem para `#tars-case`.
 - [ ] T029 [US5] Validar Escenario 4 de `quickstart.md` para los personajes ya migrados en
   T025-T028 (o confirmar que los que sigan sin curar permanecen correctamente degradados).
