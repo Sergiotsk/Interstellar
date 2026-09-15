@@ -199,10 +199,16 @@ se cura material — sin tocar código nuevo, solo reusar lo de US2-US4.
 
 ### Implementation for User Story 5
 
-- [ ] T025 [US5] Curar stills adicionales + 3 escenas + 2-3 tramos de visor para `#brand`
-  (`assets/img/personajes-brand-*.jpg` + `CREDITOS.md`) y aplicarle el mismo markup que
-  Cooper/Murph en `personajes.html` (reusa el CSS de T005/T009/T015/T022 y el JS de
-  T016/T023 sin cambios).
+- [X] T025 [US5] Ídem para `#brand` — DESVÍO: se reusaron stills ya curados de
+  `mundos-miller.html`/`mundos-mann.html`/`mundos-gargantua.html`
+  (`mundos-miller-brand-restos/-mann-brand/-gargantua-amelia.jpg`), mismo
+  criterio que T011/T012/T027. Hero + galería de 3 escenas (arco Miller →
+  Mann → Gargantúa) completos; **el visor Nav-Ranger queda pendiente** — se
+  buscó un tramo de fotogramas consecutivos con Brand en el debate de
+  planetas (~frame 04400-04700 del volcado) sin encontrar uno claro, no se
+  forzó. Filas de crédito nuevas en `CREDITOS.md` + `js/creditos.js` para los
+  3 stills reusados (no tenían fila propia pese a usarse ya en sus páginas
+  de mundos).
 - [ ] T026 [US5] Ídem para `#profesor-brand`.
 - [X] T027 [US5] Ídem para `#mann` — DESVÍO: se reusaron stills ya curados de
   `mundos-mann.html` (`mundos-mann-retrato/-mann/-engano/-docking.jpg`) en vez

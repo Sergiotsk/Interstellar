@@ -34,15 +34,15 @@ describe('js/creditos.js — página de créditos y fuentes', () => {
   });
 
   test('cubre el 100 % de los assets descargados del registro (SC-008)', () => {
-    // Sincronía con assets/img/CREDITOS.md: 105 assets con estado `descargado`
-    // (97 previos + 8 netos: `personajes-mann-visor-01` a `-08`, 2 tramos de 4
-    // fotogramas consecutivos del volcado local — "El mejor de nosotros"
-    // [07900-07903] y "La confesión al borde del abismo" [07945-07948] —
-    // curados para el visor Nav-Ranger de Mann [feature 008, US5/T027]).
+    // Sincronía con assets/img/CREDITOS.md: 108 assets con estado `descargado`
+    // (105 previos + 3 netos: `mundos-gargantua-amelia/-miller-brand-restos/
+    // -mann-brand`, stills ya usados en las paginas de mundos y reusados en
+    // personajes.html #brand [feature 008, US5/T025] que nunca habian tenido
+    // fila de credito propia).
     // Licencia clara NASA/ESA/EHT/NOAA + fotogramas de la película (FILMGRAB /
     // cap-that.com). Los `pendiente` NO se listan hasta tener archivo
     // (convención de honestidad).
-    assert.equal(ASSET_CREDITS.length, 105);
+    assert.equal(ASSET_CREDITS.length, 108);
     for (const linea of ASSET_CREDITS) {
       // Cada línea: `<archivo>.<ext> — <atribución no vacía>` (jpg salvo
       // terra-orbita.webp, que necesita alpha para recortarse sobre el cielo).
