@@ -204,7 +204,14 @@ se cura material — sin tocar código nuevo, solo reusar lo de US2-US4.
   Cooper/Murph en `personajes.html` (reusa el CSS de T005/T009/T015/T022 y el JS de
   T016/T023 sin cambios).
 - [ ] T026 [US5] Ídem para `#profesor-brand`.
-- [ ] T027 [US5] Ídem para `#mann`.
+- [X] T027 [US5] Ídem para `#mann` — DESVÍO: se reusaron stills ya curados de
+  `mundos-mann.html` (`mundos-mann-retrato/-mann/-engano/-docking.jpg`) en vez
+  de curar fotogramas nuevos del volcado, mismo criterio que T011/T012. Hero +
+  galería de 3 escenas completos; **el visor Nav-Ranger queda pendiente**
+  (necesita tramos de fotogramas CONSECUTIVOS del volcado crudo, no stills
+  sueltos — no hay ese material curado todavía para Mann). Filas de crédito
+  nuevas en `CREDITOS.md` + `js/creditos.js` para los 4 stills reusados (no
+  tenían fila propia pese a usarse ya en `mundos-mann.html`).
 - [ ] T028 [US5] Ídem para `#tars-case`.
 - [ ] T029 [US5] Validar Escenario 4 de `quickstart.md` para los personajes ya migrados en
   T025-T028 (o confirmar que los que sigan sin curar permanecen correctamente degradados).
