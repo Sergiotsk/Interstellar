@@ -34,16 +34,16 @@ describe('js/creditos.js — página de créditos y fuentes', () => {
   });
 
   test('cubre el 100 % de los assets descargados del registro (SC-008)', () => {
-    // Sincronía con assets/img/CREDITOS.md: 122 assets con estado `descargado`
-    // (121 previos + 1 neto: `personajes-cooper-bts-rodaje.jpg`, primera foto
-    // de rodaje —no fotograma— del sitio: Nolan dirigiendo a McConaughey/Foy/
-    // Chalamet, fuente TIME/unit photography de Melinda Sue Gordon, escena
-    // "Detrás de cámaras" de Cooper [feature 008]).
+    // Sincronía con assets/img/CREDITOS.md: 123 assets con estado `descargado`
+    // (122 previos + 1 neto: `personajes-cooper-bts-preparacion.jpg`, segunda
+    // foto de rodaje del sitio: McConaughey conversando con Nolan en el set
+    // de la granja, misma fuente TIME/unit photography de Melinda Sue Gordon,
+    // escena "La preparación" de Cooper [feature 008]).
     // Licencia clara NASA/ESA/EHT/NOAA + fotogramas de la película (FILMGRAB /
     // cap-that.com) + fotos de rodaje via prensa con fotógrafo acreditado.
     // Los `pendiente` NO se listan hasta tener archivo (convención de
     // honestidad).
-    assert.equal(ASSET_CREDITS.length, 122);
+    assert.equal(ASSET_CREDITS.length, 123);
     for (const linea of ASSET_CREDITS) {
       // Cada línea: `<archivo>.<ext> — <atribución no vacía>` (jpg salvo
       // terra-orbita.webp, que necesita alpha para recortarse sobre el cielo).
