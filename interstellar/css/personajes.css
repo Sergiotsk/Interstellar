@@ -310,14 +310,34 @@ body.js-armado .riel-tira.is-armada .tira-datos-item > * {
   margin: 0;
 }
 
+/* "Dato curioso": ficha de instrumento, no un callout generico — mismo
+   lenguaje que el resto del cockpit (metal + bezel + recorte diagonal), con
+   un LED encendido en vez de un simple borde de color. */
 .tira-datos-dato {
-  margin-top: 0.4rem;
-  padding: 0.7rem 1.15rem;
-  border-left: 3px solid var(--color-gargantua);
-  background: color-mix(in srgb, var(--color-gargantua) 8%, transparent);
+  position: relative;
+  margin-top: 0.5rem;
+  padding: 0.85rem 1.15rem 0.85rem 1.65rem;
+  clip-path: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px);
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--color-gargantua) 13%, var(--cockpit-metal-alto)),
+    color-mix(in srgb, var(--cockpit-metal) 90%, var(--color-gargantua)));
+  border: 1px solid color-mix(in srgb, var(--color-gargantua) 40%, var(--cockpit-bezel));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-gargantua) 22%, transparent);
   font-family: var(--font-texto);
   font-size: 0.9rem;
   color: var(--color-texto);
+}
+
+.tira-datos-dato::before {
+  content: "";
+  position: absolute;
+  top: 1.05rem;
+  left: 0.6rem;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-gargantua);
+  box-shadow: 0 0 7px 1px color-mix(in srgb, var(--color-gargantua) 75%, transparent);
 }
 
 .tira-datos-dato strong {
@@ -325,9 +345,9 @@ body.js-armado .riel-tira.is-armada .tira-datos-item > * {
   font-family: var(--font-instrumento);
   text-transform: uppercase;
   font-size: 0.72rem;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.14em;
   display: block;
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.35rem;
 }
 
 /* -- Tira de fotogramas: SIEMPRE abajo, bloque grande (70%) -- */
@@ -431,7 +451,7 @@ body.js-armado .riel-tira.is-armada .tira-progreso {
   }
 
   .tira-datos-dato {
-    padding: 0.65rem 0.85rem;
+    padding: 0.65rem 0.85rem 0.65rem 1.35rem;
     font-size: 0.8rem;
   }
 
@@ -480,8 +500,13 @@ body.js-armado .riel-tira.is-armada .tira-progreso {
 
   .tira-datos-dato {
     margin-top: 0.25rem;
-    padding: 0.45rem 0.7rem;
+    padding: 0.45rem 0.7rem 0.45rem 1.2rem;
     font-size: 0.74rem;
+  }
+
+  .tira-datos-dato::before {
+    top: 0.85rem;
+    left: 0.5rem;
   }
 
   .tira-datos-dato strong {
