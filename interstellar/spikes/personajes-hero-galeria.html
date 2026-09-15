@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SPIKE — Hero partido + galería horizontal (Personajes)</title>
+  <link rel="stylesheet" href="../css/reset.css">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/personajes.css">
+  <style>
+    /* --- SOLO PARA EL SPIKE --- */
+    body {
+      padding: 0 0 6rem;
+    }
+
+    .spike-nota {
+      font-family: var(--font-instrumento);
+      font-size: 0.8rem;
+      color: var(--color-texto-atenuado);
+      border: 1px dashed color-mix(in srgb, var(--color-texto) 30%, transparent);
+      padding: 0.75rem 1rem;
+      margin: 1.5rem 1.25rem 2.5rem;
+    }
+
+    .spike-nota code {
+      color: var(--color-gargantua);
+    }
+
+    .spike-separador {
+      text-align: center;
+      font-family: var(--font-instrumento);
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--color-gargantua);
+      margin: clamp(3rem, 8vw, 6rem) 0 clamp(2rem, 6vw, 3.5rem);
+    }
+
+    /* === 1. HERO FULL-BLEED (mismo mecanismo que .mundo-portada-escena
+       en css/mundos.css: imagen de fondo + scrim degradado + texto encima,
+       min-height casi pantalla completa) ============================== */
+    .personaje-hero {
+      position: relative;
+      min-height: 92svh;
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .personaje-hero-img-wrap {
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+    }
+
+    .personaje-hero-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: brightness(0.88);
+    }
+
+    .personaje-hero::before {
+      /* scrim: legibilidad del texto inferior, mismo criterio que mundos */
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(to top,
+          rgba(0, 0, 0, 0.88) 0%, rgba(0, 0, 0, 0.6) 28%, rgba(0, 0, 0, 0.15) 58%, transparent 78%);
+    }
+
+    .personaje-hero-ficha {
+      position: relative;
+      max-width: 40rem;
+      padding: clamp(2rem, 6vw, 4rem) clamp(1.25rem, 5vw, 4rem) clamp(3rem, 9vw, 6rem);
+    }
+
+    .personaje-hero-ficha h1 {
+      margin: 0 0 0.4rem;
+    }
+
+    .personaje-hero-rol {
+      font-family: var(--font-instrumento);
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--color-gargantua);
+      margin: 0 0 1.1rem;
+    }
+
+    .personaje-hero-ficha p {
+      color: var(--color-texto-atenuado);
+      line-height: 1.75;
+    }
+
+    /* === 2. BLOQUE DE TEXTO (placeholder de "Quién es" / "Su papel" / etc)
+       — más aireado: más padding vertical y más separación del vecino */
+    .personaje-texto {
+      max-width: 42rem;
+      margin: 0 auto;
+      padding: clamp(3rem, 8vw, 5rem) 1.25rem;
+      text-align: left;
+    }
+
+    .personaje-texto h3 {
+      margin: 0 0 0.75rem;
+    }
+
+    .personaje-texto p {
+      color: var(--color-texto-atenuado);
+      line-height: 1.75;
+    }
+
+    .personaje-texto+.personaje-texto {
+      padding-top: 0;
+    }
+
+    /* === 2b. CIERRE post-galería: texto + visor en FILA (row). El visor no
+       es una imagen fija ni un iframe: es un ciclador de fotogramas rápido
+       en loop (estilo stop-motion), con la piel de una pantalla de
+       instrumentos del Ranger — mismo lenguaje visual que el nav del header
+       (--cockpit-metal / --cockpit-bezel / --instrumento-teal / --font-instrumento
+       en css/variables.css y css/layout.css), NO la estética de celuloide
+       de #en-celuloide (js/filmstrip.js resuelve un problema distinto: tira
+       continua que se desliza; acá los fotogramas se REEMPLAZAN in situ). */
+    .personaje-cierre {
+      max-width: 68rem;
+      margin: 0 auto;
+      padding: 0 1.25rem clamp(3rem, 8vw, 5rem);
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: clamp(2rem, 5vw, 4rem);
+      align-items: center;
+    }
+
+    @media (max-width: 48rem) {
+      .personaje-cierre {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .personaje-cierre-texto p {
+      color: var(--color-texto-atenuado);
+      line-height: 1.75;
+    }
+
+    .personaje-cierre-texto h3 {
+      margin: 0 0 0.75rem;
+    }
+
+    .personaje-cierre-texto h3+p+h3 {
+      margin-top: 1.5rem;
+    }
+
+    /* Visor Nav-Ranger */
+    .nav-visor {
+      position: relative;
+      padding: clamp(1rem, 50vw, 1.5rem);
+      background: linear-gradient(180deg, var(--cockpit-metal-alto), var(--cockpit-metal));
+      border: 1px solid var(--cockpit-bezel);
+      border-radius: 0.2rem;
+      box-shadow: inset 0 1px 0 var(--cockpit-bezel-brillo), 0 12px 24px rgba(0, 0, 0, 0.5);
+    }
+
+    .nav-visor-cabecera {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 0 0.25rem 0.5rem;
+      font-family: var(--font-instrumento);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--instrumento-teal);
+    }
+
+    .nav-visor-cabecera .nav-visor-rec::before {
+      content: "●";
+      margin-right: 0.35em;
+      color: var(--color-gargantua);
+      animation: nav-visor-parpadeo 1.4s steps(2, jump-none) infinite;
+    }
+
+    @keyframes nav-visor-parpadeo {
+      50% {
+        opacity: 0.15;
+      }
+    }
+
+    .nav-visor-pantalla {
+      position: relative;
+      aspect-ratio: 4 / 3;
+      overflow: hidden;
+      background: #000;
+      padding: 0.5rem;
+      border: 1px solid color-mix(in srgb, var(--instrumento-teal) 30%, var(--cockpit-bezel));
+    }
+
+    .nav-visor-frame {
+      position: absolute;
+      inset: 0.5rem;
+      width: calc(100% - 1rem);
+      height: calc(100% - 1rem);
+      object-fit: cover;
+      display: block;
+      opacity: 0;
+      filter: brightness(0.9) saturate(0.85) contrast(1.05);
+    }
+
+    .nav-visor-frame.is-activo {
+      opacity: 1;
+    }
+
+    /* scanlines + viñeta: encima de los fotogramas, sutil */
+    .nav-visor-pantalla::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.35) 0 1px, transparent 1px 3px),
+        radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+      mix-blend-mode: multiply;
+    }
+
+    /* marco esquina superior-derecha recortado, mismo criterio que las
+       "teclas" del nav del header (--recorte-tecla ya existe en el sitio,
+       acá un recorte propio más discreto para no competir con la pantalla) */
+    .nav-visor-pantalla::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      z-index: 2;
+      width: 14px;
+      height: 14px;
+      border-top: 1px solid var(--instrumento-teal);
+      border-right: 1px solid var(--instrumento-teal);
+      opacity: 0.7;
+    }
+
+    .nav-visor-pie {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0.25rem 0;
+      font-family: var(--font-instrumento);
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      color: color-mix(in srgb, var(--instrumento-teal) 70%, var(--color-texto-atenuado));
+    }
+
+    /* === 3. GALERÍA HORIZONTAL — riel alto + sticky (mismo mecanismo de
+       js/mundo-portada.js) con el EFECTO del CodePen (tira que avanza
+       horizontal atada al scroll). Colapsa a fila scrolleable normal sin
+       JS / con reduced-motion (riel sin alto extra, sticky desactivado). */
+    .riel-galeria {
+      position: relative;
+    }
+
+    /* alto real lo pone JS via --riel-alto */
+    body.js-armado .riel-galeria.is-armada {
+      height: var(--riel-alto);
+    }
+
+    .riel-galeria-vista {
+      display: flex;
+      align-items: center;
+      overflow-x: auto;
+      scroll-snap-type: x proximity;
+      padding: 0 1.25rem;
+    }
+
+    body.js-armado .riel-galeria.is-armada .riel-galeria-vista {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: hidden;
+      scroll-snap-type: none;
+    }
+
+    .personaje-galeria-pista {
+      display: flex;
+    }
+
+    /* Escena a pantalla completa: apilada VERTICAL (texto arriba, imagen
+       abajo) — misma división de pantalla que la rama galeria-vertical
+       (.tira-datos 30% / .tira-fotogramas 70%), no lado a lado. Cada escena
+       ES un slide de 100% del viewport dentro del riel horizontal. */
+    .galeria-escena {
+      flex: 0 0 100%;
+      width: 100%;
+      min-height: 100vh;
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .galeria-escena-texto {
+      order: 1;
+      flex: 0 0 30%;
+      background: var(--color-superficie);
+      padding: clamp(2rem, 5vw, 4.5rem);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 1rem;
+      overflow: hidden;
+    }
+
+    .galeria-escena-img {
+      order: 2;
+      position: relative;
+      flex: 1 1 70%;
+      overflow: hidden;
+      background: var(--color-fondo);
+    }
+
+    .galeria-escena-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: brightness(0.82);
+    }
+
+    .galeria-escena-label {
+      font-family: var(--font-instrumento);
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--color-gargantua);
+      margin: 0;
+    }
+
+    .galeria-escena-texto h3 {
+      margin: 0;
+    }
+
+    .galeria-escena-texto p {
+      color: var(--color-texto-atenuado);
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    .galeria-escena-dato {
+      margin-top: 0.5rem;
+      padding: 0.75rem 1rem;
+      border-left: 3px solid var(--color-gargantua);
+      background: color-mix(in srgb, var(--color-gargantua) 8%, transparent);
+      font-family: var(--font-texto);
+      font-size: 0.88rem;
+      color: var(--color-texto);
+    }
+
+    .galeria-escena-dato strong {
+      color: var(--color-gargantua);
+      font-family: var(--font-instrumento);
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    .spike-controles {
+      max-width: 68rem;
+      margin: 1.5rem auto 0;
+      padding: 0 1.25rem;
+      font-family: var(--font-instrumento);
+      font-size: 0.78rem;
+      color: var(--instrumento-teal);
+    }
+  </style>
+</head>
+
+<body>
+  <p class="spike-nota">
+    SPIKE 2 (v4) — hero full-bleed (<code>.mundo-portada-escena</code>), galería
+    de escenas a pantalla completa (riel alto + sticky + <code>ScrollTrigger</code>
+    scrub, mismo mecanismo de <code>js/mundo-portada.js</code>), y al cierre de
+    cada personaje: texto + <strong>visor Nav-Ranger</strong> en fila — un
+    ciclador de fotogramas que se reemplazan cada <code>140ms</code> en loop
+    (estilo stop-motion), con la piel de instrumentos del cockpit
+    (<code>--cockpit-metal</code> / <code>--cockpit-bezel</code> /
+    <code>--instrumento-teal</code>), NO la tira de celuloide de
+    <code>#en-celuloide</code>. Degradado sin JS / reduced-motion: la galería
+    queda swipe-able en fila normal y el visor queda fijo en su primer
+    fotograma.
+  </p>
+
+  <!-- ============ COOPER ============ -->
+  <section class="personaje-hero">
+    <div class="personaje-hero-img-wrap">
+      <img class="personaje-hero-img" src="../assets/img/personajes-cooper.jpg" alt="">
+    </div>
+    <div class="personaje-hero-ficha">
+      <p class="personaje-hero-rol">Piloto · Endurance</p>
+      <h1>Cooper</h1>
+      <p>Ex piloto e ingeniero de la NASA, ahora agricultor. Acepta pilotar el
+        Endurance a través del agujero de gusano con una sola promesa: volver.</p>
+    </div>
+  </section>
+  <p class="spike-nota" style="margin-top:2.5rem;">
+    Hero nuevo: full-bleed, <code>min-height: 92svh</code>, imagen de fondo +
+    scrim degradado + ficha apoyada abajo — mismo mecanismo que
+    <code>.mundo-portada-escena</code> en <code>css/mundos.css</code>.
+  </p>
+
+  <div class="personaje-texto">
+    <h3>Quién es</h3>
+    <p>Placeholder de texto — acá va el primer bloque de la ficha (mismo
+      contenido que hoy tiene <code>personajes.html#cooper</code>). Sirve para
+      ver cuánto "respira" la página entre el hero y la galería.</p>
+  </div>
+
+  <p class="spike-separador">↓ scroll ↓</p>
+
+  <div class="riel-galeria" data-riel>
+    <div class="riel-galeria-vista">
+      <div class="personaje-galeria-pista" data-pista>
+
+        <article class="galeria-escena">
+          <div class="galeria-escena-img">
+            <img src="../assets/img/personajes-cooper-casco.jpg"
+              alt="Cooper con el casco de piloto, antes del despegue.">
+          </div>
+          <div class="galeria-escena-texto">
+            <p class="galeria-escena-label">Escena 01 · Antes del despegue</p>
+            <h3>El último vistazo a la Tierra</h3>
+            <p>Placeholder de descripción — el momento en que Cooper se pone el
+              casco por primera vez en años, minutos antes de dejar el planeta
+              que ya no puede sostener a su familia.</p>
+            <div class="galeria-escena-dato">
+              <strong>Dato curioso</strong>
+              Placeholder — acá va un dato de producción o de guion sobre esta
+              escena puntual (ej. algo del rodaje, del vestuario, de la
+              elección de cámara).
+            </div>
+          </div>
+        </article>
+
+        <article class="galeria-escena">
+          <div class="galeria-escena-img">
+            <img src="../assets/img/personajes-cooper-sudor.jpg" alt="Cooper bajo tensión durante la misión.">
+          </div>
+          <div class="galeria-escena-texto">
+            <p class="galeria-escena-label">Escena 02 · Bajo presión</p>
+            <h3>Cuando el plan se desarma</h3>
+            <p>Placeholder de descripción — el punto de la misión donde Cooper
+              enfrenta la primera gran decisión imposible, con el reloj (literal)
+              en contra.</p>
+            <div class="galeria-escena-dato">
+              <strong>Dato curioso</strong>
+              Placeholder — otro dato específico de esta escena.
+            </div>
+          </div>
+        </article>
+
+        <article class="galeria-escena">
+          <div class="galeria-escena-img">
+            <img src="../assets/img/personajes-cooper-murph-adios.jpg" alt="Cooper despidiéndose de Murph.">
+          </div>
+          <div class="galeria-escena-texto">
+            <p class="galeria-escena-label">Escena 03 · El adiós</p>
+            <h3>La promesa que sostiene todo</h3>
+            <p>Placeholder de descripción — la despedida que Murph se niega a
+              cerrar, y que termina siendo el hilo que atraviesa el resto de la
+              película.</p>
+            <div class="galeria-escena-dato">
+              <strong>Dato curioso</strong>
+              Placeholder — dato final de esta escena.
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="personaje-cierre">
+    <div class="personaje-cierre-texto">
+      <h3>Su papel en la historia</h3>
+      <p>Placeholder de texto — segundo bloque de la ficha. La idea es sentir el
+        ritmo texto → scroll → texto a lo largo de una ficha completa, no solo ver
+        la galería aislada.</p>
+      <h3>Rasgos distintivos</h3>
+      <p>· Piloto por vocación, agricultor por obligación.<br>
+        · Su brújula es la promesa a Murph, no la misión.<br>
+        · El personaje a través del cual el espectador entra a la historia.</p>
+    </div>
+    <div class="nav-visor" data-nav-visor data-intervalo="250">
+      <p class="nav-visor-cabecera"><span class="nav-visor-rec">REC</span><span>COOPER · 09</span></p>
+      <div class="nav-visor-pantalla">
+        <img class="nav-visor-frame is-activo" src="../assets/img/personajes-cooper-casco.jpg"
+          alt="Fotogramas de Cooper en la escena del despegue.">
+        <img class="nav-visor-frame" src="../assets/img/personajes-cooper-sudor.jpg" alt="">
+        <img class="nav-visor-frame" src="../assets/img/personajes-cooper-murph-adios.jpg" alt="">
+        <img class="nav-visor-frame" src="../assets/img/personajes-cooper.jpg" alt="">
+      </div>
+      <p class="nav-visor-pie"><span>LOOP ⟳</span><span data-nav-estado>04 FRM</span></p>
+    </div>
+  </div>
+
+  <p class="spike-separador">— siguiente personaje —</p>
+
+  <!-- ============ MURPH (repetido para probar el ritmo en un segundo bloque) ============ -->
+  <section class="personaje-hero">
+    <div class="personaje-hero-img-wrap">
+      <img class="personaje-hero-img" src="../assets/img/personajes-murph.jpg" alt="">
+    </div>
+    <div class="personaje-hero-ficha">
+      <p class="personaje-hero-rol">Física · NASA</p>
+      <h1>Murph</h1>
+      <p>Hija menor de Cooper. De niña, terca y convencida de que hay un
+        "fantasma" en su cuarto. De adulta, física que termina resolviendo la
+        ecuación que salva a la humanidad.</p>
+    </div>
+  </section>
+
+  <div class="personaje-texto">
+    <h3>Quién es</h3>
+    <p>Placeholder — mismo patrón que Cooper, para confirmar que el ritmo
+      funciona igual de bien con un segundo personaje seguido.</p>
+  </div>
+
+  <p class="spike-separador">↓ scroll ↓</p>
+
+  <div class="riel-galeria" data-riel>
+    <div class="riel-galeria-vista">
+      <div class="personaje-galeria-pista" data-pista>
+
+        <article class="galeria-escena">
+          <div class="galeria-escena-img">
+            <img src="../assets/img/personajes-murph-nina.jpg" alt="Murph de niña.">
+          </div>
+          <div class="galeria-escena-texto">
+            <p class="galeria-escena-label">Escena 01 · La niña que no se despidió</p>
+            <h3>El fantasma del estante</h3>
+            <p>Placeholder de descripción — Murph convencida de que algo le
+              habla desde los libros que caen, mucho antes de entender qué es.</p>
+            <div class="galeria-escena-dato">
+              <strong>Dato curioso</strong>
+              Placeholder — dato de producción o guion sobre esta escena.
+            </div>
+          </div>
+        </article>
+
+        <article class="galeria-escena">
+          <div class="galeria-escena-img">
+            <img src="../assets/img/personajes-murph-corre.jpg" alt="Murph corriendo.">
+          </div>
+          <div class="galeria-escena-texto">
+            <p class="galeria-escena-label">Escena 02 · La persecución</p>
+            <h3>Correr detrás de una respuesta</h3>
+            <p>Placeholder de descripción — el momento en que Murph deja de
+              aceptar la explicación fácil y empieza a investigar por su cuenta.</p>
+            <div class="galeria-escena-dato">
+              <strong>Dato curioso</strong>
+              Placeholder — otro dato de esta escena.
+            </div>
+          </div>
+        </article>
+
+        <article class="galeria-escena">
+          <div class="galeria-escena-img">
+            <img src="../assets/img/personajes-murph-anciana.jpg" alt="Murph anciana.">
+          </div>
+          <div class="galeria-escena-texto">
+            <p class="galeria-escena-label">Escena 03 · Décadas después</p>
+            <h3>El cierre del círculo</h3>
+            <p>Placeholder de descripción — Murph anciana, rodeada de su
+              familia, cerrando la historia que empezó con un padre que
+              prometió volver.</p>
+            <div class="galeria-escena-dato">
+              <strong>Dato curioso</strong>
+              Placeholder — dato final de esta escena.
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="personaje-cierre">
+    <div class="personaje-cierre-texto">
+      <h3>Su papel en la historia</h3>
+      <p>Placeholder — la resolución de la ecuación de la gravedad y el mensaje
+        a través del tiempo.</p>
+    </div>
+    <div class="nav-visor" data-nav-visor data-intervalo="250">
+      <p class="nav-visor-cabecera"><span class="nav-visor-rec">REC</span><span>MURPH · 12</span></p>
+      <div class="nav-visor-pantalla">
+        <img class="nav-visor-frame is-activo" src="../assets/img/personajes-murph-nina.jpg"
+          alt="Fotogramas de Murph en una escena clave.">
+        <img class="nav-visor-frame" src="../assets/img/personajes-murph-corre.jpg" alt="">
+        <img class="nav-visor-frame" src="../assets/img/personajes-murph-anciana.jpg" alt="">
+        <img class="nav-visor-frame" src="../assets/img/personajes-murph.jpg" alt="">
+      </div>
+      <p class="nav-visor-pie"><span>LOOP ⟳</span><span data-nav-estado>04 FRM</span></p>
+    </div>
+  </div>
+
+  <p class="spike-controles" id="estado-js">JS: cargando…</p>
+
+  <script type="module">
+    // Visor Nav-Ranger: ciclador de fotogramas independiente del riel de la
+    // galería (no está atado a scroll, no necesita GSAP). reduced-motion ->
+    // queda fijo en el primer fotograma. IntersectionObserver -> pausa el
+    // setInterval cuando el visor no está en pantalla (no gasta CPU de más).
+    function initNavVisores() {
+      const visores = [...document.querySelectorAll('[data-nav-visor]')];
+      if (visores.length === 0) return 0;
+
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduced) return 0; // cada visor ya muestra su primer fotograma por CSS (.is-activo)
+
+      const observer = new IntersectionObserver((entradas) => {
+        entradas.forEach((entrada) => {
+          const ciclador = entrada.target._ciclador;
+          if (!ciclador) return;
+          ciclador.activo = entrada.isIntersecting;
+        });
+      }, { threshold: 0.15 });
+
+      visores.forEach((visor) => {
+        const frames = [...visor.querySelectorAll('.nav-visor-frame')];
+        if (frames.length < 2) return; // nada que ciclar
+        const intervaloMs = Number(visor.dataset.intervalo) || 250;
+        let indice = 0;
+        const ciclador = { activo: false };
+        visor._ciclador = ciclador;
+
+        setInterval(() => {
+          if (!ciclador.activo) return;
+          frames[indice].classList.remove('is-activo');
+          indice = (indice + 1) % frames.length;
+          frames[indice].classList.add('is-activo');
+        }, intervaloMs);
+
+        observer.observe(visor);
+      });
+
+      return visores.length;
+    }
+
+    async function init() {
+      const estado = document.getElementById('estado-js');
+      const visoresArmados = initNavVisores();
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduced) {
+        estado.textContent = 'JS: reduced-motion activo → tiras scrolleables manuales (sin riel) y visores Nav-Ranger fijos en el primer fotograma.';
+        return;
+      }
+
+      let gsap, ScrollTrigger;
+      try {
+        ({ gsap } = await import('../js/vendor/gsap@3.13.0/gsap.mjs'));
+        ({ ScrollTrigger } = await import('../js/vendor/gsap@3.13.0/ScrollTrigger.mjs'));
+      } catch (err) {
+        estado.textContent = `JS: GSAP no cargó → tiras scrolleables manuales (sin riel). Visores Nav-Ranger: ${visoresArmados} ciclando igual (no dependen de GSAP).`;
+        console.warn('[spike-galeria] GSAP no disponible', err);
+        return;
+      }
+      gsap.registerPlugin(ScrollTrigger);
+      document.body.classList.add('js-armado');
+
+      const instancias = [];
+
+      function armar(riel) {
+        const vista = riel.querySelector('.riel-galeria-vista');
+        const pista = riel.querySelector('[data-pista]');
+        const distancia = pista.scrollWidth - vista.clientWidth;
+        if (distancia <= 0) return null; // no hay nada que desplazar: queda como fila normal
+
+        riel.classList.add('is-armada');
+        // riel alto = 100vh (la ventana del sticky) + la distancia que hay
+        // que recorrer -> exactamente el rango de scroll que necesita el
+        // scrub para llevar la tira de 0 a -distancia (mismo calculo que
+        // usa mundo-portada.js para sus rieles verticales).
+        riel.style.setProperty('--riel-alto', `${window.innerHeight + distancia}px`);
+
+        const tween = gsap.to(pista, {
+          x: -distancia,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: riel,
+            start: 'top top',
+            end: 'bottom bottom',
+            scrub: 0.5,
+          },
+        });
+        return { riel, tween };
+      }
+
+      document.querySelectorAll('[data-riel]').forEach((riel) => {
+        const inst = armar(riel);
+        if (inst) instancias.push(inst);
+      });
+
+      estado.textContent = (instancias.length
+        ? `JS: GSAP armado — ${instancias.length} galería(s) con riel + sticky + scrub.`
+        : 'JS: GSAP cargó pero ninguna tira tuvo distancia para armar riel.')
+        + ` Visores Nav-Ranger: ${visoresArmados} ciclando.`;
+
+      let resizeTimer;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          instancias.forEach(({ tween, riel }) => {
+            tween.scrollTrigger.kill();
+            riel.classList.remove('is-armada');
+          });
+          instancias.length = 0;
+          document.querySelectorAll('[data-riel]').forEach((riel) => {
+            const inst = armar(riel);
+            if (inst) instancias.push(inst);
+          });
+          ScrollTrigger.refresh();
+        }, 200);
+      });
+    }
+    init();
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SPIKE — Tira inferior "stop motion" (Personajes)</title>
+  <link rel="stylesheet" href="../css/reset.css">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/personajes.css">
+  <style>
+    /* --- SOLO PARA EL SPIKE --- */
+    body {
+      padding: 0 0 6rem;
+    }
+
+    .spike-nota {
+      font-family: var(--font-instrumento);
+      font-size: 0.8rem;
+      color: var(--color-texto-atenuado);
+      border: 1px dashed color-mix(in srgb, var(--color-texto) 30%, transparent);
+      padding: 0.75rem 1rem;
+      margin: 1.5rem 1.25rem 2.5rem;
+    }
+
+    .spike-nota code {
+      color: var(--color-gargantua);
+    }
+
+    .spike-separador {
+      text-align: center;
+      font-family: var(--font-instrumento);
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--color-gargantua);
+      margin: 4rem 0 1rem;
+    }
+
+    /* === HERO FULL-BLEED (portado desde spikes/personajes-hero-galeria.html
+       — mismo mecanismo que .mundo-portada-escena en css/mundos.css: imagen
+       de fondo + scrim degradado + ficha apoyada abajo, min-height casi
+       pantalla completa). Reemplaza el hero partido en 2 de la v3. ======= */
+    .personaje-hero {
+      position: relative;
+      min-height: 92svh;
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .personaje-hero-img-wrap {
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+    }
+
+    .personaje-hero-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: brightness(0.88);
+    }
+
+    .personaje-hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(to top,
+          rgba(0, 0, 0, 0.88) 0%, rgba(0, 0, 0, 0.6) 28%, rgba(0, 0, 0, 0.15) 58%, transparent 78%);
+    }
+
+    .personaje-hero-ficha {
+      position: relative;
+      max-width: 40rem;
+      padding: clamp(2rem, 6vw, 4rem) clamp(1.25rem, 5vw, 4rem) clamp(3rem, 9vw, 6rem);
+    }
+
+    .personaje-hero-ficha h1 {
+      margin: 0 0 0.4rem;
+    }
+
+    .personaje-hero-rol {
+      font-family: var(--font-instrumento);
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--color-gargantua);
+      margin: 0 0 1.1rem;
+    }
+
+    .personaje-hero-ficha p {
+      color: var(--color-texto-atenuado);
+      line-height: 1.75;
+    }
+
+    .personaje-texto {
+      max-width: 42rem;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem;
+      text-align: left;
+    }
+
+    .personaje-texto h3 {
+      margin: 0 0 0.5rem;
+    }
+
+    .personaje-texto p {
+      color: var(--color-texto-atenuado);
+      line-height: 1.7;
+    }
+
+    /* === TIRA INFERIOR "STOP MOTION" ==================================
+       El texto/dato ocupa la mayor parte de la pantalla (arriba); la tira
+       de fotogramas queda SIEMPRE abajo, angosta (1/5 del alto = 20vh),
+       y se desplaza horizontal (mismo mecanismo riel+sticky+scrub de
+       js/mundo-portada.js, pero moviendo x en vez de swapear fotogramas).
+       El texto de arriba cambia en sincro con el fotograma que está
+       centrado/activo en la tira (corte duro, sin crossfade) -> se lee
+       como avanzar frame a frame, "estilo stop motion". Degradado sin JS /
+       reduced-motion: texto y tira quedan en flujo normal, tira scrolleable
+       a mano (swipe/rueda). */
+    .riel-tira {
+      position: relative;
+    }
+
+    body.js-armado .riel-tira.is-armada {
+      height: var(--riel-alto-t);
+    }
+
+    .riel-tira-vista {
+      display: flex;
+      flex-direction: column;
+    }
+
+    body.js-armado .riel-tira.is-armada .riel-tira-vista {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    /* -- Panel de datos: 30% de la pantalla -- */
+    .tira-datos {
+      position: relative;
+      background: var(--color-superficie);
+    }
+
+    body.js-armado .riel-tira.is-armada .tira-datos {
+      height: 30%;
+      overflow: hidden;
+    }
+
+    .tira-datos-item {
+      padding: clamp(1.5rem, 5vw, 4rem);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.9rem;
+      max-width: 46rem;
+      margin: 0 auto;
+    }
+
+    body.js-armado .riel-tira.is-armada .tira-datos-item {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      max-width: none;
+    }
+
+    body.js-armado .riel-tira.is-armada .tira-datos-item.activa {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    body.js-armado .riel-tira.is-armada .tira-datos-item>* {
+      max-width: 46rem;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .tira-datos-label {
+      font-family: var(--font-instrumento);
+      font-size: 0.8rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--color-gargantua);
+      margin: 0;
+    }
+
+    .tira-datos-item h3 {
+      margin: 0;
+      font-size: clamp(1.35rem, 3.2vw, 2.1rem);
+    }
+
+    .tira-datos-item p {
+      color: var(--color-texto-atenuado);
+      line-height: 1.75;
+      margin: 0;
+    }
+
+    .tira-datos-dato {
+      margin-top: 0.5rem;
+      padding: 0.9rem 1.15rem;
+      border-left: 3px solid var(--color-gargantua);
+      background: color-mix(in srgb, var(--color-gargantua) 8%, transparent);
+      font-family: var(--font-texto);
+      font-size: 0.9rem;
+      color: var(--color-texto);
+    }
+
+    .tira-datos-dato strong {
+      color: var(--color-gargantua);
+      font-family: var(--font-instrumento);
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+
+    /* -- Tira de fotogramas: SIEMPRE abajo, ahora el bloque GRANDE (70%) -- */
+    .tira-fotogramas {
+      position: relative;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x proximity;
+      background: var(--color-fondo);
+      border-top: 1px solid color-mix(in srgb, var(--color-texto) 15%, transparent);
+      height: 55vh;
+      /* fallback / no-JS */
+    }
+
+    body.js-armado .riel-tira.is-armada .tira-fotogramas {
+      height: 70%;
+      scroll-snap-type: none;
+      overflow-x: hidden;
+    }
+
+    .tira-pista {
+      display: flex;
+      gap: 1rem;
+      height: 100%;
+      align-items: center;
+      padding: 0 1.25rem;
+    }
+
+    .tira-frame {
+      flex: 0 0 auto;
+      height: calc(100% - 2rem); /* 🔧 AJUSTAR ACÁ el margin vertical (subí/bajá el 2rem junto con el margin de abajo) */
+      margin: 1rem 0;
+      aspect-ratio: 3 / 2;
+      scroll-snap-align: center;
+      position: relative;
+      overflow: hidden;
+      background: var(--color-fondo);
+      border: 2px solid transparent;
+      transition: border-color 0.15s ease, opacity 0.15s ease;
+      opacity: 0.55;
+    }
+
+    .tira-frame.activa {
+      border-color: var(--color-gargantua);
+      opacity: 1;
+    }
+
+    .tira-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: brightness(0.85);
+    }
+
+    .tira-progreso {
+      position: absolute;
+      top: 0.6rem;
+      right: 1rem;
+      z-index: 2;
+      font-family: var(--font-instrumento);
+      font-size: 0.75rem;
+      color: var(--instrumento-teal);
+      opacity: 0.85;
+      display: none;
+    }
+
+    body.js-armado .riel-tira.is-armada .tira-progreso {
+      display: block;
+    }
+
+    .spike-controles {
+      max-width: 68rem;
+      margin: 1.5rem auto 0;
+      padding: 0 1.25rem;
+      font-family: var(--font-instrumento);
+      font-size: 0.78rem;
+      color: var(--instrumento-teal);
+    }
+
+    /* === CIERRE en FILA: "Su papel en la historia" (.personaje-texto, SIN
+       cambios propios) + visor Nav-Ranger, lado a lado. Envuelve ambos sin
+       tocar las reglas de .personaje-texto (esas siguen valiendo también
+       para el bloque "Quién es" de arriba, que no está en fila). */
+    .personaje-cierre {
+      max-width: 74rem;
+      margin: 0 auto;
+      padding: clamp(3rem, 8vw, 5rem) 1.25rem; /* arriba Y abajo: antes quedaba pegado a la tira de escenas por faltar el top */
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(2rem, 5vw, 4rem);
+      align-items: center;
+    }
+    @media (max-width: 48rem) {
+      .personaje-cierre { grid-template-columns: 1fr; }
+    }
+    /* dentro de la fila, el texto no necesita su propio centrado de 42rem:
+       ocupa la columna entera */
+    .personaje-cierre > .personaje-texto {
+      max-width: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* === VISOR NAV-RANGER — ciclador de fotogramas que se reemplazan en
+       loop (estilo stop-motion), piel de instrumentos del cockpit (mismo
+       lenguaje visual que el nav del header: --cockpit-metal / --cockpit-bezel
+       / --instrumento-teal / --font-instrumento). NO es la tira de celuloide
+       de #en-celuloide (mecanismo distinto: reemplazo in-situ, no scroll).
+
+       🔧 AJUSTAR TAMAÑO ACÁ: `aspect-ratio` de .nav-visor-pantalla (más
+       chico el segundo número = visor más "alto"; subí ambos por igual para
+       agrandar todo el visor manteniendo proporción). Al estar en una
+       columna de la fila (~50% del ancho), ya es más grande que antes. */
+    .nav-visor-bloque {
+      margin: 0;
+      padding: 0;
+    }
+    @media (max-width: 48rem) {
+      /* 🔧 AJUSTAR ACÁ si lo querés más/menos separado del texto cuando
+         se apila en mobile (el gap del grid ya da algo, esto suma extra) */
+      .nav-visor-bloque { margin-top: 1.5rem; }
+    }
+
+    .nav-visor {
+      position: relative;
+      padding: clamp(1rem, 5vw, 1.5rem);
+      background: linear-gradient(180deg, var(--cockpit-metal-alto), var(--cockpit-metal));
+      border: 1px solid var(--cockpit-bezel);
+      border-radius: 0.2rem;
+      box-shadow: inset 0 1px 0 var(--cockpit-bezel-brillo), 0 12px 24px rgba(0, 0, 0, 0.5);
+    }
+
+    .nav-visor-cabecera {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 0 0.25rem 0.5rem;
+      font-family: var(--font-instrumento);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--instrumento-teal);
+    }
+
+    .nav-visor-cabecera .nav-visor-rec::before {
+      content: "●";
+      margin-right: 0.35em;
+      color: var(--color-gargantua);
+      animation: nav-visor-parpadeo 1.4s steps(2, jump-none) infinite;
+    }
+
+    @keyframes nav-visor-parpadeo {
+      50% {
+        opacity: 0.15;
+      }
+    }
+
+    .nav-visor-pantalla {
+      position: relative;
+      aspect-ratio: 4 / 3; /* 🔧 AJUSTAR TAMAÑO/PROPORCIÓN ACÁ (ej. "1 / 1" más cuadrado, "16 / 10" más panorámico) */
+      overflow: hidden;
+      background: #000;
+      padding: 0.5rem;
+      border: 1px solid color-mix(in srgb, var(--instrumento-teal) 30%, var(--cockpit-bezel));
+    }
+
+    .nav-visor-frame {
+      position: absolute;
+      inset: 0.5rem;
+      width: calc(100% - 1rem);
+      height: calc(100% - 1rem);
+      object-fit: cover;
+      display: block;
+      opacity: 0;
+      filter: brightness(0.9) saturate(0.85) contrast(1.05);
+    }
+
+    .nav-visor-frame.is-activo {
+      opacity: 1;
+    }
+
+    .nav-visor-pantalla::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.35) 0 1px, transparent 1px 3px),
+        radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+      mix-blend-mode: multiply;
+    }
+
+    .nav-visor-pantalla::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      z-index: 2;
+      width: 14px;
+      height: 14px;
+      border-top: 1px solid var(--instrumento-teal);
+      border-right: 1px solid var(--instrumento-teal);
+      opacity: 0.7;
+    }
+
+    .nav-visor-pie {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0.25rem 0;
+      font-family: var(--font-instrumento);
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      color: color-mix(in srgb, var(--instrumento-teal) 70%, var(--color-texto-atenuado));
+    }
+  </style>
+</head>
+
+<body>
+  <p class="spike-nota">
+    SPIKE 3 (v6) — <strong>tira de escenas sin tocar</strong> (30% texto /
+    70% fotogramas, riel + sticky + scrub, corte duro sincronizado — igual
+    que siempre). Hero full-bleed portado de
+    <code>personajes-hero-galeria.html</code>. Al final de cada personaje,
+    "Su papel en la historia" + <strong>visor Nav-Ranger</strong> ahora EN
+    FILA (<code>.personaje-cierre</code>, grid 1fr/1fr) — el visor ocupa la
+    columna entera, más grande que antes. Velocidad subida a
+    <code>450ms</code> por fotograma como punto de partida — buscá los
+    comentarios <code>🔧 AJUSTAR</code> en el HTML (<code>data-intervalo</code>
+    de cada visor) y en el CSS (<code>aspect-ratio</code> de
+    <code>.nav-visor-pantalla</code>) para tunearlo a mano.
+  </p>
+
+  <!-- ============ COOPER ============ -->
+  <section class="personaje-hero">
+    <div class="personaje-hero-img-wrap"><img class="personaje-hero-img" src="../assets/img/personajes-cooper.jpg"
+        alt=""></div>
+    <div class="personaje-hero-ficha">
+      <p class="personaje-hero-rol">Piloto · Endurance</p>
+      <h1>Cooper</h1>
+      <p>Ex piloto e ingeniero de la NASA, ahora agricultor. Acepta pilotar el
+        Endurance a través del agujero de gusano con una sola promesa: volver.</p>
+    </div>
+  </section>
+
+  <div class="personaje-texto">
+    <h3>Quién es</h3>
+    <p>Placeholder de texto — primer bloque de la ficha, igual que en
+      <code>personajes.html#cooper</code>.
+    </p>
+  </div>
+
+  <p class="spike-separador">↓ scroll (tira abajo, stop motion) ↓</p>
+
+  <div class="riel-tira" data-riel-t>
+    <p class="tira-progreso" data-progreso>1 / 3</p>
+    <div class="riel-tira-vista">
+
+      <div class="tira-datos" data-datos>
+        <div class="tira-datos-item">
+          <p class="tira-datos-label">Escena 01 · Antes del despegue</p>
+          <h3>El último vistazo a la Tierra</h3>
+          <p>Placeholder — el momento en que Cooper se pone el casco por
+            primera vez en años, minutos antes de dejar el planeta.</p>
+          <div class="tira-datos-dato"><strong>Dato curioso</strong>Placeholder de dato de producción o guion.</div>
+        </div>
+        <div class="tira-datos-item">
+          <p class="tira-datos-label">Escena 02 · Bajo presión</p>
+          <h3>Cuando el plan se desarma</h3>
+          <p>Placeholder — el punto de la misión donde Cooper enfrenta la
+            primera gran decisión imposible.</p>
+          <div class="tira-datos-dato"><strong>Dato curioso</strong>Placeholder de otro dato de esta escena.</div>
+        </div>
+        <div class="tira-datos-item">
+          <p class="tira-datos-label">Escena 03 · El adiós</p>
+          <h3>La promesa que sostiene todo</h3>
+          <p>Placeholder — la despedida que Murph se niega a cerrar, hilo que
+            atraviesa el resto de la película.</p>
+          <div class="tira-datos-dato"><strong>Dato curioso</strong>Placeholder de dato final de esta escena.</div>
+        </div>
+      </div>
+
+      <div class="tira-fotogramas">
+        <div class="tira-pista" data-pista>
+          <figure class="tira-frame"><img src="../assets/img/personajes-cooper-casco.jpg"
+              alt="Cooper con el casco de piloto."></figure>
+          <figure class="tira-frame"><img src="../assets/img/personajes-cooper-sudor.jpg"
+              alt="Cooper bajo tensión durante la misión."></figure>
+          <figure class="tira-frame"><img src="../assets/img/personajes-cooper-murph-adios.jpg"
+              alt="Cooper despidiéndose de Murph."></figure>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="personaje-cierre">
+    <div class="personaje-texto">
+      <h3>Su papel en la historia</h3>
+      <p>Placeholder — segundo bloque de la ficha.</p>
+      <h3 style="margin-top:1.5rem">Rasgos distintivos</h3>
+      <p>· Piloto por vocación, agricultor por obligación.<br>
+        · Su brújula es la promesa a Murph, no la misión.<br>
+        · El personaje a través del cual el espectador entra a la historia.</p>
+    </div>
+
+    <div class="nav-visor-bloque">
+      <!-- 🔧 AJUSTAR VELOCIDAD ACÁ: data-intervalo en milisegundos entre
+           fotogramas (más alto = más lento). Default JS si se borra: 250. -->
+      <div class="nav-visor" data-nav-visor data-intervalo="450">
+        <p class="nav-visor-cabecera"><span class="nav-visor-rec">REC</span><span>COOPER · 09</span></p>
+        <div class="nav-visor-pantalla">
+          <img class="nav-visor-frame is-activo" src="../assets/img/personajes-cooper-casco.jpg"
+            alt="Fotogramas de Cooper en la escena del despegue.">
+          <img class="nav-visor-frame" src="../assets/img/personajes-cooper-sudor.jpg" alt="">
+          <img class="nav-visor-frame" src="../assets/img/personajes-cooper-murph-adios.jpg" alt="">
+          <img class="nav-visor-frame" src="../assets/img/personajes-cooper.jpg" alt="">
+        </div>
+        <p class="nav-visor-pie"><span>LOOP ⟳</span><span data-nav-estado>04 FRM</span></p>
+      </div>
+    </div>
+  </div>
+
+  <p class="spike-separador">— siguiente personaje —</p>
+
+  <!-- ============ MURPH ============ -->
+  <section class="personaje-hero">
+    <div class="personaje-hero-img-wrap"><img class="personaje-hero-img" src="../assets/img/personajes-murph.jpg"
+        alt=""></div>
+    <div class="personaje-hero-ficha">
+      <p class="personaje-hero-rol">Física · NASA</p>
+      <h1>Murph</h1>
+      <p>Hija menor de Cooper. De niña, terca y convencida de que hay un
+        "fantasma" en su cuarto. De adulta, física que resuelve la ecuación que
+        salva a la humanidad.</p>
+    </div>
+  </section>
+
+  <div class="personaje-texto">
+    <h3>Quién es</h3>
+    <p>Placeholder — mismo patrón que Cooper, para confirmar el ritmo con un
+      segundo personaje.</p>
+  </div>
+
+  <p class="spike-separador">↓ scroll (tira abajo, stop motion) ↓</p>
+
+  <div class="riel-tira" data-riel-t>
+    <p class="tira-progreso" data-progreso>1 / 3</p>
+    <div class="riel-tira-vista">
+
+      <div class="tira-datos" data-datos>
+        <div class="tira-datos-item">
+          <p class="tira-datos-label">Escena 01 · La niña que no se despidió</p>
+          <h3>El fantasma del estante</h3>
+          <p>Placeholder — Murph convencida de que algo le habla desde los
+            libros que caen.</p>
+          <div class="tira-datos-dato"><strong>Dato curioso</strong>Placeholder de dato de esta escena.</div>
+        </div>
+        <div class="tira-datos-item">
+          <p class="tira-datos-label">Escena 02 · La persecución</p>
+          <h3>Correr detrás de una respuesta</h3>
+          <p>Placeholder — Murph deja de aceptar la explicación fácil y
+            empieza a investigar por su cuenta.</p>
+          <div class="tira-datos-dato"><strong>Dato curioso</strong>Placeholder de otro dato de esta escena.</div>
+        </div>
+        <div class="tira-datos-item">
+          <p class="tira-datos-label">Escena 03 · Décadas después</p>
+          <h3>El cierre del círculo</h3>
+          <p>Placeholder — Murph anciana, cerrando la historia que empezó con
+            un padre que prometió volver.</p>
+          <div class="tira-datos-dato"><strong>Dato curioso</strong>Placeholder de dato final de esta escena.</div>
+        </div>
+      </div>
+
+      <div class="tira-fotogramas">
+        <div class="tira-pista" data-pista>
+          <figure class="tira-frame"><img src="../assets/img/personajes-murph-nina.jpg" alt="Murph de niña."></figure>
+          <figure class="tira-frame"><img src="../assets/img/personajes-murph-corre.jpg" alt="Murph corriendo.">
+          </figure>
+          <figure class="tira-frame"><img src="../assets/img/personajes-murph-anciana.jpg" alt="Murph anciana.">
+          </figure>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="personaje-cierre">
+    <div class="personaje-texto">
+      <h3>Su papel en la historia</h3>
+      <p>Placeholder — la resolución de la ecuación de la gravedad y el mensaje
+        a través del tiempo.</p>
+    </div>
+
+    <div class="nav-visor-bloque">
+      <!-- 🔧 AJUSTAR VELOCIDAD ACÁ (ms entre fotogramas, más alto = más lento) -->
+      <div class="nav-visor" data-nav-visor data-intervalo="450">
+        <p class="nav-visor-cabecera"><span class="nav-visor-rec">REC</span><span>MURPH · 12</span></p>
+        <div class="nav-visor-pantalla">
+          <img class="nav-visor-frame is-activo" src="../assets/img/personajes-murph-nina.jpg"
+            alt="Fotogramas de Murph en una escena clave.">
+          <img class="nav-visor-frame" src="../assets/img/personajes-murph-corre.jpg" alt="">
+          <img class="nav-visor-frame" src="../assets/img/personajes-murph-anciana.jpg" alt="">
+          <img class="nav-visor-frame" src="../assets/img/personajes-murph.jpg" alt="">
+        </div>
+        <p class="nav-visor-pie"><span>LOOP ⟳</span><span data-nav-estado>04 FRM</span></p>
+      </div>
+    </div>
+  </div>
+
+  <p class="spike-controles" id="estado-js">JS: cargando…</p>
+
+  <script type="module">
+    // Visor Nav-Ranger: ciclador de fotogramas independiente de la tira de
+    // escenas (no está atado a scroll, no depende de GSAP ni toca `armar()`
+    // de abajo). reduced-motion -> queda fijo en el primer fotograma.
+    // IntersectionObserver -> pausa el setInterval fuera de pantalla.
+    function initNavVisores() {
+      const visores = [...document.querySelectorAll('[data-nav-visor]')];
+      if (visores.length === 0) return 0;
+
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduced) return 0; // cada visor ya muestra su primer fotograma por CSS (.is-activo)
+
+      const observer = new IntersectionObserver((entradas) => {
+        entradas.forEach((entrada) => {
+          const ciclador = entrada.target._ciclador;
+          if (!ciclador) return;
+          ciclador.activo = entrada.isIntersecting;
+        });
+      }, { threshold: 0.15 });
+
+      visores.forEach((visor) => {
+        const frames = [...visor.querySelectorAll('.nav-visor-frame')];
+        if (frames.length < 2) return;
+        // 🔧 AJUSTAR VELOCIDAD ACÁ (fallback si algún visor no trae data-intervalo)
+        const intervaloMs = Number(visor.dataset.intervalo) || 450;
+        let indice = 0;
+        const ciclador = { activo: false };
+        visor._ciclador = ciclador;
+
+        setInterval(() => {
+          if (!ciclador.activo) return;
+          frames[indice].classList.remove('is-activo');
+          indice = (indice + 1) % frames.length;
+          frames[indice].classList.add('is-activo');
+        }, intervaloMs);
+
+        observer.observe(visor);
+      });
+
+      return visores.length;
+    }
+
+    async function init() {
+      const estado = document.getElementById('estado-js');
+      const visoresArmados = initNavVisores();
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduced) {
+        estado.textContent = 'JS: reduced-motion activo → texto y tira en flujo normal (sin riel). Visores Nav-Ranger fijos en el primer fotograma.';
+        return;
+      }
+
+      let gsap, ScrollTrigger;
+      try {
+        ({ gsap } = await import('../js/vendor/gsap@3.13.0/gsap.mjs'));
+        ({ ScrollTrigger } = await import('../js/vendor/gsap@3.13.0/ScrollTrigger.mjs'));
+      } catch (err) {
+        estado.textContent = `JS: GSAP no cargó → texto y tira en flujo normal (sin riel). Visores Nav-Ranger: ${visoresArmados} ciclando igual (no dependen de GSAP).`;
+        console.warn('[spike-tira] GSAP no disponible', err);
+        return;
+      }
+      gsap.registerPlugin(ScrollTrigger);
+      document.body.classList.add('js-armado');
+
+      const instancias = [];
+
+      function armar(riel) {
+        const datos = [...riel.querySelectorAll('.tira-datos-item')];
+        const frames = [...riel.querySelectorAll('.tira-frame')];
+        const pista = riel.querySelector('[data-pista]');
+        const tiraViewport = riel.querySelector('.tira-fotogramas');
+        const progreso = riel.querySelector('[data-progreso]');
+        const total = datos.length;
+        if (total < 2 || frames.length !== total) return null;
+
+        riel.classList.add('is-armada');
+        riel.style.setProperty('--riel-alto-t', `${window.innerHeight * total}px`);
+
+        datos.forEach((el, n) => el.classList.toggle('activa', n === 0));
+        frames.forEach((el, n) => el.classList.toggle('activa', n === 0));
+        if (progreso) progreso.textContent = `1 / ${total}`;
+
+        // Distancia real de la tira (para que el desplazamiento horizontal
+        // coincida con el ancho real de los fotogramas, no un valor fijo).
+        const distancia = pista.scrollWidth - tiraViewport.clientWidth;
+
+        const trigger = ScrollTrigger.create({
+          trigger: riel,
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: 0.3,
+          onUpdate(self) {
+            if (distancia > 0) {
+              gsap.set(pista, { x: -distancia * self.progress });
+            }
+            const idx = Math.round(self.progress * (total - 1));
+            datos.forEach((el, n) => el.classList.toggle('activa', n === idx));
+            frames.forEach((el, n) => el.classList.toggle('activa', n === idx));
+            if (progreso) progreso.textContent = `${idx + 1} / ${total}`;
+          },
+        });
+        return { riel, trigger };
+      }
+
+      document.querySelectorAll('[data-riel-t]').forEach((riel) => {
+        const inst = armar(riel);
+        if (inst) instancias.push(inst);
+      });
+
+      estado.textContent = (instancias.length
+        ? `JS: GSAP armado — ${instancias.length} tira(s) con texto sincronizado.`
+        : 'JS: GSAP cargó pero ninguna tira tuvo suficientes escenas para armar riel.')
+        + ` Visores Nav-Ranger: ${visoresArmados} ciclando.`;
+
+      let resizeTimer;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          instancias.forEach(({ trigger, riel }) => {
+            trigger.kill();
+            riel.classList.remove('is-armada');
+          });
+          instancias.length = 0;
+          document.querySelectorAll('[data-riel-t]').forEach((riel) => {
+            const inst = armar(riel);
+            if (inst) instancias.push(inst);
+          });
+          ScrollTrigger.refresh();
+        }, 200);
+      });
+    }
+    init();
+  </script>
+</body>
+
+</html>
