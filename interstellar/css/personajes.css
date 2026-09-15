@@ -54,10 +54,10 @@ body:not(.home) main > section.portada-tripulacion:first-child p {
 /* --- Grilla a lo ANCHO: tarjetas grandes, poster-vertical, image-forward.
    BUGFIX: `auto-fit` dejaba el número de columnas a merced del ancho
    disponible (5, a veces 4) — con 6 tarjetas, la última fila quedaba con UNA
-   sola tarjeta huérfana. Se fija a exactamente 2 columnas en desktop (3
-   filas parejas, sin huérfanas) y 1 en mobile — tarjetas más grandes de
-   paso, más cerca de "ocupan el ancho de la pantalla" que 5 columnas
-   angostas. --- */
+   sola tarjeta huérfana. 6 se divide parejo por 1, 2 y 3: mobile 1 columna,
+   tablet 2, desktop 3 — las 6 fichas entran en dos filas de tres, visibles
+   casi de punta a punta en una pantalla de escritorio sin quedar ninguna
+   sola. --- */
 .portada-tripulacion .galeria-grid {
   list-style: none;
   width: min(100% - 2.5rem, 75rem);
@@ -71,6 +71,12 @@ body:not(.home) main > section.portada-tripulacion:first-child p {
 @media (min-width: 40rem) {
   .portada-tripulacion .galeria-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 64rem) {
+  .portada-tripulacion .galeria-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
