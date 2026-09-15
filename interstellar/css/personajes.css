@@ -16,54 +16,62 @@
    6 personajes, clickeables, a pantalla casi completa. El <h1>Personajes</h1>
    de esta sección es el UNICO <h1> de toda la página (contrato 008 C1).
 
-   Ajuste posterior (mismo feature 008): la portada se alinea al lenguaje
-   visual del hub de Mundos (css/mundos.css `.mundos-intro`/`.mundos-grid`/
-   `.mundo-tarjeta*`) — tarjetas altas a todo el ancho, zoom + brillo al
-   hover/foco, texto que se desliza hacia arriba y una barra de acento que
-   "barre" desde la izquierda en `--color-gargantua` (el único color saturado
-   del sitio — mismo acento que usa Mundos, el nav y el resto del cockpit; no
-   se introduce un segundo color saturado). Estructura textual PORTADA de
+   Ajuste posterior (mismo feature 008): la portada toma el lenguaje visual
+   del hub de Mundos (css/mundos.css `.mundos-grid`/`.mundo-tarjeta*`) para
+   las TARJETAS — grandes, zoom + brillo al hover/foco, texto que se desliza
+   hacia arriba y una barra de acento que "barre" desde la izquierda en
+   `--color-gargantua` (el único color saturado del sitio — mismo acento que
+   usa Mundos, el nav y el resto del cockpit; no se introduce un segundo
+   color saturado). El H1/subtítulo, en cambio, NO copian el ancho angosto
+   de `.mundos-intro` (46rem): quedan alineados al mismo margen de lectura
+   que el resto de las secciones de esta página (`personaje-texto`, etc.),
+   no pegados al borde de la pantalla. Estructura de tarjeta PORTADA de
    `.mundo-tarjeta`, adaptada al markup existente (figure > a > img +
    figcaption) para no romper el HTML de esta página.
    --------------------------------------------------------------------------- */
-/* --- Intro: mismo peso que `body.mundos-hub .mundos-intro`. La regla
-   genérica (`body:not(.home) main > section:first-child`, layout.css §10)
-   limita la SECCIÓN a max-width:60rem y le pone padding-inline — bien para
-   una intro de solo texto, pero acá adentro también vive el grid a todo el
-   ancho (igual que en Mundos, donde `.mundos-grid` NO vive dentro de
-   `.mundos-intro`). Se libera la sección del todo (max-width/padding-inline
-   a 0) y el ancho de lectura + el gutter lateral se lo damos al h1/p
-   directamente; el grid pone su PROPIO gutter vía la fórmula de `width`. */
+/* --- Intro: la regla genérica (`body:not(.home) main > section:first-child`,
+   layout.css §10) limita la SECCIÓN a max-width:60rem + padding-inline —
+   bien para una intro de solo texto, pero acá adentro también vive el grid
+   a todo el ancho (a diferencia de Mundos, donde `.mundos-grid` es HERMANO
+   de `.mundos-intro`, no hijo). Se libera la sección (max-width/padding a
+   0) para que el grid respire, y el h1/p reproducen el mismo ancho de
+   lectura + centrado que la regla genérica les daba — sin eso, quedaban
+   pegados al borde izquierdo de la pantalla en vez de alineados con el
+   resto de las secciones. Tamaño/tipografía del h1 SIN cambios: el mismo
+   clamp genérico que usa cualquier otra página, no el más grande de Mundos. */
 body:not(.home) main > section.portada-tripulacion:first-child {
   max-width: none;
   padding-inline: 0;
 }
 
-body:not(.home) main > section.portada-tripulacion:first-child h1 {
-  max-width: 46rem;
-  padding-inline: 1.25rem;
-  font-size: clamp(2rem, 6vw, 3.5rem);
-  letter-spacing: 0.06em;
-  text-shadow: 0 0 1.5rem var(--color-fondo);
-}
-
+body:not(.home) main > section.portada-tripulacion:first-child h1,
 body:not(.home) main > section.portada-tripulacion:first-child p {
-  max-width: 46rem;
+  max-width: 60rem;
+  margin-inline: auto;
   padding-inline: 1.25rem;
-  font-size: clamp(1rem, 2vw, 1.15rem);
 }
 
 /* --- Grilla a lo ANCHO: tarjetas grandes, poster-vertical, image-forward.
-   Copia 1:1 de la estructura de `.mundos-grid`/`.mundo-tarjeta` (mismos
-   valores), adaptada al markup figure>a>img+figcaption de esta página. --- */
+   BUGFIX: `auto-fit` dejaba el número de columnas a merced del ancho
+   disponible (5, a veces 4) — con 6 tarjetas, la última fila quedaba con UNA
+   sola tarjeta huérfana. Se fija a exactamente 2 columnas en desktop (3
+   filas parejas, sin huérfanas) y 1 en mobile — tarjetas más grandes de
+   paso, más cerca de "ocupan el ancho de la pantalla" que 5 columnas
+   angostas. --- */
 .portada-tripulacion .galeria-grid {
   list-style: none;
-  width: min(100% - 2.5rem, 90rem);
+  width: min(100% - 2.5rem, 75rem);
   margin: 1rem auto 4rem;
   padding: 0;
   display: grid;
   gap: clamp(0.75rem, 1.5vw, 1.4rem);
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 40rem) {
+  .portada-tripulacion .galeria-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .portada-tripulacion .galeria-grid > li {
