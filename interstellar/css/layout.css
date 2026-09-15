@@ -728,13 +728,70 @@ header nav ul ul a {
   }
 }
 
+/* ---------------------------------------------------------------------------
+   4c-bis. Franja de notebook (60-97rem): teclas comprimidas
+   ---------------------------------------------------------------------------
+   BUGFIX (notebook con 8 ejes): las 8 teclas del nav (INICIO/MUNDOS/
+   PERSONAJES/LA CIENCIA/EL VIAJE/GALERIA/MINIJUEGOS/TRAILER) a tamano
+   completo (`font-size: 1rem` + padding 0.95rem) necesitan ~1114px de
+   contenido — y a partir de 75rem la placa de marca le suma otros ~304px de
+   reserva (`padding-inline: 9.5rem`), asi que en los hechos hacen falta
+   ~1484px para que entren en una sola fila CON la placa. Por debajo de eso
+   (960px a ~1484px — 1366/1440px de notebook tipica caen de lleno ahi) el
+   `flex-wrap` de `header nav > ul` las envolvia a una segunda fila, y con el
+   aviso de spoiler activo el rotulo `.spoiler-rotulo` (pensado para una sola
+   fila) quedaba pisando esa segunda fila. Se comprime tecla/tipografia en
+   TODA esta franja — no solo hasta 75rem — para que entren en una fila
+   conviviendo con la placa de marca; recien a partir de 97rem vuelven a su
+   tamano pleno, que es donde sobra lugar de verdad.
+   --------------------------------------------------------------------------- */
+@media (min-width: 60rem) and (max-width: 96.99rem) {
+  header nav > ul {
+    gap: 0.25rem 0.1rem;
+  }
+
+  header nav > ul > li > a {
+    padding: 0.68rem 0.08rem 0.68rem 0.55rem;
+    font-size: 0.78rem;
+  }
+
+  header nav > ul > li:not(:has(> button)) > a {
+    padding-right: 0.55rem;
+  }
+
+  header nav > ul > li > a::before {
+    width: 5px;
+    height: 5px;
+    margin-right: 0.35rem;
+  }
+
+  header nav > ul > li > button {
+    padding: 0.28rem 0.25rem;
+    margin: 0 0.15rem 0 0;
+    font-size: 0.52rem;
+  }
+
+  /* Con el aviso de spoiler activo, `.spoiler-rotulo` (60rem+, ver mas abajo)
+     ocupa el hueco izquierdo igual que a 75rem+ ocupa la placa de marca — hay
+     que reservarle aire para que no pise la primera tecla (INICIO). El propio
+     rotulo se achica en esta franja (override mas abajo, DESPUES de la regla
+     base de `.spoiler-rotulo`, para ganarle por orden de cascada — misma
+     especificidad) para que la reserva no fuerce de nuevo el wrap a 2 filas en
+     los anchos mas ajustados (~1024px). */
+  body.spoiler-alerta header nav > ul {
+    padding-left: 5.5rem;
+  }
+}
+
 /* A partir de ~1200px ya hay lugar para la placa de marca (Interstellar /
-   NAV·RANGER) a la izquierda de la banda sin apretar la fila de teclas: vuelve,
-   con sus dos LED (SYS/PWR), y se reserva aire simetrico en el <ul> para que la
-   fila siga centrada de verdad. Debajo de este ancho la banda queda solo con
-   las teclas. EXCEPCION `body.spoiler-alerta`: ese hueco izquierdo lo ocupa
-   `.spoiler-rotulo` (ver mas abajo), asi que ahi la placa sigue oculta hasta
-   descartar el aviso. */
+   NAV·RANGER) a la izquierda de la banda: vuelve, con sus dos LED (SYS/PWR), y
+   se reserva aire simetrico en el <ul> para que la fila siga centrada de
+   verdad. Debajo de este ancho la banda queda solo con las teclas. OJO: esto
+   NO alcanza para que la fila de 8 teclas quepa a tamano PLENO junto a la
+   placa — las teclas siguen comprimidas (bloque "4c-bis") hasta 97rem, que es
+   donde de verdad sobra lugar. EXCEPCION `body.spoiler-alerta`: ese hueco
+   izquierdo lo ocupa `.spoiler-rotulo` (ver mas abajo), asi que ahi la placa
+   sigue oculta hasta descartar el aviso. */
 @media (min-width: 75rem) {
   body:not(.spoiler-alerta) .cockpit-brand {
     display: flex;                     /* revierte el display:none de 60-75rem; la placa es flex-column */
@@ -1203,6 +1260,22 @@ body.spoiler-alerta .cockpit-brand-linea::before {
     white-space: nowrap;
     color: color-mix(in srgb, var(--led-alerta) 82%, var(--color-texto));
     text-shadow: 0 0 8px color-mix(in srgb, var(--led-alerta) 40%, transparent);
+  }
+}
+
+/* Version compacta del rotulo SOLO en la franja de notebook 60-97rem (ver
+   bloque "4c-bis" mas arriba): misma regla base de arriba, pero mas angosta,
+   para que la reserva de `padding-left` en `header nav > ul` no fuerce el
+   wrap a 2 filas en los anchos mas ajustados de esa franja (~1024px). Va
+   DESPUES de la regla base a proposito: misma especificidad, gana por orden
+   de cascada. */
+@media (min-width: 60rem) and (max-width: 96.99rem) {
+  body.spoiler-alerta .spoiler-rotulo {
+    left: 0.75rem;
+    padding: 0.22rem 0.35rem;
+    font-size: 0.58rem;
+    letter-spacing: 0.14em;
+    gap: 0.35rem;
   }
 }
 

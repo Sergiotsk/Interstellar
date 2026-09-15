@@ -256,11 +256,17 @@ body.js-armado .riel-tira.is-armada .tira-datos {
 }
 
 .tira-datos-item {
-  padding: clamp(1.5rem, 5vw, 4rem);
+  /* Vertical MAS chico que horizontal (BUGFIX): el panel mide 30% de un
+     `100vh` con `overflow: hidden` — un padding vertical tan generoso como el
+     horizontal (ambos a 4rem) se comia el alto disponible incluso en un
+     monitor 1080p a pantalla completa (30% de 1080px = 324px, y el contenido
+     con el padding/tipografia viejos necesitaba ~378px). Ver tambien el ajuste
+     dedicado para notebooks bajitas mas abajo (≤50rem de alto). */
+  padding: clamp(1rem, 3vw, 2rem) clamp(1.5rem, 5vw, 4rem);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 0.9rem;
+  gap: 0.7rem;
   max-width: 46rem;
   margin: 0 auto;
 }
@@ -295,18 +301,18 @@ body.js-armado .riel-tira.is-armada .tira-datos-item > * {
 
 .tira-datos-item h3 {
   margin: 0;
-  font-size: clamp(1.35rem, 3.2vw, 2.1rem);
+  font-size: clamp(1.3rem, 2.6vw, 1.8rem);
 }
 
 .tira-datos-item p {
   color: var(--color-texto-atenuado);
-  line-height: 1.75;
+  line-height: 1.6;
   margin: 0;
 }
 
 .tira-datos-dato {
-  margin-top: 0.5rem;
-  padding: 0.9rem 1.15rem;
+  margin-top: 0.4rem;
+  padding: 0.7rem 1.15rem;
   border-left: 3px solid var(--color-gargantua);
   background: color-mix(in srgb, var(--color-gargantua) 8%, transparent);
   font-family: var(--font-texto);
@@ -423,6 +429,55 @@ body.js-armado .riel-tira.is-armada .tira-progreso {
   .tira-frame {
     max-width: calc(100vw - 2.5rem); /* tope real: nunca más ancho que la pantalla */
     aspect-ratio: 4 / 3;             /* menos panorámico: cabe mejor en el alto disponible */
+  }
+}
+
+/* Notebook (ancho de escritorio, ALTO bajo — ~768-900px, sin monitor externo):
+   BUGFIX — el panel de datos mide 30% de un `100vh` y `.tira-datos-item` tiene
+   `overflow: hidden`, pero su padding usa `clamp(1.5rem, 5vw, 4rem)` — crece
+   con el ANCHO, no con el alto. En una notebook ancha y baja ese padding
+   queda casi en su tope (4rem) justo cuando el 30% de alto es mas chico
+   (~230px a 768px), y el contenido (label + h3 + parrafo + tarjeta de "dato
+   curioso") no entra — la tarjeta de dato curioso, al ir ultima, es la que se
+   ve recortada. Se agranda la porcion del panel de datos (30% -> 40%) y se
+   achica tipografia/padding, esta vez en funcion del ALTO disponible — con
+   margen real, no al limite exacto del contenido medido. */
+@media (min-width: 48.01rem) and (max-height: 56.25rem) {
+  body.js-armado .riel-tira.is-armada .tira-datos {
+    height: 40%;
+  }
+
+  body.js-armado .riel-tira.is-armada .tira-fotogramas {
+    height: 60%;
+  }
+
+  .tira-datos-item {
+    padding: clamp(0.75rem, 2.2vw, 1.5rem) clamp(1.25rem, 4vw, 2.5rem);
+    gap: 0.4rem;
+  }
+
+  .tira-datos-label {
+    font-size: 0.66rem;
+  }
+
+  .tira-datos-item h3 {
+    font-size: clamp(1rem, 2vw, 1.35rem);
+  }
+
+  .tira-datos-item p {
+    font-size: 0.82rem;
+    line-height: 1.4;
+  }
+
+  .tira-datos-dato {
+    margin-top: 0.25rem;
+    padding: 0.45rem 0.7rem;
+    font-size: 0.74rem;
+  }
+
+  .tira-datos-dato strong {
+    font-size: 0.6rem;
+    margin-bottom: 0.15rem;
   }
 }
 
