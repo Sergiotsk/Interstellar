@@ -1,25 +1,72 @@
 <!--
 SYNC IMPACT REPORT
-Version change: 1.0.0 -> 1.1.0
-Rationale: Enmienda a la seccion "Restricciones Tecnicas y Convenciones". Se reemplaza el
-hosting: Vercel -> GitHub Pages, con deploy via GitHub Actions en cada push a `main`. El
-sitio pasa a servirse bajo el subpath `/Interstellar/`, por lo que se eleva a regla dura
-la exigencia de rutas internas relativas. Ningun principio (I-VI) cambia; por eso el bump
-es MINOR y no MAJOR.
+Version change: 2.2.0 -> 2.3.0
+Rationale: Enmienda a "Principio I" y a "Restricciones Tecnicas / Assets + Estructura de
+carpetas". Habilita un pipeline LOCAL y OFFLINE de optimizacion de imagenes (script en
+`tools/`, dependencias de tooling solo-desarrollo como sharp) sin tocar el "sin build" del
+pipeline de publicacion. Expande guia material, no redefine ningun principio core -> bump
+MINOR.
 
 Cambios de esta version:
-  - "Restricciones Tecnicas y Convenciones" -> bloque **Hosting** reescrito (GitHub Pages).
-  - Se agrega referencia a .github/workflows/deploy-pages.yml y al archivo .nojekyll.
+  - "Principio I / Sin paso de build": se aclara que "sin paso de build" acota al pipeline
+    de PUBLICACION (GitHub Actions publica tal cual). Un script de mantenimiento que corre
+    local, fuera de CI, con outputs commiteados, NO es un paso de build y esta permitido.
+  - "Principio I": nuevo parrafo "Dependencias de tooling (solo desarrollo)" -> se permite
+    un set acotado de devDependencies (p. ej. sharp para procesar imagenes) que NO se
+    envian al navegador ni participan del runtime del sitio; no relajan ninguna prohibicion
+    de framework/preprocesador.
+  - "Restricciones Tecnicas / Assets": "optimizadas a WebP ... a mano" -> la optimizacion a
+    WebP + el resize PUEDEN hacerse con un script local cuyos resultados (`.webp` + fallback
+    en el formato original) se commitean y se sirven tal cual; "a mano" deja de ser
+    obligatorio. Se sirve WebP con respaldo (queda sin efecto la nota "solo JPEG" de
+    `assets/img/CREDITOS.md`, 2026-08-28). Los originales sin optimizar NO se versionan
+    (siguen locales / gitignored, politica existente); para imagenes sin original guardado,
+    la version servida actual es la fuente.
+  - "Restricciones Tecnicas / Estructura de carpetas": se suma `/tools` (scripts de
+    mantenimiento del repo, Node ESM, corren local) y se documenta `/assets/_source`
+    (originales, LOCAL / gitignored).
+
+Historial anterior:
+  - 2.2.0 (2026-09-08): Diseno -> regla de legibilidad del cuerpo (negritas `<strong>` para
+    conceptos clave; parrafos de mas de dos lineas alineados a la izquierda, nunca centrados
+    ni justificados). Implementado en `css/base.css` (`strong, b`) y `css/layout.css` /
+    `css/mundos.css`.
+  - 2.1.0 (2026-09-03): Diseno -> segundo acento saturado acotado a la capa de interfaz
+    de nave; tipografia via `@font-face` (se retira Google Fonts). (Detalle abajo.)
+  - "Restricciones Tecnicas / Diseno": "el naranja de Gargantua como unico acento saturado"
+    -> "dos acentos saturados, uno por capa" (Gargantua = contenido narrativo; teal `#4fd0e0`
+    = capa de interfaz de nave / cockpit, no baja al contenido; ambar y rojo = LED de
+    estado/alerta puntuales dentro de esa capa).
+  - "Restricciones Tecnicas / Diseno": "Tipografia via Google Fonts (`<link>`)" -> "self-
+    hosted via `@font-face` desde `assets/fonts/` (woff2 subset latin); sin `<link>` a
+    servicios de terceros".
 
 Historial:
   - 1.0.0 (2026-08-27): Primera ratificacion. Principios I-VI y las tres secciones
     definidas a partir de proyecto-interstellar-base.md.
+  - 1.1.0 (2026-08-29): Hosting Vercel -> GitHub Pages (Actions), subpath /Interstellar/,
+    rutas internas relativas como regla dura.
+  - 1.2.0 (2026-09-02): Arquitectura CSS de 4 hojas (reset -> variables -> base -> layout),
+    cargadas en orden como `<link>` independientes, sin `@import`.
+  - 2.0.0 (2026-09-03): Principio I redefinido -> se permiten librerias de proposito
+    acotado, sin paso de build. Autorizacion de la catedra.
+  - 2.1.0 (2026-09-03): Diseno -> segundo acento saturado acotado a la capa de interfaz
+    de nave (teal `#4fd0e0` para el cockpit: header/footer/LEDs); tipografia self-hosted
+    (`@font-face`), se retira la mencion a Google Fonts.
+  - 2.2.0 (2026-09-08): Diseno -> regla de legibilidad del cuerpo (negritas `<strong>`
+    para conceptos clave; parrafos de mas de dos lineas alineados a la izquierda, nunca
+    centrados ni justificados).
+  - 2.3.0 (2026-09-08): Principio I + Assets -> se habilita un pipeline local/offline de
+    optimizacion de imagenes (script en `tools/`, devDependencies de tooling como sharp);
+    "sin paso de build" queda acotado al deploy; se sirve WebP con respaldo; `/tools` sumado
+    a la estructura de carpetas, `/assets/_source` documentado (LOCAL / gitignored). Los
+    originales NO se versionan.
 
 Follow-up / consistencia (fuera del alcance de este comando):
-  - specs/001-shared-layout-hero/quickstart.md y research.md -> mencionan "Vercel" como
-    ejemplo de hosting. Feature 001 ya cerrada; se corrige el texto por prolijidad.
-  - .specify/templates/plan-template.md -> el "Constitution Check" no referencia hosting;
-    no requiere cambios.
+  - specs/001-005 mencionan reglas del Principio I viejo; features cerradas, no se tocan.
+  - La primera feature que sume una libreria crea `js/vendor/` y fija el patron
+    `<lib>@<version>/`.
+  - La enmienda 2.3.0 la ejerce la feature 007 (optimizacion de imagenes + `<picture>`/WebP).
 
 TODOs deferidos: ninguno.
 -->
@@ -33,23 +80,61 @@ DEBE respetar.
 
 ## Core Principles
 
-### I. Stack Vanilla, Sin Frameworks
+### I. Stack Vanilla, Librerias con Criterio
 
-El sitio se construye unica y exclusivamente con **HTML5 semantico, CSS puro y JavaScript
-ES6+**. Estan PROHIBIDOS los frameworks y librerias de terceros: sin React, Preact, Angular,
-Astro, Tailwind, TypeScript, jQuery, ni ninguna dependencia de runtime. La interactividad,
-los efectos y los minijuegos se resuelven con **APIs nativas del navegador** (Canvas 2D,
-Intersection Observer, localStorage, Fetch, Web Audio).
+El nucleo del sitio se construye con **HTML5 semantico, CSS puro y JavaScript ES6+ escrito
+a mano como ES Modules**. Ese nucleo no se negocia: la interactividad y los efectos parten
+de las **APIs nativas del navegador** (Canvas 2D, Intersection Observer, localStorage,
+Fetch, Web Audio) y se suma una libreria SOLO cuando resuelve un problema que la plataforma
+no cubre bien.
 
-No hay paso de build: sin bundler, sin transpilacion, sin minificacion automatizada, sin
-autoprefixer. Los archivos que se escriben son los que se sirven. Unica dependencia externa
-por red permitida: **Google Fonts via `<link>`** y **embeds de video via `<iframe>`**
-(YouTube). Se asume JavaScript habilitado en el navegador; la degradacion sin-JS no es un
-objetivo del proyecto.
+**Librerias de terceros PERMITIDAS** (autorizacion de la catedra, 2026-09-03), de proposito
+acotado y usadas DESDE el JavaScript propio: animacion, render WebGL/Canvas, motor de juego
+2D, audio, particulas. Ejemplos orientativos, NO lista cerrada: GSAP/ScrollTrigger,
+three.js, OGL, PixiJS, Phaser, Howler, Lottie, tsParticles. Toda feature que introduzca una
+libreria DEBE justificar en su spec: (a) que problema resuelve, (b) por que no se hace
+razonablemente con plataforma nativa, (c) su peso en KB gzip y su impacto en LCP/TBT,
+(d) en que pagina(s) carga (nunca global si solo la usa una pagina).
 
-**Razon**: la catedra evalua el dominio de los fundamentos web y la efectividad dirigiendo
-IA, no el uso de abstracciones. Cada capacidad debe salir de la plataforma, no de una
-libreria.
+**PROHIBIDO**: frameworks de aplicacion o de UI (React, Preact, Vue, Angular, Svelte,
+Solid, Astro, Lit); frameworks CSS y utilidades atomicas (Tailwind, Bootstrap); TypeScript;
+preprocesadores CSS (Sass, Less, PostCSS). No se adopta el modelo de componentes / JSX de
+ningun framework: el JS propio se escribe a mano.
+
+**Sin paso de build**: sin bundler, sin transpilacion, sin minificacion automatizada, sin
+autoprefixer. Las librerias se cargan como **ES Modules con version FIJADA (pinned)** desde
+un CDN de ESM mientras la feature esta en prototipo, y las **librerias criticas se
+VENDORIZAN** en `js/vendor/<lib>@<version>/` antes de cerrar la feature, para no depender de
+un CDN en runtime. Una libreria que se deja como ESM pinneado desde CDN en produccion tiene
+que explicar el motivo en su spec y asumir ese CDN como dependencia de runtime. Los
+archivos que se escriben o vendorizan son los que se sirven.
+
+"Sin paso de build" acota al **pipeline de publicacion**: GitHub Actions publica los
+archivos del repo tal cual, sin transformarlos. Un **script de mantenimiento del repo** que
+corre en la maquina del desarrollador, FUERA de CI, y cuyos resultados se commitean y se
+sirven sin cambios (p. ej. optimizar imagenes a WebP), NO es un paso de build: no hay build
+en el deploy y "lo que se lee en el repo es lo que corre" sigue valiendo. Estos scripts
+viven en `tools/` (Node ESM).
+
+**Dependencias de tooling (solo desarrollo)**: se permite un conjunto acotado de
+`devDependencies` en `package.json` para alimentar esos scripts de `tools/` — por ejemplo
+**sharp** para procesar imagenes. NO se envian al navegador, NO participan del runtime del
+sitio y NO se despliegan. Son distintas de las "librerias de terceros" de este principio
+(que son de runtime en el browser: animacion, canvas, juego, audio, particulas) y NO
+relajan ninguna prohibicion: siguen vetados los frameworks de app/UI, los frameworks CSS y
+los preprocesadores, tambien como tooling. Toda devDependency de tooling se justifica en la
+spec de la feature que la introduce (que hace, por que no alcanza con Node/plataforma).
+
+**Dependencias externas por red permitidas**: fuentes (Google Fonts via `<link>` o
+self-hosted), embeds de video via `<iframe>` (YouTube), y CDN de ESM solo durante el
+prototipo de una feature. Se asume JavaScript habilitado en el navegador; la degradacion
+sin-JS no es un objetivo del proyecto.
+
+**Razon**: la catedra autorizo el uso de librerias. Lo que se evalua sigue siendo el
+dominio de HTML semantico + CSS + JS vanilla y la efectividad dirigiendo IA. Una libreria
+entra para resolver un problema concreto, entendida y pesada (Principio IV) — no como
+sustituto de entender la plataforma. El "sin build" mantiene el sitio auditable: lo que se
+lee en el repo es lo que corre.
 
 ### II. HTML Semantico Primero
 
@@ -103,6 +188,12 @@ La **capa presentacional** —HTML semantico, CSS, animaciones de scroll, efecto
 puramente visuales— NO se testea con framework; se valida contra los **criterios de
 aceptacion** de la seccion "Flujo de Trabajo y Puertas de Calidad".
 
+El **glue de integracion de una libreria** de render, animacion o juego (montaje de escena,
+wiring de tweens, registro de callbacks visuales) es capa presentacional y se valida por
+aceptacion. La **logica que esa libreria dibuja** —estado del minijuego, scoring, condicion
+de victoria, maquinas de estado, calculos puros— sigue con **TDD estricto** aunque el
+render lo haga la libreria.
+
 **Razon**: el TDD protege donde hay ramas de decision y regresiones reales; forzarlo sobre
 markup y estilos seria sobreingenieria y contradice el alcance acotado del proyecto.
 
@@ -131,8 +222,12 @@ ante un evaluador que sepa del tema.
 ```
 /                 -> archivos .html (index.html, mundos.html, ...)
 /css              -> hojas de estilo
-/js               -> modulos JavaScript
-/assets/img       -> imagenes (locales, rutas relativas)
+/js               -> modulos JavaScript propios
+/js/vendor        -> librerias de terceros vendorizadas (`<lib>@<version>/`)
+/tools            -> scripts de mantenimiento del repo (Node ESM, corren local, NO en CI)
+/assets/img       -> imagenes optimizadas que se sirven (locales, rutas relativas)
+/assets/_source   -> originales sin optimizar; LOCAL, gitignored (ver .gitignore). Entrada
+                     opcional de los scripts de `tools/`; no todas las imagenes tienen original
 /assets/fonts     -> tipografias self-hosted (solo si no alcanza con Google Fonts)
 ```
 
@@ -140,25 +235,60 @@ ante un evaluador que sepa del tema.
 (`gargantua.html`, `campo-estrellas.js`, `hero-viaje.css`). Descriptivos por
 responsabilidad, nunca genericos (`quiz.js`, no `script2.js`).
 
-**CSS**: un `css/global.css` de base (variables, reset, header/nav/footer, utilidades) +
-un CSS especifico por pagina pesada cuando haga falta (`css/viaje.css`,
-`css/minijuegos.css`). Toda la paleta y todo valor reutilizable van como **variables CSS**
-en `:root`; nada hardcodeado suelto. Layout con Grid/Flexbox; responsive con media queries.
+**CSS**: **cuatro hojas globales de responsabilidad unica**, cargadas como `<link
+rel="stylesheet">` independientes en el `<head>` de cada pagina, SIEMPRE en este orden y
+sin `@import`:
+
+1. `css/reset.css` — reset y normalizacion entre navegadores. Selectores `:where()` para
+   mantener especificidad 0, de modo que cualquier hoja posterior lo sobreescriba sin
+   `!important`. Unica excepcion: el bloque `@media (prefers-reduced-motion: reduce)`, que
+   PUEDE exceder especificidad y usar `!important`. NO impone decisiones de diseno.
+2. `css/variables.css` — todos los tokens en `:root` (paleta, tipografia, foco, etc.).
+   Toda la paleta y todo valor reutilizable van aca; nada hardcodeado suelto.
+3. `css/base.css` — estilos base de elementos (tipografia de lectura, enlaces, listas) y el
+   espaciado vertical del contenido.
+4. `css/layout.css` — layout del sitio y componentes compartidos (header/nav/drawer, Hero,
+   footer, foco, secciones de eje, galeria, fichas).
+
+Cuando una pagina pesada lo justifique, se suma un CSS propio (`css/viaje.css`,
+`css/minijuegos.css`) cargado **despues** de las cuatro. Layout con Grid/Flexbox; responsive
+con media queries. **Sin framework CSS ni preprocesador** (Principio I): las cuatro hojas se
+escriben a mano.
 
 **JavaScript**: **ES Modules** (`<script type="module">`, `import`/`export`), un modulo por
 responsabilidad, cargado solo en la pagina que lo usa. Sin variables globales. El header
 (con el menu) y el footer se mantienen en un unico partial **inyectado por un modulo JS
-compartido** en cada pagina.
+compartido** en cada pagina. Las **librerias de terceros** (Principio I) viven vendorizadas
+en `js/vendor/<lib>@<version>/` y se importan por ruta relativa desde los modulos propios
+que las usan; se cargan solo en la(s) pagina(s) que las necesitan. Sin paso de build.
 
 **Diseno**: paleta de negros y azules profundos para el espacio, ocres y dorados para la
-Tierra, el naranja de Gargantua como unico acento saturado. Blancos rotos / crema para
-texto; nada de blancos puros. Backdrops oscurecidos (`filter: brightness(...)`) para
-legibilidad. Tipografia via Google Fonts (`<link>`). Efectos ambientales sutiles, sin
-recargar.
+Tierra. **Dos acentos saturados, uno por capa**: el naranja de Gargantua es el unico acento
+del **contenido narrativo** (ejes, fichas, licencia narrativa); el teal/cian de pantallas
+(`#4fd0e0`) es el acento de la **capa de interfaz de nave** — el "chrome" del cockpit:
+header, footer, LEDs, instrumentos — y **no baja al contenido**. Ambar y rojo quedan como
+LED de estado/alerta puntuales dentro de esa capa. Blancos rotos / crema para texto; nada
+de blancos puros. Backdrops oscurecidos (`filter: brightness(...)`) para legibilidad.
+Tipografia **self-hosted via `@font-face` desde `assets/fonts/` (woff2 subset latin); sin
+`<link>` a servicios de terceros**. Efectos ambientales sutiles, sin recargar.
 
-**Assets**: imagenes locales, referenciadas con rutas relativas, optimizadas a WebP y a
-resoluciones razonables a mano. **Acreditar la fuente de cada imagen es OBLIGATORIO**
-(NASA/ESA lo exigen; el resto queda prolijo).
+**Legibilidad del cuerpo**: los **conceptos relevantes** de cada parrafo se marcan con
+`<strong>` (semibold + color pleno, ya que el cuerpo va en crema atenuado) — con criterio,
+uno o dos por parrafo, no una lista de palabras subrayadas. El texto de lectura de **mas de
+dos lineas se alinea a la izquierda** con borde derecho irregular; **nunca centrado ni
+justificado**. Solo los titulos cortos, taglines de Hero y etiquetas de una linea pueden ir
+centrados.
+
+**Assets**: imagenes locales, referenciadas con rutas relativas, optimizadas a resoluciones
+razonables. La optimizacion (resize + conversion) PUEDE hacerse a mano o con un **script
+local de `tools/`** cuyos resultados se commitean y se sirven tal cual; se prefiere el
+script por reproducibilidad. Se sirve **WebP con un respaldo** en el formato original
+(deja sin efecto la nota "solo JPEG" de `assets/img/CREDITOS.md` del 2026-08-28). Los
+originales sin optimizar NO se versionan: siguen locales (`assets/_source/`, gitignored); si
+una imagen no tiene original guardado, la version servida actual es su fuente y se acepta
+una unica recompresion. **Acreditar la fuente de cada imagen es OBLIGATORIO** (NASA/ESA lo
+exigen; el resto queda prolijo); los derivados de una imagen (p. ej. su `.webp`) heredan el
+credito del original y NO se listan por separado.
 
 **Baseline**: navegadores evergreen, ultimas 2 versiones. Sin polyfills.
 
@@ -166,7 +296,8 @@ resoluciones razonables a mano. **Acreditar la fuente de cada imagen es OBLIGATO
 push a la rama principal (`main`). El workflow vive en
 `.github/workflows/deploy-pages.yml` y publica el contenido estatico de la raiz del repo
 (`*.html`, `css/`, `js/`, `assets/`); un archivo `.nojekyll` en la raiz desactiva el
-procesado Jekyll. Sin paso de build, sin configuracion extra.
+procesado Jekyll. Sin paso de build, sin configuracion extra: el workflow publica los
+archivos tal cual, incluido `js/vendor/`.
 
 El sitio se sirve bajo el subpath **`https://sergiotsk.github.io/Interstellar/`**. Por eso
 **toda ruta interna DEBE ser relativa** (`css/global.css`, `mundos.html#gargantua`), nunca
@@ -179,7 +310,7 @@ futuro se implementan rankings globales persistentes, la plataforma elegida es *
 (Firestore)** — y recien ahi se abre una spec para eso.
 
 **Fuera de alcance** (no hacer, es sobreingenieria para este TP): PWA, service workers, SEO
-avanzado, optimizacion extrema, i18n, ARIA avanzado, consumo de API en vivo, WebGL/Three.js.
+avanzado, optimizacion extrema, i18n, ARIA avanzado, consumo de API en vivo.
 
 ## Flujo de Trabajo y Puertas de Calidad
 
@@ -206,6 +337,12 @@ volumen de contenido. El umbral se define en esa spec, no se improvisa.
   semantico).
 - **No hay errores en la consola** del navegador.
 - **Links y assets cargan** correctamente (rutas relativas bien resueltas).
+- Las **hojas de estilo cargan en el orden definido** (§ CSS): `reset -> variables -> base
+  -> layout`, y el CSS propio de la pagina despues.
+- Si la pagina incorpora una **libreria de terceros** (Principio I): esta **justificada en
+  su spec** (problema que resuelve, peso en KB gzip, paginas donde carga) y **vendorizada**
+  en `js/vendor/` — o, si queda como ESM pinneado desde CDN, la spec explica por que. Sin
+  paso de build.
 - Respeta la **paleta y la tipografia** definidas (via variables CSS).
 - Los textos de ciencia estan **verificados contra fuente** y **etiquetados** (Principio VI).
 - Para modulos de logica JS involucrados: sus **tests estan en verde** (Principio V).
@@ -237,4 +374,4 @@ en las specs colgadas si corresponde.
 criterios de aceptacion y los principios antes de considerarse cerrada. El agente reporta
 desvios de forma explicita en vez de resolverlos por su cuenta.
 
-**Version**: 1.1.0 | **Ratified**: 2026-08-27 | **Last Amended**: 2026-08-29
+**Version**: 2.3.0 | **Ratified**: 2026-08-27 | **Last Amended**: 2026-09-08

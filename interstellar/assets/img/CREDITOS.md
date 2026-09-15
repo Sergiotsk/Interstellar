@@ -20,6 +20,9 @@ catálogo en la columna "Fuente").
   dependencias, Principio I). La referencia relativa usa la extension real del archivo;
   la conversion a WebP se podra realizar en una ronda posterior con herramienta externa
   (fuera del repo) si el evaluador lo exige.
+  - **Excepcion `terra-orbita.webp`** (portada de Tierra, beat 1): se usa WebP porque
+    necesita **canal alpha** — el planeta va recortado sobre el campo estelar `.cielo`,
+    y JPEG no tiene transparencia. Derivado de la imagen GOES (recorte por luminancia).
 - **Estado**: `descargado` = archivo presente en `assets/img/` · `pendiente` = planificado,
   sin descargar (la tarea T008 registra lo pendiente sin inventar URLs ni archivos falsos).
 - Ninguna URL de imagen se hardcodea en codigo; el HTML futuro referencia los archivos
@@ -34,6 +37,11 @@ catálogo en la columna "Fuente").
 | mundos-tierra | `mundos-tierra.jpg` | NASA Image Library | https://images.nasa.gov/details/GSFC_20171208_Archive_e001788 | Dominio publico (NASA) | "NASA (Blue Marble 2012)" | descargado |
 | personajes-astronauta | `personajes-astronauta.jpg` | NASA Image Library | https://images.nasa.gov/details/iss054e022823 | Dominio publico (NASA) | "NASA (astronauta Scott Tingle)" | descargado |
 | viaje-pilares | `viaje-pilares-de-creacion.jpg` | NASA Image Library / ESA-Hubble | https://images.nasa.gov/details/GSFC_20171208_Archive_e000842 | Dominio publico con creditos (NASA/ESA Hubble) | "NASA, ESA/Hubble" | descargado |
+| mundo-portada-tierra-goes | `terra-orbita.webp` | NASA GSFC — GOES Project (satelite GOES-13, disco completo) | _pendiente: confirmar enlace de origen_ | Dominio publico (imagen de satelite NOAA/NASA) | "NASA/NOAA (GOES Project)" | descargado |
+| mundo-portada-terra-granja | `terra-granja.jpg` | cap-that.com — galeria Interstellar (2014) | https://cap-that.com/ (galeria Interstellar 2014) | Material de la pelicula, uso academico con atribucion | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
+| mundo-portada-terra-maizal | `terra-maizal.jpg` | cap-that.com — galeria Interstellar (2014) | https://cap-that.com/ (galeria Interstellar 2014) | Material de la pelicula, uso academico con atribucion | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
+| mundo-portada-terra-tormenta | `terra-tormenta.jpg` | cap-that.com — galeria Interstellar (2014) | https://cap-that.com/ (galeria Interstellar 2014) | Material de la pelicula, uso academico con atribucion | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
+| mundo-portada-terra-abandonada | `terra-abandonada.jpg` | cap-that.com — galeria Interstellar (2014) | https://cap-that.com/ (galeria Interstellar 2014) | Material de la pelicula, uso academico con atribucion | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
 | mundos-gargantua | `mundos-gargantua.jpg` | FILMGRAB (film-grab.com) — archivo de fotogramas | https://film-grab.com/2015/04/17/interstellar/ | Material de la pelicula, uso academico con atribucion (research.md D2; politica del catalogo base) | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
 | mundos-miller | `mundos-miller.jpg` | FILMGRAB (film-grab.com) — archivo de fotogramas | https://film-grab.com/2015/04/17/interstellar/ | Material de la pelicula, uso academico con atribucion (research.md D2; politica del catalogo base) | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
 | mundos-mann | `mundos-mann.jpg` | FILMGRAB (film-grab.com) — archivo de fotogramas | https://film-grab.com/2015/04/17/interstellar/ | Material de la pelicula, uso academico con atribucion (research.md D2; politica del catalogo base) | "© Warner Bros. Pictures / Paramount Pictures" | descargado |
@@ -159,7 +167,7 @@ catálogo en la columna "Fuente").
 
 Orbitron y Exo 2 (variable fonts, subset latin) se sirven LOCAL desde
 `assets/fonts/` (`orbitron-latin-var.woff2` 11,8 KB, `exo2-latin-var.woff2` 40,9 KB)
-via `@font-face` en `css/global.css` (seccion 0). Antes venian de Google Fonts con
+via `@font-face` en `css/variables.css` (seccion 0). Antes venian de Google Fonts con
 un `<link>` en cada `<head>`; se saco para eliminar un request bloqueante de ~780 ms
 y la dependencia de un tercero (PageSpeed). Ambas fuentes son **SIL Open Font License
 1.1** — su redistribucion self-hosted esta permitida. Descargadas del CDN de Google

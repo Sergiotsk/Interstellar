@@ -6,10 +6,13 @@
 import { NavConfig } from './nav-data.js';
 import { createSubmenuState } from './submenu-state.js';
 
-const CREDITS = 'Interstellar — sitio académico de fan, sin fines de lucro.';
 const REPO_URL = 'https://github.com/Sergiotsk/Interstellar.git';
-// La atribución por asset ya NO vive en el pie: se movió a creditos.html
-// (módulo js/creditos.js). El pie solo enlaza esa página + el repo.
+const SITE_URL = 'https://sergiotsk.github.io/Interstellar/';
+// El pie es una consola de TECLAS cortas: enlaza creditos.html, el repo, la
+// página de contacto y suma teclas para compartir el sitio (WhatsApp/Facebook
+// como enlaces de "share"; "Compartir" usa la Web Share API, solo si existe).
+// El disclaimer completo ("sitio académico de fan, sin fines de lucro") vive en
+// creditos.html; la atribución por asset también (módulo js/creditos.js).
 
 function escapeHtml(value) {
   return String(value)
@@ -41,17 +44,25 @@ function buildTopLevelItem(item) {
 
 export function buildHeader(navConfig = NavConfig) {
   const items = navConfig.items.map(buildTopLevelItem).join('\n');
+  // Marca del header: enlace al inicio con aspecto de placa de instrumento en la
+  // banda. Antes era `header::after` (pseudo, no enlazable); es un <a> real para
+  // que sea navegable y accesible (aria-label da el destino). Dos lineas:
+  //   1. `.cockpit-marca` -> "Interstellar" (la marca).
+  //   2. `.cockpit-brand-linea` -> los dos LED (SYS/PWR) + "NAV · RANGER".
+  // Visible <60rem (en escritorio la fila de nav ocupa el centro; la placa
+  // vuelve a la izquierda a partir de ~68rem, salvo con el aviso de spoiler
+  // activo). El sufijo " · RANGER" se oculta en pantallas muy angostas.
+  //
   // Boton CASE: menu-hamburguesa "girado" a 4 barras VERTICALES (guiño al robot
-  // de la pelicula). Abre/cierra el drawer de navegacion en TODOS los viewports
-  // (ya no hay barra horizontal de escritorio). Las 4 <span> internas son
-  // DECORATIVAS (el <span.case-icon> lleva aria-hidden): el nombre accesible del
-  // control lo da el aria-label; el icono se dibuja por completo con CSS.
-  // Vive FUERA del <nav>
-  // (primer hijo del <header>, antes del <nav>) para que collectDisclosures(nav)
-  // —que consulta `button[aria-controls]` dentro del nav— nunca lo confunda con
-  // un disclosure de submenu. El nav lleva id="nav-principal" (target del
-  // aria-controls y hook del CSS para mostrar/ocultar el drawer en mobile).
+  // de la pelicula). Abre/cierra el drawer de navegacion por debajo de 60rem.
+  // Las 4 <span> internas son DECORATIVAS (el <span.case-icon> lleva
+  // aria-hidden): el nombre accesible del control lo da el aria-label; el icono
+  // se dibuja por completo con CSS. Vive FUERA del <nav> (antes del <nav>) para
+  // que collectDisclosures(nav) —que consulta `button[aria-controls]` dentro del
+  // nav— nunca lo confunda con un disclosure de submenu. El nav lleva
+  // id="nav-principal" (target del aria-controls y hook del CSS del drawer).
   return `<header>
+  <a class="cockpit-brand" href="index.html" aria-label="Interstellar — ir al inicio"><span class="cockpit-marca">Interstellar</span><span class="cockpit-brand-linea"><span>NAV</span><span class="cockpit-brand-ext"> · RANGER</span></span></a>
   <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="nav-principal" aria-label="Abrir menú de navegación"><span class="case-icon" aria-hidden="true"><span></span><span></span><span></span><span></span></span></button>
   <nav id="nav-principal" aria-label="Navegación principal">
     <ul>
@@ -64,11 +75,27 @@ ${items}
 export function buildFooter() {
   // Pie mínimo: disclaimer + enlaces (créditos y repo). La lista de atribución
   // por asset vive en creditos.html (FR-012, FR-013; contrato assets.md).
+  //
+  // Consola inferior del cockpit (constitución v2.1.0): cada entrada es una
+  // "tecla" de panel — misma caja con recorte diagonal, bezel y LED que las de
+  // la nav. Cada tecla es UNA palabra (`.tele-v`) + un LED (`.led`, decorativo),
+  // sin etiqueta previa. El LED va a la izquierda (como en la nav). Todas son
+  // `.tele-accion`: tecla-BOTÓN — un <a> (o <button>) ocupa toda la caja y es el
+  // destino (`aria-label` da el destino sin sumar texto visible). El disclaimer
+  // completo vive en creditos.html.
+  // WhatsApp y Facebook: sin JS comparten la home; wireFooterShare() los sube a
+  // la página actual. La tecla "Compartir" (Web Share API) nace oculta y solo la
+  // muestra el JS si navigator.share existe.
+  const waFallback = `https://wa.me/?text=${encodeURIComponent(`Interstellar — ${SITE_URL}`)}`;
+  const fbFallback = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(SITE_URL)}`;
   return `<footer>
-  <p>${escapeHtml(CREDITS)}</p>
   <ul>
-    <li><a href="creditos.html">Créditos y fuentes</a></li>
-    <li><a href="${escapeHtml(REPO_URL)}">Repositorio del proyecto</a></li>
+    <li class="tele tele-accion"><a href="contacto.html" aria-label="Formulario de contacto"><span class="led" aria-hidden="true"></span><span class="tele-v">Contacto</span></a></li>
+    <li class="tele tele-accion"><a href="${escapeHtml(waFallback)}" data-share="whatsapp" target="_blank" rel="noopener" aria-label="Compartir el sitio en WhatsApp"><span class="led" aria-hidden="true"></span><span class="tele-v">WhatsApp</span></a></li>
+    <li class="tele tele-accion"><a href="${escapeHtml(fbFallback)}" data-share="facebook" target="_blank" rel="noopener" aria-label="Compartir el sitio en Facebook"><span class="led" aria-hidden="true"></span><span class="tele-v">Facebook</span></a></li>
+    <li class="tele tele-accion" data-share-nativo hidden><button type="button" data-share="nativo" aria-label="Compartir el sitio"><span class="led led-ambar" aria-hidden="true"></span><span class="tele-v">Compartir</span></button></li>
+    <li class="tele tele-accion"><a href="creditos.html" aria-label="Créditos y fuentes"><span class="led" aria-hidden="true"></span><span class="tele-v">Créditos</span></a></li>
+    <li class="tele tele-accion"><a href="${escapeHtml(REPO_URL)}" aria-label="Repositorio en GitHub"><span class="led led-alerta" aria-hidden="true"></span><span class="tele-v">GitHub</span></a></li>
   </ul>
 </footer>`;
 }
@@ -78,6 +105,14 @@ export function renderLayout(navConfig = NavConfig) {
     header: buildHeader(navConfig),
     footer: buildFooter(),
   };
+}
+
+// Cielo compartido (css/layout.css §15): campo estelar + 3 estrellas fugaces
+// (los <i>). Es puramente decorativo (`aria-hidden`); todo el movimiento vive en
+// CSS. Se inyecta como PRIMER hijo del <body> —detras de header/main/footer— y
+// SOLO en las paginas marcadas con `class="... con-cielo"` (opt-in).
+export function buildCielo() {
+  return '<div class="cielo" aria-hidden="true"><i></i><i></i><i></i></div>';
 }
 
 /* -----------------------------------------------------------------------------
@@ -133,13 +168,6 @@ function wireDisclosure(nav, estado) {
     });
   });
 
-  // Cierre sin restaurar foco: para abandonos "suaves" (puro mouse), donde el
-  // foco de teclado no debe ser robado a un boton del header (BUGFIX defecto #2).
-  const dismissSinFoco = () => {
-    estado.dismiss();
-    syncDisclosures(estado, disclosures);
-  };
-
   // Cierre restaurando foco: para cierres por teclado/clic (Escape, focusout,
   // clic fuera), que devuelven el foco al control que estaba abierto (FR-010).
   const dismissConFoco = () => {
@@ -176,28 +204,12 @@ function wireDisclosure(nav, estado) {
     }
   });
 
-  // Abandonar la navegacion con el raton: al salir del area del nav, cerrar la
-  // vista pero SIN restaurar foco (el raton nunca debe robar el foco de teclado).
-  nav.addEventListener('mouseleave', dismissSinFoco);
-
-  // HOVER OPEN (desktop): el submenu debe abrirse al pasar el cursor sobre el eje
-  // (patron clasico de escritorio), restableciendo su descubribilidad (BUGFIX
-  // SC-010). Se limita a dispositivos con hover fino para no afectar al toque.
-  if (
-    typeof window !== 'undefined' &&
-    typeof window.matchMedia === 'function' &&
-    window.matchMedia('(hover: hover) and (pointer: fine)').matches
-  ) {
-    disclosures.forEach(({ button, axisId }) => {
-      const li = button.closest('li');
-      if (li) {
-        li.addEventListener('mouseenter', () => {
-          estado.open(axisId);
-          syncDisclosures(estado, disclosures);
-        });
-      }
-    });
-  }
+  // El submenu se abre y se cierra SOLO por intencion explicita: clic/tecla en el
+  // boton ▼ (toggle, arriba), Escape, seleccion de un destino anidado o clic
+  // fuera de la navegacion. Sin hover-open: cruzar la barra con el raton ya no
+  // despliega nada (evita disparos accidentales y que el menu "persiga" al
+  // cursor). Sin cierre por `mouseleave`: una vez abierto queda abierto hasta un
+  // gesto de cierre, aunque el raton se aleje del area del nav.
 }
 
 /* -----------------------------------------------------------------------------
@@ -309,12 +321,160 @@ function initHeroVideo() {
   }
 }
 
+// Compartir desde el pie. WhatsApp y Facebook son enlaces a sus URLs de "share":
+// sin JS comparten la home; aca se actualizan a la pagina actual (`location.href`).
+// El boton "Compartir" usa la Web Share API (`navigator.share`) y SOLO se muestra
+// si el navegador la soporta —tipico en movil—: abre la bandeja nativa del
+// sistema, el unico camino real para compartir a Instagram desde una web (no
+// existe una URL de "share" de Instagram). Inofensivo si el pie no esta.
+function wireFooterShare(footer) {
+  if (!footer || typeof footer.querySelector !== 'function') {
+    return;
+  }
+  const url = window.location.href;
+  const titulo = document.title || 'Interstellar';
+
+  const wa = footer.querySelector('a[data-share="whatsapp"]');
+  if (wa) {
+    wa.href = `https://wa.me/?text=${encodeURIComponent(`${titulo} — ${url}`)}`;
+  }
+  const fb = footer.querySelector('a[data-share="facebook"]');
+  if (fb) {
+    fb.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+  }
+
+  const nativoLi = footer.querySelector('[data-share-nativo]');
+  const nativoBtn = footer.querySelector('button[data-share="nativo"]');
+  if (
+    nativoLi &&
+    nativoBtn &&
+    typeof navigator !== 'undefined' &&
+    typeof navigator.share === 'function'
+  ) {
+    nativoLi.hidden = false;
+    nativoBtn.addEventListener('click', () => {
+      navigator.share({ title: titulo, url }).catch(() => {});
+    });
+  }
+}
+
+// Aviso de spoiler (css/layout.css §17). El sitio comenta la trama completa
+// —final incluido— en casi todas las paginas. En la primera visita se pone
+// `body.spoiler-alerta` (los LED del header pasan a rojo y parpadean), se inyecta
+// un rotulo "SPOILERS" en la banda y una tira de aviso debajo del header con un
+// boton "Ya la vi". Al confirmar se guarda en localStorage y todo vuelve a teal.
+// `localStorage` puede tirar (modo privado): las lecturas/escrituras van en
+// try/catch y si falla, el aviso simplemente aparece cada vez.
+const SPOILER_KEY = 'interstellar:spoiler-ack';
+
+function spoilerReconocido() {
+  try {
+    return localStorage.getItem(SPOILER_KEY) === '1';
+  } catch (_) {
+    return false;
+  }
+}
+
+function guardarSpoilerReconocido() {
+  try {
+    localStorage.setItem(SPOILER_KEY, '1');
+  } catch (_) {
+    /* modo privado / storage bloqueado: se vuelve a mostrar la proxima vez */
+  }
+}
+
+function initSpoilerAviso(header) {
+  if (!header || typeof header.insertAdjacentHTML !== 'function' || !document.body) {
+    return;
+  }
+  if (spoilerReconocido()) {
+    return;
+  }
+
+  document.body.classList.add('spoiler-alerta');
+  header.insertAdjacentHTML(
+    'afterbegin',
+    '<span class="spoiler-rotulo" aria-hidden="true"><span class="led led-alerta"></span>Spoilers</span>',
+  );
+  // DENTRO del <header> (no como hermano): asi el panel CUELGA del tablero
+  // (`position: absolute; top: 100%`) y flota sobre el contenido en vez de
+  // reservar un bloque full-width que lo empuja hacia abajo.
+  header.insertAdjacentHTML(
+    'beforeend',
+    '<div class="spoiler-aviso" role="alert">' +
+      '<span><b>⚠ Spoilers:</b> este sitio comenta la trama completa, incluido el final.</span>' +
+      '<button type="button" data-spoiler-ok>Ya la vi</button>' +
+      '</div>',
+  );
+
+  const rotulo = header.querySelector('.spoiler-rotulo');
+  const aviso = header.querySelector('.spoiler-aviso');
+  const boton = aviso && aviso.querySelector('[data-spoiler-ok]');
+  if (boton) {
+    boton.addEventListener('click', () => {
+      guardarSpoilerReconocido();
+      // "Check del tablero": al reconocerlo, las luces vuelven a la normalidad
+      // AL INSTANTE (quitar la clase deja que las transiciones de color hagan el
+      // rojo -> teal/ambar) y el panel de aviso se RETRAE hacia el header antes
+      // de quitarse del DOM. `animationend` cierra; el timeout es el respaldo
+      // para prefers-reduced-motion (sin animacion, no dispara `animationend`).
+      document.body.classList.remove('spoiler-alerta');
+      const cerrar = () => {
+        if (rotulo) rotulo.remove();
+        if (aviso) aviso.remove();
+      };
+      const sinMovimiento =
+        typeof matchMedia === 'function' &&
+        matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (sinMovimiento) {
+        cerrar(); // sin animacion de retraccion -> se quita al toque
+        return;
+      }
+      aviso.classList.add('spoiler-aviso--retrae');
+      aviso.addEventListener('animationend', cerrar, { once: true });
+      setTimeout(cerrar, 1800); // respaldo: > que la animacion de 1.5s
+    });
+  }
+}
+
+// Indicador de seccion actual (FR: descubribilidad de la nav). Marca con
+// `aria-current="page"` el enlace de NIVEL SUPERIOR cuyo destino es la pagina en
+// curso; el CSS lo resalta (LED fijo + acento) tanto en la barra de escritorio
+// como en el drawer. Solo enlaces directos del <ul> raiz: los destinos anidados
+// apuntan a `pagina.html#ancla` y no deben marcarse como "pagina actual".
+function markCurrentPage(nav) {
+  if (!nav || typeof nav.querySelectorAll !== 'function') {
+    return;
+  }
+  let archivo = (window.location.pathname.split('/').pop() || '').toLowerCase();
+  if (archivo === '') {
+    archivo = 'index.html'; // la raiz del sitio sirve index.html
+  }
+  nav.querySelectorAll(':scope > ul > li > a').forEach((enlace) => {
+    const destino = (enlace.getAttribute('href') || '').split('#')[0].toLowerCase();
+    if (destino === archivo) {
+      enlace.setAttribute('aria-current', 'page');
+    }
+  });
+}
+
 export function init(navConfig = NavConfig) {
   if (typeof document === 'undefined' || !document.body) {
     return;
   }
   document.body.insertAdjacentHTML('afterbegin', buildHeader(navConfig));
   document.body.insertAdjacentHTML('beforeend', buildFooter());
+
+  // Cielo: solo en paginas `con-cielo`. `afterbegin` lo deja como primer hijo
+  // del body (por detras del header, que ya se inyecto). `classList` puede no
+  // existir en el DOM de prueba: se consulta con guarda.
+  if (
+    document.body.classList &&
+    typeof document.body.classList.contains === 'function' &&
+    document.body.classList.contains('con-cielo')
+  ) {
+    document.body.insertAdjacentHTML('afterbegin', buildCielo());
+  }
 
   // Conecta la interaccion del disclosure. Solo se ejecuta si el DOM de prueba
   // (layout.test.js usa un fake body sin querySelector) expone la API real;
@@ -325,8 +485,11 @@ export function init(navConfig = NavConfig) {
   const header = document.body.querySelector('header');
   const nav = header && header.querySelector('nav');
   const estado = createSubmenuState();
+  markCurrentPage(nav);
   wireDisclosure(nav, estado);
   wireDrawer(header, nav, estado);
+  wireFooterShare(document.body.querySelector('footer'));
+  initSpoilerAviso(header);
   initHeroVideo();
 }
 

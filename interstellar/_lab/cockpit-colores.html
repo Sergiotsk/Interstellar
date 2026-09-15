@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab · cockpit header/footer — opciones de color</title>
+  <link rel="stylesheet" href="_lab.css">
+  <style>
+    /* ---------------------------------------------------------------------
+       Prueba descartable (rama spike/librerias). NO es el sitio.
+       Objetivo: decidir la PALETA del header/footer estilo cockpit de la
+       Ranger antes de arrancar la feature `sec/inicio`. Tres frames
+       apilados, mismo layout, distinta paleta:
+         A — Teal capa de instrumentos  (#4fd0e0 dominante) → necesita
+             enmienda a constitution.md:219 (2 acentos por capa)
+         B — Paleta actual del sitio     (gunmetal + crema + dorado terroso;
+             Gargantua = LED de alerta) → cero conflicto
+         C — Teal apagado no saturado    (#1e5a63/gris-azulado de "pantalla")
+       La tipografia mono es del sistema (proxy). En la feature se
+       self-hostea Share Tech Mono. Sin librerias. Sin errores en consola.
+       --------------------------------------------------------------------- */
+
+    .ck-page { max-width: 60rem; margin: 0 auto; padding: 4.5rem 1rem 5rem; }
+    .ck-page > h1 { font-size: clamp(1.4rem, 4vw, 2rem); margin: 0 0 .3rem; }
+    .ck-page > p.note {
+      color: var(--lab-atenuado); font-size: .9rem; margin: 0 0 2.5rem; line-height: 1.6;
+    }
+    .ck-page > p.note code { color: var(--lab-texto); }
+
+    /* Etiqueta de cada frame */
+    .cockpit-label {
+      font: 600 .8rem/1.4 ui-monospace, "Cascadia Code", Consolas, monospace;
+      letter-spacing: .08em; text-transform: uppercase;
+      color: var(--lab-atenuado); margin: 2.2rem 0 .6rem;
+    }
+    .cockpit-label b { color: var(--lab-texto); }
+    .cockpit-label:first-of-type { margin-top: 0; }
+
+    /* =====================================================================
+       COCKPIT — estructura comun. Los colores salen de custom properties
+       que cada .cockpit-frame[data-tema] redefine (bloques mas abajo).
+       ===================================================================== */
+    .cockpit-frame {
+      /* metal / estructura (comun a las 3 opciones) */
+      --ck-bg: #0a0d10;
+      --ck-metal: #12161a;
+      --ck-metal-2: #1c2226;
+      --ck-bezel: #3d454c;
+      --ck-bezel-hi: #4a5560;
+      --ck-text: #e8e0d0;
+
+      position: relative;
+      border-radius: 4px;
+      overflow: hidden;
+      background: var(--ck-bg);
+      box-shadow: 0 1px 0 var(--ck-bezel-hi) inset, 0 0 0 1px #000;
+      font-family: ui-monospace, "Cascadia Code", Consolas, "Share Tech Mono", monospace;
+    }
+
+    /* ---- Header: banda superior de instrumentos ---- */
+    .cockpit-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem 1.5rem;
+      flex-wrap: wrap;
+      padding: .7rem 1.4rem 1rem;
+      background:
+        repeating-linear-gradient(90deg, transparent 0 22px, rgba(255,255,255,.015) 22px 23px),
+        linear-gradient(180deg, var(--ck-metal-2), var(--ck-metal));
+      border-bottom: 2px solid var(--ck-bezel);
+      box-shadow: 0 1px 0 var(--ck-bezel-hi) inset, 0 -6px 14px rgba(0,0,0,.5) inset;
+      /* esquinas inferiores cortadas: marco de ventana de la nave */
+      clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 22px) 100%, 22px 100%, 0 calc(100% - 14px));
+    }
+
+    .cockpit-brand {
+      display: flex; align-items: center; gap: .55rem;
+      font-size: .82rem; letter-spacing: .18em; text-transform: uppercase;
+      color: var(--ck-text);
+    }
+    .cockpit-brand .led { --led: var(--ck-accent); }
+
+    .cockpit-nav { margin-left: auto; }
+    .cockpit-nav ul {
+      list-style: none; margin: 0; padding: 0;
+      display: flex; flex-wrap: wrap; gap: .4rem .5rem;
+    }
+    .cockpit-nav a {
+      display: inline-flex; align-items: center; gap: .45rem;
+      padding: .32rem .7rem;
+      font-size: .72rem; letter-spacing: .1em; text-transform: uppercase;
+      text-decoration: none;
+      color: var(--ck-accent);
+      text-shadow: 0 0 6px color-mix(in srgb, var(--ck-accent) 55%, transparent);
+      background: linear-gradient(180deg, var(--ck-metal-2), #0d1114);
+      border: 1px solid var(--ck-bezel);
+      border-radius: 2px;
+      /* esquina sup-der cortada (bisel de panel) */
+      clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 0 100%);
+      transition: border-color .15s, box-shadow .15s, color .15s;
+    }
+    .cockpit-nav a::before {
+      content: ""; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--ck-accent);
+      box-shadow: 0 0 6px 1px color-mix(in srgb, var(--ck-accent) 70%, transparent);
+      opacity: .45;
+      transition: opacity .15s, box-shadow .15s;
+    }
+    .cockpit-nav a:hover,
+    .cockpit-nav a.activo {
+      color: color-mix(in srgb, var(--ck-accent) 82%, #fff);
+      border-color: var(--ck-accent);
+      box-shadow: 0 0 10px color-mix(in srgb, var(--ck-accent) 30%, transparent);
+    }
+    .cockpit-nav a:hover::before,
+    .cockpit-nav a.activo::before {
+      opacity: 1;
+      box-shadow: 0 0 8px 2px color-mix(in srgb, var(--ck-accent) 85%, transparent);
+    }
+
+    /* ---- Vista: "la ventana al espacio" ---- */
+    .cockpit-view {
+      position: relative;
+      min-height: 190px;
+      display: grid; place-items: center;
+      background:
+        radial-gradient(120% 120% at 50% 0%, rgba(0,0,0,.15), rgba(0,0,0,.75)),
+        url("../assets/img/hero-gargantua.jpg") center/cover no-repeat, #05070f;
+      box-shadow:
+        inset 0 0 0 2px var(--ck-bezel),
+        inset 0 0 60px rgba(0,0,0,.9);
+    }
+    .cockpit-view span {
+      font-size: .68rem; letter-spacing: .3em; text-transform: uppercase;
+      color: color-mix(in srgb, var(--ck-accent) 70%, #fff);
+      text-shadow: 0 0 10px #000, 0 0 6px color-mix(in srgb, var(--ck-accent) 60%, transparent);
+    }
+
+    /* ---- Footer: consola inferior de telemetria ---- */
+    .cockpit-footer {
+      display: flex; flex-wrap: wrap; gap: .5rem 2rem;
+      padding: 1rem 1.4rem .7rem;
+      background:
+        repeating-linear-gradient(90deg, transparent 0 22px, rgba(255,255,255,.015) 22px 23px),
+        linear-gradient(0deg, var(--ck-metal-2), var(--ck-metal));
+      border-top: 2px solid var(--ck-bezel);
+      box-shadow: 0 -1px 0 var(--ck-bezel-hi) inset, 0 6px 14px rgba(0,0,0,.5) inset;
+      /* esquinas superiores cortadas (reflejo del header) */
+      clip-path: polygon(0 14px, 22px 0, calc(100% - 22px) 0, 100% 14px, 100% 100%, 0 100%);
+    }
+    .tele {
+      display: flex; align-items: center; gap: .5rem;
+      font-size: .72rem; letter-spacing: .06em;
+      color: var(--ck-text);
+    }
+    .tele .k {
+      color: color-mix(in srgb, var(--ck-accent) 75%, var(--ck-text));
+      text-transform: uppercase; letter-spacing: .12em;
+    }
+    .tele .v { color: color-mix(in srgb, var(--ck-text) 78%, transparent); }
+
+    /* ---- LED reutilizable ---- */
+    .led {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--led, var(--ck-accent));
+      box-shadow: 0 0 7px 1px color-mix(in srgb, var(--led, var(--ck-accent)) 75%, transparent);
+      flex: none;
+    }
+    .led-amber { --led: var(--ck-led-amber); }
+    .led-warn  { --led: var(--ck-led-warn); }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .cockpit-brand .led { animation: ck-pulse 2.4s ease-in-out infinite; }
+      .tele .led-warn { animation: ck-pulse 1.3s steps(1, end) infinite; }
+    }
+    @keyframes ck-pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+
+    /* =====================================================================
+       OPCION A — Teal como capa de instrumentos (#4fd0e0 dominante)
+       Requiere enmendar constitution.md:219 (2 acentos por CAPA):
+       teal = UI de nave, Gargantua = contenido narrativo.
+       ===================================================================== */
+    .cockpit-frame[data-tema="a"] {
+      --ck-accent: #4fd0e0;
+      --ck-led-amber: #e0a94a;
+      --ck-led-warn: #d0453a;
+    }
+
+    /* =====================================================================
+       OPCION B — Paleta actual del sitio, sin colores nuevos.
+       "Ambar" = dorado terroso (--color-tierra-oro). Gargantua = LED de
+       alerta puntual. Cero conflicto, cero enmienda.
+       ===================================================================== */
+    .cockpit-frame[data-tema="b"] {
+      --ck-accent: #c9b58c;   /* crema-dorada: se lee como "texto de pantalla" sin saturar */
+      --ck-led-amber: #d4a94e;
+      --ck-led-warn: #e8803b;  /* naranja de Gargantua, reservado a alerta */
+    }
+
+    /* =====================================================================
+       OPCION C — Teal APAGADO no saturado (#1e5a63 → gris-azulado).
+       Funciona como superficie de "pantalla", no como acento. Sigue
+       introduciendo un color nuevo, pero de baja saturacion.
+       ===================================================================== */
+    .cockpit-frame[data-tema="c"] {
+      --ck-accent: #7ea6ab;   /* teal grisaceo, croma baja */
+      --ck-led-amber: #c99f5b;
+      --ck-led-warn: #cf6b46;
+    }
+
+    @media (max-width: 40rem) {
+      .cockpit-header { flex-direction: column; align-items: flex-start; }
+      .cockpit-nav { margin-left: 0; }
+      .cockpit-footer { flex-direction: column; gap: .45rem; }
+    }
+  </style>
+</head>
+<body class="lab">
+  <div class="lab-bar">
+    <strong>_lab · cockpit — opciones de color</strong>
+    <span class="lab-meta">header + footer estilo Ranger · decidir paleta antes de <code>sec/inicio</code></span>
+    <a href="index.html">← índice</a>
+  </div>
+
+  <div class="ck-page">
+    <h1>Header + footer estilo cockpit — 3 paletas</h1>
+    <p class="note">
+      Mismo layout (banda angular con <code>clip-path</code>, links de panel con LED,
+      footer como telemetría), tres paletas. La mono es del sistema (proxy de
+      <code>Share Tech Mono</code>). Elegí una y seguimos con la feature en
+      <code>sec/inicio</code>.
+    </p>
+
+    <!-- ============ OPCION A ============ -->
+    <p class="cockpit-label">Opción A — <b>Teal capa de instrumentos</b> · #4fd0e0 · requiere enmendar la constitución</p>
+    <div class="cockpit-frame" data-tema="a">
+      <header class="cockpit-header">
+        <span class="cockpit-brand"><span class="led"></span> Ranger · NAV</span>
+        <nav class="cockpit-nav" aria-label="demo A">
+          <ul>
+            <li><a href="#" class="activo">Inicio</a></li>
+            <li><a href="#">Mundos</a></li>
+            <li><a href="#">Personajes</a></li>
+            <li><a href="#">La Ciencia</a></li>
+            <li><a href="#">El Viaje</a></li>
+            <li><a href="#">Galería</a></li>
+            <li><a href="#">Minijuegos</a></li>
+            <li><a href="#">Trailer</a></li>
+          </ul>
+        </nav>
+      </header>
+      <div class="cockpit-view"><span>Vista exterior · Gargantúa</span></div>
+      <footer class="cockpit-footer">
+        <span class="tele"><span class="k">Source:</span> <span class="v">film-grabs / prod. stills</span> <span class="led led-amber"></span></span>
+        <span class="tele"><span class="k">Build:</span> <span class="v">2026.09.03 · acc1b6c</span> <span class="led"></span></span>
+        <span class="tele"><span class="k">Crew:</span> <span class="v">sitio académico de fan</span> <span class="led"></span></span>
+        <span class="tele"><span class="k">Link:</span> <span class="v">github.com/Sergiotsk/Interstellar</span> <span class="led led-warn"></span></span>
+      </footer>
+    </div>
+
+    <!-- ============ OPCION B ============ -->
+    <p class="cockpit-label">Opción B — <b>Paleta actual del sitio</b> · sin colores nuevos · Gargantúa = LED de alerta</p>
+    <div class="cockpit-frame" data-tema="b">
+      <header class="cockpit-header">
+        <span class="cockpit-brand"><span class="led"></span> Ranger · NAV</span>
+        <nav class="cockpit-nav" aria-label="demo B">
+          <ul>
+            <li><a href="#" class="activo">Inicio</a></li>
+            <li><a href="#">Mundos</a></li>
+            <li><a href="#">Personajes</a></li>
+            <li><a href="#">La Ciencia</a></li>
+            <li><a href="#">El Viaje</a></li>
+            <li><a href="#">Galería</a></li>
+            <li><a href="#">Minijuegos</a></li>
+            <li><a href="#">Trailer</a></li>
+          </ul>
+        </nav>
+      </header>
+      <div class="cockpit-view"><span>Vista exterior · Gargantúa</span></div>
+      <footer class="cockpit-footer">
+        <span class="tele"><span class="k">Source:</span> <span class="v">film-grabs / prod. stills</span> <span class="led led-amber"></span></span>
+        <span class="tele"><span class="k">Build:</span> <span class="v">2026.09.03 · acc1b6c</span> <span class="led"></span></span>
+        <span class="tele"><span class="k">Crew:</span> <span class="v">sitio académico de fan</span> <span class="led"></span></span>
+        <span class="tele"><span class="k">Link:</span> <span class="v">github.com/Sergiotsk/Interstellar</span> <span class="led led-warn"></span></span>
+      </footer>
+    </div>
+
+    <!-- ============ OPCION C ============ -->
+    <p class="cockpit-label">Opción C — <b>Teal apagado, no saturado</b> · #1e5a63 como "pantalla" · color nuevo de croma baja</p>
+    <div class="cockpit-frame" data-tema="c">
+      <header class="cockpit-header">
+        <span class="cockpit-brand"><span class="led"></span> Ranger · NAV</span>
+        <nav class="cockpit-nav" aria-label="demo C">
+          <ul>
+            <li><a href="#" class="activo">Inicio</a></li>
+            <li><a href="#">Mundos</a></li>
+            <li><a href="#">Personajes</a></li>
+            <li><a href="#">La Ciencia</a></li>
+            <li><a href="#">El Viaje</a></li>
+            <li><a href="#">Galería</a></li>
+            <li><a href="#">Minijuegos</a></li>
+            <li><a href="#">Trailer</a></li>
+          </ul>
+        </nav>
+      </header>
+      <div class="cockpit-view"><span>Vista exterior · Gargantúa</span></div>
+      <footer class="cockpit-footer">
+        <span class="tele"><span class="k">Source:</span> <span class="v">film-grabs / prod. stills</span> <span class="led led-amber"></span></span>
+        <span class="tele"><span class="k">Build:</span> <span class="v">2026.09.03 · acc1b6c</span> <span class="led"></span></span>
+        <span class="tele"><span class="k">Crew:</span> <span class="v">sitio académico de fan</span> <span class="led"></span></span>
+        <span class="tele"><span class="k">Link:</span> <span class="v">github.com/Sergiotsk/Interstellar</span> <span class="led led-warn"></span></span>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>

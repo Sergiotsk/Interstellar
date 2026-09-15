@@ -1,0 +1,1090 @@
+/* =============================================================================
+   css/mundos.css — Hoja propia de la seccion Mundos (5ª <link>, solo en las
+   paginas de mundos). 5ª hoja opcional por pagina (contrato hojas-css.md C5):
+   lleva SOLO los estilos del hub y de las paginas de detalle.
+
+   El campo estelar dejo de vivir aca: se promovio al modulo compartido `.cielo`
+   en css/cielo.css, que `js/layout.js` inyecta en las paginas que
+   llevan `class="... con-cielo"` (mundos.html incluida).
+   -----------------------------------------------------------------------------
+   Contenido:
+   - Hub: `.mundos-intro`, `.mundos-grid`, `.mundo-tarjeta*` (image-forward).
+   - Paginas de detalle (`body.mundo-detalle`): `.mundo-hero`, rasgos, enlace a
+     La Ciencia, `.mundo-paginacion`.
+   Capa de CONTENIDO: paleta crema + acento gargantua/dorado, nada de teal.
+   ========================================================================== */
+
+/* =========================================================================
+   Seccion de eje con backdrop  -  movida aca desde css/layout.css (seccion 11)
+   el 2026-09-10. Bases .eje-con-backdrop / .eje-backdrop / .eje-contenido que
+   usan las 5 paginas mundos-*detalle* (el hub tambien carga esta hoja y no las
+   referencia, ~2 KiB). Van ANTES de las reglas .mundo-* de abajo, igual que
+   cuando layout.css cargaba primero. */
+
+/* ---------------------------------------------------------------------------
+   11. Seccion de eje con backdrop (feature 002 — mundos-content)
+   ---------------------------------------------------------------------------
+   Patron REUTILIZABLE por los cuatro ejes (Mundos primero; Personajes,
+   La Ciencia y El Viaje despues). Cada `section[id]` de contenido puede sumar
+   la clase `.eje-con-backdrop` para llevar una imagen de fondo propia,
+   oscurecida con `--backdrop-oscurecer` (FR-005), con respaldo de paleta si la
+   imagen no carga (caso limite).
+
+   Contrato: specs/002-mundos-content/contracts/mundos-page.md
+   --------------------------------------------------------------------------- */
+.eje-con-backdrop {
+  position: relative;                 /* contexto para el .eje-backdrop absoluto */
+  overflow: hidden;                   /* el object-fit:cover no se derrama (FR-012, SC-003) */
+  isolation: isolate;                 /* nuevo contexto de apilamiento local */
+  /* Respaldo: si el backdrop no carga, el contenido conserva jerarquia y
+     legibilidad sobre la paleta (caso limite, FR-005). */
+  background-color: var(--color-fondo);
+}
+
+/* Imagen de fondo DECORATIVA (alt="" en el HTML). Cubre toda la seccion y se
+   oscurece para garantizar el contraste del texto encima (FR-005, SC-007). */
+.eje-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: var(--backdrop-oscurecer);
+  z-index: 0;
+}
+
+/* Contenido de la seccion por encima del backdrop. Reserva de padding propia
+   para separar el texto de los bordes de la imagen. */
+.eje-contenido {
+  position: relative;
+  z-index: 1;
+  padding: 0.5rem 0;
+}
+
+/* Sobre fondo fotografico, el texto secundario necesita un poco mas de
+   presencia que sobre la superficie plana del sitio (SC-006, SC-007). */
+.eje-con-backdrop .eje-contenido p,
+.eje-con-backdrop .eje-contenido li {
+  color: var(--color-texto);
+}
+
+.eje-con-backdrop .eje-contenido ul {
+  padding-left: 1.25rem;
+}
+
+.eje-con-backdrop .eje-contenido li {
+  margin: 0.25rem 0;
+  line-height: 1.6;
+}
+
+/* Halo oscuro suave para despegar los encabezados del brillo del backdrop,
+   igual criterio que el Hero de la home (SC-006). */
+.eje-con-backdrop .eje-contenido h2,
+.eje-con-backdrop .eje-contenido h3 {
+  text-shadow: 0 0 1rem var(--color-fondo);
+}
+
+/* Intro del hub: columna centrada de lectura, con más presencia que el resto.
+   Prefijo `body.mundos-hub` para ganarle en especificidad a la regla genérica
+   de intro de página (§10, `body:not(.home) main > section:first-child`). */
+body.mundos-hub .mundos-intro {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 4.5rem 1.25rem 2.5rem;
+  text-align: left;                     /* legibilidad: parrafos de varias lineas
+                                          alineados a la izquierda (ver Constitucion) */
+}
+
+body.mundos-hub .mundos-intro h1 {
+  margin-bottom: 1rem;
+  font-family: var(--font-hero-titulo);
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-texto);
+  text-shadow: 0 0 1.5rem var(--color-fondo);
+}
+
+body.mundos-hub .mundos-intro p {
+  font-family: var(--font-texto);
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  line-height: 1.7;
+  color: var(--color-texto-atenuado);
+}
+
+/* Grilla a lo ANCHO: tarjetas grandes, poster-vertical, image-forward. */
+.mundos-grid {
+  width: min(100% - 2.5rem, 90rem);
+  margin: 1rem auto 5rem;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: clamp(0.75rem, 1.5vw, 1.4rem);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+}
+
+.mundos-grid > li {
+  min-width: 0;
+}
+
+.mundo-tarjeta {
+  position: relative;
+  display: block;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: 2px;
+  border: 1px solid color-mix(in srgb, var(--color-texto) 14%, transparent);
+  text-decoration: none;
+  isolation: isolate;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.mundo-tarjeta img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.55) saturate(1.05);
+  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1), filter 0.4s ease;
+}
+
+/* Bloque de texto anclado al pie, sobre un degradado hacia arriba. */
+.mundo-tarjeta-texto {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 1.4rem 1rem 1rem;
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--color-fondo) 94%, transparent) 0%,
+    color-mix(in srgb, var(--color-fondo) 55%, transparent) 55%,
+    transparent 100%
+  );
+  transform: translateY(0.35rem);
+  transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.mundo-tarjeta-nombre {
+  font-family: var(--font-hero-titulo);
+  font-size: clamp(1.05rem, 1.6vw, 1.35rem);
+  letter-spacing: 0.03em;
+  color: var(--color-texto);
+}
+
+.mundo-tarjeta-teaser {
+  font-family: var(--font-texto);
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--color-texto-atenuado);
+}
+
+/* Filo de acento que barre desde la izquierda al hover/foco. */
+.mundo-tarjeta::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: var(--color-gargantua);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+  z-index: 1;
+}
+
+.mundo-tarjeta:hover,
+.mundo-tarjeta:focus-visible {
+  border-color: color-mix(in srgb, var(--color-gargantua) 60%, transparent);
+  box-shadow: 0 0.75rem 2rem color-mix(in srgb, #000 55%, transparent);
+}
+
+.mundo-tarjeta:hover img,
+.mundo-tarjeta:focus-visible img {
+  transform: scale(1.07);
+  filter: brightness(0.68) saturate(1.12);
+}
+
+.mundo-tarjeta:hover .mundo-tarjeta-texto,
+.mundo-tarjeta:focus-visible .mundo-tarjeta-texto {
+  transform: translateY(0);
+}
+
+.mundo-tarjeta:hover::after,
+.mundo-tarjeta:focus-visible::after {
+  transform: scaleX(1);
+}
+
+/* --- Pagina de detalle --- */
+.mundo-volver {
+  max-width: 60rem;
+  margin: 1.5rem auto 0;
+  padding: 0 1.25rem;
+}
+
+.mundo-volver a {
+  font-family: var(--font-nav);
+  font-size: 0.95rem;
+  text-decoration: none;
+  color: var(--color-texto-atenuado);
+}
+
+.mundo-volver a:hover,
+.mundo-volver a:focus-visible {
+  color: var(--color-texto);
+}
+
+/* Hero del mundo: `.eje-con-backdrop` + `.mundo-hero`. Sin el border-top de
+   `section[id]`; el contenido se ancla abajo sobre el backdrop oscurecido. */
+.mundo-hero.eje-con-backdrop {
+  border-top: 0;
+  min-height: 42vh;
+  display: flex;
+  align-items: flex-end;
+  padding-block: 3rem 2.5rem;
+}
+
+.mundo-hero .eje-contenido {
+  padding: 0;
+}
+
+.mundo-hero h1 {
+  margin-bottom: 0.6rem;
+  font-family: var(--font-hero-titulo);
+  font-size: clamp(1.9rem, 5vw, 3.25rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-texto);
+  text-shadow: 0 0 1rem var(--color-fondo);
+}
+
+.mundo-lead {
+  max-width: 42rem;
+  font-family: var(--font-texto);
+  font-size: clamp(1rem, 2.2vw, 1.2rem);
+  line-height: 1.6;
+  color: var(--color-texto);
+  text-shadow: 0 0 0.75rem var(--color-fondo);
+  text-align: left;                 /* parrafo de varias lineas: no se centra
+                                        (legibilidad, ver Constitucion §Diseno) */
+  text-wrap: pretty;                /* evita palabras huerfanas en el ultimo
+                                        renglon; sin soporte, cae al wrap normal */
+}
+
+/* ---------------------------------------------------------------------------
+   Portada "caida al polvo" (js/mundo-portada.js, GSAP) — pagina Tierra
+   ---------------------------------------------------------------------------
+   El <section id> lleva `.mundo-portada` en vez de `.mundo-hero`: es full-bleed
+   y, cuando GSAP arma la escena, hace de "riel" de scroll. Tres capas de imagen
+   apiladas (`.mundo-capa--orbita | --campo | --tormenta`) que GSAP encadena al
+   scrollear: orbita -> maizal -> tormenta de polvo.
+
+   Estado BASE (sin JS, GSAP caido, `prefers-reduced-motion`) = hero estatico:
+   una sola pantalla con la Tierra desde orbita + titulo + lead. El riel alto y
+   el `sticky` SOLO existen cuando el JS agrega `.is-armed` sobre la seccion
+   (lo hace unicamente si logro construir el timeline). GSAP nunca es requisito
+   para leer la pagina.
+   --------------------------------------------------------------------------- */
+/* `body.mundo-detalle main > section.mundo-portada` (0,0,2,3): empata en
+   specificity a `body:not(.home) main > section:first-child` de layout.css y le
+   gana por orden de fuente -> full-bleed, sin la caja de lectura ni el borde. */
+body.mundo-detalle main > section.mundo-portada {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  border-top: 0;
+}
+
+.mundo-portada-escena {
+  position: relative;
+  min-height: 82svh;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;                 /* capas que escalan fuera de cuadro no dan scroll */
+  isolation: isolate;
+  /* Sin background: la orbita es un WebP con transparencia (el planeta recortado)
+     -> por sus zonas transparentes se ve el campo estelar `.cielo` (fixed, detras
+     de main, que no tiene fondo). Los beats 2-5 son fotos `cover` opacas -> tapan
+     el cielo. */
+}
+
+/* Scrim inferior: dos funciones.
+   1. Legibilidad: zona oscura amplia donde cae el titulo/lead, difuminada
+      hacia el centro para no matar la foto.
+   2. Transicion al contenido: el borde inferior se funde a `--color-fondo`
+      (el mismo color de las secciones que siguen) -> al soltarse el sticky
+      no hay corte, la ultima foto se desvanece hacia el contenido. */
+.mundo-portada-escena::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    var(--color-fondo) 0%,
+    rgba(10, 14, 26, 0.86) 9%,
+    rgba(0, 0, 0, 0.55) 24%,
+    rgba(0, 0, 0, 0.2) 44%,
+    transparent 64%
+  );
+}
+
+.mundo-portada-capas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.mundo-capa {
+  position: absolute;
+  inset: -2.5%;                     /* sobre-escaneo: los transforms de entrada
+                                       (scale/yPercent) nunca dejan ver un borde */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  will-change: transform, opacity, filter;
+}
+
+/* Grano POR CAPA (no por escena): los fotogramas de FILMGRAB son 1280x720 y al
+   escalarlos quedan blandos; un ruido tenue en `soft-light` los lee como
+   celuloide en vez de imagen pixelada. SVG inline -> 0 bytes de red.
+   BUGFIX 2026-09-11: antes vivía en `.mundo-portada-capas::after` (un overlay
+   a nivel de escena). `will-change` en `.mundo-capa` crea su propio stacking
+   context -> el `mix-blend-mode` de un overlay de escena solo puede mezclarse
+   con lo pintado DENTRO del stacking context de `<main>` (que cielo.css eleva
+   con `z-index: 1` para quedar sobre `.cielo`). En `--orbita`, cuyo WebP es
+   transparente fuera del disco (para que se vea `.cielo` detrás), no había
+   nada dentro de ese grupo con qué mezclar el grano ahí -> se pintaba casi sin
+   mezclar, como un velo GRIS opaco encima del campo estelar. Poniendo el grano
+   en el `::after` de CADA `.mundo-capa` (que ya es su propio stacking context
+   por el `will-change` de arriba) se mezcla siempre con el fondo de ESA capa
+   nada más — igual que antes en los beats opacos, y en `--orbita` con nada que
+   tapar donde es transparente. */
+.mundo-capa::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* 5 capas — descenso al colapso: la Tierra completa desde orbita (full-disk
+   GOES, recortada sobre el cielo) -> la granja de los Cooper con maizal verde ->
+   el aereo del maizal -> la tormenta en el pueblo -> la granja sepultada.
+   Solo `--orbita` visible en el estado base; el resto lo revela GSAP.
+   Beats 2-5: fotogramas de la pelicula (cap-that.com), 1800px. */
+.mundo-capa--orbita {
+  background-image: url("../assets/img/terra-orbita.webp");
+  background-size: contain;         /* el disco entero, sin recortar, sobre el cielo */
+}
+
+/* El grano de esta capa se recorta a la silueta del planeta (mismo WebP como
+   máscara de alpha): fuera del disco no hay nada que pintar -> se ve `.cielo`
+   sin ningún velo encima (ver bugfix arriba). */
+.mundo-capa--orbita::after {
+  mask-image: url("../assets/img/terra-orbita.webp");
+  -webkit-mask-image: url("../assets/img/terra-orbita.webp");
+  mask-size: contain;
+  -webkit-mask-size: contain;
+  mask-position: center;
+  -webkit-mask-position: center;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+}
+
+.mundo-capa--granja {
+  background-image: url("../assets/img/terra-granja.webp");
+  opacity: 0;
+}
+
+.mundo-capa--maizal {
+  background-image: url("../assets/img/terra-maizal.webp");
+  opacity: 0;
+}
+
+.mundo-capa--tormenta {
+  background-image: url("../assets/img/terra-tormenta.webp");
+  opacity: 0;
+}
+
+.mundo-capa--abandonada {
+  background-image: url("../assets/img/terra-abandonada.webp");
+  opacity: 0;
+}
+
+.mundo-portada-texto {
+  position: relative;              /* dentro del flex: anclado abajo */
+  z-index: 3;
+  width: min(100% - 3rem, 56rem);
+  margin: 0 auto;
+  padding-bottom: clamp(4rem, 15vh, 9rem);        /* despegado del borde inferior */
+  text-align: center;
+}
+
+/* Titulo y lead de la portada: mas grandes y con halo fuerte. El selector largo
+   (0,0,3,4) le gana a `body:not(.home) main > section:first-child h1|p` de
+   layout.css (0,0,2,4), que si no fija tamano y color atenuado. */
+body.mundo-detalle main > section.mundo-portada .mundo-portada-texto h1 {
+  margin-bottom: 0.5rem;
+  font-size: clamp(2.5rem, 6.5vw, 4.25rem);
+  line-height: 1.04;
+  text-shadow: 0 2px 22px rgba(0, 0, 0, 0.88), 0 0 6px rgba(0, 0, 0, 0.7);
+}
+
+body.mundo-detalle main > section.mundo-portada .mundo-portada-texto .mundo-lead {
+  max-width: 46rem;
+  margin: 0 auto;
+  font-size: clamp(1.1rem, 1.7vw, 1.4rem);
+  line-height: 1.55;
+  color: #fff;
+  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.9), 0 0 5px rgba(0, 0, 0, 0.72);
+  text-align: left;                 /* el h1 de arriba sigue centrado (titulo de
+                                        impacto); el parrafo de varias lineas no
+                                        (legibilidad) */
+  text-wrap: pretty;                /* sin palabras huerfanas en el ultimo renglon */
+}
+
+/* Enlace "volver" DENTRO de la escena: overlay arriba-izquierda con chip oscuro
+   para despegarse de la foto. Se desvanece con el titulo (GSAP). En el estado
+   base (reduced-motion) queda fijo arriba y legible. El selector largo gana a
+   `body:not(.home) main > section:first-child p` de layout.css (centrado). */
+body.mundo-detalle main > section.mundo-portada .mundo-volver {
+  position: absolute;
+  top: clamp(0.75rem, 3vh, 1.5rem);
+  left: 0;
+  right: 0;
+  width: min(100% - 2.5rem, 60rem);
+  margin: 0 auto;
+  z-index: 3;
+  text-align: left;
+}
+
+.mundo-portada .mundo-volver a {
+  display: inline-block;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(4, 5, 10, 0.55);
+  color: var(--color-texto);
+  text-shadow: 0 0 0.6rem var(--color-fondo);
+}
+
+/* Riel + escena clavada: SOLO cuando el JS pudo armar el timeline. Sin `.is-armed`
+   (sin JS / GSAP caido / reduced-motion) la seccion mide lo que su contenido. */
+.mundo-portada.is-armed {
+  height: 380svh;                   /* movil: los 5 beats, riel mas corto que escritorio */
+}
+
+.mundo-portada.is-armed .mundo-portada-escena {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  min-height: 0;
+}
+
+@media (min-width: 48rem) {
+  .mundo-portada.is-armed {
+    height: 460svh;                 /* escritorio: los 5 beats */
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Portada "descenso a Gargantua" (js/mundo-portada.js, GSAP) — pagina Gargantua
+   ---------------------------------------------------------------------------
+   Misma mecanica que la Tierra: riel alto + escena `sticky` que solo aparece
+   con `.is-armed`. Seis fotogramas apilados que el scroll encadena — la
+   Endurance frente a Gargantua -> el disco de cerca -> el descenso por el plano
+   del disco -> la Endurance minima contra el disco -> el Ranger con las chispas
+   del roce -> Cooper a la deriva. Al irse el ultimo fotograma queda el negro y
+   el campo de chispas (canvas, ver mas abajo). El riel es mas largo que el de
+   la Tierra. Sin JS / GSAP caido / reduced-motion queda el hero estatico: el
+   primer fotograma + titulo + lead.
+   Beat 1-2: renders del disco (assets propios). Beat 3-6: fotogramas de la
+   pelicula (cap-that.com), 1600px.
+   --------------------------------------------------------------------------- */
+.mundo-capa--gargantua-lejos {
+  background-image: url("../assets/img/mundos-gargantua.webp");
+}
+
+.mundo-capa--gargantua-disco {
+  background-image: url("../assets/img/ciencia-gargantua.webp");
+  opacity: 0;
+}
+
+.mundo-capa--gargantua-plano {
+  background-image: url("../assets/img/mundos-gargantua-plano.webp");
+  opacity: 0;
+}
+
+.mundo-capa--gargantua-endurance {
+  background-image: url("../assets/img/mundos-gargantua-endurance.webp");
+  opacity: 0;
+}
+
+.mundo-capa--gargantua-ranger {
+  background-image: url("../assets/img/mundos-gargantua-ranger.webp");
+  opacity: 0;
+}
+
+.mundo-capa--gargantua-deriva {
+  background-image: url("../assets/img/mundos-gargantua-deriva.webp");
+  opacity: 0;
+}
+
+/* Movil (viewport angosto): los fotogramas panoramicos siguen en `cover` (llenan
+   la pantalla), pero se corre el encuadre a donde esta el sujeto para que el
+   recorte vertical no lo deje afuera. El zoom extra de estos beats se anula en
+   el JS (rama movil) para que no queden todavia mas ampliados. */
+@media (max-width: 47.99rem) {
+  .mundo-capa--gargantua-lejos {
+    background-position: 60% center; /* el borde del agujero + el disco, no el vacio de la izq */
+  }
+  .mundo-capa--gargantua-deriva {
+    background-position: 58% center; /* el casco de Cooper */
+  }
+}
+
+/* Al irse el ultimo fotograma queda el negro (el campo de chispas va encima). */
+.mundo-portada--gargantua .mundo-portada-escena {
+  background: #000;
+}
+
+/* Chispas del cruce: dos <canvas> que dibuja js/mundo-portada.js -> solo existen
+   con la escena armada; sin JS no hay canvas y esto no pinta nada.
+   - `.mundo-chispas-fx` (z-index 3): por DELANTE del fotograma.
+   - `.mundo-chispas-fx--fondo` (z-index 0, primer hijo): por DETRAS de las
+     `.mundo-capa` -> mientras `deriva` es opaco tapa esas chispas (Cooper
+     adelante); al bajar el fotograma a autoAlpha 0.22 asoman -> profundidad. */
+.mundo-chispas-fx {
+  position: absolute;
+  inset: 0;
+  z-index: 3;                            /* sobre el fotograma y el grano */
+  pointer-events: none;
+}
+
+.mundo-chispas-fx--fondo {
+  z-index: 0;                            /* detras de los fotogramas */
+}
+
+.mundo-chispas-fx canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Riel mas largo que el de la Tierra: 6 beats + el ultimo fotograma aguanta.
+   (La regla generica de `.mundo-portada.is-armed` fija 380/460svh para 5.) */
+.mundo-portada--gargantua.is-armed {
+  height: 560svh;                        /* 6 beats + el ultimo fotograma aguanta */
+}
+
+@media (min-width: 48rem) {
+  .mundo-portada--gargantua.is-armed {
+    height: 680svh;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Portada "el amerizaje" (js/mundo-portada.js, GSAP) — pagina Miller
+   ---------------------------------------------------------------------------
+   Misma mecanica que Tierra y Gargantua: riel alto + escena `sticky` que solo
+   aparece con `.is-armed`. Seis fotogramas apilados que el scroll encadena —
+   los dos exploradores en el agua somera -> un explorador solo -> la camara al
+   ras del oceano -> la ola-montaña que TREPA con el scroll -> el agua barriendo
+   el Ranger -> la cabina en la huida. Encima, el reloj de la dilatacion (ver
+   `.mundo-reloj`). Sin JS / GSAP caido / reduced-motion queda el hero estatico:
+   el primer fotograma + titulo + lead, sin reloj.
+   Beats: fotogramas de la pelicula (cap-that.com), 1800px.
+   --------------------------------------------------------------------------- */
+.mundo-capa--miller-arribo {
+  background-image: url("../assets/img/mundos-miller-arribo.webp");
+}
+
+.mundo-capa--miller-vadeo {
+  background-image: url("../assets/img/mundos-miller-vadeo.webp");
+  opacity: 0;
+}
+
+.mundo-capa--miller-rasante {
+  background-image: url("../assets/img/mundos-miller-rasante.webp");
+  opacity: 0;
+}
+
+.mundo-capa--miller-ola {
+  background-image: url("../assets/img/mundos-miller-ola.webp");
+  opacity: 0;
+}
+
+.mundo-capa--miller-impacto {
+  background-image: url("../assets/img/mundos-miller-impacto.webp");
+  opacity: 0;
+}
+
+.mundo-capa--miller-muro {
+  background-image: url("../assets/img/mundos-miller-muro.webp");
+  opacity: 0;
+}
+
+.mundo-capa--miller-cabina {
+  background-image: url("../assets/img/mundos-miller-cabina.webp");
+  opacity: 0;
+}
+
+/* Los exteriores de Miller se filmaron con una paleta muy lavada (cielo pálido,
+   mar gris, sin sol). Un empujón leve de contraste/saturación los despega sin
+   traicionar el tono. `--miller-impacto` queda afuera: el JS le anima su propio
+   `filter` (blanqueo) y un filter en CSS lo pisaría. */
+.mundo-portada--miller .mundo-capa:not(.mundo-capa--miller-impacto) {
+  filter: saturate(1.08) contrast(1.1) brightness(0.97);
+}
+
+/* Movil: se corre el encuadre al sujeto para que el recorte vertical de `cover`
+   no lo deje afuera. */
+@media (max-width: 47.99rem) {
+  .mundo-capa--miller-arribo {
+    background-position: 60% center;
+  }
+  .mundo-capa--miller-cabina {
+    background-position: 66% center;
+  }
+  .mundo-capa--miller-vadeo {
+    background-position: 70% center;  /* los exploradores estan a la derecha */
+  }
+  .mundo-capa--miller-impacto {
+    background-position: 74% center;  /* el astronauta esta a la derecha */
+  }
+}
+
+/* Reloj de la dilatacion temporal: overlay arriba-derecha que cuenta los años
+   perdidos afuera mientras "bajas" (0 -> 23). Es a Miller lo que el campo de
+   chispas a Gargantua: lo prende y lo anima js/mundo-portada.js, asi que solo
+   existe con la escena armada. Sin `.is-armed` no se muestra. */
+.mundo-reloj {
+  position: absolute;
+  top: clamp(0.75rem, 3vh, 1.5rem);
+  right: clamp(1rem, 4vw, 2.75rem);
+  z-index: 3;
+  margin: 0;
+  font: 500 clamp(0.82rem, 1.3vw, 1rem) / 1 var(--font-instrumento);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-texto);
+  text-shadow: 0 0 0.7rem #000, 0 1px 3px #000;
+  opacity: 0;                        /* GSAP lo sube al armar la escena */
+}
+
+.mundo-portada--miller:not(.is-armed) .mundo-reloj {
+  display: none;
+}
+
+.mundo-reloj-num {
+  font-size: 1.4em;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Riel: 7 beats (la ola + el muro sobre el Ranger aguantan tramos largos). */
+.mundo-portada--miller.is-armed {
+  height: 640svh;
+}
+
+@media (min-width: 48rem) {
+  .mundo-portada--miller.is-armed {
+    height: 800svh;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Portada "el señuelo" (js/mundo-portada.js, GSAP) — pagina Mann
+   ---------------------------------------------------------------------------
+   Misma mecanica: riel + escena `sticky` que solo aparece con `.is-armed`.
+   Seis fotogramas que el scroll encadena — la vista cenital del hielo -> dos
+   figuras en las crestas -> el doctor Mann -> la traicion (Cooper boca abajo,
+   visor rajado) -> la aproximacion a la Endurance -> la caida por el tunel de
+   acoplamiento. Encima, una baliza que marca SEÑAL: HABITABLE y se corrompe a
+   ENGAÑO en cuanto el scroll llega a la traicion.
+   Fotogramas de la pelicula (cap-that.com), 1800px.
+   --------------------------------------------------------------------------- */
+.mundo-capa--mann-hielo {
+  background-image: url("../assets/img/mundos-mann-hielo.webp");
+}
+
+.mundo-capa--mann-superficie {
+  background-image: url("../assets/img/mundos-mann-superficie.webp");
+  opacity: 0;
+}
+
+.mundo-capa--mann-mann {
+  background-image: url("../assets/img/mundos-mann-mann.webp");
+  opacity: 0;
+}
+
+.mundo-capa--mann-engano {
+  background-image: url("../assets/img/mundos-mann-engano.webp");
+  opacity: 0;
+}
+
+.mundo-capa--mann-docking {
+  background-image: url("../assets/img/mundos-mann-docking.webp");
+  opacity: 0;
+}
+
+.mundo-capa--mann-tunel {
+  background-image: url("../assets/img/mundos-mann-tunel.webp");
+  opacity: 0;
+}
+
+/* La paleta de Mann es blanco de hielo, casi sin color: un grade frio la lleva
+   al limite sin volverla monocroma. `docking` y `tunel` quedan afuera — pasan
+   en el negro del espacio y el JS les toca su propio filter en el remate. */
+.mundo-portada--mann .mundo-capa:not(.mundo-capa--mann-docking):not(.mundo-capa--mann-tunel) {
+  filter: saturate(0.88) contrast(1.12) brightness(1.03);
+}
+
+@media (max-width: 47.99rem) {
+  .mundo-capa--mann-hielo {
+    background-position: 72% center;  /* el anillo del campamento esta a la derecha */
+  }
+  .mundo-capa--mann-mann {
+    background-position: 35% center;
+  }
+  .mundo-capa--mann-engano {
+    background-position: 42% center;
+  }
+}
+
+/* Baliza de habitabilidad: overlay arriba-derecha con lectura de instrumento.
+   Arranca `SEÑAL HABITABLE` (verde); el JS le agrega `.is-mentira` y la pasa a
+   `ENGAÑO` (rojo) cuando el scroll llega a la traicion. Es a Mann lo que el
+   reloj a Miller: solo aparece con la escena armada. */
+.mundo-baliza {
+  position: absolute;
+  top: clamp(0.75rem, 3vh, 1.5rem);
+  right: clamp(1rem, 4vw, 2.75rem);
+  z-index: 3;
+  margin: 0;
+  font: 500 clamp(0.72rem, 1.15vw, 0.9rem) / 1 var(--font-instrumento);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-texto);
+  text-shadow: 0 0 0.7rem #000, 0 1px 3px #000;
+  opacity: 0;                        /* GSAP lo sube al armar la escena */
+}
+
+.mundo-portada--mann:not(.is-armed) .mundo-baliza {
+  display: none;
+}
+
+.mundo-baliza-estado {
+  font-weight: 700;
+  color: #6bd88c;                    /* verde "apto" */
+}
+
+.mundo-baliza.is-mentira .mundo-baliza-estado {
+  color: #e8564a;                    /* rojo — la señal era falsa */
+}
+
+.mundo-portada--mann.is-armed {
+  height: 560svh;
+}
+
+@media (min-width: 48rem) {
+  .mundo-portada--mann.is-armed {
+    height: 700svh;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Portada "el pasillo del tiempo" (js/mundo-portada.js, GSAP) — pagina Tesseract
+   ---------------------------------------------------------------------------
+   El tesseract no es un planeta: es la reticula donde el tiempo se recorre como
+   un espacio. Seis fotogramas que el scroll encadena — la reticula infinita de
+   estanterias -> la caida por la estructura -> detras del estante, la
+   habitacion por los hilos -> Cooper tensandose contra el estante -> la vista
+   cenital del cuarto (el mensaje) -> Murph adulta entendiendo. Encima, un tren
+   de morse que TRANSMITE mientras scrolleas y se decodifica en STAY al final.
+   Fotogramas de la pelicula (cap-that.com), 1800px.
+   --------------------------------------------------------------------------- */
+.mundo-capa--tesseract-reticula {
+  background-image: url("../assets/img/mundos-tesseract-reticula.webp");
+}
+
+.mundo-capa--tesseract-caida {
+  background-image: url("../assets/img/mundos-tesseract-caida.webp");
+  opacity: 0;
+}
+
+.mundo-capa--tesseract-estante {
+  background-image: url("../assets/img/mundos-tesseract-estante.webp");
+  opacity: 0;
+}
+
+.mundo-capa--tesseract-empuje {
+  background-image: url("../assets/img/mundos-tesseract-empuje.webp");
+  opacity: 0;
+}
+
+.mundo-capa--tesseract-mensaje {
+  background-image: url("../assets/img/mundos-tesseract-mensaje.webp");
+  opacity: 0;
+}
+
+.mundo-capa--tesseract-murph {
+  background-image: url("../assets/img/mundos-tesseract-murph.webp");
+  opacity: 0;
+}
+
+/* Paleta del tesseract: negro con luz ambar del cuarto. Un grade que ahonda los
+   negros y calienta apenas el ambar. */
+.mundo-portada--tesseract .mundo-capa {
+  filter: contrast(1.12) saturate(1.06) brightness(0.96);
+}
+
+@media (max-width: 47.99rem) {
+  .mundo-capa--tesseract-reticula {
+    background-position: 70% center;  /* Cooper trepando esta a la derecha */
+  }
+  .mundo-capa--tesseract-estante {
+    background-position: 60% center;
+  }
+  .mundo-capa--tesseract-mensaje {
+    background-position: 45% center;
+  }
+}
+
+/* El tren de morse: overlay arriba-derecha. Los cuatro grupos (S T A Y) entran
+   apagados y el JS los ENCIENDE en orden con el scroll; al final asoma la
+   palabra decodificada. Solo con la escena armada. */
+.mundo-morse {
+  position: absolute;
+  top: clamp(0.75rem, 3vh, 1.5rem);
+  right: clamp(1rem, 4vw, 2.75rem);
+  z-index: 3;
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  font: 500 clamp(0.8rem, 1.3vw, 1rem) / 1 var(--font-instrumento);
+  letter-spacing: 0.1em;
+  color: var(--color-texto);
+  text-shadow: 0 0 0.7rem #000, 0 1px 3px #000;
+  opacity: 0;                        /* GSAP lo sube al armar la escena */
+}
+
+.mundo-portada--tesseract:not(.is-armed) .mundo-morse {
+  display: none;
+}
+
+.mundo-morse-tren {
+  display: inline-flex;
+  gap: 0.5rem;
+}
+
+.mundo-morse-g {
+  opacity: 0.26;                     /* GSAP los sube de a uno */
+}
+
+.mundo-morse-palabra {
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-tierra-oro);
+  opacity: 0;                        /* GSAP la revela al final */
+}
+
+.mundo-portada--tesseract.is-armed {
+  height: 560svh;
+}
+
+@media (min-width: 48rem) {
+  .mundo-portada--tesseract.is-armed {
+    height: 700svh;
+  }
+}
+
+/* Lista de "rasgos distintivos": el reset dejo los <ul> sin viñeta; aca se
+   repone el disco para este bloque de contenido. */
+.mundo-detalle #rasgos ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+
+.mundo-detalle #rasgos li {
+  margin: 0.35rem 0;
+  font-family: var(--font-texto);
+  line-height: 1.6;
+  color: var(--color-texto-atenuado);
+}
+
+/* ---------------------------------------------------------------------------
+   Tira de celuloide (js/filmstrip.js, GSAP) — pagina de detalle
+   ---------------------------------------------------------------------------
+   Port del prototipo _lab/filmstrip-mundos.html (spike/librerias). Una tira de
+   pelicula con perforaciones que desfila en loop infinito mientras esta a la
+   vista; hover/foco la desaceleran. Capa de CONTENIDO: paleta crema, sin teal.
+
+   Degradado (sin JS / GSAP caido / reduced-motion): `overflow-x: auto` sin
+   mascara -> la tira se scrollea a mano. El JS lo aplica inline; aca el estado
+   base es la tira quieta con la vineta puesta.
+   --------------------------------------------------------------------------- */
+.mundo-film {
+  position: relative;
+  height: clamp(200px, 34vh, 340px);
+  overflow: hidden;
+  background: #0b0b0d;                 /* base del celuloide */
+  border-radius: 3px;
+  /* vineta a los costados: los fotogramas entran y salen suave */
+  -webkit-mask: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+          mask: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+
+/* En modo manual (reduced-motion / sin GSAP) la tira es un scroll horizontal:
+   necesita foco visible para navegarse con teclado. */
+.mundo-film:focus-visible {
+  outline: 2px solid var(--focus-anillo);
+  outline-offset: 2px;
+}
+
+.mundo-film-track {
+  display: flex;
+  height: 100%;
+  width: max-content;
+  /* perforaciones arriba y abajo: viajan CON la tira */
+  padding-block: 18px;
+  background:
+    repeating-linear-gradient(90deg,
+      transparent 0 14px, #d9d4c4 14px 26px, transparent 26px 44px) top    / auto 11px repeat-x,
+    repeating-linear-gradient(90deg,
+      transparent 0 14px, #d9d4c4 14px 26px, transparent 26px 44px) bottom / auto 11px repeat-x,
+    #050506;
+}
+
+.mundo-film-frame {
+  flex: 0 0 auto;
+  width: clamp(240px, 32vw, 400px);
+  height: 100%;
+  margin-inline: 5px;                  /* separacion entre cuadros (base del film) */
+  position: relative;
+  background: #000;
+  overflow: hidden;
+}
+
+/* El <picture> (feature 007) es solo envoltorio de formato: no debe meter una
+   caja intermedia entre el frame y su <img> (el <img> lleva height:100%). */
+.mundo-film-frame picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.mundo-film-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  /* patina de celuloide: desaturado calido, algo de contraste */
+  filter: grayscale(0.14) sepia(0.14) saturate(0.9) contrast(1.09) brightness(0.9);
+}
+
+.mundo-film-frame figcaption {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  font: 500 0.7rem/1.2 var(--font-instrumento);
+  letter-spacing: 0.08em;
+  color: var(--color-texto);
+  background: rgba(0, 0, 0, 0.6);
+  padding: 2px 6px;
+  border-radius: 2px;
+  text-transform: uppercase;
+  opacity: 0.92;
+}
+
+/* grano de pelicula: da textura al fotograma; SVG inline -> 0 bytes de red */
+.mundo-film::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.35;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* vineta general sobre toda la tira */
+.mundo-film::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  box-shadow: inset 0 0 6rem 1.5rem rgba(0, 0, 0, 0.8);
+}
+
+.mundo-ciencia-enlace {
+  margin-top: 1rem;
+}
+
+.mundo-ciencia-enlace a {
+  font-family: var(--font-nav);
+  font-size: 0.98rem;
+  color: var(--color-tierra-oro);
+  text-decoration: none;
+}
+
+.mundo-ciencia-enlace a:hover,
+.mundo-ciencia-enlace a:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+/* Paginacion anterior / siguiente entre mundos. El <span> vacio del lado sin
+   destino actua de separador para `space-between`. */
+.mundo-paginacion {
+  max-width: 60rem;
+  margin: 2.5rem auto 3.5rem;
+  padding: 1.5rem 1.25rem 0;
+  border-top: 1px solid color-mix(in srgb, var(--color-texto) 12%, transparent);
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.mundo-paginacion a {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  max-width: 47%;
+  text-decoration: none;
+  color: var(--color-texto-atenuado);
+}
+
+.mundo-paginacion a:hover,
+.mundo-paginacion a:focus-visible {
+  color: var(--color-texto);
+}
+
+.mundo-siguiente {
+  margin-left: auto;
+  text-align: right;
+}
+
+.mundo-paginacion-rol {
+  font-family: var(--font-nav);
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.mundo-paginacion-nombre {
+  font-family: var(--font-hero-titulo);
+  font-size: 1.05rem;
+  color: inherit;
+}

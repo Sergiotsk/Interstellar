@@ -7,11 +7,11 @@ const mundos = {
   href: 'mundos.html',
   hasChildren: true,
   children: [
-    { id: 'tierra', label: 'La Tierra', href: 'mundos.html#tierra' },
-    { id: 'gargantua', label: 'Gargantúa', href: 'mundos.html#gargantua' },
-    { id: 'miller', label: 'Planeta de Miller', href: 'mundos.html#miller' },
-    { id: 'mann', label: 'Planeta de Mann', href: 'mundos.html#mann' },
-    { id: 'tesseract', label: 'El Tesseract', href: 'mundos.html#tesseract' },
+    { id: 'tierra', label: 'La Tierra', href: 'mundos-tierra.html' },
+    { id: 'gargantua', label: 'Gargantúa', href: 'mundos-gargantua.html' },
+    { id: 'miller', label: 'Planeta de Miller', href: 'mundos-miller.html' },
+    { id: 'mann', label: 'Planeta de Mann', href: 'mundos-mann.html' },
+    { id: 'tesseract', label: 'El Tesseract', href: 'mundos-tesseract.html' },
   ],
 };
 

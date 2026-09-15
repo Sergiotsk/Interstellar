@@ -1,7 +1,7 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { NavConfig } from '../js/nav-data.js';
-import { buildHeader, buildFooter, renderLayout, init } from '../js/layout.js';
+import { buildHeader, buildFooter, buildCielo, renderLayout, init } from '../js/layout.js';
 
 function escapeHtml(value) {
   return String(value)
@@ -56,6 +56,20 @@ describe('js/layout.js — contrato layout-injection.md', () => {
     assert.ok(toggleIdx < navIdx, 'el toggle va antes del <nav>');
   });
 
+  test('el header incluye la marca (Interstellar + NAV · RANGER) como enlace al inicio', () => {
+    // Antes era un pseudo-elemento (header::after); ahora es un <a> real para
+    // que sea navegable y accesible. Dos lineas: la marca "Interstellar" arriba
+    // y el rotulo de instrumento "NAV · RANGER" (con sus LED) abajo.
+    assert.match(header, /<a class="cockpit-brand" href="index\.html"[^>]*aria-label="[^"]+"/);
+    assert.ok(header.includes('<span class="cockpit-marca">Interstellar</span>'));
+    assert.ok(header.includes('>NAV<'));
+    assert.ok(header.includes('RANGER'));
+    // La marca "Interstellar" va antes de la linea NAV · RANGER.
+    assert.ok(header.indexOf('cockpit-marca') < header.indexOf('cockpit-brand-linea'));
+    // Va antes del toggle (extremo izquierdo de la banda).
+    assert.ok(header.indexOf('class="cockpit-brand"') < header.indexOf('class="nav-toggle"'));
+  });
+
   test('hasChildren: true solo en los 4 ejes (FR-003)', () => {
     const axes = NavConfig.items.filter((item) => item.hasChildren);
     assert.equal(axes.length, 4);
@@ -65,12 +79,14 @@ describe('js/layout.js — contrato layout-injection.md', () => {
     );
   });
 
-  test('21 destinos anidados con href <pagina>.html#<ancla> (FR-005..FR-008)', () => {
+  test('21 destinos anidados con href relativo a pagina (FR-005..FR-008)', () => {
     const items = NavConfig.items.filter((item) => item.hasChildren);
     const children = items.flatMap((item) => item.children);
     assert.equal(children.length, 21);
     for (const child of children) {
-      assert.match(child.href, /^[a-z-]+\.html#[a-z-]+$/);
+      // Los ejes con pagina propia por destino (Mundos -> mundos-<slug>.html)
+      // no llevan ancla; el resto sigue apuntando a <pagina>.html#<ancla>.
+      assert.match(child.href, /^[a-z-]+\.html(#[a-z-]+)?$/);
       assert.ok(header.includes(`href="${escapeHtml(child.href)}"`));
       assert.ok(header.includes(`>${escapeHtml(child.label)}<`));
     }
@@ -108,6 +124,23 @@ describe('js/layout.js — contrato layout-injection.md', () => {
     assert.doesNotMatch(footer, /Fuentes del material visual/i);
   });
 
+  test('el pie suma la tecla de Contacto y las de compartir (WhatsApp/Facebook/Compartir)', () => {
+    // Contacto: enlace directo a la página propia.
+    assert.ok(footer.includes('href="contacto.html"'));
+    // WhatsApp y Facebook: enlaces de "share" con la home como destino sin JS.
+    assert.match(footer, /<a href="https:\/\/wa\.me\/\?text=[^"]+" data-share="whatsapp"/);
+    assert.match(footer, /<a href="https:\/\/www\.facebook\.com\/sharer\/sharer\.php\?u=[^"]+" data-share="facebook"/);
+    // "Compartir": <button> (Web Share API) dentro de un <li> oculto hasta que
+    // el JS confirme soporte de navigator.share.
+    assert.match(footer, /<li class="tele tele-accion" data-share-nativo hidden>/);
+    assert.match(footer, /<button type="button" data-share="nativo"/);
+    // Siguen las teclas de créditos y repo; ya NO está el display "Interstellar".
+    assert.ok(footer.includes('href="creditos.html"'));
+    assert.ok(footer.includes('https://github.com/Sergiotsk/Interstellar.git'));
+    assert.doesNotMatch(footer, /<span class="tele-v">Interstellar<\/span>/);
+    assert.doesNotMatch(footer, /class="tele"(?!\s+tele-accion)/); // no quedan teclas-display sin acción
+  });
+
   test('layout.js no lleva datos propios: sin argumento produce el mismo header que con NavConfig', () => {
     assert.equal(buildHeader(), buildHeader(NavConfig));
   });
@@ -132,5 +165,36 @@ describe('js/layout.js — contrato layout-injection.md', () => {
     assert.ok(calls[0].html.startsWith('<header>'));
     assert.equal(calls[1].position, 'beforeend');
     assert.ok(calls[1].html.startsWith('<footer>'));
+  });
+
+  test('buildCielo: div decorativo con 3 <i> (las estrellas fugaces)', () => {
+    const cielo = buildCielo();
+    assert.ok(cielo.startsWith('<div class="cielo"'));
+    assert.match(cielo, /aria-hidden="true"/);
+    assert.equal(countMatches(cielo, /<i>/g), 3);
+  });
+
+  test('init: sin `con-cielo` no inyecta cielo; con `con-cielo` lo agrega primero', () => {
+    // Sin classList (DOM de prueba minimo): la guarda evita el cielo -> 2 calls.
+    const sin = [];
+    globalThis.document = {
+      body: { insertAdjacentHTML: (position, html) => sin.push({ position, html }) },
+    };
+    init();
+    assert.equal(sin.length, 2);
+    assert.ok(!sin.some((c) => c.html.includes('class="cielo"')));
+
+    // Con `con-cielo`: 3ra llamada = cielo, en `afterbegin` (queda primer hijo).
+    const con = [];
+    globalThis.document = {
+      body: {
+        classList: { contains: (c) => c === 'con-cielo' },
+        insertAdjacentHTML: (position, html) => con.push({ position, html }),
+      },
+    };
+    init();
+    assert.equal(con.length, 3);
+    assert.equal(con[2].position, 'afterbegin');
+    assert.ok(con[2].html.startsWith('<div class="cielo"'));
   });
 });

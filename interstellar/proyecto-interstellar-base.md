@@ -209,8 +209,8 @@ Definiciones prácticas para que el agente de IA no improvise su propia estructu
 
 ### Estrategia de CSS
 
-- **Un CSS global de base** (`css/global.css`): variables (paleta, tipografía, espaciados), reset, estilos de `header`/`footer`/`nav`, utilidades comunes.
-- **Un CSS específico por página pesada** cuando haga falta (ej. `css/viaje.css` para la animación del viaje, `css/minijuegos.css`). Las páginas simples usan solo el global.
+- **Cuatro hojas globales de responsabilidad única**, cargadas como `<link>` independientes y en este orden fijo (sin `@import`): `css/reset.css` (reset y normalización con `:where()`), `css/variables.css` (todos los tokens en `:root` + `@font-face`), `css/base.css` (estilos base de elementos + espaciado de lectura), `css/layout.css` (layout del sitio y componentes compartidos). Ver `specs/006-reset-css/`.
+- **Un CSS específico por página pesada** cuando haga falta (ej. `css/viaje.css` para la animación del viaje, `css/minijuegos.css`), cargado como 5º `<link>` **después** de las cuatro. Las páginas simples usan solo las cuatro globales.
 - Toda la paleta y valores reutilizables van como **variables CSS** (`:root { --color-gargantua: #e8a13a; ... }`), nunca hardcodeados sueltos.
 
 ### JavaScript

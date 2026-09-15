@@ -1,1 +1,13 @@
-{"name": "interstellar", "private": true, "type": "module"}
+{
+  "name": "interstellar",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.33.0",
+  "scripts": {
+    "test": "node --test",
+    "optimize": "node tools/optimize-img.mjs"
+  },
+  "devDependencies": {
+    "sharp": "0.35.4"
+  }
+}
