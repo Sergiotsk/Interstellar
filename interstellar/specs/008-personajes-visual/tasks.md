@@ -209,7 +209,14 @@ se cura material — sin tocar código nuevo, solo reusar lo de US2-US4.
   forzó. Filas de crédito nuevas en `CREDITOS.md` + `js/creditos.js` para los
   3 stills reusados (no tenían fila propia pese a usarse ya en sus páginas
   de mundos).
-- [ ] T026 [US5] Ídem para `#profesor-brand`.
+- [X] T026 [US5] Ídem para `#profesor-brand` — patrón completo (hero + galería
+  + visor). Sin stills reusables previos (personaje solo en Tierra, no
+  aparece en `mundos-*.html`): se curaron 3 escenas nuevas del volcado
+  (NASA secreta ~frame 02408, laboratorios ~02450, lecho de muerte ~06635) +
+  un tramo de 3 fotogramas consecutivos (06618-06620) para el visor. El hero
+  reusa `personajes-profesor-brand.jpg` de la feature 003, recortado sin
+  letterbox como `personajes-profesor-brand-hero.jpg` (el original queda
+  intacto para la portada en mosaico).
 - [X] T027 [US5] Ídem para `#mann` — DESVÍO: se reusaron stills ya curados de
   `mundos-mann.html` (`mundos-mann-retrato/-mann/-engano/-docking.jpg`) en vez
   de curar fotogramas nuevos del volcado, mismo criterio que T011/T012. Hero +

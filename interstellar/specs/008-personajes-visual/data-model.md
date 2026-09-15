@@ -76,7 +76,7 @@ el campo `Personaje.patron`:
 | `cooper` | 5 | Sí (≥2) | Pendiente de curar | `completo` (galería) — visor pendiente de curación real, ver Tareas |
 | `murph` | 4 | Sí (≥2) | Pendiente de curar | `completo` (galería) — visor pendiente de curación real |
 | `brand` | 4 (3 reusados de mundos-miller/mann/gargantua) | Sí (3) | No | `completo` (hero + galería) — visor pendiente de curación real |
-| `profesor-brand` | 1 | No | No | `degradado` |
+| `profesor-brand` | 5 (1 hero recortado + 3 escenas + curados del volcado) | Sí (3) | Sí (1 tramo, 3 frames) | `completo` (hero + galería + visor) |
 | `mann` | 5 (4 reusados de `mundos-mann.html`) | Sí (3) | Sí (2 tramos, 8 frames) | `completo` (hero + galería + visor) |
 | `tars-case` | 1 | No | No | `degradado` |
 
