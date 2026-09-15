@@ -355,9 +355,18 @@ body.js-armado .riel-tira.is-armada .tira-fotogramas {
   padding: 0 1.25rem;
 }
 
+/* BUGFIX: el riel NO centra cada fotograma activo — `js/personajes.js`
+   desplaza la pista con un paneo lineal continuo (de punta a punta segun el
+   scroll), no lo snapea al centro del viewport. Con el fotograma ocupando
+   casi todo el ancho/alto disponible (como era antes), en la mayoria de las
+   posiciones de scroll el activo quedaba cortado por un borde de la pantalla
+   — se perdia el marco naranja de `--color-gargantua`. Se lo achica (alto +
+   `max-width` en vw) para que, panee donde panee la pista, siempre quede aire
+   real a los costados y arriba/abajo. */
 .tira-frame {
   flex: 0 0 auto;
-  height: calc(100% - 2rem);
+  height: calc(78% - 2rem);
+  max-width: 62vw;
   margin: 1rem 0;
   aspect-ratio: 3 / 2;
   scroll-snap-align: center;
