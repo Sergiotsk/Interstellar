@@ -34,15 +34,16 @@ describe('js/creditos.js — página de créditos y fuentes', () => {
   });
 
   test('cubre el 100 % de los assets descargados del registro (SC-008)', () => {
-    // Sincronía con assets/img/CREDITOS.md: 93 assets con estado `descargado`
-    // (72 previos + 21 netos: el tramo "El despegue" de Cooper se re-curó de
-    // 4 a 25 fotogramas consecutivos — 3000-3024, la secuencia real de
-    // lanzamiento con fuerza G — tras detectar que el tramo anterior no era
-    // la escena correcta. Murph sin cambios: 8 frames, 2 tramos de 4).
+    // Sincronía con assets/img/CREDITOS.md: 121 assets con estado `descargado`
+    // (115 previos + 6 netos: `personajes-tars.jpg`/`personajes-case.jpg`, 2
+    // escenas de galería curadas del volcado local (TARS y CASE a bordo del
+    // Endurance, misma secuencia); y `personajes-tars-case-visor-01..04.jpg`,
+    // tramo "A bordo" [fotogramas 04618-04621] para el visor Nav-Ranger
+    // [feature 008, US5 — completa los 6 personajes de la portada]).
     // Licencia clara NASA/ESA/EHT/NOAA + fotogramas de la película (FILMGRAB /
     // cap-that.com). Los `pendiente` NO se listan hasta tener archivo
     // (convención de honestidad).
-    assert.equal(ASSET_CREDITS.length, 93);
+    assert.equal(ASSET_CREDITS.length, 121);
     for (const linea of ASSET_CREDITS) {
       // Cada línea: `<archivo>.<ext> — <atribución no vacía>` (jpg salvo
       // terra-orbita.webp, que necesita alpha para recortarse sobre el cielo).

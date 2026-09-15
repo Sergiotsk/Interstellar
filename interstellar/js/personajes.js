@@ -92,9 +92,18 @@ async function armarGalerias() {
     frames.forEach((el, n) => el.classList.toggle('activa', n === 0));
     if (progreso) progreso.textContent = `1 / ${total}`;
 
-    // Distancia real de la tira: el desplazamiento coincide con el ancho
-    // real de los fotogramas, no un valor fijo.
-    const distancia = pista.scrollWidth - tiraViewport.clientWidth;
+    // Centro (en x) de cada fotograma dentro de la pista, medido con el
+    // layout SIN transformar (offsetLeft ignora `transform`, así que da
+    // igual el x actual). BUGFIX: antes la pista se desplazaba con un pan
+    // lineal atado a `progress` de punta a punta de la tira — el primer y el
+    // último fotograma quedaban pegados a un borde del viewport (nunca
+    // centrados) y, como el `activa` (corte duro de texto/marco) cambia en
+    // umbrales no lineales (ver `segmentos` abajo), el paneo del último tramo
+    // se sentía desparejo/apurado frente a los anteriores.
+    const centros = frames.map(
+      (f) => f.offsetLeft + f.offsetWidth / 2 - tiraViewport.clientWidth / 2,
+    );
+    const segmentos = total - 1;
 
     const trigger = ScrollTrigger.create({
       trigger: riel,
@@ -102,10 +111,20 @@ async function armarGalerias() {
       end: 'bottom bottom',
       scrub: 0.3,
       onUpdate(self) {
-        if (distancia > 0) {
-          gsap.set(pista, { x: -distancia * self.progress });
-        }
-        const idx = Math.round(self.progress * (total - 1));
+        // `cruda` recorre 0..segmentos: cada tramo entero mueve la pista
+        // desde el centro del fotograma `piso` hasta el centro del
+        // siguiente, en línea recta y a ritmo parejo — el primero arranca
+        // centrado (cruda=0) y el último TERMINA centrado (cruda=segmentos),
+        // sin pegarse a ningún borde.
+        const cruda = self.progress * segmentos;
+        const piso = Math.min(segmentos, Math.floor(cruda));
+        const siguiente = Math.min(segmentos, piso + 1);
+        const local = cruda - piso;
+        const xDesde = -centros[piso];
+        const xHasta = -centros[siguiente];
+        gsap.set(pista, { x: xDesde + (xHasta - xDesde) * local });
+
+        const idx = Math.round(cruda);
         datos.forEach((el, n) => el.classList.toggle('activa', n === idx));
         frames.forEach((el, n) => el.classList.toggle('activa', n === idx));
         if (progreso) progreso.textContent = `${idx + 1} / ${total}`;

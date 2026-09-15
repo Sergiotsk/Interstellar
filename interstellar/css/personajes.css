@@ -16,27 +16,68 @@
    6 personajes, clickeables, a pantalla casi completa. El <h1>Personajes</h1>
    de esta sección es el UNICO <h1> de toda la página (contrato 008 C1).
 
-   `.galeria-grid` de acá abajo es una PORTACION TEXTUAL de css/galeria.css
-   (misma regla, sin cambio de valor) — NO se linkea css/galeria.css desde
-   esta página: cada hoja de 5o nivel queda aislada a su propia página
-   (contrato 006 C5, ver research.md §6b de la feature 008). Solo se le suma
-   el overlay de nombre/rol, que es exclusivo de este mosaico.
+   Ajuste posterior (mismo feature 008): la portada toma el lenguaje visual
+   del hub de Mundos (css/mundos.css `.mundos-grid`/`.mundo-tarjeta*`) para
+   las TARJETAS — grandes, zoom + brillo al hover/foco, texto que se desliza
+   hacia arriba y una barra de acento que "barre" desde la izquierda en
+   `--color-gargantua` (el único color saturado del sitio — mismo acento que
+   usa Mundos, el nav y el resto del cockpit; no se introduce un segundo
+   color saturado). El H1/subtítulo, en cambio, NO copian el ancho angosto
+   de `.mundos-intro` (46rem): quedan alineados al mismo margen de lectura
+   que el resto de las secciones de esta página (`personaje-texto`, etc.),
+   no pegados al borde de la pantalla. Estructura de tarjeta PORTADA de
+   `.mundo-tarjeta`, adaptada al markup existente (figure > a > img +
+   figcaption) para no romper el HTML de esta página.
    --------------------------------------------------------------------------- */
-.portada-tripulacion {
-  min-height: 92svh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+/* --- Intro: la regla genérica (`body:not(.home) main > section:first-child`,
+   layout.css §10) limita la SECCIÓN a max-width:60rem + padding-inline —
+   bien para una intro de solo texto, pero acá adentro también vive el grid
+   a todo el ancho (a diferencia de Mundos, donde `.mundos-grid` es HERMANO
+   de `.mundos-intro`, no hijo). Se libera la sección (max-width/padding a
+   0) para que el grid respire, y el h1/p reproducen el mismo ancho de
+   lectura + centrado que la regla genérica les daba — sin eso, quedaban
+   pegados al borde izquierdo de la pantalla en vez de alineados con el
+   resto de las secciones. Tamaño/tipografía del h1 SIN cambios: el mismo
+   clamp genérico que usa cualquier otra página, no el más grande de Mundos. */
+body:not(.home) main > section.portada-tripulacion:first-child {
+  max-width: none;
+  padding-inline: 0;
 }
 
-/* --- .galeria-grid: portado 1:1 de css/galeria.css --- */
+body:not(.home) main > section.portada-tripulacion:first-child h1,
+body:not(.home) main > section.portada-tripulacion:first-child p {
+  max-width: 60rem;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+/* --- Grilla a lo ANCHO: tarjetas grandes, poster-vertical, image-forward.
+   BUGFIX: `auto-fit` dejaba el número de columnas a merced del ancho
+   disponible (5, a veces 4) — con 6 tarjetas, la última fila quedaba con UNA
+   sola tarjeta huérfana. 6 se divide parejo por 1, 2 y 3: mobile 1 columna,
+   tablet 2, desktop 3 — las 6 fichas entran en dos filas de tres, visibles
+   casi de punta a punta en una pantalla de escritorio sin quedar ninguna
+   sola. --- */
 .portada-tripulacion .galeria-grid {
   list-style: none;
-  margin: 1.5rem 0 0;
+  width: min(100% - 2.5rem, 75rem);
+  margin: 1rem auto 4rem;
   padding: 0;
   display: grid;
-  gap: 0.75rem;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  gap: clamp(0.75rem, 1.5vw, 1.4rem);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 40rem) {
+  .portada-tripulacion .galeria-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 64rem) {
+  .portada-tripulacion .galeria-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .portada-tripulacion .galeria-grid > li {
@@ -45,46 +86,67 @@
 
 .portada-tripulacion .galeria-grid figure {
   margin: 0;
-  position: relative;                /* ancla el overlay de nombre/rol */
 }
 
 .portada-tripulacion .galeria-grid figure > a {
+  position: relative;
   display: block;
-  background: var(--color-superficie);
-  border-radius: 2px;
+  aspect-ratio: 3 / 4;
   overflow: hidden;
+  border-radius: 2px;
+  border: 1px solid color-mix(in srgb, var(--color-texto) 14%, transparent);
+  isolation: isolate;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .portada-tripulacion .galeria-grid img {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
-  height: auto;
-  aspect-ratio: 3 / 2;
+  height: 100%;
   object-fit: cover;
-  filter: brightness(0.78);          /* deja legible el overlay de nombre/rol */
-  transition: filter 0.15s ease;
+  filter: brightness(0.55) saturate(1.05);
+  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1), filter 0.4s ease;
 }
 
 .portada-tripulacion .galeria-grid a:hover img,
 .portada-tripulacion .galeria-grid a:focus-visible img {
-  filter: brightness(0.95);
+  transform: scale(1.07);
+  filter: brightness(0.68) saturate(1.12);
 }
 
-/* --- overlay de nombre/rol: puntual de la portada, NO parte de .galeria-grid --- */
+/* --- overlay de nombre/rol: mismo criterio que `.mundo-tarjeta-texto` --- */
 .portada-tripulacion .galeria-grid figcaption {
   position: absolute;
   inset: auto 0 0 0;
   z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
   margin: 0;
-  padding: 0.6rem 0.75rem;
+  padding: 1.4rem 1rem 1rem;
   pointer-events: none;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.75), transparent);
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--color-fondo) 94%, transparent) 0%,
+    color-mix(in srgb, var(--color-fondo) 55%, transparent) 55%,
+    transparent 100%
+  );
+  transform: translateY(0.35rem);
+  transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.portada-tripulacion .galeria-grid a:hover figcaption,
+.portada-tripulacion .galeria-grid a:focus-visible figcaption {
+  transform: translateY(0);
 }
 
 .portada-tripulacion .galeria-grid figcaption strong {
   display: block;
   font-family: var(--font-hero-titulo);
-  font-size: 1rem;
+  font-size: clamp(1.05rem, 1.6vw, 1.35rem);
+  letter-spacing: 0.03em;
   color: var(--color-texto);
 }
 
@@ -95,6 +157,30 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-gargantua);
+}
+
+/* --- Filo de acento: barre desde la izquierda al hover/foco --- */
+.portada-tripulacion .galeria-grid figure > a::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: var(--color-gargantua);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+  z-index: 1;
+}
+
+.portada-tripulacion .galeria-grid a:hover,
+.portada-tripulacion .galeria-grid a:focus-visible {
+  border-color: color-mix(in srgb, var(--color-gargantua) 60%, transparent);
+  box-shadow: 0 0.75rem 2rem color-mix(in srgb, #000 55%, transparent);
+}
+
+.portada-tripulacion .galeria-grid a:hover::after,
+.portada-tripulacion .galeria-grid a:focus-visible::after {
+  transform: scaleX(1);
 }
 
 /* ===========================================================================
@@ -256,11 +342,17 @@ body.js-armado .riel-tira.is-armada .tira-datos {
 }
 
 .tira-datos-item {
-  padding: clamp(1.5rem, 5vw, 4rem);
+  /* Vertical MAS chico que horizontal (BUGFIX): el panel mide 30% de un
+     `100vh` con `overflow: hidden` — un padding vertical tan generoso como el
+     horizontal (ambos a 4rem) se comia el alto disponible incluso en un
+     monitor 1080p a pantalla completa (30% de 1080px = 324px, y el contenido
+     con el padding/tipografia viejos necesitaba ~378px). Ver tambien el ajuste
+     dedicado para notebooks bajitas mas abajo (≤50rem de alto). */
+  padding: clamp(1rem, 3vw, 2rem) clamp(1.5rem, 5vw, 4rem);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 0.9rem;
+  gap: 0.7rem;
   max-width: 46rem;
   margin: 0 auto;
 }
@@ -295,23 +387,43 @@ body.js-armado .riel-tira.is-armada .tira-datos-item > * {
 
 .tira-datos-item h3 {
   margin: 0;
-  font-size: clamp(1.35rem, 3.2vw, 2.1rem);
+  font-size: clamp(1.3rem, 2.6vw, 1.8rem);
 }
 
 .tira-datos-item p {
   color: var(--color-texto-atenuado);
-  line-height: 1.75;
+  line-height: 1.6;
   margin: 0;
 }
 
+/* "Dato curioso": ficha de instrumento, no un callout generico — mismo
+   lenguaje que el resto del cockpit (metal + bezel + recorte diagonal), con
+   un LED encendido en vez de un simple borde de color. */
 .tira-datos-dato {
+  position: relative;
   margin-top: 0.5rem;
-  padding: 0.9rem 1.15rem;
-  border-left: 3px solid var(--color-gargantua);
-  background: color-mix(in srgb, var(--color-gargantua) 8%, transparent);
+  padding: 0.85rem 1.15rem 0.85rem 1.65rem;
+  clip-path: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px);
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--color-gargantua) 13%, var(--cockpit-metal-alto)),
+    color-mix(in srgb, var(--cockpit-metal) 90%, var(--color-gargantua)));
+  border: 1px solid color-mix(in srgb, var(--color-gargantua) 40%, var(--cockpit-bezel));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-gargantua) 22%, transparent);
   font-family: var(--font-texto);
   font-size: 0.9rem;
   color: var(--color-texto);
+}
+
+.tira-datos-dato::before {
+  content: "";
+  position: absolute;
+  top: 1.05rem;
+  left: 0.6rem;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-gargantua);
+  box-shadow: 0 0 7px 1px color-mix(in srgb, var(--color-gargantua) 75%, transparent);
 }
 
 .tira-datos-dato strong {
@@ -319,9 +431,9 @@ body.js-armado .riel-tira.is-armada .tira-datos-item > * {
   font-family: var(--font-instrumento);
   text-transform: uppercase;
   font-size: 0.72rem;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.14em;
   display: block;
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.35rem;
 }
 
 /* -- Tira de fotogramas: SIEMPRE abajo, bloque grande (70%) -- */
@@ -349,9 +461,18 @@ body.js-armado .riel-tira.is-armada .tira-fotogramas {
   padding: 0 1.25rem;
 }
 
+/* BUGFIX: el riel NO centra cada fotograma activo — `js/personajes.js`
+   desplaza la pista con un paneo lineal continuo (de punta a punta segun el
+   scroll), no lo snapea al centro del viewport. Con el fotograma ocupando
+   casi todo el ancho/alto disponible (como era antes), en la mayoria de las
+   posiciones de scroll el activo quedaba cortado por un borde de la pantalla
+   — se perdia el marco naranja de `--color-gargantua`. Se lo achica (alto +
+   `max-width` en vw) para que, panee donde panee la pista, siempre quede aire
+   real a los costados y arriba/abajo. */
 .tira-frame {
   flex: 0 0 auto;
-  height: calc(100% - 2rem);
+  height: calc(78% - 2rem);
+  max-width: 62vw;
   margin: 1rem 0;
   aspect-ratio: 3 / 2;
   scroll-snap-align: center;
@@ -416,13 +537,67 @@ body.js-armado .riel-tira.is-armada .tira-progreso {
   }
 
   .tira-datos-dato {
-    padding: 0.65rem 0.85rem;
+    padding: 0.65rem 0.85rem 0.65rem 1.35rem;
     font-size: 0.8rem;
   }
 
   .tira-frame {
     max-width: calc(100vw - 2.5rem); /* tope real: nunca más ancho que la pantalla */
     aspect-ratio: 4 / 3;             /* menos panorámico: cabe mejor en el alto disponible */
+  }
+}
+
+/* Notebook (ancho de escritorio, ALTO bajo — ~768-900px, sin monitor externo):
+   BUGFIX — el panel de datos mide 30% de un `100vh` y `.tira-datos-item` tiene
+   `overflow: hidden`, pero su padding usa `clamp(1.5rem, 5vw, 4rem)` — crece
+   con el ANCHO, no con el alto. En una notebook ancha y baja ese padding
+   queda casi en su tope (4rem) justo cuando el 30% de alto es mas chico
+   (~230px a 768px), y el contenido (label + h3 + parrafo + tarjeta de "dato
+   curioso") no entra — la tarjeta de dato curioso, al ir ultima, es la que se
+   ve recortada. Se agranda la porcion del panel de datos (30% -> 40%) y se
+   achica tipografia/padding, esta vez en funcion del ALTO disponible — con
+   margen real, no al limite exacto del contenido medido. */
+@media (min-width: 48.01rem) and (max-height: 56.25rem) {
+  body.js-armado .riel-tira.is-armada .tira-datos {
+    height: 40%;
+  }
+
+  body.js-armado .riel-tira.is-armada .tira-fotogramas {
+    height: 60%;
+  }
+
+  .tira-datos-item {
+    padding: clamp(0.75rem, 2.2vw, 1.5rem) clamp(1.25rem, 4vw, 2.5rem);
+    gap: 0.4rem;
+  }
+
+  .tira-datos-label {
+    font-size: 0.66rem;
+  }
+
+  .tira-datos-item h3 {
+    font-size: clamp(1rem, 2vw, 1.35rem);
+  }
+
+  .tira-datos-item p {
+    font-size: 0.82rem;
+    line-height: 1.4;
+  }
+
+  .tira-datos-dato {
+    margin-top: 0.25rem;
+    padding: 0.45rem 0.7rem 0.45rem 1.2rem;
+    font-size: 0.74rem;
+  }
+
+  .tira-datos-dato::before {
+    top: 0.85rem;
+    left: 0.5rem;
+  }
+
+  .tira-datos-dato strong {
+    font-size: 0.6rem;
+    margin-bottom: 0.15rem;
   }
 }
 
