@@ -16,27 +16,54 @@
    6 personajes, clickeables, a pantalla casi completa. El <h1>Personajes</h1>
    de esta sección es el UNICO <h1> de toda la página (contrato 008 C1).
 
-   `.galeria-grid` de acá abajo es una PORTACION TEXTUAL de css/galeria.css
-   (misma regla, sin cambio de valor) — NO se linkea css/galeria.css desde
-   esta página: cada hoja de 5o nivel queda aislada a su propia página
-   (contrato 006 C5, ver research.md §6b de la feature 008). Solo se le suma
-   el overlay de nombre/rol, que es exclusivo de este mosaico.
+   Ajuste posterior (mismo feature 008): la portada se alinea al lenguaje
+   visual del hub de Mundos (css/mundos.css `.mundos-intro`/`.mundos-grid`/
+   `.mundo-tarjeta*`) — tarjetas altas a todo el ancho, zoom + brillo al
+   hover/foco, texto que se desliza hacia arriba y una barra de acento que
+   "barre" desde la izquierda en `--color-gargantua` (el único color saturado
+   del sitio — mismo acento que usa Mundos, el nav y el resto del cockpit; no
+   se introduce un segundo color saturado). Estructura textual PORTADA de
+   `.mundo-tarjeta`, adaptada al markup existente (figure > a > img +
+   figcaption) para no romper el HTML de esta página.
    --------------------------------------------------------------------------- */
-.portada-tripulacion {
-  min-height: 92svh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+/* --- Intro: mismo peso que `body.mundos-hub .mundos-intro`. La regla
+   genérica (`body:not(.home) main > section:first-child`, layout.css §10)
+   limita la SECCIÓN a max-width:60rem y le pone padding-inline — bien para
+   una intro de solo texto, pero acá adentro también vive el grid a todo el
+   ancho (igual que en Mundos, donde `.mundos-grid` NO vive dentro de
+   `.mundos-intro`). Se libera la sección del todo (max-width/padding-inline
+   a 0) y el ancho de lectura + el gutter lateral se lo damos al h1/p
+   directamente; el grid pone su PROPIO gutter vía la fórmula de `width`. */
+body:not(.home) main > section.portada-tripulacion:first-child {
+  max-width: none;
+  padding-inline: 0;
 }
 
-/* --- .galeria-grid: portado 1:1 de css/galeria.css --- */
+body:not(.home) main > section.portada-tripulacion:first-child h1 {
+  max-width: 46rem;
+  padding-inline: 1.25rem;
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  letter-spacing: 0.06em;
+  text-shadow: 0 0 1.5rem var(--color-fondo);
+}
+
+body:not(.home) main > section.portada-tripulacion:first-child p {
+  max-width: 46rem;
+  padding-inline: 1.25rem;
+  font-size: clamp(1rem, 2vw, 1.15rem);
+}
+
+/* --- Grilla a lo ANCHO: tarjetas grandes, poster-vertical, image-forward.
+   Copia 1:1 de la estructura de `.mundos-grid`/`.mundo-tarjeta` (mismos
+   valores), adaptada al markup figure>a>img+figcaption de esta página. --- */
 .portada-tripulacion .galeria-grid {
   list-style: none;
-  margin: 1.5rem 0 0;
+  width: min(100% - 2.5rem, 90rem);
+  margin: 1rem auto 4rem;
   padding: 0;
   display: grid;
-  gap: 0.75rem;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  gap: clamp(0.75rem, 1.5vw, 1.4rem);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
 }
 
 .portada-tripulacion .galeria-grid > li {
@@ -45,46 +72,67 @@
 
 .portada-tripulacion .galeria-grid figure {
   margin: 0;
-  position: relative;                /* ancla el overlay de nombre/rol */
 }
 
 .portada-tripulacion .galeria-grid figure > a {
+  position: relative;
   display: block;
-  background: var(--color-superficie);
-  border-radius: 2px;
+  aspect-ratio: 3 / 4;
   overflow: hidden;
+  border-radius: 2px;
+  border: 1px solid color-mix(in srgb, var(--color-texto) 14%, transparent);
+  isolation: isolate;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .portada-tripulacion .galeria-grid img {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
-  height: auto;
-  aspect-ratio: 3 / 2;
+  height: 100%;
   object-fit: cover;
-  filter: brightness(0.78);          /* deja legible el overlay de nombre/rol */
-  transition: filter 0.15s ease;
+  filter: brightness(0.55) saturate(1.05);
+  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1), filter 0.4s ease;
 }
 
 .portada-tripulacion .galeria-grid a:hover img,
 .portada-tripulacion .galeria-grid a:focus-visible img {
-  filter: brightness(0.95);
+  transform: scale(1.07);
+  filter: brightness(0.68) saturate(1.12);
 }
 
-/* --- overlay de nombre/rol: puntual de la portada, NO parte de .galeria-grid --- */
+/* --- overlay de nombre/rol: mismo criterio que `.mundo-tarjeta-texto` --- */
 .portada-tripulacion .galeria-grid figcaption {
   position: absolute;
   inset: auto 0 0 0;
   z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
   margin: 0;
-  padding: 0.6rem 0.75rem;
+  padding: 1.4rem 1rem 1rem;
   pointer-events: none;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.75), transparent);
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--color-fondo) 94%, transparent) 0%,
+    color-mix(in srgb, var(--color-fondo) 55%, transparent) 55%,
+    transparent 100%
+  );
+  transform: translateY(0.35rem);
+  transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.portada-tripulacion .galeria-grid a:hover figcaption,
+.portada-tripulacion .galeria-grid a:focus-visible figcaption {
+  transform: translateY(0);
 }
 
 .portada-tripulacion .galeria-grid figcaption strong {
   display: block;
   font-family: var(--font-hero-titulo);
-  font-size: 1rem;
+  font-size: clamp(1.05rem, 1.6vw, 1.35rem);
+  letter-spacing: 0.03em;
   color: var(--color-texto);
 }
 
@@ -95,6 +143,30 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-gargantua);
+}
+
+/* --- Filo de acento: barre desde la izquierda al hover/foco --- */
+.portada-tripulacion .galeria-grid figure > a::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: var(--color-gargantua);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+  z-index: 1;
+}
+
+.portada-tripulacion .galeria-grid a:hover,
+.portada-tripulacion .galeria-grid a:focus-visible {
+  border-color: color-mix(in srgb, var(--color-gargantua) 60%, transparent);
+  box-shadow: 0 0.75rem 2rem color-mix(in srgb, #000 55%, transparent);
+}
+
+.portada-tripulacion .galeria-grid a:hover::after,
+.portada-tripulacion .galeria-grid a:focus-visible::after {
+  transform: scaleX(1);
 }
 
 /* ===========================================================================
