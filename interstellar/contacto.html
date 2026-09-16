@@ -53,7 +53,7 @@
 
             <p class="form-campo">
               <label for="cto-nombre">Nombre</label>
-              <input type="text" id="cto-nombre" name="name" autocomplete="name" required>
+              <input type="text" id="cto-nombre" name="name" autocomplete="name" required maxlength="100">
             </p>
             <p class="form-campo">
               <label for="cto-email">Tu correo <span class="form-opcional">(opcional)</span></label>
@@ -61,11 +61,11 @@
             </p>
             <p class="form-campo">
               <label for="cto-asunto">Asunto <span class="form-opcional">(opcional)</span></label>
-              <input type="text" id="cto-asunto" name="subject" autocomplete="off">
+              <input type="text" id="cto-asunto" name="subject" autocomplete="off" maxlength="100">
             </p>
             <p class="form-campo">
               <label for="cto-mensaje">Mensaje</label>
-              <textarea id="cto-mensaje" name="message" rows="6" required></textarea>
+              <textarea id="cto-mensaje" name="message" rows="6" required maxlength="500"></textarea>
             </p>
             <p class="form-acciones">
               <button type="submit">Enviar mensaje</button>
