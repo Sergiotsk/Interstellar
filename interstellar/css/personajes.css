@@ -330,6 +330,16 @@ body.js-armado .riel-tira.is-armada .riel-tira-vista {
   height: 100vh;
 }
 
+/* Desktop grande (≥64rem): a pantalla completa el riel se siente demasiado
+   "tomado" por el componente — se baja el alto fijado a 85vh para que quede
+   algo de la página visible arriba/abajo mientras se scrollea, sin restarle
+   proporción a las fotos (siguen siendo 70% de este alto, ahora menor). */
+@media (min-width: 64rem) {
+  body.js-armado .riel-tira.is-armada .riel-tira-vista {
+    height: 85vh;
+  }
+}
+
 /* -- Panel de datos: 30% de la pantalla -- */
 .tira-datos {
   position: relative;
