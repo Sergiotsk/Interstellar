@@ -101,7 +101,7 @@
           orbita,
           {
             t: Math.PI * 2,
-            duration: 11.5,
+            duration: 13.65,
             ease: "none",
             onUpdate: () => {
               const planeta = document.getElementById("planeta");
@@ -113,9 +113,9 @@
         );
 
         tl.fromTo("#cuerpo", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 2.6);
-        tl.fromTo("#rigor", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 13.0);
+        tl.fromTo("#rigor", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 15.85);
 
-        tl.fromTo("#inner", { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.6, ease: "power1.inOut", immediateRender: false }, 14.0);
+        tl.fromTo("#inner", { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.6, ease: "power1.inOut", immediateRender: false }, 16.85);
 
         window.__timelines["limite"] = tl;
       </script>

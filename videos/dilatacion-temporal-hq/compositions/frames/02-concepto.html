@@ -147,14 +147,14 @@
 
         // Las manecillas giran a ritmos MUY distintos: el reloj cerca de la masa
         // gira lento (90°), el lejano gira rapido (3 vueltas) en el mismo lapso real.
-        tl.fromTo("#mano-cerca", { rotation: 0 }, { rotation: 80, duration: 9, ease: "none" }, 1.4);
-        tl.fromTo("#mano-lejos", { rotation: 0 }, { rotation: 1080, duration: 9, ease: "none" }, 1.4);
+        tl.fromTo("#mano-cerca", { rotation: 0 }, { rotation: 80, duration: 11.18, ease: "none" }, 1.4);
+        tl.fromTo("#mano-lejos", { rotation: 0 }, { rotation: 1080, duration: 11.18, ease: "none" }, 1.4);
 
         tl.fromTo("#cuerpo", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 2.0);
-        tl.fromTo("#rigor", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 9.9);
+        tl.fromTo("#rigor", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 12.58);
 
         // Salida del frame completo (solapa con la entrada de #miller).
-        tl.fromTo("#inner", { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.6, ease: "power1.inOut", immediateRender: false }, 10.9);
+        tl.fromTo("#inner", { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.6, ease: "power1.inOut", immediateRender: false }, 13.58);
 
         window.__timelines["concepto"] = tl;
       </script>

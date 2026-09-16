@@ -1,11 +1,11 @@
 ---
 format: 1920x1080
-duration: 71.8s
+duration: 84.84s
 message: "Una hora en Miller son siete años afuera: es relatividad general pura, no ciencia ficción"
 arc: Pregunta → Concepto (diagrama de relojes) → Número de impacto (stat + count-up) → Consecuencia (comparación de barras) → Límite honesto (diagrama de órbita punteada) → Cierre
 audience: visitantes del fan site que ya vieron Interstellar
 mode: autonomous
-voice: ef_dora (Kokoro, local, español)
+voice: ElevenLabs (Playground, voz elegida por el usuario, mp3 exportado a mano)
 ---
 
 ## Frame 1 — Apertura
