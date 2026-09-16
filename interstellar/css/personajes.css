@@ -402,6 +402,7 @@ body.js-armado .riel-tira.is-armada .tira-datos-item > * {
 .tira-datos-dato {
   position: relative;
   margin-top: 0.5rem;
+  margin-bottom: 0.75rem;
   padding: 0.85rem 1.15rem 0.85rem 1.65rem;
   clip-path: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px);
   background: linear-gradient(135deg,
@@ -554,6 +555,7 @@ body.js-armado .riel-tira.is-armada .tira-progreso {
     padding: 0.6rem 0.8rem 0.6rem 1.3rem;
     font-size: 0.76rem;
     line-height: 1.4;
+    margin-bottom: 0.5rem;
   }
 
   .tira-frame {
@@ -601,6 +603,7 @@ body.js-armado .riel-tira.is-armada .tira-progreso {
 
   .tira-datos-dato {
     margin-top: 0.25rem;
+    margin-bottom: 0.4rem;
     padding: 0.45rem 0.7rem 0.45rem 1.2rem;
     font-size: 0.74rem;
   }
