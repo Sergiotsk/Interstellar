@@ -1,0 +1,53 @@
+{
+  "category": "kinetic-type",
+  "duration_s": 12,
+  "fps": 30,
+  "canvas": { "w": 1920, "h": 1080, "aspect": "16:9" },
+  "style": "Cockpit de la Ranger mirando por la ventana hacia Gargantua: negro profundo del espacio, acercamiento lento a un agujero negro con disco de acrecion y lente gravitacional sutil, resuelve en un title card cinematico. Angular, sobrio, sin adornos redondeados. Un solo acento saturado (naranja Gargantua); nunca blanco puro, nunca teal (reservado al chrome del sitio).",
+  "palette": ["#0a0e1a", "#e8803b", "#efe7d6", "#a8a294", "#12161a"],
+  "font": "Orbitron",
+  "beats": [4, 8, 11],
+  "export": "mp4",
+
+  "asset_needs": [],
+
+  "block": null,
+  "customize": {},
+
+  "content": {
+    "scenes": [
+      {
+        "id": "vacio",
+        "start": 0,
+        "end": 4,
+        "text": "",
+        "emphasis_words": [],
+        "emotion": "quietud, expectativa",
+        "motion": "campo estelar estatico; zoom lentisimo (scale 1 -> 1.06) hacia el centro; un resplandor naranja empieza a asomar detras de una silueta circular negra (el horizonte de sucesos)",
+        "beats": [0]
+      },
+      {
+        "id": "gargantua",
+        "start": 4,
+        "end": 8,
+        "text": "",
+        "emphasis_words": [],
+        "emotion": "revelacion, magnitud",
+        "motion": "el disco de acrecion se intensifica (opacity + blur-out del glow), rotacion continua lentisima (conic-gradient), el zoom se sostiene; lente gravitacional sugerida con un anillo elipsoidal superior deformado",
+        "beats": [4, 8]
+      },
+      {
+        "id": "titulo",
+        "start": 8,
+        "end": 12,
+        "text": "GARGANTUA",
+        "emphasis_words": ["GARGANTUA"],
+        "emotion": "peso, cierre cinematico",
+        "motion": "wordmark entra con fromTo autoAlpha 0->1 + y 24->0 (power2.out), letter-spacing ligeramente contraido -> reposo; tagline entra 0.4s despues, mas sutil; todo se sostiene en el frame final (hold)",
+        "beats": [8, 8.4, 11]
+      }
+    ]
+  },
+
+  "notes": "Spike de evaluacion de integracion (rama spike/hframes, Interstellar). Paleta y tipografia tomadas literalmente de interstellar/DESIGN.md (tokens --color-fondo, --color-gargantua, --color-texto, --color-texto-atenuado, --font-hero-titulo). Output MP4 standalone: no se inyecta como composicion HTML viva en el sitio, se evalua como asset de video para reemplazar/acompanar el hero-backdrop existente."
+}

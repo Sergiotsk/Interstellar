@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Exo+2:wght@400;500&display=swap");
+
+      :root {
+        --bg: #0a0e1a;
+        --gargantua: #e8803b;
+        --texto: #efe7d6;
+        --atenuado: #a8a294;
+        --metal: #12161a;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+
+      #stage {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        background: var(--bg);
+      }
+
+      .clip {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      /* ── campo estelar (estatico, deterministico) ── */
+      .campo-estelar {
+        position: absolute;
+        inset: 0;
+        background-color: var(--bg);
+      }
+      .campo-estelar::before,
+      .campo-estelar::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: transparent;
+      }
+      /* Dos capas de estrellas via box-shadow, misma tecnica que .cielo del sitio (layout.css). */
+      .campo-estelar::before {
+        width: 2px;
+        height: 2px;
+        box-shadow:
+          112px 84px var(--texto), 340px 210px var(--texto), 588px 60px var(--texto),
+          812px 340px var(--texto), 1040px 120px var(--texto), 1290px 400px var(--texto),
+          1520px 90px var(--texto), 1750px 260px var(--texto), 90px 520px var(--texto),
+          330px 680px var(--texto), 600px 780px var(--texto), 860px 610px var(--texto),
+          1100px 720px var(--texto), 1360px 560px var(--texto), 1620px 700px var(--texto),
+          1830px 480px var(--texto), 60px 900px var(--texto), 400px 960px var(--texto),
+          720px 940px var(--texto), 980px 980px var(--texto), 1250px 900px var(--texto),
+          1500px 1000px var(--texto), 1780px 920px var(--texto), 200px 30px var(--texto),
+          470px 20px var(--texto), 950px 40px var(--texto), 1450px 30px var(--texto);
+        opacity: 0.55;
+      }
+      .campo-estelar::after {
+        width: 3px;
+        height: 3px;
+        box-shadow:
+          160px 150px var(--texto), 420px 320px var(--texto), 700px 180px var(--texto),
+          960px 420px var(--texto), 1230px 260px var(--texto), 1480px 460px var(--texto),
+          1700px 160px var(--texto), 140px 640px var(--texto), 500px 740px var(--texto),
+          780px 560px var(--texto), 1160px 660px var(--texto), 1560px 620px var(--texto),
+          1860px 760px var(--texto), 260px 880px var(--texto), 640px 860px var(--texto),
+          1040px 900px var(--texto);
+        opacity: 0.85;
+      }
+
+      /* ── Gargantua: horizonte de sucesos + disco de acrecion ── */
+      .horizonte-wrap {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 640px;
+        height: 640px;
+        transform: translate(-50%, -50%) scale(1);
+        will-change: transform;
+      }
+      .glow {
+        position: absolute;
+        inset: -180px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle at 50% 50%,
+          color-mix(in srgb, var(--gargantua) 95%, #fff) 0%,
+          var(--gargantua) 22%,
+          color-mix(in srgb, var(--gargantua) 45%, var(--bg)) 42%,
+          transparent 68%
+        );
+        filter: blur(6px);
+        opacity: 0;
+      }
+      .anillo {
+        position: absolute;
+        inset: -60px;
+        border-radius: 50%;
+        background: conic-gradient(
+          from 0deg,
+          transparent 0deg,
+          color-mix(in srgb, var(--gargantua) 70%, #fff) 40deg,
+          transparent 100deg,
+          transparent 220deg,
+          color-mix(in srgb, var(--gargantua) 55%, #fff) 280deg,
+          transparent 340deg
+        );
+        opacity: 0.9;
+        mix-blend-mode: screen;
+      }
+      .lente {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 900px;
+        height: 90px;
+        transform: translate(-50%, -50%) scaleY(1);
+        border-radius: 50%;
+        background: linear-gradient(
+          90deg,
+          transparent 0%,
+          color-mix(in srgb, var(--gargantua) 60%, #fff) 50%,
+          transparent 100%
+        );
+        filter: blur(3px);
+        opacity: 0;
+      }
+      .horizonte {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: var(--metal);
+        box-shadow: 0 0 0 1px color-mix(in srgb, var(--bg) 40%, #000) inset;
+      }
+
+      /* ── title card ── */
+      .titulo-wrap {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        padding: 120px 160px;
+      }
+      .titulo {
+        font-family: "Orbitron", "Exo 2", system-ui, sans-serif;
+        font-weight: 800;
+        font-size: 108px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--texto);
+        text-shadow: 0 0 48px var(--bg), 0 0 90px color-mix(in srgb, var(--gargantua) 55%, transparent);
+        opacity: 0;
+      }
+      .tagline {
+        font-family: "Exo 2", system-ui, sans-serif;
+        font-weight: 400;
+        font-size: 30px;
+        letter-spacing: 0.04em;
+        color: var(--atenuado);
+        text-shadow: 0 0 24px var(--bg);
+        opacity: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-4f4f" id="stage" data-composition-id="main" data-start="0" data-duration="12" data-width="1920" data-height="1080">
+      <div data-hf-id="hf-8gp6" class="clip" id="escena" data-start="0" data-duration="12" data-track-index="0">
+        <div data-hf-id="hf-c85v" class="campo-estelar"></div>
+
+        <div data-hf-id="hf-fgp6" class="horizonte-wrap" id="horizonte-wrap">
+          <div data-hf-id="hf-eptb" class="glow" id="glow" data-layout-allow-overflow="true"></div>
+          <div data-hf-id="hf-snaa" class="anillo" id="anillo"></div>
+          <div data-hf-id="hf-yjom" class="lente" id="lente"></div>
+          <div data-hf-id="hf-yy8g" class="horizonte"></div>
+        </div>
+
+        <div data-hf-id="hf-5hk4" class="titulo-wrap">
+          <h1 data-hf-id="hf-cmn5" class="titulo" id="titulo">Gargantúa</h1>
+          <p data-hf-id="hf-n0vu" class="tagline" id="tagline">Un vistazo mas alla del horizonte</p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // Acercamiento continuo (0 -> 8s): zoom lentisimo hacia Gargantua.
+      tl.fromTo("#horizonte-wrap", { scale: 1 }, { scale: 1.22, duration: 8, ease: "sine.inOut" }, 0);
+
+      // Rotacion continua del disco de acrecion durante todo el plano.
+      tl.fromTo("#anillo", { rotation: 0 }, { rotation: 55, duration: 12, ease: "none" }, 0);
+
+      // Baseline segura para #glow: todo seek anterior al primer tween descansa en autoAlpha 0.
+      tl.set("#glow", { autoAlpha: 0 }, 0);
+
+      // Beat 1 -> 2 (0-4s): el resplandor empieza a asomar detras del horizonte.
+      tl.fromTo("#glow", { autoAlpha: 0 }, { autoAlpha: 0.55, duration: 4, ease: "power1.in" }, 0);
+
+      // Beat 2 (4-8s): el disco se intensifica; se insinua la lente gravitacional.
+      tl.fromTo("#glow", { autoAlpha: 0.55 }, { autoAlpha: 1, duration: 4, ease: "power1.out", immediateRender: false }, 4);
+      tl.fromTo("#lente", { autoAlpha: 0, scaleY: 0.6 }, { autoAlpha: 0.6, scaleY: 1, duration: 4, ease: "power2.out" }, 4);
+
+      // Beat 3 (8-12s): title card. letterSpacing queda fijo en CSS (0.05em) — animarlo
+      // reflowaria texto y se ve a los saltos bajo el motor de captura por frame.
+      tl.fromTo("#titulo", { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: "power2.out" }, 8);
+      tl.fromTo("#tagline", { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 8.4);
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
