@@ -34,16 +34,18 @@ describe('js/creditos.js — página de créditos y fuentes', () => {
   });
 
   test('cubre el 100 % de los assets descargados del registro (SC-008)', () => {
-    // Sincronía con assets/img/CREDITOS.md: 121 assets con estado `descargado`
-    // (115 previos + 6 netos: `personajes-tars.jpg`/`personajes-case.jpg`, 2
-    // escenas de galería curadas del volcado local (TARS y CASE a bordo del
-    // Endurance, misma secuencia); y `personajes-tars-case-visor-01..04.jpg`,
-    // tramo "A bordo" [fotogramas 04618-04621] para el visor Nav-Ranger
-    // [feature 008, US5 — completa los 6 personajes de la portada]).
+    // Sincronía con assets/img/CREDITOS.md: 130 assets con estado `descargado`
+    // (128 previos + 2 netos: `personajes-profesor-brand-silla.jpg` y
+    // `personajes-tars-bloque.jpg`, fotogramas nuevos del dump cap-that.com
+    // que evitan repetir la misma toma dentro de una ficha —Brand en silla
+    // de ruedas en vez del mismo plano del lecho, y un detalle del bloque
+    // sin el nombre grabado en vez del mismo plano de la intro— [feature
+    // 008].
     // Licencia clara NASA/ESA/EHT/NOAA + fotogramas de la película (FILMGRAB /
-    // cap-that.com). Los `pendiente` NO se listan hasta tener archivo
-    // (convención de honestidad).
-    assert.equal(ASSET_CREDITS.length, 121);
+    // cap-that.com) + fotos de rodaje via prensa con fotógrafo acreditado.
+    // Los `pendiente` NO se listan hasta tener archivo (convención de
+    // honestidad).
+    assert.equal(ASSET_CREDITS.length, 130);
     for (const linea of ASSET_CREDITS) {
       // Cada línea: `<archivo>.<ext> — <atribución no vacía>` (jpg salvo
       // terra-orbita.webp, que necesita alpha para recortarse sobre el cielo).
