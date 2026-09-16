@@ -34,17 +34,17 @@ describe('js/creditos.js — página de créditos y fuentes', () => {
   });
 
   test('cubre el 100 % de los assets descargados del registro (SC-008)', () => {
-    // Sincronía con assets/img/CREDITOS.md: 125 assets con estado `descargado`
-    // (123 previos + 2 netos: `personajes-murph-bts-rodaje.jpg` y
-    // `personajes-murph-bts-preparacion.jpg`, fotos de rodaje dedicadas a
-    // Murph —Foy+McConaughey junto al maizal, Nolan+Chastain en el set de la
-    // NASA—, misma fuente TIME/unit photography de Melinda Sue Gordon
-    // [feature 008]).
+    // Sincronía con assets/img/CREDITOS.md: 127 assets con estado `descargado`
+    // (125 previos + 2 netos: `personajes-brand-bts-suits.jpg` y
+    // `personajes-brand-bts-agua.jpg`, fotos de rodaje dedicadas a Brand
+    // —Hathaway+McConaughey con los trajes puestos, Hathaway en el agua
+    // durante la secuencia de Islandia—, misma fuente TIME/unit photography
+    // de Melinda Sue Gordon [feature 008]).
     // Licencia clara NASA/ESA/EHT/NOAA + fotogramas de la película (FILMGRAB /
     // cap-that.com) + fotos de rodaje via prensa con fotógrafo acreditado.
     // Los `pendiente` NO se listan hasta tener archivo (convención de
     // honestidad).
-    assert.equal(ASSET_CREDITS.length, 125);
+    assert.equal(ASSET_CREDITS.length, 127);
     for (const linea of ASSET_CREDITS) {
       // Cada línea: `<archivo>.<ext> — <atribución no vacía>` (jpg salvo
       // terra-orbita.webp, que necesita alpha para recortarse sobre el cielo).

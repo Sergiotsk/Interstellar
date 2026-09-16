@@ -61,6 +61,8 @@ export const ASSET_CREDITS = [
   'personajes-cooper-bts-preparacion.jpg — Melinda Sue Gordon / Paramount Pictures, foto de rodaje, uso académico con atribución (TIME, unit photography)',
   'personajes-murph-bts-rodaje.jpg — Melinda Sue Gordon / Paramount Pictures, foto de rodaje, uso académico con atribución (TIME, unit photography)',
   'personajes-murph-bts-preparacion.jpg — Melinda Sue Gordon / Paramount Pictures, foto de rodaje, uso académico con atribución (TIME, unit photography)',
+  'personajes-brand-bts-suits.jpg — Melinda Sue Gordon / Paramount Pictures, foto de rodaje, uso académico con atribución (TIME, unit photography)',
+  'personajes-brand-bts-agua.jpg — Melinda Sue Gordon / Paramount Pictures, foto de rodaje, uso académico con atribución (TIME, unit photography)',
   'personajes-cooper-sudor.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',
   'personajes-murph.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',
   'personajes-murph-nina.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (FILMGRAB)',
