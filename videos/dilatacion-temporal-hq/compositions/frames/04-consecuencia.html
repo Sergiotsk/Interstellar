@@ -1,0 +1,147 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <template>
+      <style>
+        @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Exo+2:wght@400;500&family=Share+Tech+Mono&display=swap");
+
+        #root { position: absolute; inset: 0; width: 100%; height: 100%; }
+        .frame-inner {
+          position: absolute;
+          inset: 0;
+          background: #0a0e1a;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 70px 200px;
+          gap: 24px;
+          text-align: center;
+          overflow: hidden;
+          opacity: 0;
+        }
+
+        .kicker {
+          font-family: "Share Tech Mono", monospace;
+          font-size: 24px;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: #a8a294;
+          opacity: 0;
+        }
+
+        .barras {
+          width: 1400px;
+          display: flex;
+          flex-direction: column;
+          gap: 26px;
+        }
+        .fila-barra {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 8px;
+        }
+        .fila-barra-label {
+          font-family: "Exo 2", sans-serif;
+          font-size: 26px;
+          font-weight: 500;
+          color: #efe7d6;
+        }
+        .fila-barra-label span {
+          color: #a8a294;
+          font-weight: 400;
+        }
+        .barra-track {
+          width: 100%;
+          height: 34px;
+          border-radius: 3px;
+          background: rgba(239, 231, 214, 0.1);
+          overflow: hidden;
+        }
+        .barra-fill {
+          height: 100%;
+          background: rgba(239, 231, 214, 0.72);
+          transform: scaleX(0);
+          transform-origin: left center;
+        }
+        #fila-miller { opacity: 0; }
+        #fila-endurance { opacity: 0; }
+        #barra-miller { width: 6%; }
+        #barra-endurance { width: 94%; }
+
+        .cuerpo {
+          font-family: "Exo 2", sans-serif;
+          font-size: 31px;
+          line-height: 1.5;
+          color: #efe7d6;
+          max-width: 1180px;
+          opacity: 0;
+        }
+        .cuerpo strong { font-weight: 500; }
+
+        .etiqueta-rigor {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          padding: 10px 22px;
+          border-radius: 999px;
+          background: rgba(20, 28, 49, 0.88);
+          border: 1px solid rgba(239, 231, 214, 0.22);
+          border-left: 4px solid rgba(239, 231, 214, 0.55);
+          font-family: "Exo 2", sans-serif;
+          font-size: 23px;
+          font-weight: 500;
+          color: #efe7d6;
+          opacity: 0;
+        }
+      </style>
+
+      <div id="root" data-composition-id="consecuencia" data-width="1920" data-height="1080">
+        <div class="frame-inner" id="inner">
+          <p class="kicker" id="kicker">La consecuencia</p>
+
+          <div class="barras">
+            <div class="fila-barra" id="fila-miller">
+              <p class="fila-barra-label">Miller — <span>unas horas</span></p>
+              <div class="barra-track"><div class="barra-fill" id="barra-miller"></div></div>
+            </div>
+            <div class="fila-barra" id="fila-endurance">
+              <p class="fila-barra-label">Endurance — <span>veintitrés años esperando</span></p>
+              <div class="barra-track"><div class="barra-fill" id="barra-endurance"></div></div>
+            </div>
+          </div>
+
+          <p class="cuerpo" id="cuerpo">
+            Por eso una demora de horas en Miller le cuesta décadas a Cooper, que vuelve para
+            encontrar a sus hijos crecidos. <strong>El mecanismo es relatividad general pura, sin trucos.</strong>
+          </p>
+          <span class="etiqueta-rigor" id="rigor">✓ Ciencia real</span>
+        </div>
+      </div>
+
+      <script>
+        const tl = gsap.timeline({ paused: true });
+
+        tl.fromTo("#inner", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.6, ease: "power1.inOut" }, 0);
+        tl.fromTo("#kicker", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0.6);
+
+        tl.fromTo("#fila-miller", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4, ease: "power2.out" }, 1.1);
+        tl.fromTo("#fila-endurance", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4, ease: "power2.out" }, 1.1);
+        // La barra corta crece rapido (la brevedad ES el punto); la larga, lenta y dramatica.
+        tl.fromTo("#barra-miller", { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: "power2.out" }, 1.7);
+        tl.fromTo("#barra-endurance", { scaleX: 0 }, { scaleX: 1, duration: 1.2, ease: "power2.out" }, 2.4);
+
+        tl.fromTo("#cuerpo", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 4.2);
+        tl.fromTo("#rigor", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 17.9);
+
+        tl.fromTo("#inner", { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.6, ease: "power1.inOut", immediateRender: false }, 18.9);
+
+        window.__timelines["consecuencia"] = tl;
+      </script>
+    </template>
+  </body>
+</html>

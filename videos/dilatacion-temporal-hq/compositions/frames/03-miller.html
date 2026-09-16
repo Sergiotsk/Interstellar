@@ -1,0 +1,156 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <template>
+      <style>
+        @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Exo+2:wght@400;500&family=Share+Tech+Mono&display=swap");
+
+        #root { position: absolute; inset: 0; width: 100%; height: 100%; }
+        .frame-inner {
+          position: absolute;
+          inset: 0;
+          background: #0a0e1a;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 70px 160px;
+          gap: 22px;
+          text-align: center;
+          overflow: hidden;
+          opacity: 0;
+        }
+
+        .kicker {
+          font-family: "Share Tech Mono", monospace;
+          font-size: 24px;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: #a8a294;
+          opacity: 0;
+        }
+        .numero-hero {
+          font-family: "Orbitron", sans-serif;
+          font-weight: 900;
+          font-size: 104px;
+          color: #efe7d6;
+          line-height: 1.05;
+          opacity: 0;
+        }
+
+        .stat-card {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 10px;
+          opacity: 0;
+        }
+        .stat-numero {
+          font-family: "Orbitron", sans-serif;
+          font-weight: 800;
+          font-size: 62px;
+          color: #e8803b;
+        }
+        .stat-label {
+          font-family: "Exo 2", sans-serif;
+          font-size: 22px;
+          color: #a8a294;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+        }
+        .stat-track {
+          width: 460px;
+          height: 6px;
+          border-radius: 3px;
+          background: rgba(239, 231, 214, 0.14);
+          overflow: hidden;
+        }
+        .stat-fill {
+          width: 100%;
+          height: 100%;
+          background: #e8803b;
+          transform: scaleX(0);
+          transform-origin: left center;
+        }
+
+        .contexto {
+          font-family: "Exo 2", sans-serif;
+          font-size: 30px;
+          line-height: 1.5;
+          color: #a8a294;
+          max-width: 1100px;
+          opacity: 0;
+        }
+        .contexto strong { color: #efe7d6; font-weight: 500; }
+
+        .etiqueta-rigor {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          padding: 10px 22px;
+          border-radius: 999px;
+          background: rgba(20, 28, 49, 0.88);
+          border: 1px solid rgba(239, 231, 214, 0.22);
+          border-left: 4px solid rgba(239, 231, 214, 0.55);
+          font-family: "Exo 2", sans-serif;
+          font-size: 23px;
+          font-weight: 500;
+          color: #efe7d6;
+          opacity: 0;
+        }
+      </style>
+
+      <div id="root" data-composition-id="miller" data-width="1920" data-height="1080">
+        <div class="frame-inner" id="inner">
+          <p class="kicker" id="kicker">En el planeta de Miller</p>
+          <p class="numero-hero" id="numero">1 hora = 7 años</p>
+
+          <div class="stat-card" id="statcard">
+            <p class="stat-numero" id="stat-numero">× 0</p>
+            <div class="stat-track"><div class="stat-fill" id="stat-fill"></div></div>
+            <p class="stat-label">Factor de dilatación</p>
+          </div>
+
+          <p class="contexto" id="contexto">
+            Alcanzable muy cerca del horizonte de un agujero negro que gira muy rápido.
+            <strong>Thorne hizo las cuentas con Gargantúa y los números cierran.</strong>
+          </p>
+          <span class="etiqueta-rigor" id="rigor">✓ Ciencia real</span>
+        </div>
+      </div>
+
+      <script>
+        const tl = gsap.timeline({ paused: true });
+        const contador = { val: 0 };
+
+        tl.fromTo("#inner", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.6, ease: "power1.inOut" }, 0);
+        tl.fromTo("#kicker", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0.6);
+        tl.fromTo("#numero", { autoAlpha: 0, scale: 0.9 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "power2.out" }, 1.2);
+        tl.fromTo("#statcard", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5, ease: "power2.out" }, 2.8);
+        // Count-up seek-safe: tween de un proxy, nunca Date.now(); onUpdate re-pinta el texto.
+        tl.to(
+          contador,
+          {
+            val: 60000,
+            duration: 2,
+            ease: "power1.out",
+            onUpdate: () => {
+              document.getElementById("stat-numero").textContent = "× " + Math.round(contador.val).toLocaleString("es-AR");
+            },
+          },
+          2.9,
+        );
+        tl.fromTo("#stat-fill", { scaleX: 0 }, { scaleX: 1, duration: 2, ease: "power1.out" }, 2.9);
+        tl.fromTo("#contexto", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 5.2);
+        tl.fromTo("#rigor", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 15.9);
+
+        tl.fromTo("#inner", { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.6, ease: "power1.inOut", immediateRender: false }, 16.9);
+
+        window.__timelines["miller"] = tl;
+      </script>
+    </template>
+  </body>
+</html>
