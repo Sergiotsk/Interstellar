@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <template>
+      <style>
+        @import url("https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap");
+
+        /*
+          Capa "cockpit" — NUNCA usa el naranja de Gargantua (acento del
+          CONTENIDO). El teal #4fd0e0 es el acento de la capa de instrumento,
+          igual que header/footer/LEDs del sitio real (DESIGN.md §3.3).
+        */
+        #root {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+        }
+
+        .marco {
+          position: absolute;
+          inset: 20px;
+          border: 1px solid rgba(79, 208, 224, 0.14);
+          opacity: 0;
+        }
+
+        .bracket {
+          position: absolute;
+          width: 56px;
+          height: 56px;
+          border-color: rgba(79, 208, 224, 0.85);
+          opacity: 0;
+        }
+        .bracket-tl { top: 30px; left: 30px; border-top: 2px solid; border-left: 2px solid; }
+        .bracket-tr { top: 30px; right: 30px; border-top: 2px solid; border-right: 2px solid; }
+        .bracket-bl { bottom: 30px; left: 30px; border-bottom: 2px solid; border-left: 2px solid; }
+        .bracket-br { bottom: 30px; right: 30px; border-bottom: 2px solid; border-right: 2px solid; }
+
+        .nav-label {
+          position: absolute;
+          top: 46px;
+          left: 104px;
+          display: flex;
+          align-items: center;
+          gap: 9px;
+          font-family: "Share Tech Mono", monospace;
+          font-size: 19px;
+          letter-spacing: 0.22em;
+          text-transform: uppercase;
+          color: #4fd0e0;
+          text-shadow: 0 0 10px rgba(79, 208, 224, 0.55);
+          opacity: 0;
+        }
+        .led {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+        }
+        .led-sys {
+          background: #4fd0e0;
+          box-shadow: 0 0 7px 2px rgba(79, 208, 224, 0.6);
+        }
+        .led-pwr {
+          background: #e0a94a;
+          box-shadow: 0 0 7px 2px rgba(224, 169, 74, 0.5);
+        }
+      </style>
+
+      <div id="root" data-composition-id="visor" data-duration="84.84" data-width="1920" data-height="1080">
+        <div class="marco" id="marco"></div>
+
+        <div class="bracket bracket-tl" id="bracket-tl"></div>
+        <div class="bracket bracket-tr" id="bracket-tr"></div>
+        <div class="bracket bracket-bl" id="bracket-bl"></div>
+        <div class="bracket bracket-br" id="bracket-br"></div>
+
+        <div class="nav-label" id="nav-label">
+          <span class="led led-sys" id="led-sys"></span>
+          <span class="led led-pwr" id="led-pwr"></span>
+          <span>Nav · Ciencia</span>
+        </div>
+      </div>
+
+      <script>
+        const tl = gsap.timeline({ paused: true });
+
+        tl.fromTo(
+          ["#marco", "#bracket-tl", "#bracket-tr", "#bracket-bl", "#bracket-br", "#nav-label"],
+          { autoAlpha: 0 },
+          { autoAlpha: 1, duration: 0.9, ease: "power1.out", stagger: 0.05 },
+          0.3,
+        );
+
+        // Titileo de LEDs, desincronizado — mismo espiritu que .cockpit-brand del
+        // sitio real, pero via GSAP (seek-safe) en vez de @keyframes CSS. Repeat
+        // finito (nunca -1: rompe el calculo de duracion de la sub-composicion) —
+        // de sobra para cubrir los 84.84s del video.
+        tl.to("#led-sys", { opacity: 0.35, duration: 1.3, repeat: 70, yoyo: true, ease: "sine.inOut" }, 0);
+        tl.to("#led-pwr", { opacity: 0.35, duration: 0.95, repeat: 95, yoyo: true, ease: "sine.inOut" }, 0);
+
+        window.__timelines["visor"] = tl;
+      </script>
+    </template>
+  </body>
+</html>
