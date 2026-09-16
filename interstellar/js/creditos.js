@@ -77,6 +77,8 @@ export const ASSET_CREDITS = [
   'personajes-tars.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (cap-that.com, volcado local de fotogramas)',
   'personajes-case.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (cap-that.com, volcado local de fotogramas)',
   'personajes-tars-diseno.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (cap-that.com, volcado local de fotogramas)',
+  'personajes-profesor-brand-silla.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (cap-that.com, volcado local de fotogramas)',
+  'personajes-tars-bloque.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (cap-that.com, volcado local de fotogramas)',
   'personajes-tars-case-visor-01.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (cap-that.com, volcado local de fotogramas)',
   'personajes-tars-case-visor-02.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (cap-that.com, volcado local de fotogramas)',
   'personajes-tars-case-visor-03.jpg — © Warner Bros. Pictures / Paramount Pictures, uso académico con atribución (cap-that.com, volcado local de fotogramas)',
