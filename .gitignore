@@ -18,6 +18,10 @@ node_modules/
 .atl/
 .opencode/
 interstellar/.specify/extensions/
+.claude/settings.local.json
+# Symlinks a .agents/skills/ (source of truth); core.symlinks=false los duplicaria.
+# Regenerar con: npx skills add heygen-com/hyperframes
+.claude/skills/
 
 # Material fuente crudo de assets (clips, frames de referencia, etc.): local.
 # Los assets FINALES (optimizados) si se versionan en assets/img/.
