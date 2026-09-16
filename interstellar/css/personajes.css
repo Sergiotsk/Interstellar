@@ -330,6 +330,16 @@ body.js-armado .riel-tira.is-armada .riel-tira-vista {
   height: 100vh;
 }
 
+/* Desktop grande (≥64rem): a pantalla completa el riel se siente demasiado
+   "tomado" por el componente — se baja el alto fijado a 85vh para que quede
+   algo de la página visible arriba/abajo mientras se scrollea, sin restarle
+   proporción a las fotos (siguen siendo 70% de este alto, ahora menor). */
+@media (min-width: 64rem) {
+  body.js-armado .riel-tira.is-armada .riel-tira-vista {
+    height: 85vh;
+  }
+}
+
 /* -- Panel de datos: 30% de la pantalla -- */
 .tira-datos {
   position: relative;
@@ -402,6 +412,7 @@ body.js-armado .riel-tira.is-armada .tira-datos-item > * {
 .tira-datos-dato {
   position: relative;
   margin-top: 0.5rem;
+  margin-bottom: 0.75rem;
   padding: 0.85rem 1.15rem 0.85rem 1.65rem;
   clip-path: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px);
   background: linear-gradient(135deg,
@@ -518,9 +529,23 @@ body.js-armado .riel-tira.is-armada .tira-progreso {
    eso da un ancho MAYOR que el viewport y desborda. Acá se lo topea por
    ancho en vez de por alto, y se achica texto/padding en general. */
 @media (max-width: 48rem) {
+  /* BUGFIX: el panel de datos mide 30% de un `100vh` con `overflow: hidden`
+     (igual que en el caso de notebooks bajitas, ver mas abajo) — en mobile
+     los "dato curioso" mas largos (varios personajes combinan 2 datos en
+     una sola tarjeta) no entraban en esos 253px aprox. y se cortaban a
+     mitad de oracion. Se le da mas alto al panel (30% -> 42%) y menos a la
+     tira de fotogramas, con tipografia un poco mas chica para compensar. */
+  body.js-armado .riel-tira.is-armada .tira-datos {
+    height: 42%;
+  }
+
+  body.js-armado .riel-tira.is-armada .tira-fotogramas {
+    height: 58%;
+  }
+
   .tira-datos-item {
-    padding: 1.25rem 1.25rem;
-    gap: 0.6rem;
+    padding: 1.1rem 1.25rem;
+    gap: 0.5rem;
   }
 
   .tira-datos-label {
@@ -528,17 +553,19 @@ body.js-armado .riel-tira.is-armada .tira-progreso {
   }
 
   .tira-datos-item h3 {
-    font-size: 1.15rem;
+    font-size: 1.1rem;
   }
 
   .tira-datos-item p {
-    font-size: 0.9rem;
-    line-height: 1.6;
+    font-size: 0.85rem;
+    line-height: 1.45;
   }
 
   .tira-datos-dato {
-    padding: 0.65rem 0.85rem 0.65rem 1.35rem;
-    font-size: 0.8rem;
+    padding: 0.6rem 0.8rem 0.6rem 1.3rem;
+    font-size: 0.76rem;
+    line-height: 1.4;
+    margin-bottom: 0.5rem;
   }
 
   .tira-frame {
@@ -586,6 +613,7 @@ body.js-armado .riel-tira.is-armada .tira-progreso {
 
   .tira-datos-dato {
     margin-top: 0.25rem;
+    margin-bottom: 0.4rem;
     padding: 0.45rem 0.7rem 0.45rem 1.2rem;
     font-size: 0.74rem;
   }
