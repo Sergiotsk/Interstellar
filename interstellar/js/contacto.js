@@ -17,6 +17,15 @@ export function direccionDestino() {
   return `${DESTINO_USUARIO}@${DESTINO_DOMINIO}`;
 }
 
+// Chequeo de formato liviano (no pretende cubrir todo RFC 5322): alcanza
+// para pescar los typos típicos de un formulario ("nombre@", "nombre@dominio",
+// espacios sueltos) antes de mandarlo a Web3Forms. La validación real y
+// completa la hace el navegador via `type="email"` + `required` en el HTML.
+export function emailValido(email) {
+  const valor = (email || '').trim();
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valor);
+}
+
 // Arma el enlace `mailto:` de respaldo a partir de { nombre, email, asunto,
 // mensaje }. Asunto y cuerpo van URL-encodeados.
 export function construirMailto(datos = {}) {
@@ -66,6 +75,7 @@ export function init() {
   const split = typeof form.closest === 'function' ? form.closest('.contacto-split') : null;
   const nota = form.querySelector('[data-form-nota]');
   const rotuloTexto = split ? split.querySelector('[data-rotulo-texto]') : null;
+  const boton = form.querySelector('button[type="submit"]');
 
   const ESTADOS = ['is-enviando', 'is-enviado', 'is-error'];
   const fijarEstado = (clase, rotulo) => {
@@ -119,6 +129,10 @@ export function init() {
     const datos = leerCampos(form);
     if (!datos.nombre.trim() || !datos.mensaje.trim()) {
       avisar('Completá tu nombre y el mensaje antes de empujar el estante.');
+      return;
+    }
+    if (!emailValido(datos.email)) {
+      avisar('Ese correo no tiene un formato válido — revisalo antes de empujar el estante.');
       return;
     }
 
