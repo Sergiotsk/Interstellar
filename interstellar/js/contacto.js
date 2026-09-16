@@ -134,6 +134,7 @@ export function init() {
       nota.setAttribute('tabindex', '-1');
       nota.focus();
     }
+    if (boton) boton.disabled = true;
 
     // El pulso de luz que cruza hacia Cooper dura ~1600ms (css §16). Si la
     // respuesta llega antes, esperamos a que termine para recién cambiar de
@@ -173,6 +174,7 @@ export function init() {
           fijarEstado('is-error', 'Sin enlace');
           const enlace = `<a href="${construirMailto(datos)}">${direccionDestino()}</a>`;
           avisar(`No se pudo enviar. Probá de nuevo, o escribinos a ${enlace}`, 'error');
+          if (boton) boton.disabled = false;
         });
       });
   });
