@@ -1,10 +1,26 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { construirMailto, direccionDestino } from '../js/contacto.js';
+import { construirMailto, direccionDestino, emailValido } from '../js/contacto.js';
 
 describe('js/contacto.js — enlace mailto del formulario de contacto', () => {
   test('direccionDestino compone usuario@dominio (no va como texto plano en el fuente)', () => {
     assert.equal(direccionDestino(), 'stschernitschek377@alumnos.frh.utn.edu.ar');
+  });
+
+  test('emailValido acepta formatos correctos', () => {
+    assert.ok(emailValido('cooper@nasa.gov'));
+    assert.ok(emailValido('  murph.cooper@endurance.space  ')); // con espacios alrededor
+    assert.ok(emailValido('a@b.co'));
+  });
+
+  test('emailValido rechaza formatos incorrectos o vacíos', () => {
+    assert.ok(!emailValido(''));
+    assert.ok(!emailValido('   '));
+    assert.ok(!emailValido('cooper@'));
+    assert.ok(!emailValido('cooper@nasa'));
+    assert.ok(!emailValido('coopernasa.gov'));
+    assert.ok(!emailValido('coo per@nasa.gov'));
+    assert.ok(!emailValido(undefined));
   });
 
   test('construirMailto arma mailto: con destino, subject y body codificados', () => {
