@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Galería de Interstellar: 50 imágenes organizadas por ejes —Mundos, Personajes, La Ciencia y El Viaje— cada una enlazada a su versión completa y su fuente.">
+  <meta name="description" content="Galería de Interstellar: 64 imágenes organizadas por ejes —Mundos, Personajes, La Ciencia y El Viaje— cada una enlazada a su versión completa y su fuente.">
   <title>Galería | Interstellar</title>
   <link rel="preload" href="assets/fonts/exo2-latin-var.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/orbitron-latin-var.woff2" as="font" type="font/woff2" crossorigin>
@@ -19,19 +19,30 @@
   <main>
     <section>
       <h1>Galería</h1>
-      <p>Todo el material gráfico del sitio reunido en un solo lugar, organizado por los cuatro ejes: los mundos que visita la expedición Endurance, sus personajes, la ciencia real que sostiene la historia y el viaje por el espacio y el tiempo. Cada imagen enlaza a su versión completa y su fuente está en la página de <a href="creditos.html">créditos</a>.</p>
+      <p>Todo el material gráfico del sitio reunido en un solo lugar, organizado por los cuatro ejes: los mundos que visita la expedición Endurance, sus personajes, la ciencia real que sostiene la historia y el viaje por el espacio y el tiempo. Cada imagen abre en el visor a tamaño completo; su fuente está en la página de <a href="creditos.html">créditos</a>.</p>
     </section>
 
+    <div class="galeria-filtro" role="group" aria-label="Filtrar la galería por eje">
+      <button type="button" class="galeria-filtro-tecla" data-filtro="todas" aria-pressed="true">Todas</button>
+      <button type="button" class="galeria-filtro-tecla" data-filtro="mundos" aria-pressed="false">Mundos</button>
+      <button type="button" class="galeria-filtro-tecla" data-filtro="personajes" aria-pressed="false">Personajes</button>
+      <button type="button" class="galeria-filtro-tecla" data-filtro="ciencia" aria-pressed="false">La Ciencia</button>
+      <button type="button" class="galeria-filtro-tecla" data-filtro="viaje" aria-pressed="false">El Viaje</button>
+      <p class="galeria-filtro-contador" aria-live="polite">64 imágenes</p>
+    </div>
+
     <section id="mundos">
-      <h2>Mundos</h2>
-      <a class="galeria-eje-enlace" href="mundos.html">Ir a la página de Mundos</a>
-      <ul class="galeria-grid">
+      <a class="galeria-eje-header" href="mundos.html">
+        <h2>Mundos</h2>
+        <span class="galeria-eje-cta">Ver la página completa <span aria-hidden="true">→</span></span>
+      </a>
+      <ul class="galeria-grid" data-eje="mundos">
         <li>
           <figure>
-            <a href="assets/img/mundos-tierra.jpg">
-              <img src="assets/img/mundos-tierra.jpg" alt="La Tierra vista entera desde el espacio, con los continentes bajo capas de nubes." loading="lazy" width="1280" height="1280">
+            <a href="assets/img/mundos-tierra-biblioteca.jpg">
+              <img src="assets/img/mundos-tierra-biblioteca.jpg" alt="Cooper de espaldas frente a la estantería de libros de la habitación de Murph, antes de entender el mensaje." loading="lazy" width="900" height="377">
             </a>
-            <figcaption>La Tierra entera, la fotografía «Blue Marble» de la NASA. Eje Mundos.</figcaption>
+            <figcaption>Cooper frente al «fantasma» de la biblioteca, sin saber todavía qué es.</figcaption>
           </figure>
         </li>
         <li>
@@ -39,7 +50,7 @@
             <a href="assets/img/mundos-tierra-tormenta.jpg">
               <img src="assets/img/mundos-tierra-tormenta.jpg" alt="Una pared de polvo avanza por la calle principal de un pueblo mientras varios autos se alejan." loading="lazy" width="1280" height="720">
             </a>
-            <figcaption>La Tierra moribunda: una tormenta de polvo cubre el pueblo. Eje Mundos.</figcaption>
+            <figcaption>La Tierra moribunda: una tormenta de polvo cubre el pueblo.</figcaption>
           </figure>
         </li>
         <li>
@@ -47,7 +58,7 @@
             <a href="assets/img/mundos-tierra-granja.jpg">
               <img src="assets/img/mundos-tierra-granja.jpg" alt="La casa de campo de los Cooper rodeada por un maizal alto, con cosechadoras al frente." loading="lazy" width="960" height="402">
             </a>
-            <figcaption>La granja de los Cooper, entre el maíz que todavía crece. Eje Mundos.</figcaption>
+            <figcaption>La granja de los Cooper, entre el maíz que todavía crece.</figcaption>
           </figure>
         </li>
         <li>
@@ -55,7 +66,7 @@
             <a href="assets/img/mundos-tierra-abandonada.jpg">
               <img src="assets/img/mundos-tierra-abandonada.jpg" alt="Una casa de campo semienterrada por la arena, con una camioneta cubierta de polvo delante." loading="lazy" width="1200" height="675">
             </a>
-            <figcaption>La Tierra rendida: el polvo se traga la granja. Eje Mundos.</figcaption>
+            <figcaption>La Tierra rendida: el polvo se traga la granja.</figcaption>
           </figure>
         </li>
         <li>
@@ -63,7 +74,7 @@
             <a href="assets/img/mundos-tierra-camino.jpg">
               <img src="assets/img/mundos-tierra-camino.jpg" alt="Vista desde el espejo lateral de una camioneta que se acerca a una granja por un camino de tierra entre maizales." loading="lazy" width="1200" height="675">
             </a>
-            <figcaption>De vuelta a casa por el camino de tierra, entre el maíz. Eje Mundos.</figcaption>
+            <figcaption>De vuelta a casa por el camino de tierra, entre el maíz.</figcaption>
           </figure>
         </li>
         <li>
@@ -71,7 +82,7 @@
             <a href="assets/img/mundos-tierra-maizal-aereo.jpg">
               <img src="assets/img/mundos-tierra-maizal-aereo.jpg" alt="Toma aérea de una camioneta persiguiendo un dron por una franja de tierra en medio de un maizal verde." loading="lazy" width="960" height="402">
             </a>
-            <figcaption>La persecución del dron sobre el último maíz que crece. Eje Mundos.</figcaption>
+            <figcaption>La persecución del dron sobre el último maíz que crece.</figcaption>
           </figure>
         </li>
         <li>
@@ -79,23 +90,23 @@
             <a href="assets/img/mundos-tierra-atardecer.jpg">
               <img src="assets/img/mundos-tierra-atardecer.jpg" alt="El sol bajo y anaranjado, desenfocado, sobre un campo cubierto por una neblina de polvo." loading="lazy" width="960" height="402">
             </a>
-            <figcaption>Otro atardecer polvoriento sobre los campos de maíz. Eje Mundos.</figcaption>
+            <figcaption>Otro atardecer polvoriento sobre los campos de maíz.</figcaption>
           </figure>
         </li>
         <li>
           <figure>
-            <a href="assets/img/mundos-gargantua.jpg">
-              <img src="assets/img/mundos-gargantua.jpg" alt="El agujero negro Gargantúa con su anillo de luz, visto desde el sistema planetario." loading="lazy" width="2560" height="1072">
+            <a href="assets/img/mundos-gargantua-nave.jpg">
+              <img src="assets/img/mundos-gargantua-nave.jpg" alt="Una nave con los motores encendidos maniobra a contraluz, cerca de Gargantúa." loading="lazy" width="900" height="506">
             </a>
-            <figcaption>Gargantúa domina el sistema al otro lado del agujero de gusano. Eje Mundos.</figcaption>
+            <figcaption>Maniobrando cerca de Gargantúa, a contraluz de su propio resplandor.</figcaption>
           </figure>
         </li>
         <li>
           <figure>
-            <a href="assets/img/mundos-miller.jpg">
-              <img src="assets/img/mundos-miller.jpg" alt="La superficie acuática del planeta de Miller bajo un cielo cargado." loading="lazy" width="1280" height="720">
+            <a href="assets/img/mundos-miller-muro.jpg">
+              <img src="assets/img/mundos-miller-muro.jpg" alt="La Ranger, diminuta, frente a un muro de agua gigantesco que ocupa todo el horizonte del planeta de Miller." loading="lazy" width="1800" height="1013">
             </a>
-            <figcaption>El planeta de Miller, un mundo de océano poco profundo. Eje Mundos.</figcaption>
+            <figcaption>El planeta de Miller, donde las montañas son olas.</figcaption>
           </figure>
         </li>
         <li>
@@ -103,15 +114,15 @@
             <a href="assets/img/mundos-miller-oceano.jpg">
               <img src="assets/img/mundos-miller-oceano.jpg" alt="La nave Ranger posada sobre el océano infinito del planeta de Miller, bajo un cielo de tormenta." loading="lazy" width="1280" height="720">
             </a>
-            <figcaption>La Ranger sobre el océano de Miller, minutos antes de la ola. Eje Mundos.</figcaption>
+            <figcaption>La Ranger sobre el océano de Miller, minutos antes de la ola.</figcaption>
           </figure>
         </li>
         <li>
           <figure>
-            <a href="assets/img/mundos-mann.jpg">
-              <img src="assets/img/mundos-mann.jpg" alt="El paisaje helado y nublado del planeta de Mann." loading="lazy" width="1280" height="720">
+            <a href="assets/img/mundos-mann-superficie.jpg">
+              <img src="assets/img/mundos-mann-superficie.jpg" alt="Cooper con traje espacial sobre la superficie helada del planeta de Mann, con otro astronauta al frente." loading="lazy" width="1800" height="1013">
             </a>
-            <figcaption>El planeta de Mann: hielo y nubes heladas hasta el horizonte. Eje Mundos.</figcaption>
+            <figcaption>Sobre el hielo de Mann, donde nada es lo que promete la señal.</figcaption>
           </figure>
         </li>
         <li>
@@ -119,7 +130,7 @@
             <a href="assets/img/mundos-mann-caminata.jpg">
               <img src="assets/img/mundos-mann-caminata.jpg" alt="Dos astronautas cruzan a pie un campo de crestas de hielo agrietado bajo un cielo blanco." loading="lazy" width="1200" height="675">
             </a>
-            <figcaption>Travesía por los campos helados del planeta de Mann. Eje Mundos.</figcaption>
+            <figcaption>Travesía por los campos helados del planeta de Mann.</figcaption>
           </figure>
         </li>
         <li>
@@ -127,30 +138,55 @@
             <a href="assets/img/mundos-mann-nubes.jpg">
               <img src="assets/img/mundos-mann-nubes.jpg" alt="Dos figuras diminutas de pie sobre una llanura de nubes congeladas, con un muro de hielo y niebla al fondo." loading="lazy" width="1200" height="675">
             </a>
-            <figcaption>Sobre las nubes congeladas de Mann: hielo que se puede pisar. Eje Mundos.</figcaption>
+            <figcaption>Sobre las nubes congeladas de Mann: hielo que se puede pisar.</figcaption>
           </figure>
         </li>
         <li>
           <figure>
-            <a href="assets/img/mundos-tesseract.jpg">
-              <img src="assets/img/mundos-tesseract.jpg" alt="La retícula geométrica del Tesseract, con planos que se repiten en todas direcciones." loading="lazy" width="1280" height="720">
+            <a href="assets/img/mundos-tesseract-estante.jpg">
+              <img src="assets/img/mundos-tesseract-estante.jpg" alt="Cooper visto a través de un hueco entre estanterías, moviendo una silla en la habitación de Murph desde dentro del Tesseract." loading="lazy" width="1800" height="1013">
             </a>
-            <figcaption>El Tesseract, más allá del horizonte de Gargantúa. Eje Mundos.</figcaption>
+            <figcaption>Desde el otro lado del estante, Cooper mueve lo que ella ya había visto.</figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure>
+            <a href="assets/img/mundos-tesseract-reticula.jpg">
+              <img src="assets/img/mundos-tesseract-reticula.jpg" alt="Un astronauta flota junto a una estantería infinita de libros, dentro del Tesseract." loading="lazy" width="1800" height="1013">
+            </a>
+            <figcaption>Cooper alcanza los libros desde el otro lado del tiempo.</figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure>
+            <a href="assets/img/mundos-tesseract-empuje.jpg">
+              <img src="assets/img/mundos-tesseract-empuje.jpg" alt="Primer plano de Cooper con casco espacial, rodeado de estructuras metálicas dentro del Tesseract." loading="lazy" width="1800" height="1013">
+            </a>
+            <figcaption>El rostro de Cooper, atrapado entre los planos del Tesseract.</figcaption>
           </figure>
         </li>
       </ul>
+      <nav class="galeria-paginacion" aria-label="Otro eje" hidden>
+        <span></span>
+        <button type="button" class="galeria-siguiente" data-filtro="personajes">
+          <span class="galeria-paginacion-rol">Siguiente</span>
+          <span class="galeria-paginacion-nombre">Personajes</span>
+        </button>
+      </nav>
     </section>
 
     <section id="personajes">
-      <h2>Personajes</h2>
-      <a class="galeria-eje-enlace" href="personajes.html">Ir a la página de Personajes</a>
-      <ul class="galeria-grid">
+      <a class="galeria-eje-header" href="personajes.html">
+        <h2>Personajes</h2>
+        <span class="galeria-eje-cta">Ver la página completa <span aria-hidden="true">→</span></span>
+      </a>
+      <ul class="galeria-grid" data-eje="personajes">
         <li>
           <figure>
-            <a href="assets/img/personajes-cooper.jpg">
-              <img src="assets/img/personajes-cooper.jpg" alt="Retrato de Cooper, ex piloto de la NASA, con traje de vuelo." loading="lazy" width="1280" height="720">
+            <a href="assets/img/personajes-cooper-bts-rodaje.jpg">
+              <img src="assets/img/personajes-cooper-bts-rodaje.jpg" alt="Christopher Nolan dirige una escena de rodaje al aire libre, con el equipo de cámara y McConaughey de fondo." loading="lazy" width="1200" height="800">
             </a>
-            <figcaption>Cooper, piloto del Endurance y padre de Murph. Eje Personajes.</figcaption>
+            <figcaption>Detrás de cámaras: Nolan dirige la escena de la granja.</figcaption>
           </figure>
         </li>
         <li>
@@ -158,7 +194,7 @@
             <a href="assets/img/personajes-cooper-murph-adios.jpg">
               <img src="assets/img/personajes-cooper-murph-adios.jpg" alt="Cooper abraza con fuerza a Murph niña, que llora, en el cuarto de ella antes de partir." loading="lazy" width="960" height="402">
             </a>
-            <figcaption>La despedida: Cooper deja a Murph para ir a las estrellas. Eje Personajes.</figcaption>
+            <figcaption>La despedida: Cooper deja a Murph para ir a las estrellas.</figcaption>
           </figure>
         </li>
         <li>
@@ -166,7 +202,7 @@
             <a href="assets/img/personajes-cooper-murph-siluetas.jpg">
               <img src="assets/img/personajes-cooper-murph-siluetas.jpg" alt="Cooper y Murph adulta, en silueta a contraluz, frente a una ventana con luz dorada." loading="lazy" width="960" height="402">
             </a>
-            <figcaption>Padre e hija, a contraluz, sin ponerse de acuerdo. Eje Personajes.</figcaption>
+            <figcaption>Padre e hija, a contraluz, sin ponerse de acuerdo.</figcaption>
           </figure>
         </li>
         <li>
@@ -174,7 +210,7 @@
             <a href="assets/img/personajes-cooper-cabina.jpg">
               <img src="assets/img/personajes-cooper-cabina.jpg" alt="Primer plano de Cooper en la cabina de la nave, iluminado por los instrumentos, con gesto de concentración." loading="lazy" width="1200" height="675">
             </a>
-            <figcaption>Cooper a los mandos, en el momento crítico. Eje Personajes.</figcaption>
+            <figcaption>Cooper a los mandos, en el momento crítico.</figcaption>
           </figure>
         </li>
         <li>
@@ -182,7 +218,7 @@
             <a href="assets/img/personajes-cooper-casco.jpg">
               <img src="assets/img/personajes-cooper-casco.jpg" alt="Cooper dentro del casco espacial, con la cara marcada por el esfuerzo y los ojos húmedos." loading="lazy" width="1200" height="675">
             </a>
-            <figcaption>Cooper durante el acople, al borde de sus fuerzas. Eje Personajes.</figcaption>
+            <figcaption>Cooper durante el acople, al borde de sus fuerzas.</figcaption>
           </figure>
         </li>
         <li>
@@ -190,15 +226,15 @@
             <a href="assets/img/personajes-cooper-sudor.jpg">
               <img src="assets/img/personajes-cooper-sudor.jpg" alt="Primerísimo plano de Cooper sudando dentro del casco, con reflejos de luz en el visor." loading="lazy" width="1200" height="675">
             </a>
-            <figcaption>El peso de la gravedad sobre el rostro de Cooper. Eje Personajes.</figcaption>
+            <figcaption>El peso de la gravedad sobre el rostro de Cooper.</figcaption>
           </figure>
         </li>
         <li>
           <figure>
-            <a href="assets/img/personajes-murph.jpg">
-              <img src="assets/img/personajes-murph.jpg" alt="Retrato de Murph adulta mirando de frente." loading="lazy" width="1280" height="720">
+            <a href="assets/img/personajes-murph-bts-rodaje.jpg">
+              <img src="assets/img/personajes-murph-bts-rodaje.jpg" alt="Cooper y Murph niña conversan apoyados en la camioneta, junto al maizal, entre tomas de rodaje." loading="lazy" width="1200" height="800">
             </a>
-            <figcaption>Murph, la hija de Cooper que resuelve la ecuación de la gravedad. Eje Personajes.</figcaption>
+            <figcaption>Detrás de cámaras: Cooper y Murph, entre toma y toma.</figcaption>
           </figure>
         </li>
         <li>
@@ -206,7 +242,7 @@
             <a href="assets/img/personajes-murph-nina.jpg">
               <img src="assets/img/personajes-murph-nina.jpg" alt="Murph de niña, en un campo bajo un cielo de nubes, con expresión seria." loading="lazy" width="960" height="402">
             </a>
-            <figcaption>Murph niña, cuando cree que hay un «fantasma» en su habitación. Eje Personajes.</figcaption>
+            <figcaption>Murph niña, cuando cree que hay un «fantasma» en su habitación.</figcaption>
           </figure>
         </li>
         <li>
@@ -214,7 +250,7 @@
             <a href="assets/img/personajes-murph-corre.jpg">
               <img src="assets/img/personajes-murph-corre.jpg" alt="Murph adulta corre por un pasillo en penumbra sosteniendo algo en la mano, con luz recortada al fondo." loading="lazy" width="1200" height="675">
             </a>
-            <figcaption>Murph adulta, contra el reloj, con la respuesta en la mano. Eje Personajes.</figcaption>
+            <figcaption>Murph adulta, contra el reloj, con la respuesta en la mano.</figcaption>
           </figure>
         </li>
         <li>
@@ -222,7 +258,7 @@
             <a href="assets/img/personajes-murph-anciana.jpg">
               <img src="assets/img/personajes-murph-anciana.jpg" alt="Murph anciana, entrevistada frente a una estantería de libros." loading="lazy" width="960" height="402">
             </a>
-            <figcaption>Murph anciana, al final de su vida. Eje Personajes.</figcaption>
+            <figcaption>Murph anciana, al final de su vida.</figcaption>
           </figure>
         </li>
         <li>
@@ -230,7 +266,7 @@
             <a href="assets/img/personajes-brand.jpg">
               <img src="assets/img/personajes-brand.jpg" alt="Retrato de la Dra. Amelia Brand con traje espacial." loading="lazy" width="1280" height="720">
             </a>
-            <figcaption>Dra. Amelia Brand, astrónoma de la tripulación del Endurance. Eje Personajes.</figcaption>
+            <figcaption>Dra. Amelia Brand, astrónoma de la tripulación del Endurance.</figcaption>
           </figure>
         </li>
         <li>
@@ -238,7 +274,7 @@
             <a href="assets/img/personajes-amelia-casco.jpg">
               <img src="assets/img/personajes-amelia-casco.jpg" alt="Retrato de Amelia Brand dentro de la nave, con el casco puesto y la mirada al frente." loading="lazy" width="960" height="402">
             </a>
-            <figcaption>Amelia Brand, lista para bajar a un mundo desconocido. Eje Personajes.</figcaption>
+            <figcaption>Amelia Brand, lista para bajar a un mundo desconocido.</figcaption>
           </figure>
         </li>
         <li>
@@ -246,7 +282,7 @@
             <a href="assets/img/personajes-profesor-brand.jpg">
               <img src="assets/img/personajes-profesor-brand.jpg" alt="Retrato del Profesor Brand, líder de la NASA." loading="lazy" width="1280" height="720">
             </a>
-            <figcaption>Profesor Brand, mentor y responsable del «Plan A». Eje Personajes.</figcaption>
+            <figcaption>Profesor Brand, mentor y responsable del «Plan A».</figcaption>
           </figure>
         </li>
         <li>
@@ -254,15 +290,15 @@
             <a href="assets/img/personajes-mann.jpg">
               <img src="assets/img/personajes-mann.jpg" alt="Retrato del Dr. Mann." loading="lazy" width="960" height="402">
             </a>
-            <figcaption>Dr. Mann, «el mejor de nosotros», que falsificó sus datos. Eje Personajes.</figcaption>
+            <figcaption>Dr. Mann, «el mejor de nosotros», que falsificó sus datos.</figcaption>
           </figure>
         </li>
         <li>
           <figure>
-            <a href="assets/img/personajes-tars-case.jpg">
-              <img src="assets/img/personajes-tars-case.jpg" alt="Los robots TARS y CASE, de diseño monolítico." loading="lazy" width="1280" height="720">
+            <a href="assets/img/personajes-tars.jpg">
+              <img src="assets/img/personajes-tars.jpg" alt="TARS, el robot monolítico, de pie en la bahía de carga del Endurance." loading="lazy" width="1200" height="503">
             </a>
-            <figcaption>TARS y CASE, los robots tácticos de la misión. Eje Personajes.</figcaption>
+            <figcaption>TARS, a bordo del Endurance, con su pantalla encendida.</figcaption>
           </figure>
         </li>
         <li>
@@ -270,22 +306,34 @@
             <a href="assets/img/personajes-astronauta.jpg">
               <img src="assets/img/personajes-astronauta.jpg" alt="Un astronauta real de la NASA durante una actividad extravehicular." loading="lazy" width="1280" height="853">
             </a>
-            <figcaption>Referencia real: un astronauta de la NASA en órbita. Eje Personajes.</figcaption>
+            <figcaption>Referencia real: un astronauta de la NASA en órbita.</figcaption>
           </figure>
         </li>
       </ul>
+      <nav class="galeria-paginacion" aria-label="Otro eje" hidden>
+        <button type="button" class="galeria-anterior" data-filtro="mundos">
+          <span class="galeria-paginacion-rol">Anterior</span>
+          <span class="galeria-paginacion-nombre">Mundos</span>
+        </button>
+        <button type="button" class="galeria-siguiente" data-filtro="ciencia">
+          <span class="galeria-paginacion-rol">Siguiente</span>
+          <span class="galeria-paginacion-nombre">La Ciencia</span>
+        </button>
+      </nav>
     </section>
 
     <section id="ciencia">
-      <h2>La Ciencia</h2>
-      <a class="galeria-eje-enlace" href="ciencia.html">Ir a la página de La Ciencia</a>
-      <ul class="galeria-grid">
+      <a class="galeria-eje-header" href="ciencia.html">
+        <h2>La Ciencia</h2>
+        <span class="galeria-eje-cta">Ver la página completa <span aria-hidden="true">→</span></span>
+      </a>
+      <ul class="galeria-grid" data-eje="ciencia">
         <li>
           <figure>
-            <a href="assets/img/ciencia-agujero-negro.jpg">
-              <img src="assets/img/ciencia-agujero-negro.jpg" alt="Ilustración de un agujero negro rodeado por un disco de gas brillante." loading="lazy" width="925" height="1197">
+            <a href="assets/img/ciencia-m87-polarizado.jpg">
+              <img src="assets/img/ciencia-m87-polarizado.jpg" alt="El agujero negro M87 en luz polarizada, con las líneas de su campo magnético visibles alrededor de la sombra central." loading="lazy" width="1280" height="1292">
             </a>
-            <figcaption>Ilustración de un agujero negro y su disco de acreción (NASA/JPL-Caltech). Eje La Ciencia.</figcaption>
+            <figcaption>M87 en luz polarizada: el campo magnético real al borde de un agujero negro (EHT).</figcaption>
           </figure>
         </li>
         <li>
@@ -293,7 +341,7 @@
             <a href="assets/img/hero-backdrop.jpg">
               <img src="assets/img/hero-backdrop.jpg" alt="La primera imagen real de un agujero negro: un anillo naranja de luz alrededor de una sombra oscura." loading="lazy" width="1920" height="1920">
             </a>
-            <figcaption>La primera fotografía real de un agujero negro (M87, Event Horizon Telescope). Eje La Ciencia.</figcaption>
+            <figcaption>La primera fotografía real de un agujero negro (M87, Event Horizon Telescope).</figcaption>
           </figure>
         </li>
         <li>
@@ -301,7 +349,7 @@
             <a href="assets/img/ciencia-gargantua.jpg">
               <img src="assets/img/ciencia-gargantua.jpg" alt="Gargantúa vista de cerca: la esfera negra rodeada por un disco de luz que se curva por encima y por debajo." loading="lazy" width="1280" height="720">
             </a>
-            <figcaption>Gargantúa y su disco de acreción, con la luz curvada por la lente gravitacional. Eje La Ciencia.</figcaption>
+            <figcaption>Gargantúa y su disco de acreción, con la luz curvada por la lente gravitacional.</figcaption>
           </figure>
         </li>
         <li>
@@ -309,7 +357,7 @@
             <a href="assets/img/ciencia-tesseract.jpg">
               <img src="assets/img/ciencia-tesseract.jpg" alt="El interior del Tesseract: una retícula infinita de planos con una figura diminuta al centro." loading="lazy" width="1280" height="720">
             </a>
-            <figcaption>El Tesseract, donde el tiempo se recorre como si fuera un espacio. Eje La Ciencia.</figcaption>
+            <figcaption>El Tesseract, donde el tiempo se recorre como si fuera un espacio.</figcaption>
           </figure>
         </li>
         <li>
@@ -317,7 +365,7 @@
             <a href="assets/img/ciencia-teseracto-biblioteca.jpg">
               <img src="assets/img/ciencia-teseracto-biblioteca.jpg" alt="Cooper visto a través de la retícula del Tesseract, mirando el reverso de la biblioteca de Murph." loading="lazy" width="1200" height="675">
             </a>
-            <figcaption>Cooper detrás de la biblioteca, empujando el tiempo. Eje La Ciencia.</figcaption>
+            <figcaption>Cooper detrás de la biblioteca, empujando el tiempo.</figcaption>
           </figure>
         </li>
         <li>
@@ -325,7 +373,7 @@
             <a href="assets/img/ciencia-teseracto-cooper.jpg">
               <img src="assets/img/ciencia-teseracto-cooper.jpg" alt="Cooper con traje espacial de pie dentro del Tesseract, rodeado por planos que se repiten." loading="lazy" width="1200" height="675">
             </a>
-            <figcaption>Dentro del Tesseract, donde el tiempo es una dimensión más. Eje La Ciencia.</figcaption>
+            <figcaption>Dentro del Tesseract, donde el tiempo es una dimensión más.</figcaption>
           </figure>
         </li>
         <li>
@@ -333,7 +381,7 @@
             <a href="assets/img/ciencia-teseracto-lineas.jpg">
               <img src="assets/img/ciencia-teseracto-lineas.jpg" alt="Líneas de luz que se cruzan en todas direcciones formando corredores infinitos." loading="lazy" width="1200" height="675">
             </a>
-            <figcaption>El tiempo convertido en corredores que se pueden recorrer. Eje La Ciencia.</figcaption>
+            <figcaption>El tiempo convertido en corredores que se pueden recorrer.</figcaption>
           </figure>
         </li>
         <li>
@@ -341,7 +389,7 @@
             <a href="assets/img/ciencia-pizarron.jpg">
               <img src="assets/img/ciencia-pizarron.jpg" alt="Murph adulta frente a un pizarrón cubierto de ecuaciones, en un despacho con biblioteca." loading="lazy" width="960" height="402">
             </a>
-            <figcaption>La ecuación de la gravedad, línea por línea, en el pizarrón. Eje La Ciencia.</figcaption>
+            <figcaption>La ecuación de la gravedad, línea por línea, en el pizarrón.</figcaption>
           </figure>
         </li>
         <li>
@@ -349,7 +397,7 @@
             <a href="assets/img/ciencia-control-nasa.jpg">
               <img src="assets/img/ciencia-control-nasa.jpg" alt="Sala de control subterránea de la NASA con pantallas, consolas y un destello de luz cruzando el plano." loading="lazy" width="960" height="402">
             </a>
-            <figcaption>El último centro de control de la NASA, escondido bajo tierra. Eje La Ciencia.</figcaption>
+            <figcaption>El último centro de control de la NASA, escondido bajo tierra.</figcaption>
           </figure>
         </li>
         <li>
@@ -357,22 +405,82 @@
             <a href="assets/img/ciencia-agujero-gusano.jpg">
               <img src="assets/img/ciencia-agujero-gusano.jpg" alt="Saturno con sus anillos y, a un lado, un punto de luz brillante con un destello." loading="lazy" width="1280" height="720">
             </a>
-            <figcaption>El agujero de gusano, cerca de Saturno, que abre el atajo a otra galaxia. Eje La Ciencia.</figcaption>
+            <figcaption>El agujero de gusano, cerca de Saturno, que abre el atajo a otra galaxia.</figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure>
+            <a href="assets/img/ciencia-sagitario-a-real.jpg">
+              <img src="assets/img/ciencia-sagitario-a-real.jpg" alt="Imagen compuesta de rayos X, infrarrojo y radio del agujero negro supermasivo en el centro de la Vía Láctea." loading="lazy" width="1041" height="1041">
+            </a>
+            <figcaption>Sagitario A*, el agujero negro real en el centro de nuestra propia galaxia (NASA/EHT).</figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure>
+            <a href="assets/img/ciencia-anillo-einstein.jpg">
+              <img src="assets/img/ciencia-anillo-einstein.jpg" alt="Una galaxia distante aparece deformada en un anillo casi perfecto alrededor de un cúmulo de galaxias, por lente gravitacional." loading="lazy" width="1280" height="745">
+            </a>
+            <figcaption>Un anillo de Einstein real: la luz de una galaxia lejana, curvada por la gravedad de otra (ESA/Hubble).</figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure>
+            <a href="assets/img/ciencia-ondas-gravitacionales.jpg">
+              <img src="assets/img/ciencia-ondas-gravitacionales.jpg" alt="Visualización de dos agujeros negros orbitando y fusionándose, generando ondas en el espacio-tiempo." loading="lazy" width="1024" height="576">
+            </a>
+            <figcaption>Dos agujeros negros fusionándose: la fuente real de las primeras ondas gravitacionales detectadas (NASA).</figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure>
+            <a href="assets/img/ciencia-saturno-hexagono.jpg">
+              <img src="assets/img/ciencia-saturno-hexagono.jpg" alt="El planeta Saturno visto por la sonda Cassini, con la tormenta hexagonal de su polo norte." loading="lazy" width="753" height="753">
+            </a>
+            <figcaption>Saturno real, fotografiado por la sonda Cassini cerca de donde la película sitúa el agujero de gusano.</figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure>
+            <a href="assets/img/ciencia-disco-acrecion-sim.jpg">
+              <img src="assets/img/ciencia-disco-acrecion-sim.jpg" alt="Simulación por computadora de un disco de gas brillante orbitando un agujero negro, con la luz curvada por su gravedad." loading="lazy" width="1024" height="1024">
+            </a>
+            <figcaption>Simulación científica de un disco de acreción, calculada con las mismas ecuaciones que inspiraron a Gargantúa (NASA).</figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure>
+            <a href="assets/img/ciencia-reloj-atomico.jpg">
+              <img src="assets/img/ciencia-reloj-atomico.jpg" alt="Ilustración del reloj atómico de espacio profundo de la NASA junto al satélite que lo transporta en órbita." loading="lazy" width="1280" height="720">
+            </a>
+            <figcaption>El reloj atómico de espacio profundo de la NASA, la tecnología real que mide la dilatación del tiempo.</figcaption>
           </figure>
         </li>
       </ul>
+      <nav class="galeria-paginacion" aria-label="Otro eje" hidden>
+        <button type="button" class="galeria-anterior" data-filtro="personajes">
+          <span class="galeria-paginacion-rol">Anterior</span>
+          <span class="galeria-paginacion-nombre">Personajes</span>
+        </button>
+        <button type="button" class="galeria-siguiente" data-filtro="viaje">
+          <span class="galeria-paginacion-rol">Siguiente</span>
+          <span class="galeria-paginacion-nombre">El Viaje</span>
+        </button>
+      </nav>
     </section>
 
     <section id="viaje">
-      <h2>El Viaje</h2>
-      <a class="galeria-eje-enlace" href="viaje.html">Ir a la página de El Viaje</a>
-      <ul class="galeria-grid">
+      <a class="galeria-eje-header" href="viaje.html">
+        <h2>El Viaje</h2>
+        <span class="galeria-eje-cta">Ver la página completa <span aria-hidden="true">→</span></span>
+      </a>
+      <ul class="galeria-grid" data-eje="viaje">
         <li>
           <figure>
             <a href="assets/img/viaje-pilares-de-creacion.jpg">
               <img src="assets/img/viaje-pilares-de-creacion.jpg" alt="Los Pilares de la Creación: tres columnas de gas y polvo interestelar iluminadas por estrellas jóvenes." loading="lazy" width="960" height="899">
             </a>
-            <figcaption>Los Pilares de la Creación (NASA, ESA/Hubble). Eje El Viaje.</figcaption>
+            <figcaption>Los Pilares de la Creación (NASA, ESA/Hubble).</figcaption>
           </figure>
         </li>
         <li>
@@ -380,7 +488,7 @@
             <a href="assets/img/viaje-endurance.jpg">
               <img src="assets/img/viaje-endurance.jpg" alt="La nave Endurance: doce módulos formando un anillo que gira contra el fondo negro del espacio." loading="lazy" width="1280" height="720">
             </a>
-            <figcaption>La Endurance, la nave que cruza el agujero de gusano. Eje El Viaje.</figcaption>
+            <figcaption>La Endurance, la nave que cruza el agujero de gusano.</figcaption>
           </figure>
         </li>
         <li>
@@ -388,7 +496,7 @@
             <a href="assets/img/viaje-reentrada.jpg">
               <img src="assets/img/viaje-reentrada.jpg" alt="El ala de la nave Ranger incandescente por el rozamiento mientras atraviesa la atmósfera." loading="lazy" width="1200" height="675">
             </a>
-            <figcaption>Reentrada: el borde de la nave al rojo vivo contra la atmósfera. Eje El Viaje.</figcaption>
+            <figcaption>Reentrada: el borde de la nave al rojo vivo contra la atmósfera.</figcaption>
           </figure>
         </li>
         <li>
@@ -396,7 +504,7 @@
             <a href="assets/img/viaje-tierra-orbita.jpg">
               <img src="assets/img/viaje-tierra-orbita.jpg" alt="La Tierra vista desde órbita, con el anillo de acoplamiento de una nave en primer plano." loading="lazy" width="1280" height="720">
             </a>
-            <figcaption>Salida de la órbita terrestre rumbo a Saturno. Eje El Viaje.</figcaption>
+            <figcaption>Salida de la órbita terrestre rumbo a Saturno.</figcaption>
           </figure>
         </li>
         <li>
@@ -404,7 +512,7 @@
             <a href="assets/img/viaje-tierra-lejana.jpg">
               <img src="assets/img/viaje-tierra-lejana.jpg" alt="La Tierra como una fina medialuna azul sobre el negro del espacio, con la nave reducida a un punto." loading="lazy" width="1280" height="720">
             </a>
-            <figcaption>La Tierra queda atrás: la nave, un punto camino al agujero de gusano. Eje El Viaje.</figcaption>
+            <figcaption>La Tierra queda atrás: la nave, un punto camino al agujero de gusano.</figcaption>
           </figure>
         </li>
         <li>
@@ -412,7 +520,7 @@
             <a href="assets/img/viaje-cooper-deriva.jpg">
               <img src="assets/img/viaje-cooper-deriva.jpg" alt="El casco de Cooper recortado contra un intenso destello de sol, a la deriva en el espacio." loading="lazy" width="1200" height="675">
             </a>
-            <figcaption>Cooper a la deriva, tragado por la luz. Eje El Viaje.</figcaption>
+            <figcaption>Cooper a la deriva, tragado por la luz.</figcaption>
           </figure>
         </li>
         <li>
@@ -420,7 +528,7 @@
             <a href="assets/img/viaje-cooper-station.jpg">
               <img src="assets/img/viaje-cooper-station.jpg" alt="Cooper camina hacia una granja mientras el terreno se curva hacia arriba en el fondo, dentro de una estación espacial cilíndrica." loading="lazy" width="1200" height="675">
             </a>
-            <figcaption>Estación Cooper: la humanidad viviendo dentro de un cilindro que gira. Eje El Viaje.</figcaption>
+            <figcaption>Estación Cooper: la humanidad viviendo dentro de un cilindro que gira.</figcaption>
           </figure>
         </li>
         <li>
@@ -428,7 +536,7 @@
             <a href="assets/img/viaje-amelia-edmunds.jpg">
               <img src="assets/img/viaje-amelia-edmunds.jpg" alt="Amelia Brand con traje espacial de pie en una llanura rocosa y árida bajo un cielo claro." loading="lazy" width="1200" height="675">
             </a>
-            <figcaption>Amelia en el planeta de Edmunds, empezando el nuevo hogar. Eje El Viaje.</figcaption>
+            <figcaption>Amelia en el planeta de Edmunds, empezando el nuevo hogar.</figcaption>
           </figure>
         </li>
         <li>
@@ -436,7 +544,7 @@
             <a href="assets/img/viaje-planeta-edmunds.jpg">
               <img src="assets/img/viaje-planeta-edmunds.jpg" alt="Paisaje amplio de un planeta desértico de rocas rojizas, con un astronauta diminuto entre las piedras y un destello de sol." loading="lazy" width="1200" height="675">
             </a>
-            <figcaption>El mundo de Edmunds, el plan B que sí era real. Eje El Viaje.</figcaption>
+            <figcaption>El mundo de Edmunds, el plan B que sí era real.</figcaption>
           </figure>
         </li>
         <li>
@@ -444,13 +552,79 @@
             <a href="assets/img/viaje-planeta-edmunds-despegue.jpg">
               <img src="assets/img/viaje-planeta-edmunds-despegue.jpg" alt="Un astronauta de espaldas observa una nave despegando en vertical sobre un terreno rocoso y desértico." loading="lazy" width="1200" height="675">
             </a>
-            <figcaption>Un despegue más, ya sin la Tierra a la espalda. Eje El Viaje.</figcaption>
+            <figcaption>Un despegue más, ya sin la Tierra a la espalda.</figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure>
+            <a href="assets/img/mundos-gargantua-endurance.jpg">
+              <img src="assets/img/mundos-gargantua-endurance.jpg" alt="La nave Endurance, un pequeño punto negro, sobrevuela las nubes doradas que rodean el agujero negro Gargantúa." loading="lazy" width="1600" height="900">
+            </a>
+            <figcaption>La Endurance, un punto diminuto contra las nubes de Gargantúa.</figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure>
+            <a href="assets/img/mundos-gargantua-plano.jpg">
+              <img src="assets/img/mundos-gargantua-plano.jpg" alt="El anillo de luz de Gargantúa se curva en el cielo sobre la nave, reducida a un punto diminuto." loading="lazy" width="1600" height="708">
+            </a>
+            <figcaption>El arco de luz de Gargantúa, curvado por su propia gravedad.</figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure>
+            <a href="assets/img/mundos-gargantua-descenso.jpg">
+              <img src="assets/img/mundos-gargantua-descenso.jpg" alt="Vista desde la nave descendiendo hacia la superficie curva y luminosa de Gargantúa." loading="lazy" width="900" height="506">
+            </a>
+            <figcaption>El descenso hacia el horizonte de sucesos de Gargantúa.</figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure>
+            <a href="assets/img/mundos-gargantua-caida.jpg">
+              <img src="assets/img/mundos-gargantua-caida.jpg" alt="Primer plano del rostro de Cooper dentro del casco, gritando durante una maniobra violenta." loading="lazy" width="900" height="506">
+            </a>
+            <figcaption>Cooper, al límite, durante la caída hacia Gargantúa.</figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure>
+            <a href="assets/img/mundos-mann-docking.jpg">
+              <img src="assets/img/mundos-mann-docking.jpg" alt="Vista desde la Ranger acercándose a un módulo de la Endurance que gira, con otra nave a lo lejos." loading="lazy" width="1800" height="1013">
+            </a>
+            <figcaption>El acople con el módulo que gira fuera de control.</figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure>
+            <a href="assets/img/mundos-miller-ola.jpg">
+              <img src="assets/img/mundos-miller-ola.jpg" alt="Un astronauta corre sobre el agua mientras una ola enorme se acerca en el horizonte del planeta de Miller." loading="lazy" width="1800" height="1013">
+            </a>
+            <figcaption>La ola gigante en el planeta de Miller, a punto de arrasar todo.</figcaption>
           </figure>
         </li>
       </ul>
+      <nav class="galeria-paginacion" aria-label="Otro eje" hidden>
+        <button type="button" class="galeria-anterior" data-filtro="ciencia">
+          <span class="galeria-paginacion-rol">Anterior</span>
+          <span class="galeria-paginacion-nombre">La Ciencia</span>
+        </button>
+        <span></span>
+      </nav>
     </section>
+
+    <dialog class="galeria-visor" aria-label="Visor de imagen">
+      <button type="button" class="galeria-visor-cerrar" aria-label="Cerrar visor">✕</button>
+      <button type="button" class="galeria-visor-prev" aria-label="Imagen anterior">‹</button>
+      <figure class="galeria-visor-figura">
+        <img class="galeria-visor-img" src="" alt="">
+        <figcaption class="galeria-visor-caption"></figcaption>
+      </figure>
+      <button type="button" class="galeria-visor-next" aria-label="Imagen siguiente">›</button>
+    </dialog>
 
   </main>
   <script type="module" src="js/layout.js"></script>
+  <script type="module" src="js/galeria.js"></script>
 </body>
 </html>
