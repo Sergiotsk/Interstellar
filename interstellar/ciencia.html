@@ -17,18 +17,24 @@
 </head>
 <body class="con-cielo">
   <main>
-    <section>
-      <h1>La Ciencia</h1>
-      <p>
-        Interstellar se apoya en física real más de lo que suele hacer el cine:
-        <strong>Kip Thorne, físico teórico, fue su asesor científico</strong> y
-        productor ejecutivo. Pero la película también especula y, a veces, fuerza
-        las reglas para que la historia funcione. Estos son los cinco conceptos
-        que sostienen la trama —agujeros negros, dilatación del tiempo, agujeros
-        de gusano, la relatividad que los une y la ecuación de la gravedad que
-        mueve la trama entera—, con <strong>cada afirmación marcada según su
-        nivel de rigor</strong>.
-      </p>
+    <section class="ciencia-portada">
+      <div class="horizonte-canvas" id="horizonte-canvas">
+        <img src="assets/img/hero-gargantua.jpg" alt="" id="horizonte-fallback">
+      </div>
+      <div class="ciencia-portada-contenido">
+        <h1>La Ciencia</h1>
+        <p>
+          Interstellar se apoya en física real más de lo que suele hacer el cine:
+          <strong>Kip Thorne, físico teórico, fue su asesor científico</strong>.
+          Pero también especula. Estos son los cinco conceptos que sostienen la
+          trama —agujeros negros, dilatación del tiempo, agujeros de gusano, la
+          relatividad que los une y la ecuación de la gravedad.
+        </p>
+      </div>
+    </section>
+
+    <section id="rigor">
+      <p>Cada afirmación de esta página está marcada según su nivel de rigor:</p>
       <dl class="rigor-leyenda">
         <dt><span class="rigor rigor-real">✓ Ciencia real</span></dt>
         <dd>Fielmente representada; física establecida y comprobada.</dd>
@@ -41,11 +47,6 @@
 
     <section id="agujeros-negros" class="concepto">
       <h2>Agujeros negros</h2>
-
-      <figure>
-        <img src="assets/img/ciencia-agujero-negro.jpg" alt="Ilustración de un agujero negro rodeado por un disco de gas brillante.">
-        <figcaption>Un agujero negro y su disco de acreción (ilustración de la NASA).</figcaption>
-      </figure>
 
       <h3>La ciencia</h3>
       <p>
@@ -429,5 +430,6 @@
     </section>
   </main>
   <script type="module" src="js/layout.js"></script>
+  <script type="module" src="js/ciencia.js"></script>
 </body>
 </html>

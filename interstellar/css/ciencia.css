@@ -68,6 +68,196 @@
   color: var(--color-texto-atenuado);
 }
 
+/* Portada de La Ciencia: hero full-bleed con el agujero negro animado de
+   fondo (Three.js + GLSL, adaptado de "Event Horizon" de Daniel Munoz,
+   CodePen) y el H1 + intro + leyenda de rigor superpuestos. Mismo criterio
+   que .eje-con-backdrop (seccion 11, css/mundos.css): imagen/canvas DECORATIVO
+   de fondo + contenido en su propia capa, con el mismo --backdrop-oscurecer
+   que usa cualquier backdrop fotografico del sitio (contraste del texto,
+   SC-006/SC-007). Pisa el bloque de presentacion generico de layout.css
+   (`body:not(.home) main > section:first-child`, max-width 60rem/padding
+   chico) con mas especificidad al sumar `.ciencia-portada`. */
+body:not(.home) main > section.ciencia-portada:first-child {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  max-width: none;
+  min-height: 100vh;
+  height: 100vh;
+  display: flex;
+  align-items: flex-end;
+  padding: 0;
+  background-color: var(--color-fondo);
+}
+
+.ciencia-portada .horizonte-canvas {
+  position: absolute;
+  inset: 0;
+  filter: var(--backdrop-oscurecer);
+  z-index: 0;
+}
+
+.ciencia-portada-contenido {
+  position: relative;
+  z-index: 1;
+  max-width: 52rem;
+  width: 100%;
+  margin: 0 auto 0 5%;
+  padding: 4rem 1.25rem 3rem;
+  text-align: left;
+}
+
+@media (max-width: 48rem) {
+  .ciencia-portada-contenido {
+    margin: 0 auto;
+    padding: 3rem 1.25rem 2rem;
+  }
+}
+
+.ciencia-portada-contenido h1 {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
+  text-shadow: 0 0 1.5rem var(--color-fondo);
+}
+
+.ciencia-portada-contenido > p {
+  font-size: clamp(1rem, 1.1vw, 1.15rem);
+  line-height: 1.8;
+  color: var(--color-texto);
+  margin-bottom: 1.5rem;
+  text-shadow: 0 0 1rem var(--color-fondo);
+}
+
+/* El <canvas> que arma el JS y la <img> de respaldo ocupan la MISMA caja.
+   El JS saca la <img> del DOM recien cuando el render ya esta andando —
+   hasta entonces (sin JS, sin WebGL, o si algo tira excepcion) esta regla
+   nunca importa: la <img> es lo unico que hay. */
+.horizonte-canvas canvas,
+.horizonte-canvas img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* =============================================================================
+   ACA VA EL CSS DEL PEN — pegar debajo de este comentario, tal cual, EXCEPTO:
+
+   1. `:root { --ink: ...; --dim: ...; --line: ...; --amber: ...; }`
+      -> cambiar el selector a `.horizonte-canvas` (scopeado al contenedor,
+      nunca al :root real del sitio — aunque los nombres no choquen con los
+      tokens del sitio, mejor no ensuciar el :root global por las dudas).
+
+   2. `html, body { height:100%; overflow:hidden; background:#000 }`
+      -> BORRAR esta regla entera. Tal cual viene del Pen, "overflow:hidden"
+      en <body> mata el scroll de TODO EL SITIO, no solo esta seccion.
+
+   3. `canvas { width:100vw; height:100vh; ... }`
+      -> BORRAR el width/height (ya los pone `.horizonte-canvas canvas` arriba,
+      relativos al contenedor). El resto de esa regla (cursor:grab, touch-action,
+      etc.) se puede pegar tal cual, prefijado: `.horizonte-canvas canvas { cursor: grab; ... }`.
+
+   4. Cualquier otra regla generica del Pen (`*{...}`, `body{font-family:...}`)
+      -> prefijarla con `.horizonte-canvas` para que no se escape a otras
+      paginas ni a otras secciones de esta misma.
+
+   Todo lo que NO toque html/body/canvas-fullscreen/:root se puede pegar
+   directo, sin pensar.
+   ============================================================================= */
+.horizonte-canvas{
+	--ink:#e8e4da;
+	--dim:#8a8578;
+	--line:rgba(232,228,218,.14);
+	--amber:#ffb45e;
+	font-family:"Courier New",ui-monospace,monospace;
+	color:var(--ink);
+}
+.horizonte-canvas canvas{touch-action:pan-y;cursor:grab}
+.horizonte-canvas canvas:active{cursor:grabbing}
+
+#titulo{
+	position:fixed;top:22px;left:26px;pointer-events:none;
+	letter-spacing:.42em;font-size:13px;color:var(--ink);
+	text-transform:uppercase;opacity:.9;z-index:5;
+}
+#titulo small{
+	display:block;margin-top:6px;letter-spacing:.18em;
+	font-size:9px;color:var(--dim);
+}
+
+#datos{
+	position:fixed;right:26px;top:22px;text-align:right;
+	font-size:9px;letter-spacing:.14em;color:var(--dim);
+	text-transform:uppercase;line-height:1.9;pointer-events:none;z-index:5;
+}
+#datos b{color:var(--amber);font-weight:normal}
+
+#panel{
+	position:fixed;left:26px;bottom:24px;width:238px;
+	background:rgba(0,0,0,.55);backdrop-filter:blur(6px);
+	border:1px solid var(--line);padding:14px 16px 12px;
+	font-size:10px;letter-spacing:.08em;z-index:5;
+}
+#panel .fila{margin-bottom:10px}
+input[type=text]{
+	width:100%;background:rgba(0,0,0,.4);border:1px solid var(--line);
+	color:var(--amber);font-family:inherit;font-size:11px;
+	letter-spacing:.3em;text-transform:uppercase;padding:6px 8px;outline:none;
+}
+input[type=text]:focus{border-color:var(--amber)}
+input[type=text]::placeholder{color:var(--dim);letter-spacing:.2em}
+#panel label{
+	display:flex;justify-content:space-between;
+	color:var(--dim);text-transform:uppercase;margin-bottom:4px;
+}
+#panel label b{color:var(--ink);font-weight:normal}
+input[type=range]{
+	-webkit-appearance:none;appearance:none;width:100%;height:2px;
+	background:var(--line);outline:none;
+}
+input[type=range]::-webkit-slider-thumb{
+	-webkit-appearance:none;appearance:none;width:10px;height:10px;
+	background:var(--amber);border-radius:50%;cursor:pointer;
+}
+input[type=range]::-moz-range-thumb{
+	width:10px;height:10px;background:var(--amber);
+	border:none;border-radius:50%;cursor:pointer;
+}
+#panel .toggles{display:flex;gap:6px;margin-top:2px}
+#panel button{
+	flex:1;background:none;border:1px solid var(--line);color:var(--dim);
+	font-family:inherit;font-size:9px;letter-spacing:.1em;padding:5px 0;
+	cursor:pointer;text-transform:uppercase;transition:all .2s;
+}
+#panel button.on{color:var(--amber);border-color:var(--amber)}
+#panel button:focus-visible{outline:1px solid var(--ink);outline-offset:2px}
+#panel .etiqueta{
+	color:var(--dim);text-transform:uppercase;font-size:9px;
+	letter-spacing:.14em;margin:8px 0 4px;
+}
+
+#ayuda{
+	position:fixed;right:26px;bottom:24px;text-align:right;
+	font-size:9px;letter-spacing:.14em;color:var(--dim);
+	text-transform:uppercase;line-height:1.9;pointer-events:none;z-index:5;
+}
+
+#error{
+	display:none;position:fixed;inset:0;z-index:20;
+	background:rgba(0,0,0,.92);padding:40px 30px;
+	font-size:11px;line-height:1.8;color:#ff9d7a;
+	white-space:pre-wrap;overflow:auto;
+}
+#error h2{
+	font-size:12px;letter-spacing:.3em;text-transform:uppercase;
+	color:var(--ink);margin-bottom:16px;font-weight:normal;
+}
+
+@media (max-width:640px){
+	#panel{width:calc(100vw - 52px)}
+	#ayuda,#datos{display:none}
+}
 /* Video opcional de resumen animado (uno por concepto). Reusa la misma caja
    que .concepto figure; el <video> imita la regla de <img> (bloque, ancho
    completo). Sin max-width propio: ocupa el ancho completo del contenedor,
