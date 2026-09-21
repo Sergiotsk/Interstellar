@@ -685,6 +685,59 @@ void main(){
 
 	window.addEventListener('resize', function(){ aplicarCalidad(calidadActual); });
 
+	/* Freeze en mobile (reportado): el bucle de render (6 pases de shader por
+	   cuadro) no tenia freno -- corria para siempre aunque el hero quedara
+	   scrolleado fuera de pantalla, la pestaña pasara a segundo plano, o el
+	   usuario reprodujera uno de los <video> de mas abajo. En un celular, GPU
+	   decodificando video + WebGL renderizando en simultaneo (la seccion
+	   "Dilatacion temporal", el primer video de la pagina, esta a un scroll
+	   del hero) es lo que tildaba el navegador. Estas tres condiciones
+	   combinadas deciden si el loop debe seguir pidiendo el proximo cuadro. */
+	var heroVisible = true;
+	var pestanaVisible = document.visibilityState !== 'hidden';
+	var videoReproduciendo = false;
+	var animando = false;
+
+	function debeAnimar(){
+		return heroVisible && pestanaVisible && !videoReproduciendo;
+	}
+
+	function reanudarSiCorresponde(){
+		if(animando || !debeAnimar()) return;
+		animando = true;
+		tPrev = performance.now(); // evita un salto de dt gigante tras la pausa
+		requestAnimationFrame(animar);
+	}
+
+	if(typeof IntersectionObserver === 'function'){
+		var observadorHero = new IntersectionObserver(function(entradas){
+			heroVisible = entradas.some(function(entrada){ return entrada.isIntersecting; });
+			reanudarSiCorresponde();
+		}, {rootMargin: '0px'});
+		observadorHero.observe(contenedor);
+	}
+
+	document.addEventListener('visibilitychange', function(){
+		pestanaVisible = document.visibilityState !== 'hidden';
+		reanudarSiCorresponde();
+	});
+
+	/* Cualquier <video> de la pagina (no solo si el hero sigue a la vista):
+	   en algunos moviles el costo real es decodificar video + WebGL a la vez,
+	   sin importar si el canvas quedo tapado por el scroll. */
+	Array.prototype.forEach.call(document.querySelectorAll('video'), function(video){
+		var actualizarEstadoVideos = function(){
+			videoReproduciendo = Array.prototype.some.call(
+				document.querySelectorAll('video'),
+				function(v){ return !v.paused && !v.ended; }
+			);
+			reanudarSiCorresponde();
+		};
+		video.addEventListener('play', actualizarEstadoVideos);
+		video.addEventListener('pause', actualizarEstadoVideos);
+		video.addEventListener('ended', actualizarEstadoVideos);
+	});
+
 	/* degradación automática si no alcanza ~28 fps */
 	var muestrasFPS = 0, acumFPS = 0, degradado = false;
 
@@ -709,6 +762,10 @@ void main(){
 	/* Bucle de render: 6 pases por cuadro */
 	var tPrev = performance.now();
 	function animar(t){
+		if(!debeAnimar()){
+			animando = false; // corta el loop: no se vuelve a pedir el proximo cuadro
+			return;           // reanudarSiCorresponde() lo reinicia cuando vuelva a hacer falta
+		}
 		requestAnimationFrame(animar);
 		var dt = Math.min((t - tPrev) / 1000, 0.05);
 		tPrev = t;
@@ -766,6 +823,7 @@ void main(){
 
 		mostrarHorizonteListo();
 	}
+	animando = true;
 	requestAnimationFrame(animar);
 
 })();
