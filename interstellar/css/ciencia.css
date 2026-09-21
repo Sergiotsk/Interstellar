@@ -76,14 +76,23 @@
    que usa cualquier backdrop fotografico del sitio (contraste del texto,
    SC-006/SC-007). Pisa el bloque de presentacion generico de layout.css
    (`body:not(.home) main > section:first-child`, max-width 60rem/padding
-   chico) con mas especificidad al sumar `.ciencia-portada`. */
+   chico) con mas especificidad al sumar `.ciencia-portada`.
+
+   Alto = 100svh MENOS el header (el <header> va en flujo normal en esta
+   pagina, no absolute como en la home — DESIGN.md §6.1 — asi que un
+   100svh liso se pasa exactamente esa altura y el titulo/intro, anclados
+   abajo con flex-end, quedan fuera de la pantalla sin scrollear). 6.51rem
+   medido en vivo (header.getBoundingClientRect().height a 1920px, sin el
+   aviso de spoilers — ese es position:absolute, flota, no suma layout);
+   +0.5rem de margen real (no al pixel justo) por las dudas de un renderizado
+   de fuente distinto entre navegadores. */
 body:not(.home) main > section.ciencia-portada:first-child {
   position: relative;
   overflow: hidden;
   isolation: isolate;
   max-width: none;
-  min-height: 100vh;
-  height: 100vh;
+  min-height: calc(100svh - 7rem);
+  height: calc(100svh - 7rem);
   display: flex;
   align-items: flex-end;
   padding: 0;
@@ -114,14 +123,21 @@ body:not(.home) main > section.ciencia-portada:first-child {
   }
 }
 
-.ciencia-portada-contenido h1 {
+/* Selector reforzado (con el prefijo de .ciencia-portada, no solo la clase
+   del contenido): la regla generica de intro de pagina (layout.css §10,
+   `body:not(.home) main > section:first-child h1/p`) tiene mas tipos (4)
+   que clases-de-mas necesita vencer; con solo `.ciencia-portada-contenido
+   h1` (1 clase) esa regla generica seguia ganando el empate y el h1 quedaba
+   clavado en 3rem/48px en vez de este clamp — bug real, no cosmetico,
+   agarrado recien al auditar el mismo patron en galeria.css. */
+body:not(.home) main > section.ciencia-portada:first-child .ciencia-portada-contenido h1 {
   font-size: clamp(2.5rem, 5vw, 4rem);
   letter-spacing: 0.05em;
   margin-bottom: 1rem;
   text-shadow: 0 0 1.5rem var(--color-fondo);
 }
 
-.ciencia-portada-contenido > p {
+body:not(.home) main > section.ciencia-portada:first-child .ciencia-portada-contenido > p {
   font-size: clamp(1rem, 1.1vw, 1.15rem);
   line-height: 1.8;
   color: var(--color-texto);
