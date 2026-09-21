@@ -29,26 +29,100 @@
    `.mundo-tarjeta`, adaptada al markup existente (figure > a > img +
    figcaption) para no romper el HTML de esta página.
    --------------------------------------------------------------------------- */
-/* --- Intro: la regla genérica (`body:not(.home) main > section:first-child`,
-   layout.css §10) limita la SECCIÓN a max-width:60rem + padding-inline —
-   bien para una intro de solo texto, pero acá adentro también vive el grid
-   a todo el ancho (a diferencia de Mundos, donde `.mundos-grid` es HERMANO
-   de `.mundos-intro`, no hijo). Se libera la sección (max-width/padding a
-   0) para que el grid respire, y el h1/p reproducen el mismo ancho de
-   lectura + centrado que la regla genérica les daba — sin eso, quedaban
-   pegados al borde izquierdo de la pantalla en vez de alineados con el
-   resto de las secciones. Tamaño/tipografía del h1 SIN cambios: el mismo
-   clamp genérico que usa cualquier otra página, no el más grande de Mundos. */
+/* --- Intro = hero full-bleed con mosaico de fondo (los mismos 6 retratos
+   que usan las tarjetas de .tripulacion-grid, atenuados) + H1/lead anclados
+   abajo-izquierda. Mismo patron que .ciencia-portada (css/ciencia.css) y
+   .mundos-intro (css/mundos.css): alto = 100svh menos el header (esta en
+   flujo normal en paginas que no son home, DESIGN.md §6.1), +0.5rem de
+   margen real. SUPERA la decision anterior de la feature 008 (mantener el
+   h1 en el margen de lectura angosto, sin full-bleed): pedido explicito de
+   alinear las 3 portadas (Mundos/Personajes/Ciencia) al mismo patron.
+   La grilla de tarjetas (`.tripulacion-grid`) ya NO vive adentro de esta
+   seccion — es HERMANA, igual que `.mundos-grid` con `.mundos-intro` — para
+   que el `overflow:hidden` del hero no se la recorte. */
 body:not(.home) main > section.portada-tripulacion:first-child {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
   max-width: none;
-  padding-inline: 0;
+  min-height: calc(100svh - 7rem);
+  height: calc(100svh - 7rem);
+  display: flex;
+  align-items: flex-end;
+  padding: 0;
+  background-color: var(--color-fondo);
 }
 
-body:not(.home) main > section.portada-tripulacion:first-child h1,
-body:not(.home) main > section.portada-tripulacion:first-child p {
+/* Mosaico: 6 franjas verticales (una por personaje), mismas fotos que
+   .tripulacion-grid usa mas abajo — cero asset nuevo, preview de la grilla
+   que sigue. brightness(0.4) = --backdrop-oscurecer del sitio. */
+.portada-tripulacion-mosaico {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  filter: var(--backdrop-oscurecer);
+}
+
+.portada-tripulacion-mosaico img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Scrim inferior: mismo gradiente que .mundos-intro::after / .mundo-portada-
+   escena::after — legibilidad del texto + fusion con --color-fondo hacia el
+   borde, para que .tripulacion-grid no corte en seco. */
+body:not(.home) main > section.portada-tripulacion:first-child::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    var(--color-fondo) 0%,
+    rgba(10, 14, 26, 0.86) 9%,
+    rgba(0, 0, 0, 0.55) 24%,
+    rgba(0, 0, 0, 0.2) 44%,
+    transparent 64%
+  );
+}
+
+.portada-tripulacion-contenido {
+  position: relative;
+  z-index: 2;
   max-width: 60rem;
-  margin-inline: auto;
-  padding-inline: 1.25rem;
+  width: 100%;
+  margin: 0 auto 0 5%;                  /* anclado a la izquierda, no centrado —
+                                          mismo patron que .ciencia-portada-contenido */
+  padding: 4rem 1.25rem 3rem;
+  text-align: left;
+}
+
+@media (max-width: 48rem) {
+  .portada-tripulacion-contenido {
+    margin: 0 auto;
+  }
+}
+
+/* Selector reforzado con el prefijo `section.portada-tripulacion:first-child`:
+   con solo `.portada-tripulacion-contenido h1/p` (1 clase) la regla generica
+   de intro de pagina (layout.css §10) le gana el empate por tener mas tipos
+   — el margin-bottom del h1 quedaba en 0.75rem (no 1rem) y el color del p
+   en `--color-texto-atenuado` (no `--color-texto`, mas apagado de lo
+   pensado). Mismo bug que .ciencia-portada-contenido, agarrado al auditarla. */
+body:not(.home) main > section.portada-tripulacion:first-child .portada-tripulacion-contenido h1 {
+  margin-bottom: 1rem;
+  text-shadow: 0 0 1.5rem var(--color-fondo);
+}
+
+body:not(.home) main > section.portada-tripulacion:first-child .portada-tripulacion-contenido p {
+  color: var(--color-texto);
+  text-shadow: 0 0 1rem var(--color-fondo);
 }
 
 /* --- Grilla a lo ANCHO: tarjetas grandes, poster-vertical, image-forward.
@@ -58,10 +132,10 @@ body:not(.home) main > section.portada-tripulacion:first-child p {
    tablet 2, desktop 3 — las 6 fichas entran en dos filas de tres, visibles
    casi de punta a punta en una pantalla de escritorio sin quedar ninguna
    sola. --- */
-.portada-tripulacion .galeria-grid {
+.tripulacion-grid {
   list-style: none;
   width: min(100% - 2.5rem, 75rem);
-  margin: 1rem auto 4rem;
+  margin: 3rem auto 4rem;
   padding: 0;
   display: grid;
   gap: clamp(0.75rem, 1.5vw, 1.4rem);
@@ -69,26 +143,26 @@ body:not(.home) main > section.portada-tripulacion:first-child p {
 }
 
 @media (min-width: 40rem) {
-  .portada-tripulacion .galeria-grid {
+  .tripulacion-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (min-width: 64rem) {
-  .portada-tripulacion .galeria-grid {
+  .tripulacion-grid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
-.portada-tripulacion .galeria-grid > li {
+.tripulacion-grid > li {
   min-width: 0;
 }
 
-.portada-tripulacion .galeria-grid figure {
+.tripulacion-grid figure {
   margin: 0;
 }
 
-.portada-tripulacion .galeria-grid figure > a {
+.tripulacion-grid figure > a {
   position: relative;
   display: block;
   aspect-ratio: 3 / 4;
@@ -99,7 +173,7 @@ body:not(.home) main > section.portada-tripulacion:first-child p {
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.portada-tripulacion .galeria-grid img {
+.tripulacion-grid img {
   position: absolute;
   inset: 0;
   display: block;
@@ -110,14 +184,14 @@ body:not(.home) main > section.portada-tripulacion:first-child p {
   transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1), filter 0.4s ease;
 }
 
-.portada-tripulacion .galeria-grid a:hover img,
-.portada-tripulacion .galeria-grid a:focus-visible img {
+.tripulacion-grid a:hover img,
+.tripulacion-grid a:focus-visible img {
   transform: scale(1.07);
   filter: brightness(0.68) saturate(1.12);
 }
 
 /* --- overlay de nombre/rol: mismo criterio que `.mundo-tarjeta-texto` --- */
-.portada-tripulacion .galeria-grid figcaption {
+.tripulacion-grid figcaption {
   position: absolute;
   inset: auto 0 0 0;
   z-index: 1;
@@ -137,12 +211,12 @@ body:not(.home) main > section.portada-tripulacion:first-child p {
   transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-.portada-tripulacion .galeria-grid a:hover figcaption,
-.portada-tripulacion .galeria-grid a:focus-visible figcaption {
+.tripulacion-grid a:hover figcaption,
+.tripulacion-grid a:focus-visible figcaption {
   transform: translateY(0);
 }
 
-.portada-tripulacion .galeria-grid figcaption strong {
+.tripulacion-grid figcaption strong {
   display: block;
   font-family: var(--font-hero-titulo);
   font-size: clamp(1.05rem, 1.6vw, 1.35rem);
@@ -150,7 +224,7 @@ body:not(.home) main > section.portada-tripulacion:first-child p {
   color: var(--color-texto);
 }
 
-.portada-tripulacion .galeria-grid figcaption span {
+.tripulacion-grid figcaption span {
   display: block;
   font-family: var(--font-instrumento);
   font-size: 0.72rem;
@@ -160,7 +234,7 @@ body:not(.home) main > section.portada-tripulacion:first-child p {
 }
 
 /* --- Filo de acento: barre desde la izquierda al hover/foco --- */
-.portada-tripulacion .galeria-grid figure > a::after {
+.tripulacion-grid figure > a::after {
   content: "";
   position: absolute;
   inset: 0 0 auto 0;
@@ -172,14 +246,14 @@ body:not(.home) main > section.portada-tripulacion:first-child p {
   z-index: 1;
 }
 
-.portada-tripulacion .galeria-grid a:hover,
-.portada-tripulacion .galeria-grid a:focus-visible {
+.tripulacion-grid a:hover,
+.tripulacion-grid a:focus-visible {
   border-color: color-mix(in srgb, var(--color-gargantua) 60%, transparent);
   box-shadow: 0 0.75rem 2rem color-mix(in srgb, #000 55%, transparent);
 }
 
-.portada-tripulacion .galeria-grid a:hover::after,
-.portada-tripulacion .galeria-grid a:focus-visible::after {
+.tripulacion-grid a:hover::after,
+.tripulacion-grid a:focus-visible::after {
   transform: scaleX(1);
 }
 

@@ -29,6 +29,99 @@
      dialog.showModal (o no hay JS), js/galeria.js no la conecta y los <a>
      siguen yendo directo al archivo, como antes.
    --------------------------------------------------------------------------- */
+/* Intro de la galeria = mismo hero full-bleed que .ciencia-portada /
+   .mundos-intro / .portada-tripulacion: 1 imagen representativa de cada uno
+   de los 4 ejes (el mismo orden que las teclas de .galeria-filtro), cero
+   asset nuevo — ya estan mas abajo en sus respectivas grillas. Titulo/lead
+   anclados abajo-izquierda al 5%, alto = 100svh menos el header. Selector
+   con la misma especificidad reforzada que las otras 3 paginas (evita perder
+   contra `body:not(.home) main > section:first-child`, layout.css §10). */
+body:not(.home) main > section.galeria-portada:first-child {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  max-width: none;
+  min-height: calc(100svh - 7rem);
+  height: calc(100svh - 7rem);
+  display: flex;
+  align-items: flex-end;
+  padding: 0;
+  background-color: var(--color-fondo);
+}
+
+.galeria-portada-mosaico {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  filter: var(--backdrop-oscurecer);
+}
+
+.galeria-portada-mosaico img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.galeria-portada::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    var(--color-fondo) 0%,
+    rgba(10, 14, 26, 0.86) 9%,
+    rgba(0, 0, 0, 0.55) 24%,
+    rgba(0, 0, 0, 0.2) 44%,
+    transparent 64%
+  );
+}
+
+.galeria-portada-contenido {
+  position: relative;
+  z-index: 2;
+  max-width: 52rem;
+  width: 100%;
+  margin: 0 auto 0 5%;
+  padding: 4rem 1.25rem 3rem;
+  text-align: left;
+}
+
+@media (max-width: 48rem) {
+  .galeria-portada-contenido {
+    margin: 0 auto;
+  }
+}
+
+/* Selector reforzado con el prefijo `section.galeria-portada:first-child`:
+   con solo `.galeria-portada-contenido h1/p` (1 clase) la regla generica de
+   intro de pagina (layout.css §10) le gana el empate por tener mas tipos —
+   mismo bug ya encontrado y corregido en .ciencia-portada-contenido,
+   .mundos-intro-contenido y .portada-tripulacion-contenido. */
+body:not(.home) main > section.galeria-portada:first-child .galeria-portada-contenido h1 {
+  margin-bottom: 1rem;
+  font-family: var(--font-hero-titulo);
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-texto);
+  text-shadow: 0 0 1.5rem var(--color-fondo);
+}
+
+body:not(.home) main > section.galeria-portada:first-child .galeria-portada-contenido p {
+  font-family: var(--font-texto);
+  font-size: clamp(1rem, 1.1vw, 1.15rem);
+  line-height: 1.7;
+  color: var(--color-texto);
+  text-shadow: 0 0 1rem var(--color-fondo);
+}
+
 /* Las 4 secciones de eje rompen el ancho de lectura estandar (60rem, pensado
    para prosa — section[id] base, layout.css) porque esta pagina es
    image-forward, no texto: mismo criterio que `.mundos-grid` en

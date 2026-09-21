@@ -84,18 +84,96 @@
   text-shadow: 0 0 1rem var(--color-fondo);
 }
 
-/* Intro del hub: columna centrada de lectura, con más presencia que el resto.
-   Prefijo `body.mundos-hub` para ganarle en especificidad a la regla genérica
-   de intro de página (§10, `body:not(.home) main > section:first-child`). */
-body.mundos-hub .mundos-intro {
+/* Intro del hub = hero full-bleed con mosaico de fondo (las mismas 5 fotos
+   que usan las tarjetas de abajo, atenuadas) + H1/lead anclados abajo-
+   izquierda. Mismo patron que .ciencia-portada (css/ciencia.css): alto =
+   100svh menos el header (esta en flujo normal en paginas que no son home,
+   DESIGN.md §6.1 — sin esto el titulo queda fuera de la pantalla sin
+   scrollear), +0.5rem de margen real. Selector `body:not(.home) main >
+   section.mundos-intro:first-child` (mismo patron que .ciencia-portada y
+   .portada-tripulacion): NO alcanza con `body.mundos-hub .mundos-intro`
+   (1 tipo + 2 clases) porque empata en clases con la regla generica de
+   intro de pagina (§10, `body:not(.home) main > section:first-child`,
+   2 clases) y esa tiene 3 tipos contra el nuestro de 1 — el desempate por
+   tipos la hacia ganar a ELLA, dejando max-width:60rem/padding sin pisar
+   y el mosaico encajonado en vez de full-bleed. */
+body:not(.home) main > section.mundos-intro:first-child {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  max-width: none;
+  min-height: calc(100svh - 7rem);
+  height: calc(100svh - 7rem);
+  display: flex;
+  align-items: flex-end;
+  padding: 0;
+  background-color: var(--color-fondo);
+}
+
+/* Mosaico: 5 franjas verticales (una por mundo), mismas fotos que
+   .mundo-tarjeta usa mas abajo — cero asset nuevo, funciona como preview de
+   la grilla que sigue. brightness(0.4) = --backdrop-oscurecer del sitio,
+   sobre TODO el mosaico (no imagen por imagen). */
+.mundos-intro-mosaico {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  filter: var(--backdrop-oscurecer);
+}
+
+.mundos-intro-mosaico img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Scrim inferior: mismo gradiente que .mundo-portada-escena::after (mas
+   arriba en esta hoja) — legibilidad del texto + fusion con --color-fondo
+   hacia el borde, para que la grilla de tarjetas que sigue no corte en seco. */
+.mundos-intro::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    var(--color-fondo) 0%,
+    rgba(10, 14, 26, 0.86) 9%,
+    rgba(0, 0, 0, 0.55) 24%,
+    rgba(0, 0, 0, 0.2) 44%,
+    transparent 64%
+  );
+}
+
+.mundos-intro-contenido {
+  position: relative;
+  z-index: 2;
   max-width: 46rem;
-  margin: 0 auto;
-  padding: 4.5rem 1.25rem 2.5rem;
+  width: 100%;
+  margin: 0 auto 0 5%;                  /* anclado a la izquierda, no centrado —
+                                          mismo patron que .ciencia-portada-contenido */
+  padding: 4rem 1.25rem 3rem;
   text-align: left;                     /* legibilidad: parrafos de varias lineas
                                           alineados a la izquierda (ver Constitucion) */
 }
 
-body.mundos-hub .mundos-intro h1 {
+@media (max-width: 48rem) {
+  .mundos-intro-contenido {
+    margin: 0 auto;
+  }
+}
+
+/* Selector reforzado con el prefijo `section.mundos-intro:first-child`:
+   con solo `.mundos-intro-contenido h1` (1 clase) la regla generica de
+   intro de pagina (layout.css §10) le gana el empate por tener mas tipos
+   (4 contra 1) y el h1 queda clavado en 3rem/48px en vez de este clamp —
+   mismo bug que .ciencia-portada-contenido, agarrado al auditarla. */
+body:not(.home) main > section.mundos-intro:first-child .mundos-intro-contenido h1 {
   margin-bottom: 1rem;
   font-family: var(--font-hero-titulo);
   font-size: clamp(2rem, 6vw, 3.5rem);
@@ -106,11 +184,12 @@ body.mundos-hub .mundos-intro h1 {
   text-shadow: 0 0 1.5rem var(--color-fondo);
 }
 
-body.mundos-hub .mundos-intro p {
+body:not(.home) main > section.mundos-intro:first-child .mundos-intro-contenido p {
   font-family: var(--font-texto);
   font-size: clamp(1rem, 2vw, 1.15rem);
   line-height: 1.7;
-  color: var(--color-texto-atenuado);
+  color: var(--color-texto);
+  text-shadow: 0 0 1rem var(--color-fondo);
 }
 
 /* Grilla a lo ANCHO: tarjetas grandes, poster-vertical, image-forward. */
