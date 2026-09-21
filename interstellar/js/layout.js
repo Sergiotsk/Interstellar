@@ -100,6 +100,32 @@ export function buildFooter() {
 </footer>`;
 }
 
+// Botón "volver arriba": cohete, acorde a la paleta del sitio. Es una tecla
+// más del cockpit (misma caja, --recorte-tecla, bezel) pero FLOTANTE
+// (position:fixed) — no vive en el header ni en el pie, por eso se inyecta
+// aparte, como último hijo del body (initBotonSubir la conecta). Arranca
+// oculto vía CSS (opacity/visibility, no `hidden`): así se puede animar la
+// entrada/salida con transición en vez de un corte seco.
+//
+// El ícono es un <svg> propio (silueta cuerpo+aletas+llama en un solo
+// <path>, más una "ventanilla" recortada con el color del metal de fondo),
+// NO el emoji 🚀: un emoji es un glifo a color de la fuente del sistema —
+// no admite teñirse con los tokens del sitio (--color-case en reposo,
+// --instrumento-teal al hover/foco, igual que el ícono CASE del menú,
+// css/layout.css) sin filtros CSS que lo dejan turbio, y varía de dibujo
+// entre SO/navegador. `fill="currentColor"` hereda el `color` del botón.
+export function buildBotonSubir() {
+  return (
+    '<button type="button" class="boton-subir" aria-label="Volver arriba de la página">' +
+    '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">' +
+    '<path fill="currentColor" d="M12 2C14.6 4.6 16 8.6 16 13L8 13C8 8.6 9.4 4.6 12 2Z ' +
+    'M8 12L4 18L8 15Z M16 12L20 18L16 15Z M10 13L12 20L14 13Z" />' +
+    '<circle cx="12" cy="8.3" r="1.7" fill="var(--cockpit-metal)" />' +
+    '</svg>' +
+    '</button>'
+  );
+}
+
 export function renderLayout(navConfig = NavConfig) {
   return {
     header: buildHeader(navConfig),
@@ -437,6 +463,87 @@ function initSpoilerAviso(header) {
   }
 }
 
+// Botón "volver arriba": aparece recién despues de scrollear un poco (60% de
+// un viewport — evita mostrarlo en paginas cortas donde no aporta nada) y se
+// oculta de nuevo cuando el pie ya está a la vista (ahí abajo sobra: el
+// usuario ya llegó al final, y en mobile el pie es una grilla que ocupa todo
+// el ancho — el botón fijo se le superpondría). Un solo booleano combinado
+// (`pasoUmbral && !pieVisible`) decide la clase que dispara la transición
+// CSS (ver css/layout.css). El listener de scroll va con rAF-throttle: un
+// scroll dispara decenas de eventos por segundo, no hace falta recalcular en
+// cada uno.
+function initBotonSubir(boton) {
+  if (!boton || typeof window === 'undefined' || typeof window.scrollTo !== 'function') {
+    return;
+  }
+  const UMBRAL = () => window.innerHeight * 0.6;
+  let pasoUmbral = window.scrollY > UMBRAL();
+  let pieVisible = false;
+  let tickPendiente = false;
+
+  const actualizar = () => {
+    tickPendiente = false;
+    boton.classList.toggle('boton-subir--visible', pasoUmbral && !pieVisible);
+  };
+
+  const solicitarTick = () => {
+    if (tickPendiente) return;
+    tickPendiente = true;
+    requestAnimationFrame(actualizar);
+  };
+
+  window.addEventListener(
+    'scroll',
+    () => {
+      pasoUmbral = window.scrollY > UMBRAL();
+      solicitarTick();
+    },
+    { passive: true },
+  );
+
+  const pie = document.querySelector('footer');
+  if (pie && typeof IntersectionObserver === 'function') {
+    const observador = new IntersectionObserver(
+      (entradas) => {
+        pieVisible = entradas.some((entrada) => entrada.isIntersecting);
+        solicitarTick();
+      },
+      { rootMargin: '0px' },
+    );
+    observador.observe(pie);
+  }
+
+  // Secuencia de "despegue" (css/layout.css: @keyframes cohete-despegar-*):
+  // la clase dispara la animacion del <svg> + la llama del ::after, y se
+  // saca sola al terminar -- `animationend` es la senal real, el `setTimeout`
+  // es solo la red de contencion (mismo patron que `.spoiler-aviso--retrae`)
+  // por si el navegador no lo dispara (p. ej. display:none de por medio).
+  const disparaDespegue = () => {
+    boton.classList.remove('boton-subir--despega');
+    void boton.offsetWidth; // fuerza reflow: reinicia la animacion si se clickea de nuevo rapido
+    boton.classList.add('boton-subir--despega');
+  };
+  boton.addEventListener('animationend', (evento) => {
+    if (evento.animationName === 'cohete-despegar-icono') {
+      boton.classList.remove('boton-subir--despega');
+    }
+  });
+
+  boton.addEventListener('click', () => {
+    const sinMovimiento =
+      typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: sinMovimiento ? 'auto' : 'smooth' });
+    disparaDespegue();
+    setTimeout(() => boton.classList.remove('boton-subir--despega'), 900); // respaldo: > que la animacion de 0.6s
+    // Foco al enlace de marca del header: quien navega con teclado/lector de
+    // pantalla queda "parado" en un lugar con sentido tras el salto, no
+    // perdido en el <body>. Es el primer elemento enfocable de la pagina.
+    document.querySelector('header .cockpit-brand')?.focus();
+  });
+
+  actualizar(); // estado inicial, por si la pagina se carga ya scrolleada (anchor #hash)
+}
+
 // Indicador de seccion actual (FR: descubribilidad de la nav). Marca con
 // `aria-current="page"` el enlace de NIVEL SUPERIOR cuyo destino es la pagina en
 // curso; el CSS lo resalta (LED fijo + acento) tanto en la barra de escritorio
@@ -464,6 +571,7 @@ export function init(navConfig = NavConfig) {
   }
   document.body.insertAdjacentHTML('afterbegin', buildHeader(navConfig));
   document.body.insertAdjacentHTML('beforeend', buildFooter());
+  document.body.insertAdjacentHTML('beforeend', buildBotonSubir());
 
   // Cielo: solo en paginas `con-cielo`. `afterbegin` lo deja como primer hijo
   // del body (por detras del header, que ya se inyecto). `classList` puede no
@@ -491,6 +599,7 @@ export function init(navConfig = NavConfig) {
   wireFooterShare(document.body.querySelector('footer'));
   initSpoilerAviso(header);
   initHeroVideo();
+  initBotonSubir(document.body.querySelector('.boton-subir'));
 }
 
 if (typeof document !== 'undefined') {

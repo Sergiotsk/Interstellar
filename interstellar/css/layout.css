@@ -1395,3 +1395,150 @@ body.spoiler-alerta footer .tele .led {
    position: relative }` que devolvía el header al flujo en la primera visita:
    como la clase la agrega js/layout.js POST-paint, el header pasaba de 0 px a
    ~104 px in-flow -> ~0.133 CLS (y otro salto al tocar "Ya la vi"). Se quitó. */
+
+/* ---------------------------------------------------------------------------
+   18. Botón "volver arriba" (js/layout.js: buildBotonSubir + initBotonSubir)
+   ---------------------------------------------------------------------------
+   Cohete flotante, misma tecla de cockpit que el pie (--recorte-tecla,
+   bezel, degradé metal) pero fija sobre el contenido — no vive en el header
+   ni en el pie. Arranca invisible via opacity/visibility (NO `hidden`) para
+   poder animar la entrada; el JS solo suma `.boton-subir--visible` despues
+   de pasar el umbral de scroll Y con el pie fuera de la vista (ahi abajo ya
+   sobra, y en mobile se superpondria a la grilla de teclas). `visibility`
+   queda en la transicion para que, oculto, tambien salga del orden de
+   tabulacion (SC-005) sin perder el fundido.
+
+   Icono: <svg fill="currentColor"> (buildBotonSubir), NO el emoji 🚀 — el
+   emoji es un glifo a color de la fuente del sistema, no se puede tenir con
+   los tokens del sitio. Mismo patron de color que `.nav-toggle` (el CASE del
+   menu, mas arriba en este archivo): --color-case en reposo, teal al hover
+   y al foco visible. La "ventanilla" del cohete es un <circle> del <svg>
+   pintado con --cockpit-metal (el mismo color del fondo de la tecla): un
+   recorte, no un segundo color de contenido. */
+.boton-subir {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 15;                    /* por debajo del header (20) y el drawer (30) */
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-case);
+  border: 1px solid var(--cockpit-bezel);
+  background: linear-gradient(180deg, var(--cockpit-metal-alto), var(--cockpit-metal));
+  clip-path: var(--recorte-tecla);
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(0.5rem);
+  transition: opacity 0.25s ease, transform 0.25s ease, color 0.15s ease,
+    border-color 0.15s ease, background 0.15s ease, visibility 0s linear 0.25s;
+}
+
+.boton-subir svg {
+  display: block;
+}
+
+/* Vibracion al hover/foco: un jitter sutil y en loop, SOLO en el <svg> (no
+   en `.boton-subir`, que ya usa `transform` para su propia entrada/salida —
+   pisarlo ahi las mezclaria, misma leccion que el ajuste de centrado del
+   emoji). Loop infinito -> guard explicito de prefers-reduced-motion (mismo
+   patron que `cockpit-led-pulso`, mas arriba en este archivo): el reset
+   global ya corta la duracion a 0.01ms, pero un loop infinito a 0.01ms sigue
+   siendo movimiento constante, asi que aca se apaga entero. */
+@media (prefers-reduced-motion: no-preference) {
+  .boton-subir:hover svg,
+  .boton-subir:focus-visible svg {
+    animation: cohete-vibrar 0.35s ease-in-out infinite;
+  }
+}
+
+@keyframes cohete-vibrar {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25%      { transform: translate(-1px, 1px) rotate(-4deg); }
+  50%      { transform: translate(1px, -1px) rotate(3deg); }
+  75%      { transform: translate(-1px, -1px) rotate(-3deg); }
+}
+
+/* Despegue al clic: el JS (initBotonSubir) suma `.boton-subir--despega` y la
+   saca sola al terminar (animationend + timeout de respaldo, mismo patron
+   que `.spoiler-aviso--retrae`). El <svg> sube y se desvanece; `::after` es
+   la llama de propulsion (pseudo-elemento, sin sumar markup nuevo) — un
+   destello puntual en --led-ambar, mismo tono que ya usan las balizas de
+   estado del sitio para efectos TRANSITORIOS (no es un segundo color de
+   contenido permanente, FR-017 habla de la paleta en reposo). Bajo
+   prefers-reduced-motion el reset global corta esto a 0.01ms -> un "salto"
+   casi instantaneo en vez de una secuencia, pero sigue disparando
+   animationend (por eso el timeout de respaldo no depende de que se vea). */
+.boton-subir::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0.4rem;
+  width: 0.4rem;
+  height: 0.5rem;
+  border-radius: 50% 50% 60% 60% / 65% 65% 100% 100%;
+  background: radial-gradient(circle,
+    var(--led-ambar) 0%,
+    color-mix(in srgb, var(--led-ambar) 45%, transparent) 65%,
+    transparent 100%);
+  opacity: 0;
+  transform: translateX(-50%) scaleY(0.3);
+  pointer-events: none;
+}
+
+.boton-subir--despega svg {
+  animation: cohete-despegar-icono 0.6s cubic-bezier(0.3, 0, 0.7, 1) forwards;
+}
+
+.boton-subir--despega::after {
+  animation: cohete-despegar-estela 0.6s ease-out forwards;
+}
+
+@keyframes cohete-despegar-icono {
+  0%   { transform: translateY(0); opacity: 1; }
+  20%  { transform: translateY(0.05rem); }         /* pequena "carga" antes del empuje */
+  100% { transform: translateY(-2.3rem); opacity: 0; }
+}
+
+@keyframes cohete-despegar-estela {
+  0%   { opacity: 0; transform: translateX(-50%) scaleY(0.3); }
+  20%  { opacity: 1; transform: translateX(-50%) scaleY(1); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(0.7rem) scaleY(2.4); }
+}
+
+.boton-subir.boton-subir--visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition: opacity 0.25s ease, transform 0.25s ease, color 0.15s ease,
+    border-color 0.15s ease, background 0.15s ease;
+}
+
+.boton-subir:hover,
+.boton-subir:focus-visible {
+  color: var(--instrumento-teal);
+  border-color: var(--instrumento-teal);
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--instrumento-teal) 34%, var(--cockpit-metal)),
+    color-mix(in srgb, var(--cockpit-metal) 88%, #000));
+}
+
+/* Sin guard de prefers-reduced-motion aca: el reset global (reset.css) ya
+   fuerza `transition-duration: 0.01ms !important` sobre `*` -- aparece y
+   desaparece sin deslizar, sin necesitar una regla propia. */
+
+@media (max-width: 40rem) {
+  .boton-subir {
+    right: 1rem;
+    bottom: 1rem;
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+  .boton-subir svg {
+    width: 19px;
+    height: 19px;
+  }
+}

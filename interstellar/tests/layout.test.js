@@ -1,7 +1,7 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { NavConfig } from '../js/nav-data.js';
-import { buildHeader, buildFooter, buildCielo, renderLayout, init } from '../js/layout.js';
+import { buildHeader, buildFooter, buildCielo, buildBotonSubir, renderLayout, init } from '../js/layout.js';
 
 function escapeHtml(value) {
   return String(value)
@@ -151,7 +151,7 @@ describe('js/layout.js — contrato layout-injection.md', () => {
     assert.ok(layout.footer.startsWith('<footer>'));
   });
 
-  test('init inyecta el header al inicio del body y el footer al final', () => {
+  test('init inyecta el header al inicio del body, el footer y el botón subir al final', () => {
     const calls = [];
     const fakeBody = {
       insertAdjacentHTML(position, html) {
@@ -160,11 +160,26 @@ describe('js/layout.js — contrato layout-injection.md', () => {
     };
     globalThis.document = { body: fakeBody };
     init();
-    assert.equal(calls.length, 2);
+    assert.equal(calls.length, 3);
     assert.equal(calls[0].position, 'afterbegin');
     assert.ok(calls[0].html.startsWith('<header>'));
     assert.equal(calls[1].position, 'beforeend');
     assert.ok(calls[1].html.startsWith('<footer>'));
+    assert.equal(calls[2].position, 'beforeend');
+    assert.ok(calls[2].html.startsWith('<button type="button" class="boton-subir"'));
+  });
+
+  test('buildBotonSubir: <button> con el ícono SVG del cohete y aria-label, sin texto visible extra', () => {
+    const boton = buildBotonSubir();
+    assert.ok(boton.startsWith('<button type="button" class="boton-subir"'));
+    assert.match(boton, /aria-label="[^"]+"/);
+    // Icono propio en <svg fill="currentColor">, no el emoji 🚀 (no se puede
+    // teñir con los tokens del sitio) — ver css/layout.css §18.
+    assert.ok(boton.includes('<svg'));
+    assert.ok(boton.includes('aria-hidden="true"'));
+    assert.ok(boton.includes('fill="currentColor"'));
+    assert.ok(!boton.includes('🚀'));
+    assert.equal(countMatches(boton, /<button\b/g), 1);
   });
 
   test('buildCielo: div decorativo con 3 <i> (las estrellas fugaces)', () => {
@@ -175,16 +190,17 @@ describe('js/layout.js — contrato layout-injection.md', () => {
   });
 
   test('init: sin `con-cielo` no inyecta cielo; con `con-cielo` lo agrega primero', () => {
-    // Sin classList (DOM de prueba minimo): la guarda evita el cielo -> 2 calls.
+    // Sin classList (DOM de prueba minimo): la guarda evita el cielo ->
+    // header + footer + boton subir = 3 calls.
     const sin = [];
     globalThis.document = {
       body: { insertAdjacentHTML: (position, html) => sin.push({ position, html }) },
     };
     init();
-    assert.equal(sin.length, 2);
+    assert.equal(sin.length, 3);
     assert.ok(!sin.some((c) => c.html.includes('class="cielo"')));
 
-    // Con `con-cielo`: 3ra llamada = cielo, en `afterbegin` (queda primer hijo).
+    // Con `con-cielo`: 4ta llamada = cielo, en `afterbegin` (queda primer hijo).
     const con = [];
     globalThis.document = {
       body: {
@@ -193,8 +209,8 @@ describe('js/layout.js — contrato layout-injection.md', () => {
       },
     };
     init();
-    assert.equal(con.length, 3);
-    assert.equal(con[2].position, 'afterbegin');
-    assert.ok(con[2].html.startsWith('<div class="cielo"'));
+    assert.equal(con.length, 4);
+    assert.equal(con[3].position, 'afterbegin');
+    assert.ok(con[3].html.startsWith('<div class="cielo"'));
   });
 });
