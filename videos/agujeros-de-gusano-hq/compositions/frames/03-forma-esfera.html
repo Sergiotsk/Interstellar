@@ -1,0 +1,151 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <template>
+      <style>
+        @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Exo+2:wght@400;500&family=Share+Tech+Mono&display=swap");
+
+        #root { position: absolute; inset: 0; width: 100%; height: 100%; }
+        .frame-inner {
+          position: absolute;
+          inset: 0;
+          background: #0a0e1a;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 50px 150px;
+          gap: 18px;
+          text-align: center;
+          overflow: hidden;
+          opacity: 0;
+        }
+
+        .kicker {
+          font-family: "Share Tech Mono", monospace;
+          font-size: 24px;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: #a8a294;
+          opacity: 0;
+        }
+
+        .diagrama { position: relative; width: 900px; height: 320px; opacity: 0; }
+
+        .tag-diagrama {
+          position: absolute;
+          left: 50%;
+          top: -6px;
+          transform: translateX(-50%);
+          font-family: "Exo 2", sans-serif;
+          font-size: 22px;
+          font-weight: 500;
+          white-space: nowrap;
+          opacity: 0;
+        }
+        .tag-incorrecta { color: #a8a294; }
+        .tag-correcta { color: #efe7d6; }
+
+        .cuerpo {
+          font-family: "Exo 2", sans-serif;
+          font-weight: 400;
+          font-size: 30px;
+          line-height: 1.5;
+          color: #efe7d6;
+          max-width: 1250px;
+          opacity: 0;
+        }
+        .cuerpo strong { font-weight: 500; }
+
+        .etiqueta-rigor {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          padding: 10px 22px;
+          border-radius: 999px;
+          background: rgba(20, 28, 49, 0.88);
+          border: 1px solid rgba(239, 231, 214, 0.22);
+          border-left: 3px solid rgba(239, 231, 214, 0.55);
+          font-family: "Exo 2", sans-serif;
+          font-size: 23px;
+          font-weight: 500;
+          color: #efe7d6;
+          opacity: 0;
+        }
+      </style>
+
+      <div id="root" data-composition-id="forma-esfera" data-width="1920" data-height="1080">
+        <div class="frame-inner" id="inner">
+          <p class="kicker" id="kicker">Cómo se ve en la película</p>
+
+          <div class="diagrama" id="diagrama">
+            <p class="tag-diagrama tag-incorrecta" id="tag-incorrecta">✕ representación habitual: embudo</p>
+            <p class="tag-diagrama tag-correcta" id="tag-correcta" style="display:none;">◎ forma real en la película: esfera</p>
+
+            <svg width="900" height="320" viewBox="0 0 900 320" data-layout-allow-overflow="true">
+              <g id="embudo">
+                <path d="M 230,20 C 470,20 470,290 450,290" fill="none" stroke="#a8a294" stroke-width="2.5" stroke-dasharray="6 8" />
+                <path d="M 670,20 C 430,20 430,290 450,290" fill="none" stroke="#a8a294" stroke-width="2.5" stroke-dasharray="6 8" />
+                <ellipse cx="450" cy="20" rx="220" ry="26" fill="none" stroke="#a8a294" stroke-width="2.5" stroke-dasharray="6 8" />
+              </g>
+
+              <g id="esfera" opacity="0">
+                <defs>
+                  <radialGradient id="grad-esfera" cx="38%" cy="32%" r="70%">
+                    <stop offset="0%" stop-color="#3a4258" />
+                    <stop offset="55%" stop-color="#161c2c" />
+                    <stop offset="100%" stop-color="#0a0e1a" />
+                  </radialGradient>
+                </defs>
+                <circle cx="450" cy="160" r="130" fill="url(#grad-esfera)" stroke="rgba(239,231,214,0.4)" stroke-width="2" />
+                <path d="M 450,30 C 380,90 380,230 450,290" fill="none" stroke="rgba(239,231,214,0.35)" stroke-width="1.5" />
+                <path d="M 450,30 C 520,90 520,230 450,290" fill="none" stroke="rgba(239,231,214,0.35)" stroke-width="1.5" />
+                <circle cx="330" cy="90" r="2.4" fill="#efe7d6" />
+                <circle cx="590" cy="110" r="2" fill="#efe7d6" />
+                <circle cx="310" cy="220" r="1.8" fill="#efe7d6" />
+                <circle cx="600" cy="230" r="2.2" fill="#efe7d6" />
+                <circle cx="450" cy="45" r="2" fill="#efe7d6" />
+              </g>
+            </svg>
+          </div>
+
+          <p class="cuerpo" id="cuerpo">
+            <strong>Esa forma esférica es la manera correcta de representarlo</strong> —no el
+            típico embudo plano— y la visualización terminó publicada en un artículo científico.
+          </p>
+          <span class="etiqueta-rigor" id="rigor">✓ Ciencia real</span>
+        </div>
+      </div>
+
+      <script>
+        const tl = gsap.timeline({ paused: true });
+
+        tl.fromTo("#inner", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.6, ease: "power1.inOut" }, 0);
+        tl.fromTo("#kicker", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0.6);
+        tl.fromTo("#diagrama", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4, ease: "power1.out" }, 0.9);
+        tl.fromTo("#embudo", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.6, ease: "power1.out" }, 1.0);
+        tl.fromTo("#tag-incorrecta", { autoAlpha: 0, y: -8 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 1.3);
+
+        // El embudo (representacion habitual, incorrecta) se desvanece...
+        tl.to("#embudo", { autoAlpha: 0, duration: 0.6, ease: "power1.inOut" }, 3.4);
+        tl.to("#tag-incorrecta", { autoAlpha: 0, duration: 0.4 }, 3.4);
+        tl.set("#tag-correcta", { display: "block" }, 4.0);
+
+        // ...y aparece la esfera: la forma real usada en la pelicula.
+        tl.fromTo("#esfera", { autoAlpha: 0, scale: 0.85, transformOrigin: "450px 160px" }, { autoAlpha: 1, scale: 1, duration: 0.8, ease: "power2.out" }, 4.0);
+        tl.fromTo("#tag-correcta", { autoAlpha: 0, y: -8 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 4.4);
+        tl.to("#esfera", { rotation: 6, transformOrigin: "450px 160px", duration: 8, ease: "sine.inOut", yoyo: true, repeat: 1 }, 5.0);
+
+        tl.fromTo("#cuerpo", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 6.0);
+        tl.fromTo("#rigor", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 15.39);
+
+        tl.fromTo("#inner", { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.5, ease: "power1.inOut", immediateRender: false }, 15.89);
+
+        window.__timelines["forma-esfera"] = tl;
+      </script>
+    </template>
+  </body>
+</html>

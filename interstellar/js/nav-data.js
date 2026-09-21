@@ -40,6 +40,7 @@ const laCiencia = {
     { id: 'dilatacion-temporal', label: 'Dilatación temporal', href: 'ciencia.html#dilatacion-temporal' },
     { id: 'agujeros-de-gusano', label: 'Agujeros de gusano', href: 'ciencia.html#agujeros-de-gusano' },
     { id: 'relatividad', label: 'Relatividad', href: 'ciencia.html#relatividad' },
+    { id: 'ecuacion-de-la-gravedad', label: 'La ecuación de la gravedad', href: 'ciencia.html#ecuacion-de-la-gravedad' },
   ],
 };
 
