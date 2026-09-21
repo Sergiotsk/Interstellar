@@ -1,0 +1,137 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <template>
+      <style>
+        @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Exo+2:wght@400;500&family=Share+Tech+Mono&display=swap");
+
+        #root { position: absolute; inset: 0; width: 100%; height: 100%; }
+        .frame-inner {
+          position: absolute;
+          inset: 0;
+          background: #0a0e1a;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 60px 160px;
+          gap: 22px;
+          text-align: center;
+          overflow: hidden;
+          opacity: 0;
+        }
+
+        .kicker {
+          font-family: "Share Tech Mono", monospace;
+          font-size: 24px;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: #a8a294;
+          opacity: 0;
+        }
+
+        .diagrama { opacity: 0; }
+
+        .cuerpo {
+          font-family: "Exo 2", sans-serif;
+          font-size: 28px;
+          line-height: 1.5;
+          color: #efe7d6;
+          max-width: 1240px;
+          opacity: 0;
+        }
+        .cuerpo strong { font-weight: 500; }
+
+        .etiqueta-rigor {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          padding: 10px 22px;
+          border-radius: 999px;
+          background: rgba(20, 28, 49, 0.88);
+          border: 1px solid rgba(239, 231, 214, 0.22);
+          border-left: 4px dashed rgba(239, 231, 214, 0.4);
+          font-family: "Exo 2", sans-serif;
+          font-size: 22px;
+          font-weight: 500;
+          color: #efe7d6;
+          opacity: 0;
+        }
+      </style>
+
+      <div id="root" data-composition-id="05-tesseract" data-width="1920" data-height="1080" data-duration="16.8265">
+        <div class="frame-inner" id="inner">
+          <p class="kicker" id="kicker">El Tesseract</p>
+
+          <div class="diagrama" id="diagrama">
+            <svg width="900" height="320" viewBox="0 0 900 320" data-layout-allow-overflow="true">
+              <g fill="none" stroke="rgba(239,231,214,0.4)" stroke-width="2" stroke-dasharray="4 8">
+                <rect x="40" y="30" width="820" height="260" />
+                <rect x="150" y="80" width="600" height="160" />
+                <rect x="260" y="120" width="380" height="80" />
+                <line x1="40" y1="30" x2="260" y2="120" />
+                <line x1="860" y1="30" x2="640" y2="120" />
+                <line x1="40" y1="290" x2="260" y2="200" />
+                <line x1="860" y1="290" x2="640" y2="200" />
+              </g>
+              <circle id="luz" cx="450" cy="160" r="7" fill="#e8803b" opacity="0.85" />
+            </svg>
+          </div>
+
+          <p class="cuerpo" id="cuerpo">
+            El Tesseract presenta <strong>el tiempo como un pasillo que se puede recorrer</strong>,
+            y la gravedad "se filtra" entre dimensiones para mover un reloj.
+          </p>
+          <span class="etiqueta-rigor" id="rigor">✎ Licencia narrativa</span>
+        </div>
+      </div>
+
+      <script>
+        const tl = gsap.timeline({ paused: true });
+
+        tl.fromTo("#inner", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4, ease: "power1.inOut" }, 0);
+        tl.fromTo("#kicker", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.4, ease: "power2.out" }, 0.4);
+        tl.fromTo("#diagrama", { autoAlpha: 0, scale: 0.94 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "power2.out" }, 0.9);
+
+        // Punto de luz recorre el pasillo en loop lento — proxy tween (seek-safe), nunca SMIL.
+        const viaje = { t: 0 };
+        const puntos = [
+          { x: 450, y: 160 },
+          { x: 150, y: 80 },
+          { x: 40, y: 30 },
+          { x: 450, y: 160 },
+          { x: 750, y: 240 },
+          { x: 860, y: 290 },
+          { x: 450, y: 160 },
+        ];
+        tl.to(
+          viaje,
+          {
+            t: puntos.length - 1,
+            duration: 9.3,
+            ease: "none",
+            repeat: -1,
+            onUpdate: () => {
+              const i = Math.floor(viaje.t);
+              const f = viaje.t - i;
+              const a = puntos[Math.min(i, puntos.length - 1)];
+              const b = puntos[Math.min(i + 1, puntos.length - 1)];
+              const luz = document.getElementById("luz");
+              luz.setAttribute("cx", a.x + (b.x - a.x) * f);
+              luz.setAttribute("cy", a.y + (b.y - a.y) * f);
+            },
+          },
+          2.2,
+        );
+
+        tl.fromTo("#cuerpo", { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 2.6);
+        tl.fromTo("#rigor", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 12.3995);
+
+        window.__timelines["05-tesseract"] = tl;
+      </script>
+    </template>
+  </body>
+</html>

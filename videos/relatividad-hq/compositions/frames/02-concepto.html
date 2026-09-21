@@ -1,0 +1,191 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <template>
+      <style>
+        @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Exo+2:wght@400;500&family=Share+Tech+Mono&display=swap");
+
+        #root { position: absolute; inset: 0; width: 100%; height: 100%; }
+        .frame-inner {
+          position: absolute;
+          inset: 0;
+          background: #0a0e1a;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 60px 160px;
+          gap: 22px;
+          text-align: center;
+          overflow: hidden;
+          opacity: 0;
+        }
+
+        .kicker {
+          font-family: "Share Tech Mono", monospace;
+          font-size: 24px;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: #a8a294;
+          opacity: 0;
+        }
+
+        .diagrama-stage { position: relative; width: 1100px; height: 340px; }
+        .diagrama-layer { position: absolute; inset: 0; opacity: 0; }
+
+        .masa-glow {
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          width: 56px;
+          height: 56px;
+          margin: -28px 0 0 -28px;
+          border-radius: 50%;
+          background: #12161a;
+          box-shadow: 0 0 46px 14px rgba(232, 128, 59, 0.3);
+        }
+
+        .reloj-wrap {
+          position: absolute;
+          top: 50%;
+          margin-top: -80px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 12px;
+        }
+        .reloj-a { left: 40px; }
+        .reloj-b { left: 470px; }
+        .reloj-c { left: 900px; }
+        .reloj-label {
+          font-family: "Exo 2", sans-serif;
+          font-size: 19px;
+          color: #a8a294;
+        }
+
+        .cuerpo {
+          font-family: "Exo 2", sans-serif;
+          font-size: 30px;
+          line-height: 1.5;
+          color: #efe7d6;
+          max-width: 1220px;
+          min-height: 90px;
+        }
+        .cuerpo strong { font-weight: 500; }
+        .cuerpo-a, .cuerpo-b { position: absolute; opacity: 0; }
+        .cuerpo-wrap { position: relative; width: 1220px; min-height: 90px; }
+
+        .etiqueta-rigor {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          padding: 10px 22px;
+          border-radius: 999px;
+          background: rgba(20, 28, 49, 0.88);
+          border: 1px solid rgba(239, 231, 214, 0.22);
+          border-left: 4px solid rgba(239, 231, 214, 0.55);
+          font-family: "Exo 2", sans-serif;
+          font-size: 22px;
+          font-weight: 500;
+          color: #efe7d6;
+          opacity: 0;
+        }
+      </style>
+
+      <div id="root" data-composition-id="02-concepto" data-width="1920" data-height="1080" data-duration="21.241188">
+        <div class="frame-inner" id="inner">
+          <p class="kicker" id="kicker">Relatividad general · 1915</p>
+
+          <div class="diagrama-stage">
+            <!-- Capa 1: curvatura del espacio-tiempo (malla deformada) -->
+            <div class="diagrama-layer" id="capa-curvatura">
+              <svg width="1100" height="340" viewBox="0 0 1100 340" data-layout-allow-overflow="true">
+                <g stroke="rgba(239,231,214,0.28)" stroke-width="1.5" fill="none">
+                  <path d="M 20 60 Q 550 140 1080 60" />
+                  <path d="M 20 130 Q 550 220 1080 130" />
+                  <path d="M 20 200 Q 550 300 1080 200" />
+                  <path d="M 20 270 Q 550 340 1080 270" />
+                  <path d="M 140 20 Q 300 170 140 320" />
+                  <path d="M 350 20 Q 460 170 350 320" />
+                  <path d="M 750 20 Q 640 170 750 320" />
+                  <path d="M 960 20 Q 800 170 960 320" />
+                </g>
+              </svg>
+              <div class="masa-glow"></div>
+            </div>
+
+            <!-- Capa 2: relojes desincronizados -->
+            <div class="diagrama-layer" id="capa-relojes">
+              <div class="reloj-wrap reloj-a">
+                <svg width="140" height="140" viewBox="0 0 140 140" data-layout-allow-overflow="true">
+                  <circle cx="70" cy="70" r="62" fill="none" stroke="rgba(239,231,214,0.3)" stroke-width="3" />
+                  <line id="mano-a" x1="70" y1="70" x2="70" y2="18" stroke="#efe7d6" stroke-width="5" stroke-linecap="round" style="transform-origin: 70px 70px" />
+                  <circle cx="70" cy="70" r="4" fill="#efe7d6" />
+                </svg>
+                <p class="reloj-label">Cerca de una masa</p>
+              </div>
+              <div class="reloj-wrap reloj-b">
+                <svg width="140" height="140" viewBox="0 0 140 140" data-layout-allow-overflow="true">
+                  <circle cx="70" cy="70" r="62" fill="none" stroke="rgba(239,231,214,0.3)" stroke-width="3" />
+                  <line id="mano-b" x1="70" y1="70" x2="70" y2="18" stroke="#efe7d6" stroke-width="5" stroke-linecap="round" style="transform-origin: 70px 70px" />
+                  <circle cx="70" cy="70" r="4" fill="#efe7d6" />
+                </svg>
+                <p class="reloj-label">A media distancia</p>
+              </div>
+              <div class="reloj-wrap reloj-c">
+                <svg width="140" height="140" viewBox="0 0 140 140" data-layout-allow-overflow="true">
+                  <circle cx="70" cy="70" r="62" fill="none" stroke="rgba(239,231,214,0.3)" stroke-width="3" />
+                  <line id="mano-c" x1="70" y1="70" x2="70" y2="18" stroke="#efe7d6" stroke-width="5" stroke-linecap="round" style="transform-origin: 70px 70px" />
+                  <circle cx="70" cy="70" r="4" fill="#efe7d6" />
+                </svg>
+                <p class="reloj-label">Lejos de toda masa</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="cuerpo-wrap">
+            <p class="cuerpo cuerpo-a" id="cuerpo-a">
+              <strong>La masa curva el espacio y el tiempo</strong>; caer es simplemente seguir
+              esa curvatura, no responder a una fuerza.
+            </p>
+            <p class="cuerpo cuerpo-b" id="cuerpo-b">
+              <strong>No existe un ahora único.</strong> Dos relojes idénticos, uno cerca de una
+              masa grande y otro lejos, marcan un ritmo distinto.
+            </p>
+          </div>
+          <span class="etiqueta-rigor" id="rigor">✓ Ciencia real</span>
+        </div>
+      </div>
+
+      <script>
+        const tl = gsap.timeline({ paused: true });
+
+        tl.fromTo("#inner", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4, ease: "power1.inOut" }, 0);
+        tl.fromTo("#kicker", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.4, ease: "power2.out" }, 0.4);
+
+        // Capa 1: malla de curvatura entra.
+        tl.fromTo("#capa-curvatura", { autoAlpha: 0, scale: 0.94 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "power2.out" }, 1.1);
+        tl.fromTo("#cuerpo-a", { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 1.4);
+
+        // Crossfade a capa 2: relojes desincronizados.
+        tl.to("#capa-curvatura", { autoAlpha: 0, duration: 0.6, ease: "power1.inOut" }, 5.5);
+        tl.fromTo("#capa-relojes", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.6, ease: "power1.inOut" }, 5.5);
+        tl.to("#cuerpo-a", { autoAlpha: 0, duration: 0.4, ease: "power1.inOut" }, 6.0);
+        tl.fromTo("#cuerpo-b", { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 6.3);
+
+        // Las tres manecillas giran a velocidades angulares DISTINTAS en el mismo lapso real
+        // (5.5s a 14.0s, ~8.5s) — la falta de sincronia ES el argumento visual.
+        tl.fromTo("#mano-a", { rotation: 0 }, { rotation: 55, duration: 11.748188, ease: "none" }, 5.5);
+        tl.fromTo("#mano-b", { rotation: 0 }, { rotation: 340, duration: 11.748188, ease: "none" }, 5.5);
+        tl.fromTo("#mano-c", { rotation: 0 }, { rotation: 760, duration: 11.748188, ease: "none" }, 5.5);
+
+        tl.fromTo("#rigor", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 17.248188);
+
+        window.__timelines["02-concepto"] = tl;
+      </script>
+    </template>
+  </body>
+</html>

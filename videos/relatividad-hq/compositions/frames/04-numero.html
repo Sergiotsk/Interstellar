@@ -1,0 +1,165 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <template>
+      <style>
+        @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Exo+2:wght@400;500&family=Share+Tech+Mono&display=swap");
+
+        #root { position: absolute; inset: 0; width: 100%; height: 100%; }
+        .frame-inner {
+          position: absolute;
+          inset: 0;
+          background: #0a0e1a;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 60px 160px;
+          gap: 18px;
+          text-align: center;
+          overflow: hidden;
+          opacity: 0;
+        }
+
+        .kicker {
+          font-family: "Share Tech Mono", monospace;
+          font-size: 24px;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: #a8a294;
+          opacity: 0;
+        }
+
+        .desglose {
+          font-family: "Exo 2", sans-serif;
+          font-size: 22px;
+          letter-spacing: 0.04em;
+          color: #a8a294;
+          opacity: 0;
+        }
+
+        .stats-row {
+          display: flex;
+          align-items: flex-end;
+          justify-content: center;
+          gap: 70px;
+        }
+        .stat-block { display: flex; flex-direction: column; align-items: center; gap: 10px; opacity: 0; }
+        .stat-numero-hero {
+          font-family: "Orbitron", sans-serif;
+          font-weight: 900;
+          font-size: 118px;
+          color: #e8803b;
+          line-height: 0.95;
+        }
+        .stat-numero-secundario {
+          font-family: "Orbitron", sans-serif;
+          font-weight: 800;
+          font-size: 60px;
+          color: #efe7d6;
+          line-height: 0.95;
+        }
+        .stat-label {
+          font-family: "Exo 2", sans-serif;
+          font-size: 21px;
+          color: #a8a294;
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
+        }
+        .stat-track { width: 320px; height: 8px; border-radius: 4px; background: rgba(239, 231, 214, 0.12); overflow: hidden; }
+        .stat-track-lg { width: 420px; }
+        .stat-fill { height: 100%; transform: scaleX(0); transform-origin: left center; }
+        #fill-tierra { background: #e8803b; }
+        #fill-cooper { background: rgba(239, 231, 214, 0.6); width: 12%; }
+
+        .cuerpo {
+          font-family: "Exo 2", sans-serif;
+          font-size: 27px;
+          line-height: 1.5;
+          color: #efe7d6;
+          max-width: 1220px;
+          opacity: 0;
+        }
+        .cuerpo strong { font-weight: 500; }
+
+        .etiqueta-rigor {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          padding: 10px 22px;
+          border-radius: 999px;
+          background: rgba(20, 28, 49, 0.88);
+          border: 1px solid rgba(239, 231, 214, 0.22);
+          border-left: 4px solid rgba(239, 231, 214, 0.55);
+          font-family: "Exo 2", sans-serif;
+          font-size: 22px;
+          font-weight: 500;
+          color: #efe7d6;
+          opacity: 0;
+        }
+      </style>
+
+      <div id="root" data-composition-id="04-numero" data-width="1920" data-height="1080" data-duration="14.658313">
+        <div class="frame-inner" id="inner">
+          <p class="kicker" id="kicker">El número</p>
+          <p class="desglose" id="desglose">2 años de viaje + 23 años en Miller + 51 años en Gargantúa</p>
+
+          <div class="stats-row">
+            <div class="stat-block" id="bloque-tierra">
+              <p class="stat-numero-hero" id="numero-tierra">0</p>
+              <div class="stat-track stat-track-lg"><div class="stat-fill" id="fill-tierra"></div></div>
+              <p class="stat-label">Años en la Tierra</p>
+            </div>
+            <div class="stat-block" id="bloque-cooper">
+              <p class="stat-numero-secundario">1 década</p>
+              <div class="stat-track"><div class="stat-fill" id="fill-cooper"></div></div>
+              <p class="stat-label">Envejece Cooper</p>
+            </div>
+          </div>
+
+          <p class="cuerpo" id="cuerpo">
+            <strong>Toda la estructura temporal de la película es una demostración acumulada de
+            relatividad general.</strong>
+          </p>
+          <span class="etiqueta-rigor" id="rigor">✓ Ciencia real</span>
+        </div>
+      </div>
+
+      <script>
+        const tl = gsap.timeline({ paused: true });
+        const contador = { val: 0 };
+
+        tl.fromTo("#inner", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4, ease: "power1.inOut" }, 0);
+        tl.fromTo("#kicker", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.4, ease: "power2.out" }, 0.4);
+        tl.fromTo("#desglose", { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.4, ease: "power2.out" }, 0.9);
+
+        tl.fromTo("#bloque-tierra", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 1.7);
+        // Count-up seek-safe: tween de un proxy, nunca Date.now(); onUpdate re-pinta el texto.
+        tl.to(
+          contador,
+          {
+            val: 76,
+            duration: 2.0,
+            ease: "power1.out",
+            onUpdate: () => {
+              document.getElementById("numero-tierra").textContent = Math.round(contador.val);
+            },
+          },
+          1.9,
+        );
+        tl.fromTo("#fill-tierra", { scaleX: 0 }, { scaleX: 1, duration: 2.0, ease: "power1.out" }, 1.9);
+
+        tl.fromTo("#bloque-cooper", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 4.5);
+        tl.fromTo("#fill-cooper", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power2.out" }, 4.6);
+
+        tl.fromTo("#cuerpo", { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 5.6);
+        tl.fromTo("#rigor", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 13.814313);
+
+        window.__timelines["04-numero"] = tl;
+      </script>
+    </template>
+  </body>
+</html>

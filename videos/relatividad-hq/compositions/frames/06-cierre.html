@@ -1,0 +1,115 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <template>
+      <style>
+        @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Exo+2:wght@400;500&family=Share+Tech+Mono&display=swap");
+
+        #root { position: absolute; inset: 0; width: 100%; height: 100%; }
+        .frame-inner {
+          position: absolute;
+          inset: 0;
+          background: #0a0e1a;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 80px 160px;
+          gap: 26px;
+          text-align: center;
+          overflow: hidden;
+          opacity: 0;
+        }
+
+        .cuerpo {
+          font-family: "Exo 2", sans-serif;
+          font-size: 27px;
+          line-height: 1.5;
+          color: #a8a294;
+          max-width: 1180px;
+          opacity: 0;
+        }
+        .cuerpo strong { color: #efe7d6; font-weight: 500; }
+
+        .etiqueta-rigor {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          padding: 10px 22px;
+          border-radius: 999px;
+          background: rgba(20, 28, 49, 0.88);
+          border: 1px solid rgba(239, 231, 214, 0.22);
+          border-left: 4px dashed rgba(239, 231, 214, 0.4);
+          font-family: "Exo 2", sans-serif;
+          font-size: 22px;
+          font-weight: 500;
+          color: #efe7d6;
+          opacity: 0;
+        }
+
+        .titular {
+          font-family: "Orbitron", sans-serif;
+          font-weight: 800;
+          font-size: 62px;
+          letter-spacing: 0.03em;
+          text-transform: uppercase;
+          line-height: 1.25;
+          color: #efe7d6;
+          max-width: 1560px;
+        }
+        .titular .palabra { display: inline-block; opacity: 0; }
+        .titular .acento { color: #e8803b; }
+
+        .fuente {
+          font-family: "Exo 2", sans-serif;
+          font-style: italic;
+          font-size: 23px;
+          color: #a8a294;
+          opacity: 0;
+        }
+      </style>
+
+      <div id="root" data-composition-id="06-cierre" data-width="1920" data-height="1080">
+        <div class="frame-inner" id="inner">
+          <p class="cuerpo" id="cuerpo">
+            La frase de Amelia Brand sobre el amor <strong>no es física</strong>: es la tesis de
+            un personaje.
+          </p>
+          <span class="etiqueta-rigor" id="rigor">✎ Licencia narrativa</span>
+
+          <h1 class="titular" id="titular">
+            <span class="palabra">La</span> <span class="palabra acento">gravedad</span>
+            <span class="palabra">decide</span> <span class="palabra">a</span>
+            <span class="palabra">qué</span> <span class="palabra">velocidad</span>
+            <span class="palabra">pasa</span> <span class="palabra">el</span>
+            <span class="palabra">tiempo</span>
+          </h1>
+          <p class="fuente" id="fuente">Thorne, K. — "The Science of Interstellar" (2014)</p>
+        </div>
+      </div>
+
+      <script>
+        const tl = gsap.timeline({ paused: true });
+
+        tl.fromTo("#inner", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4, ease: "power1.inOut" }, 0);
+        tl.fromTo("#cuerpo", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0.4);
+        tl.fromTo("#rigor", { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.4, ease: "power2.out" }, 1.3);
+
+        tl.fromTo(
+          "#titular .palabra",
+          { autoAlpha: 0, y: 16 },
+          { autoAlpha: 1, y: 0, duration: 0.4, ease: "power2.out", stagger: 0.09 },
+          3.5,
+        );
+        tl.fromTo("#fuente", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5, ease: "power2.out" }, 5.6);
+
+        // Frame final: sin animacion de salida, se sostiene hasta el final del video.
+
+        window.__timelines["06-cierre"] = tl;
+      </script>
+    </template>
+  </body>
+</html>

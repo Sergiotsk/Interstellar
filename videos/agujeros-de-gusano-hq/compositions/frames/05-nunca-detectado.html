@@ -1,0 +1,142 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <template>
+      <style>
+        @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Exo+2:wght@400;500&family=Share+Tech+Mono&display=swap");
+
+        #root { position: absolute; inset: 0; width: 100%; height: 100%; }
+        .frame-inner {
+          position: absolute;
+          inset: 0;
+          background: #0a0e1a;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 55px 150px;
+          gap: 18px;
+          text-align: center;
+          overflow: hidden;
+          opacity: 0;
+        }
+
+        .kicker {
+          font-family: "Share Tech Mono", monospace;
+          font-size: 24px;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: #a8a294;
+          opacity: 0;
+        }
+
+        .comparacion { position: relative; display: flex; gap: 140px; opacity: 0; }
+        .columna { display: flex; flex-direction: column; align-items: center; gap: 14px; width: 380px; }
+        .columna-titulo {
+          font-family: "Exo 2", sans-serif;
+          font-size: 26px;
+          font-weight: 500;
+          color: #efe7d6;
+        }
+        .columna-resultado {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          font-family: "Exo 2", sans-serif;
+          font-size: 22px;
+          font-weight: 500;
+          padding: 8px 18px;
+          border-radius: 999px;
+          background: rgba(20, 28, 49, 0.88);
+          border: 1px solid rgba(239, 231, 214, 0.18);
+          opacity: 0;
+        }
+        .resultado-si { color: #efe7d6; border-left: 3px solid rgba(239, 231, 214, 0.55); }
+        .resultado-no { color: #a8a294; border-left: 3px dashed rgba(239, 231, 214, 0.4); }
+
+        .cuerpo {
+          font-family: "Exo 2", sans-serif;
+          font-weight: 400;
+          font-size: 29px;
+          line-height: 1.5;
+          color: #efe7d6;
+          max-width: 1250px;
+          opacity: 0;
+        }
+        .cuerpo strong { font-weight: 500; }
+
+        .etiqueta-rigor {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          padding: 10px 22px;
+          border-radius: 999px;
+          background: rgba(20, 28, 49, 0.88);
+          border: 1px solid rgba(239, 231, 214, 0.22);
+          border-left: 3px solid rgba(239, 231, 214, 0.55);
+          font-family: "Exo 2", sans-serif;
+          font-size: 23px;
+          font-weight: 500;
+          color: #efe7d6;
+          opacity: 0;
+        }
+      </style>
+
+      <div id="root" data-composition-id="nunca-detectado" data-width="1920" data-height="1080">
+        <div class="frame-inner" id="inner">
+          <p class="kicker" id="kicker">Lo que lo distingue</p>
+
+          <div class="comparacion" id="comparacion">
+            <div class="columna">
+              <svg width="220" height="220" viewBox="0 0 220 220" data-layout-allow-overflow="true">
+                <ellipse cx="110" cy="110" rx="95" ry="30" fill="none" stroke="#e8803b" stroke-width="4" opacity="0.7" id="anillo-bh" />
+                <circle cx="110" cy="110" r="52" fill="#05070c" stroke="rgba(239,231,214,0.3)" stroke-width="2" />
+              </svg>
+              <p class="columna-titulo">Agujero negro</p>
+              <span class="columna-resultado resultado-si" id="resultado-bh">✓ Fotografiado (EHT, 2019)</span>
+            </div>
+            <div class="columna">
+              <svg width="220" height="220" viewBox="0 0 220 220" data-layout-allow-overflow="true">
+                <circle cx="110" cy="110" r="80" fill="none" stroke="#a8a294" stroke-width="3" stroke-dasharray="7 9" id="anillo-wh" />
+                <text x="110" y="122" text-anchor="middle" font-family="Orbitron, sans-serif" font-size="40" fill="#a8a294">?</text>
+              </svg>
+              <p class="columna-titulo">Agujero de gusano</p>
+              <span class="columna-resultado resultado-no" id="resultado-wh">✕ Nunca detectado</span>
+            </div>
+          </div>
+
+          <p class="cuerpo" id="cuerpo">
+            A los agujeros negros <strong>ya los fotografiamos de verdad</strong>. Un agujero de
+            gusano, en cambio, <strong>nunca se detectó, ni siquiera de forma indirecta</strong>:
+            existe solo en la matemática.
+          </p>
+          <span class="etiqueta-rigor" id="rigor">✓ Ciencia real</span>
+        </div>
+      </div>
+
+      <script>
+        const tl = gsap.timeline({ paused: true });
+
+        tl.fromTo("#inner", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.6, ease: "power1.inOut" }, 0);
+        tl.fromTo("#kicker", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0.6);
+        tl.fromTo("#comparacion", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4, ease: "power1.out" }, 0.9);
+
+        tl.fromTo("#resultado-bh", { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 1.6);
+        tl.fromTo("#anillo-bh", { scale: 0.85, transformOrigin: "110px 110px" }, { scale: 1, duration: 0.6, ease: "power2.out" }, 1.6);
+
+        tl.fromTo("#resultado-wh", { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 2.4);
+        tl.to("#anillo-wh", { rotation: 40, transformOrigin: "110px 110px", duration: 6, ease: "none" }, 2.4);
+
+        tl.fromTo("#cuerpo", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 3.4);
+        tl.fromTo("#rigor", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 13.91);
+
+        tl.fromTo("#inner", { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.5, ease: "power1.inOut", immediateRender: false }, 14.41);
+
+        window.__timelines["nunca-detectado"] = tl;
+      </script>
+    </template>
+  </body>
+</html>

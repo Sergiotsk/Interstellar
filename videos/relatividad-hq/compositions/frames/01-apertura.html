@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <template>
+      <style>
+        @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Exo+2:wght@400;500&family=Share+Tech+Mono&display=swap");
+        #root { position: absolute; inset: 0; width: 100%; height: 100%; }
+        .frame-inner {
+          position: absolute;
+          inset: 0;
+          background: #0a0e1a;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 90px 160px;
+          gap: 26px;
+          text-align: center;
+          overflow: hidden;
+          opacity: 0;
+        }
+        .kicker {
+          font-family: "Share Tech Mono", monospace;
+          font-size: 26px;
+          letter-spacing: 0.22em;
+          text-transform: uppercase;
+          color: #e8803b;
+          opacity: 0;
+        }
+        .titular {
+          font-family: "Orbitron", sans-serif;
+          font-weight: 800;
+          font-size: 74px;
+          letter-spacing: 0.03em;
+          text-transform: uppercase;
+          line-height: 1.2;
+          color: #efe7d6;
+          max-width: 1500px;
+        }
+        .titular .palabra { display: inline-block; opacity: 0; }
+      </style>
+
+      <div id="root" data-composition-id="01-apertura" data-width="1920" data-height="1080" data-duration="3.425688">
+        <div class="frame-inner" id="inner">
+          <p class="kicker" id="kicker">La ciencia · Relatividad</p>
+          <h1 class="titular" id="titular">
+            <span class="palabra">¿Existe</span> <span class="palabra">un</span>
+            <span class="palabra">ahora</span> <span class="palabra">único</span>
+            <span class="palabra">para</span> <span class="palabra">todo</span>
+            <span class="palabra">el</span> <span class="palabra">universo?</span>
+          </h1>
+        </div>
+      </div>
+
+      <script>
+        const tl = gsap.timeline({ paused: true });
+
+        tl.fromTo("#inner", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4, ease: "power1.inOut" }, 0);
+        tl.fromTo("#kicker", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.4, ease: "power2.out" }, 0.15);
+        tl.fromTo(
+          "#titular .palabra",
+          { autoAlpha: 0, y: 14 },
+          { autoAlpha: 1, y: 0, duration: 0.4, ease: "power2.out", stagger: 0.09 },
+          0.35,
+        );
+
+        window.__timelines["01-apertura"] = tl;
+      </script>
+    </template>
+  </body>
+</html>

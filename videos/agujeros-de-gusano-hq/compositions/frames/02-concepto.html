@@ -1,0 +1,145 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <template>
+      <style>
+        @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Exo+2:wght@400;500&family=Share+Tech+Mono&display=swap");
+
+        #root { position: absolute; inset: 0; width: 100%; height: 100%; }
+        .frame-inner {
+          position: absolute;
+          inset: 0;
+          background: #0a0e1a;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 60px 150px;
+          gap: 20px;
+          text-align: center;
+          overflow: hidden;
+          opacity: 0;
+        }
+
+        .kicker {
+          font-family: "Share Tech Mono", monospace;
+          font-size: 24px;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: #a8a294;
+          opacity: 0;
+        }
+
+        .diagrama { position: relative; width: 1320px; height: 300px; opacity: 0; }
+        .region-label {
+          font-family: "Exo 2", sans-serif;
+          font-size: 20px;
+          color: #a8a294;
+        }
+        .region-a { position: absolute; left: 20px; top: 178px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .region-b { position: absolute; left: 1160px; top: 178px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+
+        .ruta-label {
+          font-family: "Exo 2", sans-serif;
+          font-size: 22px;
+          font-weight: 500;
+          opacity: 0;
+        }
+        .ruta-larga-label { position: absolute; left: 500px; top: 0px; color: #a8a294; }
+        .ruta-atajo-label { position: absolute; left: 500px; top: 250px; color: #efe7d6; }
+
+        .cuerpo {
+          font-family: "Exo 2", sans-serif;
+          font-weight: 400;
+          font-size: 30px;
+          line-height: 1.5;
+          color: #efe7d6;
+          max-width: 1250px;
+          opacity: 0;
+        }
+        .cuerpo strong { font-weight: 500; }
+        .cuerpo .sub { display: block; margin-top: 8px; font-size: 24px; color: #a8a294; }
+
+        .etiqueta-rigor {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          padding: 10px 22px;
+          border-radius: 999px;
+          background: rgba(20, 28, 49, 0.88);
+          border: 1px solid rgba(239, 231, 214, 0.22);
+          border-left: 3px solid rgba(239, 231, 214, 0.55);
+          font-family: "Exo 2", sans-serif;
+          font-size: 23px;
+          font-weight: 500;
+          color: #efe7d6;
+          opacity: 0;
+        }
+      </style>
+
+      <div id="root" data-composition-id="concepto" data-width="1920" data-height="1080">
+        <div class="frame-inner" id="inner">
+          <p class="kicker" id="kicker">Qué es un agujero de gusano</p>
+
+          <div class="diagrama" id="diagrama">
+            <svg width="1320" height="300" viewBox="0 0 1320 300" data-layout-allow-overflow="true">
+              <circle id="punto-a" cx="60" cy="220" r="10" fill="#efe7d6" opacity="0" />
+              <circle id="punto-b" cx="1240" cy="220" r="10" fill="#efe7d6" opacity="0" />
+
+              <path id="ruta-larga" d="M60,220 C 350,-10 970,-10 1240,220" fill="none"
+                stroke="#a8a294" stroke-width="2" stroke-dasharray="8 10"
+                stroke-dashoffset="1600" pathLength="1600" opacity="0" />
+
+              <path id="ruta-atajo" d="M60,220 Q650,150 1240,220" fill="none"
+                stroke="#efe7d6" stroke-width="5" stroke-linecap="round"
+                stroke-dasharray="1500" stroke-dashoffset="1500" pathLength="1500" opacity="0" />
+            </svg>
+
+            <div class="region-a"><span class="region-label">Región A</span></div>
+            <div class="region-b"><span class="region-label">Región B</span></div>
+            <p class="ruta-label ruta-larga-label" id="label-largo">camino largo</p>
+            <p class="ruta-label ruta-atajo-label" id="label-atajo">un atajo</p>
+          </div>
+
+          <p class="cuerpo" id="cuerpo">
+            <strong>Un agujero de gusano es, en principio, un atajo:</strong> un túnel que
+            conecta dos regiones muy lejanas del espacio-tiempo.
+            <span class="sub">Solución de las ecuaciones de Einstein desde 1935 — el "puente de Einstein-Rosen".</span>
+          </p>
+          <span class="etiqueta-rigor" id="rigor">✓ Ciencia real</span>
+        </div>
+      </div>
+
+      <script>
+        const tl = gsap.timeline({ paused: true });
+
+        tl.fromTo("#inner", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.6, ease: "power1.inOut" }, 0);
+        tl.fromTo("#kicker", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0.6);
+        tl.fromTo("#diagrama", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4, ease: "power1.out" }, 0.7);
+        tl.fromTo(["#punto-a", "#punto-b"], { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: 0.5, ease: "power2.out", stagger: 0.1 }, 0.9);
+
+        // El "camino largo" se dibuja primero -- la distancia real que separa las dos regiones.
+        tl.fromTo("#ruta-larga", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3 }, 1.3);
+        tl.to("#ruta-larga", { strokeDashoffset: 0, duration: 1.5, ease: "power1.inOut" }, 1.3);
+        tl.fromTo("#label-largo", { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 2.4);
+
+        // Se desvanece el camino largo y aparece el atajo -- el argumento visual central.
+        tl.to("#ruta-larga", { autoAlpha: 0.12, duration: 0.6, ease: "power1.inOut" }, 3.6);
+        tl.to("#label-largo", { autoAlpha: 0.2, duration: 0.6 }, 3.6);
+        tl.fromTo("#ruta-atajo", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3 }, 3.9);
+        tl.to("#ruta-atajo", { strokeDashoffset: 0, duration: 1.3, ease: "power2.inOut" }, 3.9);
+        tl.fromTo("#label-atajo", { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 5.0);
+
+        tl.fromTo("#cuerpo", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 5.7);
+        tl.fromTo("#rigor", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 17.20);
+
+        tl.fromTo("#inner", { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.5, ease: "power1.inOut", immediateRender: false }, 17.70);
+
+        window.__timelines["concepto"] = tl;
+      </script>
+    </template>
+  </body>
+</html>
