@@ -1,0 +1,39 @@
+Dilatación temporal
+(fuente: interstellar/ciencia.html#dilatacion-temporal — Thorne, K. "The Science of Interstellar", 2014)
+
+La ciencia
+
+El tiempo no corre igual en todas partes. Cuanto más fuerte es la gravedad en un
+lugar, más lento pasa el tiempo ahí respecto de un sitio con menos gravedad. Se
+llama dilatación temporal gravitacional y no es teoría abstracta: los relojes
+atómicos la miden, y el GPS tiene que corregirla para no acumular errores de
+kilómetros.
+[✓ Ciencia real]
+
+En el planeta de Miller, una hora en la superficie equivale a unos siete años
+para quien espera lejos: un factor de alrededor de sesenta mil. Suena imposible,
+pero es alcanzable si el planeta está muy cerca del horizonte de un agujero
+negro que gira muy rápido. Thorne hizo las cuentas con Gargantúa y los números
+cierran.
+[✓ Ciencia real]
+
+La nave Endurance, en una órbita más alta y lejana, casi no sufre esa dilatación
+mientras el equipo baja a Miller. Por eso Romilly acumula esos veintitrés años
+esperando en la nave y no en la superficie.
+[✓ Ciencia real]
+
+En Interstellar
+
+La parada en Miller es el golpe emocional de la película: una demora de horas
+cuesta décadas, y Cooper vuelve a la nave para encontrar a sus hijos crecidos.
+El mecanismo es relatividad general pura, sin trucos.
+[✓ Ciencia real]
+
+Lo que la película fuerza un poco es que un planeta con océano y condiciones
+para la vida orbite de forma estable tan cerca de Gargantúa. Las mareas y la
+energía en esa zona serían brutales; Thorne lo admite como un caso límite,
+posible solo con ajustes muy finos.
+[~ Especulación plausible]
+
+Fuentes: Thorne, K. "The Science of Interstellar" (2014), capítulo "Slowing Time"
+y capítulo sobre el planeta de Miller.

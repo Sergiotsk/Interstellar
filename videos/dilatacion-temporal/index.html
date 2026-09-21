@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Exo+2:wght@400;500&family=Share+Tech+Mono&display=swap");
+
+      :root {
+        --bg: #0a0e1a;
+        --surface: rgba(20, 28, 49, 0.88);
+        --accent: #e8803b;
+        --texto: #efe7d6;
+        --atenuado: #a8a294;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+
+      #stage {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        background: var(--bg);
+      }
+
+      .clip {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .frame-inner {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 90px 160px;
+        gap: 28px;
+        text-align: center;
+        opacity: 0;
+        visibility: hidden;
+      }
+
+      .kicker {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 26px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--accent);
+        opacity: 0;
+      }
+
+      .titular {
+        font-family: "Orbitron", sans-serif;
+        font-weight: 800;
+        font-size: 76px;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        line-height: 1.15;
+        color: var(--texto);
+        max-width: 1400px;
+        opacity: 0;
+      }
+
+      .cuerpo {
+        font-family: "Exo 2", sans-serif;
+        font-weight: 400;
+        font-size: 34px;
+        line-height: 1.55;
+        color: var(--texto);
+        max-width: 1180px;
+        opacity: 0;
+      }
+
+      .cuerpo strong {
+        font-weight: 500;
+        color: var(--texto);
+      }
+
+      .etiqueta-rigor {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 22px;
+        border-radius: 999px;
+        background: var(--surface);
+        border: 1px solid color-mix(in srgb, var(--texto) 22%, transparent);
+        font-family: "Exo 2", sans-serif;
+        font-size: 24px;
+        font-weight: 500;
+        color: var(--texto);
+        opacity: 0;
+      }
+      .etiqueta-rigor.real {
+        border-left: 4px solid color-mix(in srgb, var(--texto) 55%, transparent);
+      }
+      .etiqueta-rigor.plausible {
+        border-left: 4px dashed color-mix(in srgb, var(--texto) 40%, transparent);
+      }
+
+      .numero-hero {
+        font-family: "Orbitron", sans-serif;
+        font-weight: 900;
+        font-size: 118px;
+        letter-spacing: 0.01em;
+        color: var(--accent);
+        line-height: 1.05;
+        opacity: 0;
+      }
+
+      .numero-contexto {
+        font-family: "Exo 2", sans-serif;
+        font-size: 30px;
+        color: var(--atenuado);
+        max-width: 980px;
+        opacity: 0;
+      }
+
+      .fuente {
+        font-family: "Exo 2", sans-serif;
+        font-style: italic;
+        font-size: 24px;
+        color: var(--atenuado);
+        opacity: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <!--
+      Cortes absolutos (s): c0=0 c1=3.4 c2=14.2 c3=31.0 c4=49.8 c5=63.8 c6=71.4
+      Narracion Kokoro/ef_dora: f1=1.9s f2=9.6s f3=15.6s f4=17.6s f5=12.8s f6=6.2s
+    -->
+    <div id="stage" data-composition-id="main" data-start="0" data-duration="71.4" data-width="1920" data-height="1080">
+
+      <!-- Frame 1 — Apertura (0-4.0s, corte en 3.4) -->
+      <div class="clip" id="f1" data-start="0" data-duration="4.0" data-track-index="0">
+        <div class="frame-inner" id="f1-inner">
+          <p class="kicker" id="f1-kicker">La ciencia · Dilatación temporal</p>
+          <h1 class="titular" id="f1-titular">¿Por qué el tiempo no corre igual?</h1>
+        </div>
+      </div>
+      <audio class="clip" id="f1-audio" src="narration/f1.wav" data-start="0.5" data-duration="1.9" data-track-index="10"></audio>
+
+      <!-- Frame 2 — El concepto (3.4-14.2s) -->
+      <div class="clip" id="f2" data-start="3.4" data-duration="11.4" data-track-index="0">
+        <div class="frame-inner" id="f2-inner">
+          <p class="cuerpo" id="f2-cuerpo">
+            <strong>Cuanto más fuerte es la gravedad en un lugar, más lento pasa el tiempo ahí.</strong>
+            Los relojes atómicos la miden; el GPS la corrige para no acumular errores de kilómetros.
+          </p>
+          <span class="etiqueta-rigor real" id="f2-rigor">✓ Ciencia real</span>
+        </div>
+      </div>
+      <audio class="clip" id="f2-audio" src="narration/f2.wav" data-start="3.8" data-duration="9.6" data-track-index="10"></audio>
+
+      <!-- Frame 3 — El número: Miller (14.2-31.0s) -->
+      <div class="clip" id="f3" data-start="14.2" data-duration="17.4" data-track-index="0">
+        <div class="frame-inner" id="f3-inner">
+          <p class="numero-hero" id="f3-numero">1 hora = 7 años</p>
+          <p class="numero-contexto" id="f3-contexto">
+            Un factor de alrededor de <strong>sesenta mil</strong>, alcanzable muy cerca del horizonte
+            de un agujero negro que gira muy rápido. Thorne hizo las cuentas con Gargantúa y los
+            números cierran.
+          </p>
+          <span class="etiqueta-rigor real" id="f3-rigor">✓ Ciencia real</span>
+        </div>
+      </div>
+      <audio class="clip" id="f3-audio" src="narration/f3.wav" data-start="14.6" data-duration="15.6" data-track-index="10"></audio>
+
+      <!-- Frame 4 — La consecuencia (31.0-49.8s) -->
+      <div class="clip" id="f4" data-start="31.0" data-duration="19.4" data-track-index="0">
+        <div class="frame-inner" id="f4-inner">
+          <p class="cuerpo" id="f4-cuerpo">
+            La <strong>Endurance</strong>, en órbita más alta, casi no sufre esa dilatación —
+            <strong>Romilly acumula veintitrés años</strong> esperando en la nave. Por eso una demora
+            de horas le cuesta décadas a Cooper, que vuelve para encontrar a sus hijos crecidos.
+            El mecanismo es <strong>relatividad general pura, sin trucos</strong>.
+          </p>
+          <span class="etiqueta-rigor real" id="f4-rigor">✓ Ciencia real</span>
+        </div>
+      </div>
+      <audio class="clip" id="f4-audio" src="narration/f4.wav" data-start="31.4" data-duration="17.6" data-track-index="10"></audio>
+
+      <!-- Frame 5 — El límite honesto (49.8-63.8s) -->
+      <div class="clip" id="f5" data-start="49.8" data-duration="14.6" data-track-index="0">
+        <div class="frame-inner" id="f5-inner">
+          <p class="cuerpo" id="f5-cuerpo">
+            Lo que la película fuerza un poco: que un planeta habitable orbite de forma estable
+            <strong>tan cerca de Gargantúa</strong>. Las mareas y la energía ahí serían brutales —
+            Thorne lo admite como un <strong>caso límite</strong>.
+          </p>
+          <span class="etiqueta-rigor plausible" id="f5-rigor">~ Especulación plausible</span>
+        </div>
+      </div>
+      <audio class="clip" id="f5-audio" src="narration/f5.wav" data-start="50.2" data-duration="12.8" data-track-index="10"></audio>
+
+      <!-- Frame 6 — Cierre (63.8-71.4s), sin salida -->
+      <div class="clip" id="f6" data-start="63.8" data-duration="7.6" data-track-index="0">
+        <div class="frame-inner" id="f6-inner">
+          <h1 class="titular" id="f6-titular">Una hora en Miller son siete años afuera</h1>
+          <p class="fuente" id="f6-fuente">Thorne, K. — "The Science of Interstellar" (2014)</p>
+        </div>
+      </div>
+      <audio class="clip" id="f6-audio" src="narration/f6.wav" data-start="64.2" data-duration="6.2" data-track-index="10"></audio>
+
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      const CROSS = 0.6; // duracion de crossfade entre frames
+
+      // Baselines seguras para cada frame-inner.
+      tl.set(["#f1-inner", "#f2-inner", "#f3-inner", "#f4-inner", "#f5-inner", "#f6-inner"], { autoAlpha: 0 }, 0);
+
+      // ── Frame 1 (corte en 3.4s) ──
+      tl.fromTo("#f1-inner", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, 0);
+      tl.fromTo("#f1-kicker", { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 0.2);
+      tl.fromTo("#f1-titular", { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: "power2.out" }, 1.0);
+      tl.to("#f1-inner", { autoAlpha: 0, duration: CROSS, ease: "power1.inOut" }, 3.4 - CROSS);
+
+      // ── Frame 2 (3.4 → 14.2) ──
+      tl.to("#f2-inner", { autoAlpha: 1, duration: CROSS, ease: "power1.inOut", immediateRender: false }, 3.4 - CROSS);
+      tl.fromTo("#f2-cuerpo", { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: "power2.out" }, 3.8);
+      tl.fromTo("#f2-rigor", { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 4.8);
+      tl.to("#f2-inner", { autoAlpha: 0, duration: CROSS, ease: "power1.inOut" }, 14.2 - CROSS);
+
+      // ── Frame 3 (14.2 → 31.0) ──
+      tl.to("#f3-inner", { autoAlpha: 1, duration: CROSS, ease: "power1.inOut", immediateRender: false }, 14.2 - CROSS);
+      tl.fromTo("#f3-numero", { autoAlpha: 0, scale: 0.92 }, { autoAlpha: 1, scale: 1, duration: 0.8, ease: "power2.out" }, 14.6);
+      tl.fromTo("#f3-contexto", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: "power2.out" }, 16.4);
+      tl.fromTo("#f3-rigor", { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 18.0);
+      tl.to("#f3-inner", { autoAlpha: 0, duration: CROSS, ease: "power1.inOut" }, 31.0 - CROSS);
+
+      // ── Frame 4 (31.0 → 49.8) ──
+      tl.to("#f4-inner", { autoAlpha: 1, duration: CROSS, ease: "power1.inOut", immediateRender: false }, 31.0 - CROSS);
+      tl.fromTo("#f4-cuerpo", { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: "power2.out" }, 31.4);
+      tl.fromTo("#f4-rigor", { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 32.6);
+      tl.to("#f4-inner", { autoAlpha: 0, duration: CROSS, ease: "power1.inOut" }, 49.8 - CROSS);
+
+      // ── Frame 5 (49.8 → 63.8) ──
+      tl.to("#f5-inner", { autoAlpha: 1, duration: CROSS, ease: "power1.inOut", immediateRender: false }, 49.8 - CROSS);
+      tl.fromTo("#f5-cuerpo", { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: "power2.out" }, 50.2);
+      tl.fromTo("#f5-rigor", { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 51.4);
+      tl.to("#f5-inner", { autoAlpha: 0, duration: CROSS, ease: "power1.inOut" }, 63.8 - CROSS);
+
+      // ── Frame 6 (63.8 → 71.4), frame final sin salida ──
+      tl.to("#f6-inner", { autoAlpha: 1, duration: CROSS, ease: "power1.inOut", immediateRender: false }, 63.8 - CROSS);
+      tl.fromTo("#f6-titular", { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: "power2.out" }, 64.2);
+      tl.fromTo("#f6-fuente", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.6, ease: "power2.out" }, 65.4);
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

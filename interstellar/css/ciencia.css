@@ -68,6 +68,20 @@
   color: var(--color-texto-atenuado);
 }
 
+/* Video opcional (spike de evaluacion, rama spike/hframes — NO es parte del
+   sitio final). Reusa la misma caja que .concepto figure; el <video> imita
+   la regla de <img> (bloque, ancho completo) y se ensancha un poco mas que
+   la foto ilustrativa porque es el recurso principal de la sub-seccion. */
+.concepto figure.video-opcional {
+  max-width: 42rem;
+}
+
+.concepto figure video {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 /* Etiqueta de rigor: comun a los tres niveles. El nivel se lee en el texto
    del <span> ("✓ Ciencia real", etc.), nunca solo por color (FR-011, FR-016). */
 .rigor {

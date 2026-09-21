@@ -1,0 +1,124 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <template>
+      <style>
+        @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Exo+2:wght@400;500&family=Share+Tech+Mono&display=swap");
+
+        #root { position: absolute; inset: 0; width: 100%; height: 100%; }
+        .frame-inner {
+          position: absolute;
+          inset: 0;
+          background: #0a0e1a;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 60px 200px;
+          gap: 20px;
+          text-align: center;
+          overflow: hidden;
+          opacity: 0;
+        }
+
+        .kicker {
+          font-family: "Share Tech Mono", monospace;
+          font-size: 24px;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: #a8a294;
+          opacity: 0;
+        }
+
+        .diagrama { opacity: 0; }
+
+        .cuerpo {
+          font-family: "Exo 2", sans-serif;
+          font-size: 31px;
+          line-height: 1.5;
+          color: #efe7d6;
+          max-width: 1180px;
+          opacity: 0;
+        }
+        .cuerpo strong { font-weight: 500; }
+
+        .etiqueta-rigor {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          padding: 10px 22px;
+          border-radius: 999px;
+          background: rgba(20, 28, 49, 0.88);
+          border: 1px solid rgba(239, 231, 214, 0.22);
+          border-left: 4px dashed rgba(239, 231, 214, 0.4);
+          font-family: "Exo 2", sans-serif;
+          font-size: 23px;
+          font-weight: 500;
+          color: #efe7d6;
+          opacity: 0;
+        }
+      </style>
+
+      <div id="root" data-composition-id="limite" data-width="1920" data-height="1080">
+        <div class="frame-inner" id="inner">
+          <p class="kicker" id="kicker">El límite honesto</p>
+
+          <div class="diagrama" id="diagrama">
+            <svg width="620" height="320" viewBox="0 0 620 320">
+              <circle cx="310" cy="160" r="34" fill="#12161a" />
+              <ellipse cx="310" cy="160" rx="260" ry="92" fill="none" stroke="rgba(239,231,214,0.45)" stroke-width="2.5" stroke-dasharray="6 10" />
+              <circle id="planeta" cx="570" cy="160" r="9" fill="#efe7d6" />
+            </svg>
+          </div>
+
+          <p class="cuerpo" id="cuerpo">
+            Un planeta con océano y condiciones para la vida, orbitando de forma estable
+            <strong>tan cerca de Gargantúa</strong>. Las mareas y la energía ahí serían brutales
+            — Thorne lo admite como un caso límite.
+          </p>
+          <span class="etiqueta-rigor" id="rigor">~ Especulación plausible</span>
+        </div>
+      </div>
+
+      <script>
+        const tl = gsap.timeline({ paused: true });
+        const orbita = { t: 0 };
+        const cx = 310,
+          cy = 160,
+          rx = 260,
+          ry = 92;
+
+        tl.fromTo("#inner", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.6, ease: "power1.inOut" }, 0);
+        tl.fromTo("#kicker", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0.6);
+        tl.fromTo("#diagrama", { autoAlpha: 0, scale: 0.92 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "power2.out" }, 1.1);
+
+        // Orbita determinista: se recalcula cx/cy del planeta via onUpdate (seek-safe),
+        // nunca SMIL ni Date.now(). Un barrido elíptico continuo mientras dura el frame.
+        tl.to(
+          orbita,
+          {
+            t: Math.PI * 2,
+            duration: 13.65,
+            ease: "none",
+            onUpdate: () => {
+              const planeta = document.getElementById("planeta");
+              planeta.setAttribute("cx", cx + rx * Math.cos(orbita.t));
+              planeta.setAttribute("cy", cy + ry * Math.sin(orbita.t));
+            },
+          },
+          2.2,
+        );
+
+        tl.fromTo("#cuerpo", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 2.6);
+        tl.fromTo("#rigor", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 15.85);
+
+        tl.fromTo("#inner", { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.6, ease: "power1.inOut", immediateRender: false }, 16.85);
+
+        window.__timelines["limite"] = tl;
+      </script>
+    </template>
+  </body>
+</html>
