@@ -6,11 +6,15 @@
 // ver js/vendor/README.md): import dinámico después del primer paint, nunca
 // un <script> de CDN en runtime (Constitución, Principio I).
 //
-// Degradado: si WebGL no está disponible, el import falla, o cualquier línea
-// de abajo tira una excepción, la <img id="horizonte-fallback"> (ya en el
-// DOM, ver ciencia.html) queda visible sin tocarse — este módulo SOLO la
-// reemplaza si el render llega a arrancar. Nunca es requisito para ver la
-// sección.
+// Degradado: la <img id="horizonte-fallback"> (ya en el DOM, ver ciencia.html)
+// arranca en opacity:0 -- css/ciencia.css. Nunca se ve la secuencia "aparece
+// el fallback y despues desaparece": mientras se decide si la animación va a
+// arrancar, la pantalla queda en negro (background-color de .ciencia-portada).
+// Recién se hace visible con `mostrarFallback()`, y solo en los casos donde
+// ya se sabe que la animación no va a cargar (sin WebGL, import caído,
+// excepción en cualquier línea de abajo) — ver soportaWebGL() e
+// initHorizonteSeguro(). Sin JS, el <noscript> de ciencia.html la muestra
+// directo por CSS. Nunca es requisito para ver la sección.
 
 function soportaWebGL() {
   try {
@@ -24,10 +28,15 @@ function soportaWebGL() {
   }
 }
 
+function mostrarFallback() {
+  document.getElementById('horizonte-fallback')?.classList.add('horizonte-fallback-visible');
+}
+
 async function initHorizonte() {
   const contenedor = document.getElementById('horizonte-canvas');
   if (!contenedor || !soportaWebGL()) {
-    return; // sin contenedor o sin WebGL -> la imagen de respaldo queda como esta
+    mostrarFallback(); // sin contenedor o sin WebGL -> la animacion nunca iba a arrancar
+    return;
   }
 
   const THREE = await import('./vendor/three@0.128.0/three.module.js');
@@ -679,6 +688,24 @@ void main(){
 	/* degradación automática si no alcanza ~28 fps */
 	var muestrasFPS = 0, acumFPS = 0, degradado = false;
 
+	/* Recien se hace visible el canvas despues del PRIMER render real (no
+	   apenas existe el <canvas> -- entre appendChild y el primer pase de
+	   shaders hay un instante en que el canvas esta vacio/negro). Un rAF
+	   extra de margen le da tiempo al compositor a presentar ese primer
+	   cuadro antes de empezar el fundido. La <img> de respaldo NUNCA se
+	   toca aca: en este camino (exito) jamas llego a mostrarse, asi que no
+	   hay nada que retirar -- ver mostrarFallback(), que es la unica
+	   funcion que la hace visible, y solo en los casos confirmados de
+	   fallo. */
+	var primerCuadroListo = false;
+	function mostrarHorizonteListo(){
+		if(primerCuadroListo) return;
+		primerCuadroListo = true;
+		requestAnimationFrame(function(){
+			lienzo.classList.add('horizonte-listo');
+		});
+	}
+
 	/* Bucle de render: 6 pases por cuadro */
 	var tPrev = performance.now();
 	function animar(t){
@@ -736,26 +763,22 @@ void main(){
 		uComp.tBloom.value  = rtA.texture;
 		renderer.setRenderTarget(null);
 		renderer.render(escena, camara);
+
+		mostrarHorizonteListo();
 	}
 	requestAnimationFrame(animar);
 
-})(); 
-    
-    
-  // Recién si el paste de arriba metió un <canvas> real dentro del
-  // contenedor (contenedor.appendChild(canvas), ver las notas), sacamos el
-  // respaldo. Si todavía no pegaste nada, esto no hace nada — se sigue
-  // viendo la ilustración de la NASA, como corresponde.
-  if (contenedor.querySelector('canvas')) {
-    document.getElementById('horizonte-fallback')?.remove();
-  }
+})();
 }
 
 function initHorizonteSeguro() {
-  // Si algo de lo pegado tira una excepcion, la dejamos en consola pero no
-  // rompemos la pagina: la <img> de respaldo nunca llega a sacarse.
+  // Si algo de lo pegado tira una excepcion, la dejamos en consola y recien
+  // ahi mostramos la imagen de respaldo -- hasta ese momento la pantalla
+  // se mantuvo en negro, nunca hubo un fallback visible que despues haya
+  // que retirar.
   initHorizonte().catch((error) => {
-    console.error('[ciencia] horizonte animado: no se pudo iniciar, queda la imagen de respaldo.', error);
+    console.error('[ciencia] horizonte animado: no se pudo iniciar, se muestra la imagen de respaldo.', error);
+    mostrarFallback();
   });
 }
 

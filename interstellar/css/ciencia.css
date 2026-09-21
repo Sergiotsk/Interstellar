@@ -145,16 +145,32 @@ body:not(.home) main > section.ciencia-portada:first-child .ciencia-portada-cont
   text-shadow: 0 0 1rem var(--color-fondo);
 }
 
-/* El <canvas> que arma el JS y la <img> de respaldo ocupan la MISMA caja.
-   El JS saca la <img> del DOM recien cuando el render ya esta andando —
-   hasta entonces (sin JS, sin WebGL, o si algo tira excepcion) esta regla
-   nunca importa: la <img> es lo unico que hay. */
+/* El <canvas> que arma el JS y la <img> de respaldo ocupan la MISMA caja,
+   superpuestos (position:absolute). Decision de UX: NUNCA se ve la
+   secuencia "aparece el fallback -> desaparece" -- si la animacion va a
+   cargar, la pantalla se queda en negro (background-color de
+   .ciencia-portada) hasta que hay un cuadro real; el fallback solo se
+   hace visible cuando ya se sabe que la animacion NO va a arrancar (sin
+   WebGL, import caido, excepcion en el pase de shaders). Por eso la <img>
+   arranca en opacity:0 por defecto y SOLO el JS, en esos casos de fallo
+   confirmados, le suma `.horizonte-fallback-visible` (ver js/ciencia.js).
+   El canvas hace lo mismo con `.horizonte-listo`, pero recien despues del
+   primer cuadro real pintado -- nunca hay una imagen que se retire. */
 .horizonte-canvas canvas,
 .horizonte-canvas img {
   display: block;
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+.horizonte-canvas canvas.horizonte-listo,
+.horizonte-canvas img.horizonte-fallback-visible {
+  opacity: 1;
 }
 
 /* =============================================================================
