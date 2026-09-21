@@ -68,11 +68,11 @@
   color: var(--color-texto-atenuado);
 }
 
-/* Video opcional (spike de evaluacion, rama spike/hframes — NO es parte del
-   sitio final). Reusa la misma caja que .concepto figure; el <video> imita
-   la regla de <img> (bloque, ancho completo). Sin max-width propio: ocupa
-   el ancho completo del contenedor, igual que los parrafos de .concepto
-   (que tampoco tienen max-width propio — heredan section[id], layout.css). */
+/* Video opcional de resumen animado (uno por concepto). Reusa la misma caja
+   que .concepto figure; el <video> imita la regla de <img> (bloque, ancho
+   completo). Sin max-width propio: ocupa el ancho completo del contenedor,
+   igual que los parrafos de .concepto (que tampoco tienen max-width propio
+   — heredan section[id], layout.css). */
 .concepto figure.video-opcional {
   max-width: none;
 }
