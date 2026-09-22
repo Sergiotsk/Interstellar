@@ -72,7 +72,44 @@ ${items}
 </header>`;
 }
 
-export function buildFooter() {
+// Consola de tres zonas (pedido de Sergio, 2a vuelta: no queria dos filas
+// apiladas — un unico tablero con las secciones flanqueando la fila de
+// acciones de siempre). Izquierda y derecha son GRUPOS FIJOS por id, no "los
+// primeros/ultimos N": Inicio queda afuera (redundante con la marca del
+// header) y de los 7 restantes tambien queda afuera Trailer, para llegar a
+// 3+3 simetrico. El criterio de la izquierda es real, no arbitrario: son los
+// 4 ejes con submenu propio en el header (`hasChildren: true`,
+// js/nav-data.js) menos El Viaje, que se corrio a la derecha junto con las 2
+// paginas sueltas (Galeria, Minijuegos) para completar el 3+3.
+//
+// MISMA paleta que el resto del chrome — teal, un solo acento — nunca un
+// color por seccion: eso rompia la regla de "un unico acento saturado"
+// (naranja Gargantua, reservado al CONTENIDO) que sostiene toda la identidad
+// visual del sitio. La seccion activa se distingue igual que en el header:
+// `aria-current="page"` (lo pone `markCurrentPage`, se llama sobre CADA uno
+// de los dos <nav> en `init()`) enciende el LED y el texto, no un color
+// nuevo. `.tele-fina` = mismo componente `.tele`/`.tele-accion` del pie, con
+// menos padding y letra mas chica ("botones finitos", css/layout.css).
+const PIE_IZQUIERDA_IDS = ['mundos', 'personajes', 'la-ciencia'];
+const PIE_DERECHA_IDS = ['el-viaje', 'galeria', 'minijuegos'];
+
+function buildPieSeccionesGrupo(navConfig, ids, etiqueta) {
+  const items = ids
+    .map((id) => navConfig.items.find((item) => item.id === id))
+    .filter(Boolean)
+    .map(
+      (item) =>
+        `        <li class="tele tele-accion tele-fina"><a href="${escapeHtml(item.href)}"><span class="led" aria-hidden="true"></span><span class="tele-v">${escapeHtml(item.label)}</span></a></li>`,
+    )
+    .join('\n');
+  return `<nav class="pie-secciones" aria-label="${escapeHtml(etiqueta)}">
+      <ul>
+${items}
+      </ul>
+    </nav>`;
+}
+
+export function buildFooter(navConfig = NavConfig) {
   // Pie mínimo: disclaimer + enlaces (créditos y repo). La lista de atribución
   // por asset vive en creditos.html (FR-012, FR-013; contrato assets.md).
   //
@@ -89,14 +126,18 @@ export function buildFooter() {
   const waFallback = `https://wa.me/?text=${encodeURIComponent(`Interstellar — ${SITE_URL}`)}`;
   const fbFallback = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(SITE_URL)}`;
   return `<footer>
-  <ul>
-    <li class="tele tele-accion"><a href="contacto.html" aria-label="Formulario de contacto"><span class="led" aria-hidden="true"></span><span class="tele-v">Contacto</span></a></li>
-    <li class="tele tele-accion"><a href="${escapeHtml(waFallback)}" data-share="whatsapp" target="_blank" rel="noopener" aria-label="Compartir el sitio en WhatsApp"><span class="led" aria-hidden="true"></span><span class="tele-v">WhatsApp</span></a></li>
-    <li class="tele tele-accion"><a href="${escapeHtml(fbFallback)}" data-share="facebook" target="_blank" rel="noopener" aria-label="Compartir el sitio en Facebook"><span class="led" aria-hidden="true"></span><span class="tele-v">Facebook</span></a></li>
-    <li class="tele tele-accion" data-share-nativo hidden><button type="button" data-share="nativo" aria-label="Compartir el sitio"><span class="led led-ambar" aria-hidden="true"></span><span class="tele-v">Compartir</span></button></li>
-    <li class="tele tele-accion"><a href="creditos.html" aria-label="Créditos y fuentes"><span class="led" aria-hidden="true"></span><span class="tele-v">Créditos</span></a></li>
-    <li class="tele tele-accion"><a href="${escapeHtml(REPO_URL)}" aria-label="Repositorio en GitHub"><span class="led led-alerta" aria-hidden="true"></span><span class="tele-v">GitHub</span></a></li>
-  </ul>
+  <div class="pie-consola">
+    ${buildPieSeccionesGrupo(navConfig, PIE_IZQUIERDA_IDS, 'Secciones (izquierda)')}
+    <ul class="pie-acciones">
+      <li class="tele tele-accion"><a href="contacto.html" aria-label="Formulario de contacto"><span class="led" aria-hidden="true"></span><span class="tele-v">Contacto</span></a></li>
+      <li class="tele tele-accion"><a href="${escapeHtml(waFallback)}" data-share="whatsapp" target="_blank" rel="noopener" aria-label="Compartir el sitio en WhatsApp"><span class="led" aria-hidden="true"></span><span class="tele-v">WhatsApp</span></a></li>
+      <li class="tele tele-accion"><a href="${escapeHtml(fbFallback)}" data-share="facebook" target="_blank" rel="noopener" aria-label="Compartir el sitio en Facebook"><span class="led" aria-hidden="true"></span><span class="tele-v">Facebook</span></a></li>
+      <li class="tele tele-accion" data-share-nativo hidden><button type="button" data-share="nativo" aria-label="Compartir el sitio"><span class="led led-ambar" aria-hidden="true"></span><span class="tele-v">Compartir</span></button></li>
+      <li class="tele tele-accion"><a href="creditos.html" aria-label="Créditos y fuentes"><span class="led" aria-hidden="true"></span><span class="tele-v">Créditos</span></a></li>
+      <li class="tele tele-accion"><a href="${escapeHtml(REPO_URL)}" aria-label="Repositorio en GitHub"><span class="led led-alerta" aria-hidden="true"></span><span class="tele-v">GitHub</span></a></li>
+    </ul>
+    ${buildPieSeccionesGrupo(navConfig, PIE_DERECHA_IDS, 'Secciones (derecha)')}
+  </div>
 </footer>`;
 }
 
@@ -129,7 +170,7 @@ export function buildBotonSubir() {
 export function renderLayout(navConfig = NavConfig) {
   return {
     header: buildHeader(navConfig),
-    footer: buildFooter(),
+    footer: buildFooter(navConfig),
   };
 }
 
@@ -544,6 +585,36 @@ function initBotonSubir(boton) {
   actualizar(); // estado inicial, por si la pagina se carga ya scrolleada (anchor #hash)
 }
 
+// El menu duplicado del pie (`.pie-secciones`, izquierda y derecha) solo
+// aporta si hay que SCROLLEAR para llegar al pie -- si la pagina entra
+// entera en la pantalla (la home, con su hero "sin scroll" a proposito; o
+// cualquier otra pagina corta), el header ya esta a la vista todo el tiempo
+// y duplicarlo abajo es ruido. No se puede fijar por pagina en el HTML: la
+// MISMA pagina puede tener scroll en un celular y no en un monitor grande —
+// se mide en runtime contra la altura real del documento, y se re-mide en
+// cada resize (cambia el viewport) y en `load` (fonts/imagenes pueden correr
+// la altura despues del DOMContentLoaded). El bloque central de acciones
+// (contacto/compartir/creditos) NO se toca: ese es util siempre, con o sin
+// scroll.
+function initPieSeccionesCondicional() {
+  if (typeof document.querySelectorAll !== 'function' || typeof window === 'undefined') {
+    return;
+  }
+  const grupos = document.querySelectorAll('footer nav.pie-secciones');
+  if (grupos.length === 0) {
+    return;
+  }
+  const actualizar = () => {
+    const hayScroll = document.documentElement.scrollHeight > window.innerHeight + 1; // +1: margen de redondeo
+    grupos.forEach((nav) => {
+      nav.hidden = !hayScroll;
+    });
+  };
+  actualizar();
+  window.addEventListener('resize', actualizar);
+  window.addEventListener('load', actualizar);
+}
+
 // Indicador de seccion actual (FR: descubribilidad de la nav). Marca con
 // `aria-current="page"` el enlace de NIVEL SUPERIOR cuyo destino es la pagina en
 // curso; el CSS lo resalta (LED fijo + acento) tanto en la barra de escritorio
@@ -570,7 +641,7 @@ export function init(navConfig = NavConfig) {
     return;
   }
   document.body.insertAdjacentHTML('afterbegin', buildHeader(navConfig));
-  document.body.insertAdjacentHTML('beforeend', buildFooter());
+  document.body.insertAdjacentHTML('beforeend', buildFooter(navConfig));
   document.body.insertAdjacentHTML('beforeend', buildBotonSubir());
 
   // Cielo: solo en paginas `con-cielo`. `afterbegin` lo deja como primer hijo
@@ -594,12 +665,16 @@ export function init(navConfig = NavConfig) {
   const nav = header && header.querySelector('nav');
   const estado = createSubmenuState();
   markCurrentPage(nav);
+  document.body
+    .querySelectorAll('footer nav.pie-secciones')
+    .forEach((navSecciones) => markCurrentPage(navSecciones));
   wireDisclosure(nav, estado);
   wireDrawer(header, nav, estado);
   wireFooterShare(document.body.querySelector('footer'));
   initSpoilerAviso(header);
   initHeroVideo();
   initBotonSubir(document.body.querySelector('.boton-subir'));
+  initPieSeccionesCondicional();
 }
 
 if (typeof document !== 'undefined') {
