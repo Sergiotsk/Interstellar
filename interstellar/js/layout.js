@@ -48,10 +48,10 @@ export function buildHeader(navConfig = NavConfig) {
   // banda. Antes era `header::after` (pseudo, no enlazable); es un <a> real para
   // que sea navegable y accesible (aria-label da el destino). Dos lineas:
   //   1. `.cockpit-marca` -> "Interstellar" (la marca).
-  //   2. `.cockpit-brand-linea` -> los dos LED (SYS/PWR) + "NAV · RANGER".
+  //   2. `.cockpit-brand-linea` -> los dos LED (SYS/PWR) + "NAV · ENDURANCE".
   // Visible <60rem (en escritorio la fila de nav ocupa el centro; la placa
   // vuelve a la izquierda a partir de ~68rem, salvo con el aviso de spoiler
-  // activo). El sufijo " · RANGER" se oculta en pantallas muy angostas.
+  // activo). El sufijo " · ENDURANCE" se oculta en pantallas muy angostas.
   //
   // Boton CASE: menu-hamburguesa "girado" a 4 barras VERTICALES (guiño al robot
   // de la pelicula). Abre/cierra el drawer de navegacion por debajo de 60rem.
@@ -146,34 +146,45 @@ export function buildFooter(navConfig = NavConfig) {
   const waFallback = `https://wa.me/?text=${encodeURIComponent(`Interstellar — ${SITE_URL}`)}`;
   const fbFallback = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(SITE_URL)}`;
   return `<footer>
-  <div class="pie-placa" aria-hidden="true">
-    <span class="pie-placa-linea"></span>
-    <span class="pie-placa-marca">
-      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
-        <path fill="currentColor" d="M12 2C14.6 4.6 16 8.6 16 13L8 13C8 8.6 9.4 4.6 12 2Z M8 12L4 18L8 15Z M16 12L20 18L16 15Z M10 13L12 20L14 13Z" />
-        <circle cx="12" cy="8.3" r="1.7" fill="var(--cockpit-metal)" />
-      </svg>
-      <span class="pie-placa-texto">
-        <span class="pie-placa-titulo">Endurance</span>
-        <span class="pie-placa-subtitulo">Control Panel</span>
-      </span>
-    </span>
-    <span class="pie-placa-linea"></span>
-  </div>
   <div class="pie-consola">
     ${buildPieSeccionesGrupo(navConfig, PIE_IZQUIERDA_IDS, 'Secciones (izquierda)')}
-    <div class="pie-scope" aria-hidden="true">
-      <span class="pie-scope-label">Gargantúa</span>
-      <svg class="pie-scope-svg" viewBox="0 0 120 74" preserveAspectRatio="xMidYMid meet" focusable="false">
-        <ellipse class="pie-scope-orbita" cx="60" cy="38" rx="46" ry="17" />
-        <ellipse class="pie-scope-orbita pie-scope-orbita--2" cx="60" cy="38" rx="30" ry="10" />
-        <circle class="pie-scope-planeta" cx="60" cy="38" r="9" />
-        <circle class="pie-scope-luna" cx="106" cy="38" r="2.4" />
-        <line class="pie-scope-barrido" x1="60" y1="38" x2="112" y2="24" />
-      </svg>
-      <span class="pie-scope-tags"><span>RECALIB</span><span>PARSE</span><span>SYNC</span></span>
-    </div>
     <div class="pie-pantalla">
+      <div class="pie-placa" aria-hidden="true">
+        <span class="pie-placa-linea"></span>
+        <span class="pie-placa-marca">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+            <path fill="currentColor" d="M12 2C14.6 4.6 16 8.6 16 13L8 13C8 8.6 9.4 4.6 12 2Z M8 12L4 18L8 15Z M16 12L20 18L16 15Z M10 13L12 20L14 13Z" />
+            <circle cx="12" cy="8.3" r="1.7" fill="var(--cockpit-metal)" />
+          </svg>
+          <span class="pie-placa-texto">
+            <span class="pie-placa-titulo">Endurance</span>
+            <span class="pie-placa-subtitulo">Control Panel</span>
+          </span>
+        </span>
+        <span class="pie-placa-linea"></span>
+      </div>
+      <div class="pie-pantallas" aria-hidden="true">
+        <span class="pie-perillas"><span class="pie-perilla"></span><span class="pie-perilla"></span></span>
+        <div class="pie-scope">
+          <span class="pie-scope-label">Gargantúa</span>
+          <svg class="pie-scope-svg" viewBox="0 0 210 66" preserveAspectRatio="xMidYMid meet" focusable="false">
+            <ellipse class="pie-scope-orbita" cx="105" cy="34" rx="95" ry="22" />
+            <ellipse class="pie-scope-orbita pie-scope-orbita--2" cx="105" cy="34" rx="62" ry="13" />
+            <circle class="pie-scope-planeta" cx="105" cy="34" r="11" />
+            <circle class="pie-scope-luna" cx="196" cy="34" r="3" />
+            <line class="pie-scope-barrido" x1="105" y1="34" x2="200" y2="16" />
+          </svg>
+          <span class="pie-scope-tags"><span>RECALIB</span><span>PARSE</span><span>SYNC</span></span>
+        </div>
+        <div class="pie-telemetria">
+          <span class="pie-telemetria-linea">GRAVIMETRIC · STABLE</span>
+          <span class="pie-telemetria-linea">ROTATIONAL SYNC · 98%</span>
+          <span class="pie-telemetria-linea">THERMAL · NOMINAL</span>
+          <span class="pie-telemetria-linea pie-telemetria-linea--alerta">HULL STRESS · 04%</span>
+          <span class="pie-telemetria-linea">UPLINK · ONLINE</span>
+        </div>
+        <span class="pie-perillas"><span class="pie-perilla"></span><span class="pie-perilla"></span></span>
+      </div>
       <ul class="pie-acciones">
         <li class="tele tele-accion"><a href="contacto.html" aria-label="Formulario de contacto"><span class="led" aria-hidden="true"></span><span class="tele-v">Contacto</span></a></li>
         <li class="tele tele-accion"><a href="${escapeHtml(waFallback)}" data-share="whatsapp" target="_blank" rel="noopener" aria-label="Compartir el sitio en WhatsApp"><span class="led" aria-hidden="true"></span><span class="tele-v">WhatsApp</span></a></li>
@@ -186,13 +197,6 @@ export function buildFooter(navConfig = NavConfig) {
         <span></span>
         <span></span>
       </div>
-    </div>
-    <div class="pie-telemetria" aria-hidden="true">
-      <span class="pie-telemetria-linea">GRAVIMETRIC · STABLE</span>
-      <span class="pie-telemetria-linea">ROTATIONAL SYNC · 98%</span>
-      <span class="pie-telemetria-linea">THERMAL · NOMINAL</span>
-      <span class="pie-telemetria-linea pie-telemetria-linea--alerta">HULL STRESS · 04%</span>
-      <span class="pie-telemetria-linea">UPLINK · ONLINE</span>
     </div>
     ${buildPieSeccionesGrupo(navConfig, PIE_DERECHA_IDS, 'Secciones (derecha)')}
   </div>
@@ -666,7 +670,15 @@ function initPieSeccionesCondicional() {
     return;
   }
   const grupos = document.querySelectorAll('footer .pie-secciones-marco');
-  if (grupos.length === 0) {
+  // Las pantallas de monitorizacion + perillas (`.pie-pantallas`) siguen el
+  // MISMO criterio que los brackets: solo aportan cuando hay que scrollear
+  // para llegar al pie. En la home (hero "sin scroll" a proposito) y en
+  // cualquier pagina corta se ocultan — quedan solo el lockup y la tira de
+  // acciones, que sirven siempre. (`.pie-pantallas` lleva `display:flex`, asi
+  // que el ocultamiento real lo hace la regla `.pie-pantallas[hidden]` en el
+  // CSS; el atributo `hidden` por si solo no le gana a ese `display`.)
+  const pantallas = document.querySelector('footer .pie-pantallas');
+  if (grupos.length === 0 && !pantallas) {
     return;
   }
   const actualizar = () => {
@@ -674,6 +686,9 @@ function initPieSeccionesCondicional() {
     grupos.forEach((marco) => {
       marco.hidden = !hayScroll;
     });
+    if (pantallas) {
+      pantallas.hidden = !hayScroll;
+    }
   };
   actualizar();
   window.addEventListener('resize', actualizar);

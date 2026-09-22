@@ -817,6 +817,14 @@ header nav ul ul a {
    --------------------------------------------------------------------------- */
 footer {
   position: relative;
+  /* flex column centrado: la consola queda centrada EXACTA en la altura del
+     footer (los brackets laterales, centrados en la consola, quedan asi
+     centrados respecto del footer). Ademas elimina el line-box fantasma que
+     dejaba el whitespace cuando el footer era `display:block`. */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   /* Consola inferior del cockpit (constitucion v2.1.0): metal con grilla fina,
      bezel superior con reflejo y esquinas superiores cortadas (espejo del
      header). */
@@ -842,7 +850,10 @@ footer {
     inset 0 0 0 4px rgba(0, 0, 0, 0.3);
   /* +20% de alto sobre la version anterior (1.7/1.4rem), sin tocar el contenido:
      la consola inferior gana presencia a la par del header. */
-  padding: 2.25rem 1rem 1.85rem;
+  /* padding vertical SIMETRICO: con la consola como unico contenido, top=bottom
+     la deja centrada en la altura del footer -> los brackets (centrados en la
+     consola) quedan centrados respecto del footer. */
+  padding: 2rem 1rem;
   text-align: center;
   font-family: var(--font-instrumento);
   font-size: 0.82rem;
@@ -925,8 +936,12 @@ footer::before {
   align-items: center;
   justify-content: center;
   gap: 0.85rem;
-  width: min(100% - 2rem, 34rem);
-  margin: 0 auto 1.35rem;
+  /* vive DENTRO de la columna central (encima de las pantallas): asi los
+     brackets laterales se centran contra toda la consola (lockup + pantallas
+     + tira) y quedan centrados respecto de la altura del footer. El espacio
+     hacia abajo lo da el `gap` de `.pie-pantalla`. */
+  width: min(100%, 34rem);
+  margin: 0 auto;
 }
 
 /* `.pie-placa-marca`: icono + lockup de 2 lineas (referencia: "ENDURANCE /
@@ -1091,9 +1106,14 @@ footer .tele-accion:focus-within .tele-v {
      espacio y ya queda centrado ADENTRO de esa celda via `justify-content:
      center` (regla generica `footer ul`, mas arriba). */
   grid-template-columns: auto 1fr auto;
+  /* Tablero de 3 zonas: brackets a los costados centrados verticalmente contra
+     la columna central (que ahora es mas alta: lockup + las dos pantallas +
+     la tira). `center` los deja a media altura del bloque central, prolijo. */
   align-items: center;
-  gap: 0.5rem 1.25rem;
-  width: min(100% - 2rem, 88rem);
+  gap: 0.5rem 1rem;
+  /* mas angosta (88rem -> 72rem): acerca los brackets laterales al bloque
+     central en pantallas anchas, sin tocar el centro (sigue con margin auto). */
+  width: min(100% - 2rem, 72rem);
   margin: 0 auto;
 }
 
@@ -1119,47 +1139,85 @@ footer .tele-accion:focus-within .tele-v {
   justify-self: end;
 }
 
-/* `.pie-scope` y `.pie-telemetria` son la "banda completa" (referencia:
-   Endurance Control Panel de lado a lado). Solo aparecen en pantallas MUY
-   anchas (>=90rem / 1440px): a ese ancho la tira central de 6 acciones entra
-   en UNA sola fila (lo que define el look) con los dos displays flanqueando.
-   Mas abajo, meterlos aprieta la tira y la parte en dos filas, asi que se cae
-   al tablero de 3 zonas de siempre (brackets + acciones), sin los displays. */
-.pie-scope,
-.pie-telemetria {
-  display: none;
-  /* Las dos pantallas laterales son piezas GEMELAS: mismo ancho y misma
-     altura (el contenido de cada una difiere, pero la caja no) — igual que en
-     la referencia, donde los dos displays a los costados son del mismo
-     tamaño. La altura fija + box-sizing garantiza el empate pase lo que pase
-     con el contenido interno. */
-  box-sizing: border-box;
-  width: 8.5rem;
-  height: 7.25rem;
+/* `.pie-pantallas`: las dos pantallas (scope + telemetria) van JUNTAS y
+   CENTRADAS en la columna del medio, entre el lockup "Endurance / Control
+   Panel" y la tira de acciones (pedido de Sergio). Al estar apiladas en el
+   centro, ya no compiten por el ancho con la tira -> no hace falta la banda
+   de >=90rem ni ocultarlas: el bloque central (mas ancho = la tira) manda, y
+   las pantallas quedan comodas encima. */
+.pie-pantallas {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
-@media (min-width: 90rem) {
-  .pie-consola {
-    grid-template-columns: auto auto 1fr auto auto;
-  }
+/* Ocultamiento condicional (home / paginas sin scroll, via JS
+   `initPieSeccionesCondicional`): el atributo `hidden` por si solo no le gana
+   al `display:flex` de arriba, asi que se fuerza aca. */
+.pie-pantallas[hidden] {
+  display: none;
+}
 
-  .pie-consola .pie-scope {
-    display: flex;
-    grid-column: 2;
-  }
+/* `.pie-perillas`: columna de 2 perillas decorativas a cada lado del par de
+   pantallas (referencia: los controles a los costados de la consola). */
+.pie-perillas {
+  display: flex;
+  flex-direction: column;
+  /* mas aire ENTRE las dos perillas... */
+  gap: 0.7rem;
+  /* ...y separacion extra respecto de las pantallas (sin abrir el gap entre
+     scope y telemetria, que van como par). */
+  margin-inline: 0.4rem;
+}
 
-  .pie-consola .pie-pantalla {
-    grid-column: 3;
-  }
+/* `.pie-perilla`: perilla/dial decorativo (referencia: los controles a los
+   costados de la consola de la Endurance). Puramente decorativa (vive dentro
+   de `.pie-pantallas`, aria-hidden). Metal redondo con un puntero teal; sin
+   accion ni foco. */
+.pie-perilla {
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--cockpit-bezel-brillo) 55%, var(--cockpit-bezel));
+  background:
+    radial-gradient(circle at 42% 34%,
+      var(--cockpit-bezel-brillo),
+      var(--cockpit-bezel) 46%,
+      var(--cockpit-metal) 100%);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--cockpit-bezel-brillo) 80%, transparent),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.5),
+    0 1px 3px rgba(0, 0, 0, 0.55);
+  position: relative;
+}
 
-  .pie-consola .pie-telemetria {
-    display: flex;
-    grid-column: 4;
-  }
+/* Puntero (marca de posicion del dial) — linea teal encendida de las 12 hacia
+   el centro. */
+.pie-perilla::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 14%;
+  width: 2px;
+  height: 34%;
+  transform: translateX(-50%);
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--instrumento-teal) 88%, #fff);
+  box-shadow: 0 0 5px color-mix(in srgb, var(--instrumento-teal) 65%, transparent);
+}
 
-  .pie-consola .pie-secciones-marco:last-of-type {
-    grid-column: 5;
-  }
+/* Las dos pantallas son GEMELAS (misma caja) y RECTANGULARES (~2.2:1,
+   apaisadas): un scope/readout se lee mejor horizontal. El contenido interno
+   difiere pero la caja no. */
+.pie-scope,
+.pie-telemetria {
+  box-sizing: border-box;
+  width: 13rem;
+  /* alto reducido 30% (6rem -> 4.2rem): pantallas mas apaisadas (~3:1). */
+  height: 4.2rem;
 }
 
 /* Panel angular que ENVUELVE cada grupo lateral (referencia: los paneles en
@@ -1174,7 +1232,7 @@ footer .tele-accion:focus-within .tele-v {
    rectangular; `drop-shadow` sigue el contorno real ya recortado. */
 .pie-secciones-marco {
   position: relative;
-  padding: 0.65rem 0.9rem 0.65rem 1.75rem;
+  padding: 0.5rem 0.75rem 0.5rem 1.5rem;
   border: 1px solid color-mix(in srgb, var(--cockpit-bezel-brillo) 60%, var(--cockpit-bezel));
   /* OJO: el primer intento usaba --cockpit-metal-alto/--cockpit-metal, los
      MISMOS tonos que el fondo del propio `footer` (mismos valores exactos)
@@ -1193,7 +1251,7 @@ footer .tele-accion:focus-within .tele-v {
 }
 
 .pie-secciones-marco:last-of-type {
-  padding: 0.65rem 1.75rem 0.65rem 0.9rem;
+  padding: 0.5rem 1.5rem 0.5rem 0.75rem;
   clip-path: polygon(0% 0%, 86% 0%, 100% 50%, 86% 100%, 0% 100%);
 }
 
@@ -1205,7 +1263,11 @@ footer .tele-accion:focus-within .tele-v {
 .pie-pantalla {
   display: flex;
   flex-direction: column;
-  align-items: stretch;
+  /* `center` (no `stretch`): cada hijo (pantallas, tira de acciones, barra de
+     estado) ABRAZA su contenido y queda centrado, en vez de estirarse a todo
+     el ancho de la columna del medio (1fr). Asi la capsula de botones no
+     queda con aire de mas a los costados. */
+  align-items: center;
   gap: 0.5rem;
 }
 
@@ -1229,7 +1291,10 @@ footer .tele-accion:focus-within .tele-v {
 }
 
 .pie-pantalla-estado span {
-  flex: 1 1 auto;
+  /* ancho fijo (el contenedor ya no se estira): dos lineas de brillo cortas y
+     centradas bajo la capsula, como barra de estado. */
+  flex: 0 0 auto;
+  width: 9rem;
   height: 2px;
   border-radius: 999px;
   background: linear-gradient(90deg,
@@ -1239,17 +1304,17 @@ footer .tele-accion:focus-within .tele-v {
   box-shadow: 0 0 6px color-mix(in srgb, var(--instrumento-teal) 45%, transparent);
 }
 
-/* `.pie-scope`: pantalla-radar a la IZQUIERDA del bloque central (referencia:
-   el scope "Gargantúa" del tablero). Puramente decorativa (aria-hidden en el
-   markup) — no aporta informacion nueva, solo densidad de instrumento para
-   que la banda se lea de lado a lado como una consola, no como una fila de
-   botones con aire a los costados. Mismo lenguaje de "vidrio encendido" que
-   `.pie-pantalla .pie-acciones` (fondo --instrumento-pantalla + halo teal). */
+/* `.pie-scope`: pantalla-radar "Gargantúa" (referencia: el scope del tablero).
+   Puramente decorativa (el wrapper `.pie-pantallas` lleva aria-hidden) — no
+   aporta informacion nueva, solo densidad de instrumento. Mismo lenguaje de
+   "vidrio encendido" que `.pie-pantalla .pie-acciones` (fondo
+   --instrumento-pantalla + halo teal). */
 .pie-scope {
   position: relative;
-  flex-direction: column;
-  justify-content: center;
-  padding: 0.9rem 0.7rem 0.6rem;
+  /* caja baja: el radar LLENA la pantalla y el label/tags flotan encima como
+     HUD (absolute) — asi entra sin recortarse en el alto reducido. */
+  overflow: hidden;
+  padding: 0;
   border: 1px solid color-mix(in srgb, var(--instrumento-teal) 32%, var(--cockpit-bezel));
   border-radius: 6px;
   background:
@@ -1263,8 +1328,9 @@ footer .tele-accion:focus-within .tele-v {
 
 .pie-scope-label {
   position: absolute;
-  top: 0.35rem;
-  left: 0.55rem;
+  top: 0.3rem;
+  left: 0.5rem;
+  z-index: 1;
   font-family: var(--font-instrumento);
   font-size: 0.5rem;
   letter-spacing: 0.14em;
@@ -1276,8 +1342,7 @@ footer .tele-accion:focus-within .tele-v {
 .pie-scope-svg {
   display: block;
   width: 100%;
-  height: auto;
-  margin-top: 0.35rem;
+  height: 100%;
 }
 
 .pie-scope-orbita {
@@ -1310,9 +1375,13 @@ footer .tele-accion:focus-within .tele-v {
 }
 
 .pie-scope-tags {
+  position: absolute;
+  left: 0.5rem;
+  right: 0.5rem;
+  bottom: 0.25rem;
+  z-index: 1;
   display: flex;
   justify-content: space-between;
-  margin-top: 0.4rem;
   font-family: var(--font-instrumento);
   font-size: 0.42rem;
   letter-spacing: 0.1em;
@@ -1325,12 +1394,11 @@ footer .tele-accion:focus-within .tele-v {
    en rojo-alerta como en la referencia (uso puntual del acento --led-alerta,
    igual criterio que el LED de GitHub). */
 .pie-telemetria {
-  /* display lo controla el par base (`display:none`) + la banda >=90rem
-     (`display:flex`); aca solo va la maqueta interna. */
+  display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 0.18rem;
-  padding: 0.55rem 0.7rem;
+  gap: 0.1rem;
+  padding: 0.35rem 0.7rem;
   border: 1px solid color-mix(in srgb, var(--instrumento-teal) 26%, var(--cockpit-bezel));
   border-radius: 6px;
   background: linear-gradient(180deg, color-mix(in srgb, var(--instrumento-pantalla) 92%, #000), var(--instrumento-pantalla));
@@ -1342,8 +1410,9 @@ footer .tele-accion:focus-within .tele-v {
 
 .pie-telemetria-linea {
   font-family: var(--font-instrumento);
-  font-size: 0.5rem;
-  letter-spacing: 0.06em;
+  font-size: 0.46rem;
+  line-height: 1.35;
+  letter-spacing: 0.04em;
   color: color-mix(in srgb, var(--instrumento-teal) 70%, var(--color-texto-atenuado));
   text-shadow: 0 0 5px color-mix(in srgb, var(--instrumento-teal) 25%, transparent);
   white-space: nowrap;
@@ -1416,7 +1485,8 @@ footer .tele-accion:focus-within .tele-v {
     display: none;
   }
 
-  .pie-secciones-marco {
+  .pie-secciones-marco,
+  .pie-pantallas {
     display: none;
   }
 
