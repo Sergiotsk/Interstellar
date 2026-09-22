@@ -141,8 +141,44 @@ describe('js/layout.js — contrato layout-injection.md', () => {
     assert.doesNotMatch(footer, /class="tele"(?!\s+tele-accion)/); // no quedan teclas-display sin acción
   });
 
+  test('el pie es una consola de 3 zonas: 3 secciones a la izquierda, acciones al centro, 3 a la derecha ("botones finitos")', () => {
+    // `.pie-consola` envuelve los 3 grupos; los dos <nav class="pie-secciones">
+    // duplican secciones del header (grupos FIJOS por id, no "los primeros/
+    // ultimos N" — ver js/layout.js) y flanquean `<ul class="pie-acciones">`
+    // (la fila de siempre: contacto/compartir/creditos), sin colores nuevos
+    // por seccion (Constitucion: un unico acento saturado).
+    const izquierda = ['mundos', 'personajes', 'la-ciencia'];
+    const derecha = ['el-viaje', 'galeria', 'minijuegos'];
+    const porId = Object.fromEntries(NavConfig.items.map((item) => [item.id, item]));
+
+    assert.match(footer, /<div class="pie-consola">/);
+    assert.equal(countMatches(footer, /<nav class="pie-secciones" aria-label="[^"]+">/g), 2);
+    assert.equal(countMatches(footer, /class="tele tele-accion tele-fina"/g), izquierda.length + derecha.length);
+
+    // Orden real en el HTML: izquierda -> acciones -> derecha.
+    const idxIzquierda = footer.indexOf('aria-label="Secciones (izquierda)"');
+    const idxAcciones = footer.indexOf('class="pie-acciones"');
+    const idxDerecha = footer.indexOf('aria-label="Secciones (derecha)"');
+    assert.ok(idxIzquierda >= 0 && idxIzquierda < idxAcciones);
+    assert.ok(idxAcciones < idxDerecha);
+
+    for (const id of [...izquierda, ...derecha]) {
+      const item = porId[id];
+      assert.ok(
+        footer.includes(`<a href="${escapeHtml(item.href)}"><span class="led" aria-hidden="true"></span><span class="tele-v">${escapeHtml(item.label)}</span></a>`),
+        `falta la tecla fina de ${item.label}`,
+      );
+    }
+
+    // Inicio y Trailer NO se duplican en el pie (Inicio: redundante con la
+    // marca del header; Trailer: se saco para que cierre 3+3 simetrico).
+    assert.ok(!footer.includes('>Inicio</span>'));
+    assert.ok(!footer.includes('>Trailer</span>'));
+  });
+
   test('layout.js no lleva datos propios: sin argumento produce el mismo header que con NavConfig', () => {
     assert.equal(buildHeader(), buildHeader(NavConfig));
+    assert.equal(buildFooter(), buildFooter(NavConfig));
   });
 
   test('renderLayout devuelve header y footer listos para inyectar', () => {

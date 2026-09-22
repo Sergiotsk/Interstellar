@@ -917,6 +917,105 @@ footer .tele-accion:focus-within .tele-v {
   transition: color 0.15s ease, text-shadow 0.15s ease;
 }
 
+/* Consola de tres zonas (`js/layout.js`: buildPieSeccionesGrupo): 3 secciones
+   a la izquierda, 3 a la derecha (accesos rapidos, "botones finitos" —
+   pedido de Sergio), flanqueando la fila de acciones de siempre en el
+   centro (contacto/compartir/creditos) — un unico tablero, no dos filas
+   apiladas. Grid de 3 columnas (`1fr auto 1fr`) en vez de flex
+   `space-between`: con contenido de ancho distinto en cada lado, el grid
+   asegura que la columna central quede EXACTAMENTE centrada (los dos `1fr`
+   pesan igual aunque el contenido que envuelven no).
+   Mismo componente `.tele.tele-accion` de arriba, `.tele-fina` distingue las
+   secciones por TAMAÑO (mas chico), nunca por color: un solo acento
+   saturado en todo el sitio (naranja Gargantua, reservado al contenido) —
+   la seccion activa se marca igual que en el header, con
+   `aria-current="page"` (`markCurrentPage`, llamado sobre CADA `<nav
+   class="pie-secciones">` en `init()`), no con una paleta nueva. */
+.pie-consola {
+  display: grid;
+  /* auto/auto en los costados (nunca se aprietan por debajo de lo que sus 3
+     teclas necesitan -- eso las hacia envolver a 2 lineas contra el bloque
+     central, que es mas ancho); el centro (1fr) absorbe el resto del
+     espacio y ya queda centrado ADENTRO de esa celda via `justify-content:
+     center` (regla generica `footer ul`, mas arriba). */
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.5rem 1.5rem;
+  width: min(100% - 2rem, 88rem);
+  margin: 0 auto;
+}
+
+/* Columna FIJA para cada bloque (no orden automatico): sin esto, cuando
+   `initPieSeccionesCondicional()` oculta los <nav> laterales (paginas sin
+   scroll), el algoritmo de auto-placement de grid los SALTA por completo —
+   no reserva su celda — y `.pie-acciones` cae en la 1a columna en vez de la
+   del medio, quedando pegado a la izquierda con el `1fr` vacio a la derecha
+   (bug real, visto en produccion: "quedaron corridos hacia la izquierda").
+   `grid-column` explicito hace que cada bloque quede en SU columna pase lo
+   que pase con los otros dos. */
+.pie-consola .pie-secciones:first-of-type {
+  grid-column: 1;
+  justify-self: start;
+}
+
+.pie-consola .pie-acciones {
+  grid-column: 2;
+}
+
+.pie-consola .pie-secciones:last-of-type {
+  grid-column: 3;
+  justify-self: end;
+}
+
+/* Los laterales van APILADOS (columna), no en fila -- pedido de Sergio: se ve
+   mas a paneles de botones a los costados de una consola central que a una
+   fila ancha. Especificidad: `.pie-secciones ul` (1 clase) le gana a la
+   regla generica `footer ul` (0 clases, 2 tipos) por el conteo de clases,
+   sin importar el orden de declaracion. `align-items: stretch` empareja el
+   ancho de las 3 teclas de cada columna al de la mas larga (mismo look que
+   un panel de botones parejo, no un stack irregular). */
+.pie-secciones ul {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.pie-secciones .tele-fina > a {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.72rem;
+}
+
+/* Seccion actual: mismo tratamiento que `header nav > ul > li > a[aria-current='page']`
+   (borde + fondo + texto encendidos), pero el atributo vive en el <a> hijo,
+   no en la `.tele` que lleva el borde/fondo — de ahi el `:has()`. */
+.pie-secciones .tele-fina:has(> a[aria-current='page']) {
+  border-color: var(--instrumento-teal);
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--instrumento-teal) 30%, var(--cockpit-metal)),
+    color-mix(in srgb, var(--cockpit-metal) 90%, #000));
+}
+
+.pie-secciones .tele-fina:has(> a[aria-current='page']) .tele-v {
+  color: color-mix(in srgb, var(--instrumento-teal) 85%, #fff);
+  text-shadow: 0 0 8px color-mix(in srgb, var(--instrumento-teal) 50%, transparent);
+}
+
+/* Mobile: se cae a una sola columna, apilado en el orden del DOM
+   (izquierda -> acciones -> derecha). Cada `<ul>` interno sigue el mismo
+   `@media (max-width: 40rem)` de la seccion "Mobile: las teclas del pie…"
+   mas abajo (grilla de 3 columnas, generica para cualquier `footer ul`). */
+@media (max-width: 40rem) {
+  .pie-consola {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+  .pie-consola .pie-secciones:first-of-type,
+  .pie-consola .pie-secciones:last-of-type {
+    justify-self: unset;
+  }
+}
+
 /* LED de estado reutilizable de la capa cockpit. Verde-teal por defecto; las
    variantes cubren estado (ambar) y alerta (rojo, uso puntual). Decorativo:
    siempre `aria-hidden` en el markup. */
