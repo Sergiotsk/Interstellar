@@ -670,15 +670,7 @@ function initPieSeccionesCondicional() {
     return;
   }
   const grupos = document.querySelectorAll('footer .pie-secciones-marco');
-  // Las pantallas de monitorizacion + perillas (`.pie-pantallas`) siguen el
-  // MISMO criterio que los brackets: solo aportan cuando hay que scrollear
-  // para llegar al pie. En la home (hero "sin scroll" a proposito) y en
-  // cualquier pagina corta se ocultan — quedan solo el lockup y la tira de
-  // acciones, que sirven siempre. (`.pie-pantallas` lleva `display:flex`, asi
-  // que el ocultamiento real lo hace la regla `.pie-pantallas[hidden]` en el
-  // CSS; el atributo `hidden` por si solo no le gana a ese `display`.)
-  const pantallas = document.querySelector('footer .pie-pantallas');
-  if (grupos.length === 0 && !pantallas) {
+  if (grupos.length === 0) {
     return;
   }
   const actualizar = () => {
@@ -686,9 +678,6 @@ function initPieSeccionesCondicional() {
     grupos.forEach((marco) => {
       marco.hidden = !hayScroll;
     });
-    if (pantallas) {
-      pantallas.hidden = !hayScroll;
-    }
   };
   actualizar();
   window.addEventListener('resize', actualizar);
