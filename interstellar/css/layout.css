@@ -829,10 +829,17 @@ footer {
      footer casi empata con --color-fondo, así que el borde teñido de teal + la
      línea de luz teal inset lo despegan del fondo de la página. */
   border-top: 1px solid color-mix(in srgb, var(--instrumento-teal) 30%, var(--cockpit-bezel));
+  /* Marco de panel fisico: a la sombra de siempre se le suma un "borde
+     doble" inset (linea clara + linea oscura, separadas 3px) que lee como
+     el reborde biselado de una placa de metal atornillada, no solo un
+     degrade plano — el primer intento de este rediseño quedaba DEMASIADO
+     sutil (remaches de 10px y lineas de 1px, invisibles a tamaño real). */
   box-shadow:
     inset 0 2px 6px color-mix(in srgb, var(--instrumento-teal) 14%, transparent),
     inset 0 -1px 0 var(--cockpit-bezel-brillo),
-    inset 0 12px 22px rgba(0, 0, 0, 0.36);
+    inset 0 12px 22px rgba(0, 0, 0, 0.36),
+    inset 0 0 0 1px color-mix(in srgb, var(--cockpit-bezel-brillo) 55%, transparent),
+    inset 0 0 0 4px rgba(0, 0, 0, 0.3);
   /* +20% de alto sobre la version anterior (1.7/1.4rem), sin tocar el contenido:
      la consola inferior gana presencia a la par del header. */
   padding: 2.25rem 1rem 1.85rem;
@@ -842,6 +849,151 @@ footer {
   letter-spacing: 0.04em;
   color: var(--color-texto-atenuado);
   clip-path: polygon(0 12px, 20px 0, calc(100% - 20px) 0, 100% 12px, 100% 100%, 0 100%);
+}
+
+/* Rediseño visual (referencia: panel de control de la Endurance) — 4
+   "remaches" en las esquinas, dibujados con radial-gradient (ningun asset
+   nuevo). `z-index: -1`: en Chromium un hijo con z-index negativo pinta por
+   DEBAJO del fondo/borde propios del elemento que establece el stacking
+   context (`footer`, ya `position: relative`) pero SIGUE por encima del
+   fondo de la pagina — well behind `.pie-placa`/`.pie-consola` (position
+   estatica, stacking level 0) sin necesitar tocarles el z-index a ellos.
+   Posiciones pensadas para esquivar el recorte diagonal de las esquinas
+   superiores (`clip-path` de arriba: corta hasta x=20px/y=12px). */
+footer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  /* `circle 7px` fija el radio: SIN esto, el gradiente se estira hasta la
+     esquina mas lejana del cuadro y el "remache" se ve como un cuadrado
+     solido, no un punto redondo. El ultimo stop en `transparent` deja ver
+     la textura del metal alrededor. Bisel de 4 pasos: brillo especular casi
+     blanco (arriba-izquierda) -> bezel claro -> bezel -> sombra oscura
+     (abajo-derecha) -> se apaga. 16px de diametro (subido de 10px — a ese
+     tamaño no se notaban a simple vista) + `drop-shadow` para que se lean
+     como bulto SOBRE el metal, no una mancha plana. */
+  background-image:
+    radial-gradient(circle 7px at 34% 32%,
+      #fff 0%,
+      color-mix(in srgb, var(--cockpit-bezel-brillo) 70%, #fff) 18%,
+      var(--cockpit-bezel-brillo) 40%,
+      var(--cockpit-bezel) 68%,
+      color-mix(in srgb, #000 65%, var(--cockpit-bezel)) 92%,
+      transparent 100%),
+    radial-gradient(circle 7px at 34% 32%,
+      #fff 0%,
+      color-mix(in srgb, var(--cockpit-bezel-brillo) 70%, #fff) 18%,
+      var(--cockpit-bezel-brillo) 40%,
+      var(--cockpit-bezel) 68%,
+      color-mix(in srgb, #000 65%, var(--cockpit-bezel)) 92%,
+      transparent 100%),
+    radial-gradient(circle 7px at 34% 32%,
+      #fff 0%,
+      color-mix(in srgb, var(--cockpit-bezel-brillo) 70%, #fff) 18%,
+      var(--cockpit-bezel-brillo) 40%,
+      var(--cockpit-bezel) 68%,
+      color-mix(in srgb, #000 65%, var(--cockpit-bezel)) 92%,
+      transparent 100%),
+    radial-gradient(circle 7px at 34% 32%,
+      #fff 0%,
+      color-mix(in srgb, var(--cockpit-bezel-brillo) 70%, #fff) 18%,
+      var(--cockpit-bezel-brillo) 40%,
+      var(--cockpit-bezel) 68%,
+      color-mix(in srgb, #000 65%, var(--cockpit-bezel)) 92%,
+      transparent 100%);
+  background-size: 16px 16px;
+  background-position:
+    30px 20px,
+    calc(100% - 30px) 20px,
+    18px calc(100% - 18px),
+    calc(100% - 18px) calc(100% - 18px);
+  filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, 0.55));
+}
+
+/* Placa de titulo (referencia: lockup "ENDURANCE · CONTROL PANEL"), arriba
+   del tablero de 3 zonas. Puramente decorativa (aria-hidden en el markup,
+   js/layout.js) — el nombre del sitio ya lo anuncia la marca del header.
+   Las lineas son gradiente CSS (transparente -> teal -> transparente), no
+   imagenes ni bordes rectos: se leen como haces de luz, no como reglas. */
+.pie-placa {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  width: min(100% - 2rem, 34rem);
+  margin: 0 auto 1.35rem;
+}
+
+/* `.pie-placa-marca`: icono + lockup de 2 lineas (referencia: "ENDURANCE /
+   CONTROL PANEL"). El <svg> es EL MISMO cohete de `.boton-subir`
+   (js/layout.js) — mismo lenguaje de icono, no uno nuevo. */
+.pie-placa-marca {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: color-mix(in srgb, var(--instrumento-teal) 85%, #fff);
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--instrumento-teal) 60%, transparent));
+}
+
+.pie-placa-texto {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.pie-placa-titulo {
+  font-family: var(--font-instrumento);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--instrumento-teal) 88%, #fff);
+  text-shadow:
+    0 0 6px color-mix(in srgb, var(--instrumento-teal) 75%, transparent),
+    0 0 18px color-mix(in srgb, var(--instrumento-teal) 55%, transparent);
+}
+
+.pie-placa-subtitulo {
+  font-family: var(--font-instrumento);
+  font-size: 0.56rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--color-texto-atenuado);
+}
+
+/* Subidas de 1px a 2px + sombra mucho mas fuerte y en dos capas (nucleo
+   nitido + halo ancho): a 1px con un solo `box-shadow` de 6px de blur, la
+   linea practicamente no se notaba contra el metal oscuro del pie — el
+   primer intento de este rediseño. El pulso es el mismo criterio que
+   `cockpit-led-pulso` (guard de prefers-reduced-motion): una placa con
+   "energia" encendida, no un adorno estatico. */
+.pie-placa-linea {
+  flex: 1 1 auto;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent,
+    color-mix(in srgb, var(--instrumento-teal) 85%, #fff),
+    transparent);
+  box-shadow:
+    0 0 6px 1px color-mix(in srgb, var(--instrumento-teal) 80%, transparent),
+    0 0 16px 2px color-mix(in srgb, var(--instrumento-teal) 45%, transparent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pie-placa-linea {
+    animation: pie-placa-pulso 2.8s ease-in-out infinite;
+  }
+}
+
+@keyframes pie-placa-pulso {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
 }
 
 /* La consola es una fila de TECLAS. Cada `.tele` es una tecla de panel — misma
@@ -953,18 +1105,95 @@ footer .tele-accion:focus-within .tele-v {
    (bug real, visto en produccion: "quedaron corridos hacia la izquierda").
    `grid-column` explicito hace que cada bloque quede en SU columna pase lo
    que pase con los otros dos. */
-.pie-consola .pie-secciones:first-of-type {
+.pie-consola .pie-secciones-marco:first-of-type {
   grid-column: 1;
   justify-self: start;
 }
 
-.pie-consola .pie-acciones {
+.pie-consola .pie-pantalla {
   grid-column: 2;
 }
 
-.pie-consola .pie-secciones:last-of-type {
+.pie-consola .pie-secciones-marco:last-of-type {
   grid-column: 3;
   justify-self: end;
+}
+
+/* Panel angular que ENVUELVE cada grupo lateral (referencia: los paneles en
+   punta a los costados del tablero de la Endurance) — el recorte en punta
+   va en el MARCO, el <nav>/<ul> real adentro sigue siendo un rectangulo
+   normal (ningun tap target ni foco-ring corre riesgo de quedar cortado
+   por el clip-path). Dos variantes por posicion: `:first-of-type` apunta
+   hacia afuera-izquierda, `:last-of-type` hacia afuera-derecha (mismo
+   componente, espejo). `filter: drop-shadow` en vez de `box-shadow` para la
+   sombra exterior: un `box-shadow` normal se recorta junto con el
+   `clip-path` y queda con un borde recto feo donde la forma no es
+   rectangular; `drop-shadow` sigue el contorno real ya recortado. */
+.pie-secciones-marco {
+  position: relative;
+  padding: 0.65rem 0.9rem 0.65rem 1.75rem;
+  border: 1px solid color-mix(in srgb, var(--cockpit-bezel-brillo) 60%, var(--cockpit-bezel));
+  /* OJO: el primer intento usaba --cockpit-metal-alto/--cockpit-metal, los
+     MISMOS tonos que el fondo del propio `footer` (mismos valores exactos)
+     -> el panel quedaba camuflado, invisible contra la consola. Arrancar
+     mezclado con --cockpit-bezel (bastante mas claro) es lo que lo separa
+     visualmente y lo hace leer como una pieza aparte, atornillada encima. */
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--cockpit-bezel) 55%, var(--cockpit-metal-alto)),
+    var(--cockpit-metal-alto) 60%,
+    var(--cockpit-metal));
+  box-shadow:
+    inset 0 1px 0 var(--cockpit-bezel-brillo),
+    inset 0 -8px 14px rgba(0, 0, 0, 0.45);
+  clip-path: polygon(14% 0%, 100% 0%, 100% 100%, 14% 100%, 0% 50%);
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.5));
+}
+
+.pie-secciones-marco:last-of-type {
+  padding: 0.65rem 1.75rem 0.65rem 0.9rem;
+  clip-path: polygon(0% 0%, 86% 0%, 100% 50%, 86% 100%, 0% 100%);
+}
+
+/* Pantalla que envuelve la fila de acciones (referencia: la tira larga con
+   los botones adentro) — pill/capsula con fondo de "vidrio" encendido
+   (--instrumento-pantalla, el mismo token que ya usa el resto del sitio
+   para paneles apagados) y una barra de estado decorativa debajo (2 lineas
+   de brillo, mismo lenguaje que `.pie-placa-linea`). */
+.pie-pantalla {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+.pie-pantalla .pie-acciones {
+  padding: 0.4rem 1.1rem;
+  border: 1px solid color-mix(in srgb, var(--instrumento-teal) 35%, var(--cockpit-bezel));
+  border-radius: 999px;
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--instrumento-pantalla) 90%, #000),
+    var(--instrumento-pantalla));
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, 0.55),
+    inset 0 0 0 1px color-mix(in srgb, var(--instrumento-teal) 14%, transparent),
+    0 0 16px color-mix(in srgb, var(--instrumento-teal) 16%, transparent);
+}
+
+.pie-pantalla-estado {
+  display: flex;
+  gap: 0.5rem;
+  padding-inline: 1.4rem;
+}
+
+.pie-pantalla-estado span {
+  flex: 1 1 auto;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg,
+    transparent,
+    color-mix(in srgb, var(--instrumento-teal) 70%, transparent),
+    transparent);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--instrumento-teal) 45%, transparent);
 }
 
 /* Los laterales van APILADOS (columna), no en fila -- pedido de Sergio: se ve
@@ -999,10 +1228,17 @@ footer .tele-accion:focus-within .tele-v {
   text-shadow: 0 0 8px color-mix(in srgb, var(--instrumento-teal) 50%, transparent);
 }
 
-/* Mobile: se cae a una sola columna, apilado en el orden del DOM
-   (izquierda -> acciones -> derecha). Cada `<ul>` interno sigue el mismo
-   `@media (max-width: 40rem)` de la seccion "Mobile: las teclas del pie…"
-   mas abajo (grilla de 3 columnas, generica para cualquier `footer ul`). */
+/* Mobile: el menu duplicado (secciones a los costados) NO VA — pedido
+   explicito de Sergio ("el nav-bar duplicado no va en mobile"). La nav
+   principal ya esta en el drawer del header (boton CASE); repetirla en el
+   pie en una pantalla chica es ruido, no un acceso rapido. Se oculta
+   `.pie-secciones-marco` ENTERO (`display: none`, no solo su decoracion) —
+   queda solo la fila de acciones de siempre (contacto/compartir/creditos),
+   que si tiene sentido en cualquier ancho.
+
+   El rediseño tipo "panel de control" (remaches, placa con logo, vidrio de
+   la pantalla) tambien es SOLO DESKTOP ("esta vista es solo para
+   desktop") — se apaga aca junto con las secciones. */
 @media (max-width: 40rem) {
   .pie-consola {
     display: flex;
@@ -1010,9 +1246,29 @@ footer .tele-accion:focus-within .tele-v {
     align-items: stretch;
     gap: 0.6rem;
   }
-  .pie-consola .pie-secciones:first-of-type,
-  .pie-consola .pie-secciones:last-of-type {
-    justify-self: unset;
+
+  footer::before {
+    display: none;
+  }
+
+  .pie-placa {
+    display: none;
+  }
+
+  .pie-secciones-marco {
+    display: none;
+  }
+
+  .pie-pantalla .pie-acciones {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+
+  .pie-pantalla-estado {
+    display: none;
   }
 }
 
