@@ -99,14 +99,21 @@ function buildPieSeccionesGrupo(navConfig, ids, etiqueta) {
     .filter(Boolean)
     .map(
       (item) =>
-        `        <li class="tele tele-accion tele-fina"><a href="${escapeHtml(item.href)}"><span class="led" aria-hidden="true"></span><span class="tele-v">${escapeHtml(item.label)}</span></a></li>`,
+        `          <li class="tele tele-accion tele-fina"><a href="${escapeHtml(item.href)}"><span class="led" aria-hidden="true"></span><span class="tele-v">${escapeHtml(item.label)}</span></a></li>`,
     )
     .join('\n');
-  return `<nav class="pie-secciones" aria-label="${escapeHtml(etiqueta)}">
+  // `.pie-secciones-marco`: panel angular (clip-path, css/layout.css) que
+  // ENVUELVE al <nav> — el recorte en punta va en el marco, nunca en el
+  // <nav>/<ul> real, para no arriesgar que un focus-ring o un tap target
+  // quede cortado por el clip-path. El <nav> adentro sigue siendo la unidad
+  // real de navegacion (markCurrentPage la recorre igual que antes).
+  return `<div class="pie-secciones-marco">
+    <nav class="pie-secciones" aria-label="${escapeHtml(etiqueta)}">
       <ul>
 ${items}
       </ul>
-    </nav>`;
+    </nav>
+  </div>`;
 }
 
 export function buildFooter(navConfig = NavConfig) {
@@ -123,19 +130,52 @@ export function buildFooter(navConfig = NavConfig) {
   // WhatsApp y Facebook: sin JS comparten la home; wireFooterShare() los sube a
   // la página actual. La tecla "Compartir" (Web Share API) nace oculta y solo la
   // muestra el JS si navigator.share existe.
+  //
+  // `.pie-placa`: rediseño visual (referencia: panel "ENDURANCE · CONTROL
+  // PANEL") — SOLO decoración, `aria-hidden`, no agrega informacion nueva
+  // (el nombre del sitio ya lo anuncia la marca del header). El <svg> es el
+  // MISMO cohete de `buildBotonSubir` (mismo lenguaje de icono en todo el
+  // sitio, no uno nuevo). Las `.pie-placa-linea` son lineas de brillo CSS
+  // (gradiente), no imagenes.
+  //
+  // `.pie-pantalla`: envuelve la fila de acciones en una "pantalla" con
+  // marco propio + barra de estado decorativa debajo (referencia: la tira
+  // larga con los botones adentro). `.pie-secciones-marco`: panel angular
+  // (recorte en punta, css/layout.css) que envuelve cada grupo lateral —
+  // ver el comentario en `buildPieSeccionesGrupo`.
   const waFallback = `https://wa.me/?text=${encodeURIComponent(`Interstellar — ${SITE_URL}`)}`;
   const fbFallback = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(SITE_URL)}`;
   return `<footer>
+  <div class="pie-placa" aria-hidden="true">
+    <span class="pie-placa-linea"></span>
+    <span class="pie-placa-marca">
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+        <path fill="currentColor" d="M12 2C14.6 4.6 16 8.6 16 13L8 13C8 8.6 9.4 4.6 12 2Z M8 12L4 18L8 15Z M16 12L20 18L16 15Z M10 13L12 20L14 13Z" />
+        <circle cx="12" cy="8.3" r="1.7" fill="var(--cockpit-metal)" />
+      </svg>
+      <span class="pie-placa-texto">
+        <span class="pie-placa-titulo">Interstellar</span>
+        <span class="pie-placa-subtitulo">Panel de control</span>
+      </span>
+    </span>
+    <span class="pie-placa-linea"></span>
+  </div>
   <div class="pie-consola">
     ${buildPieSeccionesGrupo(navConfig, PIE_IZQUIERDA_IDS, 'Secciones (izquierda)')}
-    <ul class="pie-acciones">
-      <li class="tele tele-accion"><a href="contacto.html" aria-label="Formulario de contacto"><span class="led" aria-hidden="true"></span><span class="tele-v">Contacto</span></a></li>
-      <li class="tele tele-accion"><a href="${escapeHtml(waFallback)}" data-share="whatsapp" target="_blank" rel="noopener" aria-label="Compartir el sitio en WhatsApp"><span class="led" aria-hidden="true"></span><span class="tele-v">WhatsApp</span></a></li>
-      <li class="tele tele-accion"><a href="${escapeHtml(fbFallback)}" data-share="facebook" target="_blank" rel="noopener" aria-label="Compartir el sitio en Facebook"><span class="led" aria-hidden="true"></span><span class="tele-v">Facebook</span></a></li>
-      <li class="tele tele-accion" data-share-nativo hidden><button type="button" data-share="nativo" aria-label="Compartir el sitio"><span class="led led-ambar" aria-hidden="true"></span><span class="tele-v">Compartir</span></button></li>
-      <li class="tele tele-accion"><a href="creditos.html" aria-label="Créditos y fuentes"><span class="led" aria-hidden="true"></span><span class="tele-v">Créditos</span></a></li>
-      <li class="tele tele-accion"><a href="${escapeHtml(REPO_URL)}" aria-label="Repositorio en GitHub"><span class="led led-alerta" aria-hidden="true"></span><span class="tele-v">GitHub</span></a></li>
-    </ul>
+    <div class="pie-pantalla">
+      <ul class="pie-acciones">
+        <li class="tele tele-accion"><a href="contacto.html" aria-label="Formulario de contacto"><span class="led" aria-hidden="true"></span><span class="tele-v">Contacto</span></a></li>
+        <li class="tele tele-accion"><a href="${escapeHtml(waFallback)}" data-share="whatsapp" target="_blank" rel="noopener" aria-label="Compartir el sitio en WhatsApp"><span class="led" aria-hidden="true"></span><span class="tele-v">WhatsApp</span></a></li>
+        <li class="tele tele-accion"><a href="${escapeHtml(fbFallback)}" data-share="facebook" target="_blank" rel="noopener" aria-label="Compartir el sitio en Facebook"><span class="led" aria-hidden="true"></span><span class="tele-v">Facebook</span></a></li>
+        <li class="tele tele-accion" data-share-nativo hidden><button type="button" data-share="nativo" aria-label="Compartir el sitio"><span class="led led-ambar" aria-hidden="true"></span><span class="tele-v">Compartir</span></button></li>
+        <li class="tele tele-accion"><a href="creditos.html" aria-label="Créditos y fuentes"><span class="led" aria-hidden="true"></span><span class="tele-v">Créditos</span></a></li>
+        <li class="tele tele-accion"><a href="${escapeHtml(REPO_URL)}" aria-label="Repositorio en GitHub"><span class="led led-alerta" aria-hidden="true"></span><span class="tele-v">GitHub</span></a></li>
+      </ul>
+      <div class="pie-pantalla-estado" aria-hidden="true">
+        <span></span>
+        <span></span>
+      </div>
+    </div>
     ${buildPieSeccionesGrupo(navConfig, PIE_DERECHA_IDS, 'Secciones (derecha)')}
   </div>
 </footer>`;
@@ -585,8 +625,8 @@ function initBotonSubir(boton) {
   actualizar(); // estado inicial, por si la pagina se carga ya scrolleada (anchor #hash)
 }
 
-// El menu duplicado del pie (`.pie-secciones`, izquierda y derecha) solo
-// aporta si hay que SCROLLEAR para llegar al pie -- si la pagina entra
+// El menu duplicado del pie (`.pie-secciones-marco`, izquierda y derecha)
+// solo aporta si hay que SCROLLEAR para llegar al pie -- si la pagina entra
 // entera en la pantalla (la home, con su hero "sin scroll" a proposito; o
 // cualquier otra pagina corta), el header ya esta a la vista todo el tiempo
 // y duplicarlo abajo es ruido. No se puede fijar por pagina en el HTML: la
@@ -596,18 +636,25 @@ function initBotonSubir(boton) {
 // la altura despues del DOMContentLoaded). El bloque central de acciones
 // (contacto/compartir/creditos) NO se toca: ese es util siempre, con o sin
 // scroll.
+//
+// Se oculta el `.pie-secciones-marco` COMPLETO, no solo el <nav> de adentro:
+// el marco es el panel angular con fondo/borde/recorte propio (rediseño
+// visual) — ocultar solo el <nav> dejaba el marco vacio pero visible, un
+// fragmento de panel sin contenido flotando en el pie (bug real, agarrado
+// en verificacion visual: la home mostraba dos "muñones" de panel a los
+// costados de la pantalla central).
 function initPieSeccionesCondicional() {
   if (typeof document.querySelectorAll !== 'function' || typeof window === 'undefined') {
     return;
   }
-  const grupos = document.querySelectorAll('footer nav.pie-secciones');
+  const grupos = document.querySelectorAll('footer .pie-secciones-marco');
   if (grupos.length === 0) {
     return;
   }
   const actualizar = () => {
     const hayScroll = document.documentElement.scrollHeight > window.innerHeight + 1; // +1: margen de redondeo
-    grupos.forEach((nav) => {
-      nav.hidden = !hayScroll;
+    grupos.forEach((marco) => {
+      marco.hidden = !hayScroll;
     });
   };
   actualizar();
