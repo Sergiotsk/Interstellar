@@ -1092,7 +1092,7 @@ footer .tele-accion:focus-within .tele-v {
      center` (regla generica `footer ul`, mas arriba). */
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 0.5rem 1.5rem;
+  gap: 0.5rem 1.25rem;
   width: min(100% - 2rem, 88rem);
   margin: 0 auto;
 }
@@ -1117,6 +1117,49 @@ footer .tele-accion:focus-within .tele-v {
 .pie-consola .pie-secciones-marco:last-of-type {
   grid-column: 3;
   justify-self: end;
+}
+
+/* `.pie-scope` y `.pie-telemetria` son la "banda completa" (referencia:
+   Endurance Control Panel de lado a lado). Solo aparecen en pantallas MUY
+   anchas (>=90rem / 1440px): a ese ancho la tira central de 6 acciones entra
+   en UNA sola fila (lo que define el look) con los dos displays flanqueando.
+   Mas abajo, meterlos aprieta la tira y la parte en dos filas, asi que se cae
+   al tablero de 3 zonas de siempre (brackets + acciones), sin los displays. */
+.pie-scope,
+.pie-telemetria {
+  display: none;
+  /* Las dos pantallas laterales son piezas GEMELAS: mismo ancho y misma
+     altura (el contenido de cada una difiere, pero la caja no) — igual que en
+     la referencia, donde los dos displays a los costados son del mismo
+     tamaño. La altura fija + box-sizing garantiza el empate pase lo que pase
+     con el contenido interno. */
+  box-sizing: border-box;
+  width: 8.5rem;
+  height: 7.25rem;
+}
+
+@media (min-width: 90rem) {
+  .pie-consola {
+    grid-template-columns: auto auto 1fr auto auto;
+  }
+
+  .pie-consola .pie-scope {
+    display: flex;
+    grid-column: 2;
+  }
+
+  .pie-consola .pie-pantalla {
+    grid-column: 3;
+  }
+
+  .pie-consola .pie-telemetria {
+    display: flex;
+    grid-column: 4;
+  }
+
+  .pie-consola .pie-secciones-marco:last-of-type {
+    grid-column: 5;
+  }
 }
 
 /* Panel angular que ENVUELVE cada grupo lateral (referencia: los paneles en
@@ -1194,6 +1237,121 @@ footer .tele-accion:focus-within .tele-v {
     color-mix(in srgb, var(--instrumento-teal) 70%, transparent),
     transparent);
   box-shadow: 0 0 6px color-mix(in srgb, var(--instrumento-teal) 45%, transparent);
+}
+
+/* `.pie-scope`: pantalla-radar a la IZQUIERDA del bloque central (referencia:
+   el scope "Gargantúa" del tablero). Puramente decorativa (aria-hidden en el
+   markup) — no aporta informacion nueva, solo densidad de instrumento para
+   que la banda se lea de lado a lado como una consola, no como una fila de
+   botones con aire a los costados. Mismo lenguaje de "vidrio encendido" que
+   `.pie-pantalla .pie-acciones` (fondo --instrumento-pantalla + halo teal). */
+.pie-scope {
+  position: relative;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0.9rem 0.7rem 0.6rem;
+  border: 1px solid color-mix(in srgb, var(--instrumento-teal) 32%, var(--cockpit-bezel));
+  border-radius: 6px;
+  background:
+    radial-gradient(120% 100% at 50% 0%, color-mix(in srgb, var(--instrumento-teal) 10%, transparent), transparent 70%),
+    linear-gradient(180deg, color-mix(in srgb, var(--instrumento-pantalla) 92%, #000), var(--instrumento-pantalla));
+  box-shadow:
+    inset 0 2px 8px rgba(0, 0, 0, 0.6),
+    inset 0 0 0 1px color-mix(in srgb, var(--instrumento-teal) 12%, transparent),
+    0 0 16px color-mix(in srgb, var(--instrumento-teal) 14%, transparent);
+}
+
+.pie-scope-label {
+  position: absolute;
+  top: 0.35rem;
+  left: 0.55rem;
+  font-family: var(--font-instrumento);
+  font-size: 0.5rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--instrumento-teal) 82%, #fff);
+  text-shadow: 0 0 6px color-mix(in srgb, var(--instrumento-teal) 55%, transparent);
+}
+
+.pie-scope-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: 0.35rem;
+}
+
+.pie-scope-orbita {
+  fill: none;
+  stroke: color-mix(in srgb, var(--instrumento-teal) 55%, transparent);
+  stroke-width: 1;
+}
+
+.pie-scope-orbita--2 {
+  stroke: color-mix(in srgb, var(--instrumento-teal) 30%, transparent);
+  stroke-dasharray: 3 3;
+}
+
+.pie-scope-planeta {
+  fill: color-mix(in srgb, var(--instrumento-teal) 45%, var(--instrumento-pantalla));
+  stroke: color-mix(in srgb, var(--instrumento-teal) 85%, #fff);
+  stroke-width: 1;
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--instrumento-teal) 60%, transparent));
+}
+
+.pie-scope-luna {
+  fill: color-mix(in srgb, var(--instrumento-teal) 85%, #fff);
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--instrumento-teal) 70%, transparent));
+}
+
+.pie-scope-barrido {
+  stroke: color-mix(in srgb, var(--instrumento-teal) 45%, transparent);
+  stroke-width: 1;
+  stroke-dasharray: 2 2;
+}
+
+.pie-scope-tags {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.4rem;
+  font-family: var(--font-instrumento);
+  font-size: 0.42rem;
+  letter-spacing: 0.1em;
+  color: color-mix(in srgb, var(--color-texto-atenuado) 80%, transparent);
+}
+
+/* `.pie-telemetria`: readout de estado a la DERECHA del bloque central
+   (referencia: las lineas "GRAVIMETRIC READINGS: STABLE / ROTATIONAL SYNC").
+   Decorativa (aria-hidden). Monospace del sistema de instrumentos; una linea
+   en rojo-alerta como en la referencia (uso puntual del acento --led-alerta,
+   igual criterio que el LED de GitHub). */
+.pie-telemetria {
+  /* display lo controla el par base (`display:none`) + la banda >=90rem
+     (`display:flex`); aca solo va la maqueta interna. */
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.18rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid color-mix(in srgb, var(--instrumento-teal) 26%, var(--cockpit-bezel));
+  border-radius: 6px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--instrumento-pantalla) 92%, #000), var(--instrumento-pantalla));
+  box-shadow:
+    inset 0 2px 8px rgba(0, 0, 0, 0.55),
+    inset 0 0 0 1px color-mix(in srgb, var(--instrumento-teal) 10%, transparent);
+  text-align: left;
+}
+
+.pie-telemetria-linea {
+  font-family: var(--font-instrumento);
+  font-size: 0.5rem;
+  letter-spacing: 0.06em;
+  color: color-mix(in srgb, var(--instrumento-teal) 70%, var(--color-texto-atenuado));
+  text-shadow: 0 0 5px color-mix(in srgb, var(--instrumento-teal) 25%, transparent);
+  white-space: nowrap;
+}
+
+.pie-telemetria-linea--alerta {
+  color: color-mix(in srgb, var(--led-alerta) 85%, #fff);
+  text-shadow: 0 0 6px color-mix(in srgb, var(--led-alerta) 45%, transparent);
 }
 
 /* Los laterales van APILADOS (columna), no en fila -- pedido de Sergio: se ve

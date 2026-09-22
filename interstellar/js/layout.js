@@ -154,14 +154,25 @@ export function buildFooter(navConfig = NavConfig) {
         <circle cx="12" cy="8.3" r="1.7" fill="var(--cockpit-metal)" />
       </svg>
       <span class="pie-placa-texto">
-        <span class="pie-placa-titulo">Interstellar</span>
-        <span class="pie-placa-subtitulo">Panel de control</span>
+        <span class="pie-placa-titulo">Endurance</span>
+        <span class="pie-placa-subtitulo">Control Panel</span>
       </span>
     </span>
     <span class="pie-placa-linea"></span>
   </div>
   <div class="pie-consola">
     ${buildPieSeccionesGrupo(navConfig, PIE_IZQUIERDA_IDS, 'Secciones (izquierda)')}
+    <div class="pie-scope" aria-hidden="true">
+      <span class="pie-scope-label">Gargantúa</span>
+      <svg class="pie-scope-svg" viewBox="0 0 120 74" preserveAspectRatio="xMidYMid meet" focusable="false">
+        <ellipse class="pie-scope-orbita" cx="60" cy="38" rx="46" ry="17" />
+        <ellipse class="pie-scope-orbita pie-scope-orbita--2" cx="60" cy="38" rx="30" ry="10" />
+        <circle class="pie-scope-planeta" cx="60" cy="38" r="9" />
+        <circle class="pie-scope-luna" cx="106" cy="38" r="2.4" />
+        <line class="pie-scope-barrido" x1="60" y1="38" x2="112" y2="24" />
+      </svg>
+      <span class="pie-scope-tags"><span>RECALIB</span><span>PARSE</span><span>SYNC</span></span>
+    </div>
     <div class="pie-pantalla">
       <ul class="pie-acciones">
         <li class="tele tele-accion"><a href="contacto.html" aria-label="Formulario de contacto"><span class="led" aria-hidden="true"></span><span class="tele-v">Contacto</span></a></li>
@@ -175,6 +186,13 @@ export function buildFooter(navConfig = NavConfig) {
         <span></span>
         <span></span>
       </div>
+    </div>
+    <div class="pie-telemetria" aria-hidden="true">
+      <span class="pie-telemetria-linea">GRAVIMETRIC · STABLE</span>
+      <span class="pie-telemetria-linea">ROTATIONAL SYNC · 98%</span>
+      <span class="pie-telemetria-linea">THERMAL · NOMINAL</span>
+      <span class="pie-telemetria-linea pie-telemetria-linea--alerta">HULL STRESS · 04%</span>
+      <span class="pie-telemetria-linea">UPLINK · ONLINE</span>
     </div>
     ${buildPieSeccionesGrupo(navConfig, PIE_DERECHA_IDS, 'Secciones (derecha)')}
   </div>
