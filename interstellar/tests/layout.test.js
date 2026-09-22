@@ -59,7 +59,8 @@ describe('js/layout.js — contrato layout-injection.md', () => {
   test('el header incluye la marca (Interstellar + NAV · ENDURANCE) como enlace al inicio', () => {
     // Antes era un pseudo-elemento (header::after); ahora es un <a> real para
     // que sea navegable y accesible. Dos lineas: la marca "Interstellar" arriba
-    // y el rotulo de instrumento "NAV · ENDURANCE" (con sus LED) abajo.
+    // y el rotulo de instrumento "NAV · ENDURANCE" (con sus LED) abajo —
+    // "RANGER" paso a "ENDURANCE" (commit 65c4e59, nombre de la nave).
     assert.match(header, /<a class="cockpit-brand" href="index\.html"[^>]*aria-label="[^"]+"/);
     assert.ok(header.includes('<span class="cockpit-marca">Interstellar</span>'));
     assert.ok(header.includes('>NAV<'));

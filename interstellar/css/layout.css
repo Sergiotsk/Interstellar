@@ -1435,9 +1435,12 @@ footer .tele-accion:focus-within .tele-v {
   align-items: stretch;
 }
 
+/* Pedido de Sergio: que las teclas de los costados (secciones) igualen el
+   tamaño de las del medio (acciones) — mismo padding que `footer
+   .tele-accion > a` (regla generica, mas arriba), en vez del padding/
+   font-size reducido de "botones finitos" de la primera pasada. */
 .pie-secciones .tele-fina > a {
-  padding: 0.3rem 0.6rem;
-  font-size: 0.72rem;
+  padding: 0.45rem 0.8rem;
 }
 
 /* Seccion actual: mismo tratamiento que `header nav > ul > li > a[aria-current='page']`
