@@ -424,6 +424,67 @@ header nav ul ul a {
    las transiciones de las barras y del ▼ se anulan.
    --------------------------------------------------------------------------- */
 
+/* Interruptor de musica de fondo (header). Mismo lenguaje que `.nav-toggle`:
+   sin caja, target tactil pleno (WCAG 2.5.8), gunmetal en reposo -> teal
+   encendido. `position/z-index` para pintar sobre `header::before` (backdrop).
+   Estado ON (`.musica-toggle--on`, lo pone js/layout.js): teal con glow + un
+   pulso sutil mientras suena. */
+.musica-toggle {
+  /* Feature SOLO DESKTOP: oculta por defecto; la muestra la barra de nav de
+     escritorio (>=60rem, mas abajo). El JS tambien se abstiene en mobile. */
+  display: none;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  /* Va al OTRO lado de la navbar: `order` lo manda despues del <nav> (a la
+     derecha del menu). El header es flex justify-end -> queda pegado al filo
+     derecho. */
+  order: 1;
+  margin-left: 0.25rem;
+  color: var(--color-case);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  transition: color 0.15s ease;
+}
+
+@media (min-width: 60rem) {
+  .musica-toggle {
+    display: inline-flex;
+  }
+}
+
+.musica-toggle:hover {
+  color: var(--instrumento-teal);
+}
+
+.musica-toggle .musica-icono {
+  display: inline-flex;
+}
+
+.musica-toggle--on {
+  color: color-mix(in srgb, var(--instrumento-teal) 90%, #fff);
+}
+
+.musica-toggle--on .musica-icono svg {
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--instrumento-teal) 60%, transparent));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .musica-toggle--on .musica-icono {
+    animation: musica-pulso 2s ease-in-out infinite;
+  }
+}
+
+@keyframes musica-pulso {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
 .nav-toggle {
   display: inline-flex;
   align-items: center;

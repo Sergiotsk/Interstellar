@@ -63,6 +63,7 @@ export function buildHeader(navConfig = NavConfig) {
   // id="nav-principal" (target del aria-controls y hook del CSS del drawer).
   return `<header>
   <a class="cockpit-brand" href="index.html" aria-label="Interstellar — ir al inicio"><span class="cockpit-marca">Interstellar</span><span class="cockpit-brand-linea"><span>NAV</span><span class="cockpit-brand-ext"> · ENDURANCE</span></span></a>
+  <button type="button" class="musica-toggle" aria-pressed="false" aria-label="Música de fondo: activar"><span class="musica-icono" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V6l10-2v10" /><circle cx="6" cy="18" r="3" fill="currentColor" stroke="none" /><circle cx="16" cy="16" r="3" fill="currentColor" stroke="none" /></svg></span></button>
   <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="nav-principal" aria-label="Abrir menú de navegación"><span class="case-icon" aria-hidden="true"><span></span><span></span><span></span><span></span></span></button>
   <nav id="nav-principal" aria-label="Navegación principal">
     <ul>
@@ -684,6 +685,147 @@ function initPieSeccionesCondicional() {
   window.addEventListener('load', actualizar);
 }
 
+// Musica de fondo con interruptor en el header. Best-effort en un MPA: la
+// preferencia (on/off) y el segundo actual viven en sessionStorage, asi la
+// musica REANUDA al cambiar de pagina (con el microcorte inevitable de una
+// recarga completa; la version gapless con una lib de transiciones tipo swup
+// quedo en backlog). NUNCA suena en trailer.html (tiene su propio video): ahi
+// se silencia sola, conservando la preferencia para reanudar al salir. Si el
+// navegador bloquea el play() tras navegar (politica de autoplay), se reintenta
+// en la primera interaccion del usuario.
+function initMusicaFondo() {
+  if (typeof document === 'undefined' || typeof window === 'undefined') {
+    return;
+  }
+  const boton = document.querySelector('.musica-toggle');
+  if (!boton) {
+    return;
+  }
+  // Feature SOLO DESKTOP: en mobile el interruptor esta oculto (CSS), asi que
+  // aca no se cablea ni suena nada (evita audio sin control visible).
+  if (typeof window.matchMedia === 'function' && !window.matchMedia('(min-width: 60rem)').matches) {
+    return;
+  }
+
+  const CLAVE = 'interstellar:musica'; // 'on' | 'off'
+  const CLAVE_T = 'interstellar:musica-t'; // segundo actual
+  const SRC = 'assets/audio/stay-ambient.m4a';
+  const VOL = 0.32;
+  const archivo = (window.location.pathname.split('/').pop() || 'index.html').toLowerCase();
+  const esTrailer = archivo === 'trailer.html';
+
+  const lee = (k) => {
+    try {
+      return sessionStorage.getItem(k);
+    } catch (e) {
+      return null;
+    }
+  };
+  const guarda = (k, v) => {
+    try {
+      sessionStorage.setItem(k, v);
+    } catch (e) {
+      /* sessionStorage no disponible (modo privado): la musica no reanuda, pero no rompe */
+    }
+  };
+
+  let audio = null;
+  const crearAudio = () => {
+    if (audio) {
+      return audio;
+    }
+    audio = new Audio(SRC);
+    audio.loop = true;
+    audio.preload = 'none';
+    audio.volume = VOL;
+    // En el DOM (no detached): mas robusto ante el GC y consistente entre
+    // navegadores. Es solo audio, no aporta nada visual.
+    document.body.appendChild(audio);
+    const t = parseFloat(lee(CLAVE_T) || '0');
+    if (t > 0) {
+      audio.addEventListener(
+        'loadedmetadata',
+        () => {
+          try {
+            if (t < audio.duration) {
+              audio.currentTime = t;
+            }
+          } catch (e) {
+            /* algunos navegadores rechazan currentTime antes de bufferear: se ignora */
+          }
+        },
+        { once: true },
+      );
+    }
+    audio.addEventListener('timeupdate', () => {
+      guarda(CLAVE_T, String(Math.floor(audio.currentTime)));
+    });
+    return audio;
+  };
+
+  const reflejar = (on) => {
+    boton.setAttribute('aria-pressed', on ? 'true' : 'false');
+    boton.setAttribute('aria-label', on ? 'Música de fondo: silenciar' : 'Música de fondo: activar');
+    boton.classList.toggle('musica-toggle--on', on);
+  };
+
+  const encender = () => {
+    guarda(CLAVE, 'on');
+    reflejar(true);
+    if (esTrailer) {
+      return; // en el trailer no suena: su video manda
+    }
+    const a = crearAudio();
+    const p = a.play();
+    if (p && typeof p.catch === 'function') {
+      p.catch(() => {
+        const reintento = () => a.play().catch(() => {});
+        window.addEventListener('pointerdown', reintento, { once: true });
+        window.addEventListener('keydown', reintento, { once: true });
+      });
+    }
+  };
+
+  const apagar = () => {
+    guarda(CLAVE, 'off');
+    reflejar(false);
+    if (audio) {
+      try {
+        guarda(CLAVE_T, String(Math.floor(audio.currentTime)));
+        audio.pause();
+      } catch (e) {
+        /* noop */
+      }
+    }
+  };
+
+  boton.addEventListener('click', () => {
+    if (boton.getAttribute('aria-pressed') === 'true') {
+      apagar();
+    } else {
+      encender();
+    }
+  });
+
+  // Antes de navegar: fijar el punto para reanudar en la proxima pagina.
+  window.addEventListener('pagehide', () => {
+    if (audio) {
+      guarda(CLAVE_T, String(Math.floor(audio.currentTime)));
+    }
+  });
+
+  // Estado inicial segun la preferencia guardada.
+  if (lee(CLAVE) === 'on') {
+    if (esTrailer) {
+      reflejar(true); // preferencia ON, pero muteada aca; reanuda al salir del trailer
+    } else {
+      encender();
+    }
+  } else {
+    reflejar(false);
+  }
+}
+
 // Indicador de seccion actual (FR: descubribilidad de la nav). Marca con
 // `aria-current="page"` el enlace de NIVEL SUPERIOR cuyo destino es la pagina en
 // curso; el CSS lo resalta (LED fijo + acento) tanto en la barra de escritorio
@@ -744,6 +886,7 @@ export function init(navConfig = NavConfig) {
   initHeroVideo();
   initBotonSubir(document.body.querySelector('.boton-subir'));
   initPieSeccionesCondicional();
+  initMusicaFondo();
 }
 
 if (typeof document !== 'undefined') {

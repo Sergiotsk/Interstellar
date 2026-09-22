@@ -71,6 +71,15 @@ describe('js/layout.js — contrato layout-injection.md', () => {
     assert.ok(header.indexOf('class="cockpit-brand"') < header.indexOf('class="nav-toggle"'));
   });
 
+  test('el header incluye el interruptor de música de fondo (button aria-pressed, fuera del nav)', () => {
+    // Control global de la banda: prende/apaga la musica de fondo. Nace en OFF
+    // (aria-pressed="false"); js/layout.js lo cablea con sessionStorage. Va
+    // ANTES del <nav> (fuera del drawer), como el toggle de nav.
+    assert.match(header, /<button type="button" class="musica-toggle" aria-pressed="false"/);
+    assert.ok(header.includes('aria-label="Música de fondo: activar"'));
+    assert.ok(header.indexOf('class="musica-toggle"') < header.indexOf('<nav'));
+  });
+
   test('hasChildren: true solo en los 4 ejes (FR-003)', () => {
     const axes = NavConfig.items.filter((item) => item.hasChildren);
     assert.equal(axes.length, 4);
@@ -95,8 +104,9 @@ describe('js/layout.js — contrato layout-injection.md', () => {
 
   test('cada eje renderiza un <button> de disclosure, un <ul> anidado y sus hijos', () => {
     const axes = NavConfig.items.filter((item) => item.hasChildren);
-    // En el header hay `axes.length` disclosure de submenu + 1 toggle (T030).
-    assert.equal(countMatches(header, /<button\b/g), axes.length + 1);
+    // En el header hay `axes.length` disclosure de submenu + 2 controles: el
+    // toggle de nav (T030) y el interruptor de musica de fondo.
+    assert.equal(countMatches(header, /<button\b/g), axes.length + 2);
     assert.equal(countMatches(header, /<ul\b/g), 1 + axes.length);
     for (const axis of axes) {
       assert.match(
