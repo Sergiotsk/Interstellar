@@ -56,15 +56,15 @@ describe('js/layout.js — contrato layout-injection.md', () => {
     assert.ok(toggleIdx < navIdx, 'el toggle va antes del <nav>');
   });
 
-  test('el header incluye la marca (Interstellar + NAV · RANGER) como enlace al inicio', () => {
+  test('el header incluye la marca (Interstellar + NAV · ENDURANCE) como enlace al inicio', () => {
     // Antes era un pseudo-elemento (header::after); ahora es un <a> real para
     // que sea navegable y accesible. Dos lineas: la marca "Interstellar" arriba
-    // y el rotulo de instrumento "NAV · RANGER" (con sus LED) abajo.
+    // y el rotulo de instrumento "NAV · ENDURANCE" (con sus LED) abajo.
     assert.match(header, /<a class="cockpit-brand" href="index\.html"[^>]*aria-label="[^"]+"/);
     assert.ok(header.includes('<span class="cockpit-marca">Interstellar</span>'));
     assert.ok(header.includes('>NAV<'));
-    assert.ok(header.includes('RANGER'));
-    // La marca "Interstellar" va antes de la linea NAV · RANGER.
+    assert.ok(header.includes('ENDURANCE'));
+    // La marca "Interstellar" va antes de la linea NAV · ENDURANCE.
     assert.ok(header.indexOf('cockpit-marca') < header.indexOf('cockpit-brand-linea'));
     // Va antes del toggle (extremo izquierdo de la banda).
     assert.ok(header.indexOf('class="cockpit-brand"') < header.indexOf('class="nav-toggle"'));
