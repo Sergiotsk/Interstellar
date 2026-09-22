@@ -1139,25 +1139,19 @@ footer .tele-accion:focus-within .tele-v {
   justify-self: end;
 }
 
-/* `.pie-pantallas`: las dos pantallas (scope + telemetria) van JUNTAS y
-   CENTRADAS en la columna del medio, entre el lockup "Endurance / Control
-   Panel" y la tira de acciones (pedido de Sergio). Al estar apiladas en el
-   centro, ya no compiten por el ancho con la tira -> no hace falta la banda
-   de >=90rem ni ocultarlas: el bloque central (mas ancho = la tira) manda, y
-   las pantallas quedan comodas encima. */
+/* `.pie-pantallas`: las dos pantallas (scope + telemetria) + perillas van
+   JUNTAS y CENTRADAS en la columna del medio, entre el lockup y la tira de
+   acciones. OCULTAS POR DEFECTO en TODO el sitio (display:none). El markup se
+   mantiene (aria-hidden, decorativo) y queda RESERVADO para cuando se encare
+   la seccion Viaje: ahi se las habilitara (`display: flex`) y se animara su
+   despliegue. Ver backlog. Las props de layout viven aca para que apliquen
+   sin cambios cuando se muestren. */
 .pie-pantallas {
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
   margin-bottom: 0.5rem;
-}
-
-/* Ocultamiento condicional (home / paginas sin scroll, via JS
-   `initPieSeccionesCondicional`): el atributo `hidden` por si solo no le gana
-   al `display:flex` de arriba, asi que se fuerza aca. */
-.pie-pantallas[hidden] {
-  display: none;
 }
 
 /* `.pie-perillas`: columna de 2 perillas decorativas a cada lado del par de
