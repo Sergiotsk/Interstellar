@@ -97,7 +97,8 @@ construye solo con:
   imaginado y no cualquier cosa.
 - **Librerías de propósito acotado** (autorización de la cátedra, 2026-09-03),
   usadas **desde el JavaScript propio** para lo que la plataforma no cubre bien:
-  animación, render WebGL/Canvas, motor de juego 2D, audio, partículas. Ejemplos:
+  animación, render WebGL/Canvas, motor de juego 2D, audio, partículas,
+  transiciones de página. Ejemplos:
   **GSAP/ScrollTrigger**, three.js, PixiJS, Phaser, Howler, Lottie, tsParticles.
   Toda feature que sume una librería justifica en su spec: qué problema resuelve,
   por qué no se hace con plataforma nativa, su peso en KB gzip y su impacto en
@@ -147,7 +148,7 @@ contenido narrativo, el **teal `#4fd0e0`** para la capa de interfaz de nave
     js/vendor/           → librerías vendorizadas (<lib>@<version>/)
     assets/img/          → imágenes que se sirven (rutas relativas)
     assets/fonts/        → tipografías self-hosted
-    tools/               → scripts de mantenimiento (Node ESM, corren local)
+    tools/               → scripts de mantenimiento (Node ESM, corren local; p. ej. sharp para optimizar imágenes)
     tests/               → node:test — lógica JS con TDD estricto
     specs/               → spec-driven development, una carpeta por feature
     .specify/memory/constitution.md   → los principios firmes del proyecto
@@ -159,47 +160,12 @@ contenido narrativo, el **teal `#4fd0e0`** para la capa de interfaz de nave
 > El sitio vive en `interstellar/`, no en la raíz. El workflow publica el
 > contenido estático de esa carpeta tal cual.
 
----
-
-## Correr el proyecto localmente
-
-Es un sitio estático: **no hay build**. Alcanza con servir `interstellar/` con
-cualquier servidor estático.
-
-```bash
-cd interstellar
-python -m http.server 8000
-# o: pnpm dlx serve .
-```
-
-Y abrir <http://localhost:8000>. Servir por HTTP (no abrir los `.html` con
-`file://`): los ES Modules y las rutas relativas lo necesitan.
-
-### Tests
-
-La **lógica JavaScript** (helper de layout, estado de submenús, formulario de
-contacto, pipeline de imágenes) se desarrolla con **TDD estricto** y corre con el
-runner nativo de Node (≥ 20):
-
-```bash
-cd interstellar
-pnpm test
-```
-
-La capa presentacional (HTML, CSS, animaciones visuales) no se testea con
-framework: se valida contra los criterios de aceptación de la constitución.
-
-> El gestor de paquetes es **pnpm** (fijado en `package.json` →
-> `packageManager`). El lockfile es `pnpm-lock.yaml`. `pnpm test` no instala nada
-> —solo corre `node --test`—, así que no necesitás `pnpm install` para los tests.
-
-### Optimizar imágenes
-
-```bash
-cd interstellar
-pnpm install         # trae sharp (devDependency de tooling)
-pnpm optimize
-```
+La lógica JavaScript se desarrolla con **TDD estricto** sobre el runner nativo
+de Node (`node:test`, ≥ 20): `tests/` cubre layout, submenús, contacto, galería,
+créditos, filmstrip y el pipeline de imágenes; el gestor queda fijado en
+`package.json` (`packageManager: pnpm`). Los resultados se commitean y no
+participan del runtime. La capa presentacional (HTML, CSS, animaciones) se valida
+contra los criterios de aceptación de la constitución.
 
 ---
 
@@ -226,3 +192,7 @@ Pendiente: los **minijuegos** (la coronación, cada uno con su spec) y la pieza 
 ambiciosa —la **animación completa del viaje de la Endurance**—, que se encara
 como sub-proyecto aparte con su propia spec. Cuando el primer minijuego sume
 **Phaser**, se vendoriza igual que GSAP, al cerrar esa feature.
+
+También en el radar, sin decidir aún: **transiciones de página** con **swup** o
+**barba.js** — la elección se hace en su spec y se vendoriza igual que GSAP, al
+cerrar la feature.
