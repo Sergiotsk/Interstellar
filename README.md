@@ -44,7 +44,7 @@ escribirse.
 
 ---
 
-## Restricciones de la cátedra (lo que NO se negocia)
+## Restricciones de la cátedra
 
 El profesor pidió explícitamente **herramientas básicas**. El núcleo del sitio se
 construye solo con:
