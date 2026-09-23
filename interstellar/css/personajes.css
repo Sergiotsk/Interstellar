@@ -414,29 +414,28 @@ body.js-armado .riel-tira.is-armada .riel-tira-vista {
   }
 }
 
-/* -- Panel de datos: 30% de la pantalla -- */
+/* -- Panel de datos: 42% de la pantalla (proporción balanceada para evitar desborde en desktop) -- */
 .tira-datos {
   position: relative;
   background: var(--color-superficie);
 }
 
 body.js-armado .riel-tira.is-armada .tira-datos {
-  height: 30%;
+  height: 42%;
   overflow: hidden;
 }
 
 .tira-datos-item {
-  /* Vertical MAS chico que horizontal (BUGFIX): el panel mide 30% de un
-     `100vh` con `overflow: hidden` — un padding vertical tan generoso como el
-     horizontal (ambos a 4rem) se comia el alto disponible incluso en un
-     monitor 1080p a pantalla completa (30% de 1080px = 324px, y el contenido
-     con el padding/tipografia viejos necesitaba ~378px). Ver tambien el ajuste
-     dedicado para notebooks bajitas mas abajo (≤50rem de alto). */
-  padding: clamp(1rem, 3vw, 2rem) clamp(1.5rem, 5vw, 4rem);
+  /* Vertical desacoplado de vw (BUGFIX): el padding vertical usa clamp en vh
+     para no comerse el alto en pantallas anchas (1080p/4K), y justify-content
+     usa `safe center` para garantizar que ante cualquier eventual desborde el
+     título superior nunca se corte en coordenadas negativas. */
+  padding: clamp(0.75rem, 1.8vh, 1.25rem) clamp(1.5rem, 5vw, 4rem);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 0.7rem;
+  justify-content: safe center;
+  gap: 0.55rem;
   max-width: 46rem;
   margin: 0 auto;
 }
@@ -485,9 +484,9 @@ body.js-armado .riel-tira.is-armada .tira-datos-item > * {
    un LED encendido en vez de un simple borde de color. */
 .tira-datos-dato {
   position: relative;
-  margin-top: 0.5rem;
-  margin-bottom: 0.75rem;
-  padding: 0.85rem 1.15rem 0.85rem 1.65rem;
+  margin-top: 0.25rem;
+  margin-bottom: 0.4rem;
+  padding: 0.65rem 1.15rem 0.65rem 1.65rem;
   clip-path: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px);
   background: linear-gradient(135deg,
     color-mix(in srgb, var(--color-gargantua) 13%, var(--cockpit-metal-alto)),
@@ -495,14 +494,15 @@ body.js-armado .riel-tira.is-armada .tira-datos-item > * {
   border: 1px solid color-mix(in srgb, var(--color-gargantua) 40%, var(--cockpit-bezel));
   box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-gargantua) 22%, transparent);
   font-family: var(--font-texto);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
+  line-height: 1.45;
   color: var(--color-texto);
 }
 
 .tira-datos-dato::before {
   content: "";
   position: absolute;
-  top: 1.05rem;
+  top: 0.85rem;
   left: 0.6rem;
   width: 6px;
   height: 6px;
@@ -521,7 +521,7 @@ body.js-armado .riel-tira.is-armada .tira-datos-item > * {
   margin-bottom: 0.35rem;
 }
 
-/* -- Tira de fotogramas: SIEMPRE abajo, bloque grande (70%) -- */
+/* -- Tira de fotogramas: SIEMPRE abajo, bloque cinematográfico (58%) -- */
 .tira-fotogramas {
   position: relative;
   overflow-x: auto;
@@ -533,7 +533,7 @@ body.js-armado .riel-tira.is-armada .tira-datos-item > * {
 }
 
 body.js-armado .riel-tira.is-armada .tira-fotogramas {
-  height: 70%;
+  height: 58%;
   scroll-snap-type: none;
   overflow-x: hidden;
 }
@@ -660,11 +660,11 @@ body.js-armado .riel-tira.is-armada .tira-progreso {
    margen real, no al limite exacto del contenido medido. */
 @media (min-width: 48.01rem) and (max-height: 56.25rem) {
   body.js-armado .riel-tira.is-armada .tira-datos {
-    height: 40%;
+    height: 42%;
   }
 
   body.js-armado .riel-tira.is-armada .tira-fotogramas {
-    height: 60%;
+    height: 58%;
   }
 
   .tira-datos-item {
