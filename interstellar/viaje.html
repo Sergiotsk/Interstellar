@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="El viaje de la Endurance en Interstellar: del lanzamiento a Saturno, la travesía por el agujero de gusano, los mundos visitados y el regreso.">
+  <meta name="description"
+    content="El viaje de la Endurance en Interstellar: travesía por el agujero de gusano, los mundos de Miller y Mann, Gargantúa y el Tesseract. Sección en construcción.">
   <title>El Viaje | Interstellar</title>
   <link rel="preload" href="assets/fonts/exo2-latin-var.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/orbitron-latin-var.woff2" as="font" type="font/woff2" crossorigin>
@@ -12,44 +14,139 @@
   <link rel="stylesheet" href="css/variables.css">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/en-desarrollo.css">
+  <link rel="stylesheet" href="css/cielo.css">
 </head>
-<body>
+
+<body class="con-cielo">
   <main>
-    <section>
+    <!-- Encabezado de telemetría y aviso en construcción -->
+    <section class="terminal-intro">
+      <div class="telemetria-alerta">
+        <span class="led-pulso" aria-hidden="true"></span>
+        <span>Telemetría Endurance · Sección en construcción</span>
+      </div>
       <h1>El Viaje</h1>
-      <p>Esta sección narrará el recorrido de la Endurance a través del sistema de Gargantúa.</p>
     </section>
 
+    <!-- Visor de Memes de Interstellar y desarrollo (GIPHY) -->
+    <section class="meme-seccion" aria-labelledby="meme-terminal-viaje">
+      <div class="meme-consola" data-meme-viewer tabindex="0" role="region"
+        aria-label="Terminal de memes de la tripulación">
+        <div class="meme-consola-header">
+          <div class="meme-consola-marca" id="meme-terminal-viaje">
+            <span class="led" aria-hidden="true"></span>
+            <span>TARS Terminal // Porcentaje de humor al 95%</span>
+          </div>
+          <span class="meme-contador" aria-live="polite">[ 1 / 8 ]</span>
+        </div>
+
+        <div class="meme-pantalla">
+          <div class="meme-frame-container">
+            <iframe class="meme-iframe" src="https://giphy.com/embed/wViS9n0RqN2"
+              title="La pequeña maniobra de desarrollo" allowfullscreen loading="lazy"></iframe>
+          </div>
+          <div class="meme-info" aria-live="polite">
+            <p class="meme-tagline">— Esta entrega del TP nos va a costar 51 millones de tokens de IA...</p>
+          </div>
+        </div>
+
+        <div class="meme-consola-footer">
+          <div class="meme-controles">
+            <button type="button" class="meme-tecla" data-meme-nav="prev" aria-label="Meme anterior">
+              <span aria-hidden="true">«</span> Anterior
+            </button>
+            <button type="button" class="meme-tecla meme-tecla--destacada" data-meme-nav="random"
+              aria-label="Mostrar meme aleatorio">
+              <span aria-hidden="true">🎲</span> Aleatorio
+            </button>
+            <button type="button" class="meme-tecla" data-meme-nav="next" aria-label="Meme siguiente">
+              Siguiente <span aria-hidden="true">»</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ETAPAS DEL VIAJE (EN DESARROLLO — Ocultas para reactivar cuando haya contenido)
+         =========================================================================
     <section id="tierra">
-      <h2>Tierra</h2>
-      <p>Sección futura dedicada al punto de partida del viaje.</p>
+      <div class="viaje-etapa-header">
+        <h2>La Tierra y Saturno</h2>
+        <span class="viaje-etapa-id">FASE 01 // SISTEMA SOLAR</span>
+      </div>
+      <p>El punto de partida de la misión Endurance: el despegue con el propulsor pesado, dos años de hibernación hasta las inmediaciones de Saturno y la preparación para el salto interestelar.</p>
+      <div class="viaje-etapa-status">
+        <span class="led" aria-hidden="true"></span>
+        <span>ESTADO: CALIBRANDO HISTORIA Y ASSETS DE LANZAMIENTO</span>
+      </div>
     </section>
 
     <section id="agujero-de-gusano">
-      <h2>Agujero de gusano</h2>
-      <p>Sección futura dedicada al cruce del agujero de gusano.</p>
+      <div class="viaje-etapa-header">
+        <h2>Agujero de gusano</h2>
+        <span class="viaje-etapa-id">FASE 02 // DISTORSIÓN ESPACIAL</span>
+      </div>
+      <p>La anomalía gravitacional esférica cerca de Saturno que conecta con otra galaxia. Representación de la curvatura del espacio bidimensional plegado en una esfera tridimensional.</p>
+      <div class="viaje-etapa-status">
+        <span class="led" aria-hidden="true"></span>
+        <span>ESTADO: MODELANDO CURVATURA Y ENTRADA DE LA ENDURANCE</span>
+      </div>
     </section>
 
     <section id="miller">
-      <h2>Miller</h2>
-      <p>Sección futura dedicada al planeta de Miller.</p>
+      <div class="viaje-etapa-header">
+        <h2>Planeta de Miller</h2>
+        <span class="viaje-etapa-id">FASE 03 // DILATACIÓN EXTREMA</span>
+      </div>
+      <p>El mundo oceánico bajo la gravedad aplastante de Gargantúa, donde cada hora en la superficie equivale a siete años en el tiempo exterior. La carrera contra las olas colosales.</p>
+      <div class="viaje-etapa-status">
+        <span class="led" aria-hidden="true"></span>
+        <span>ESTADO: CRONOMETRANDO RELATIVIDAD Y CRÓNICA DEL DESCENSO</span>
+      </div>
     </section>
 
     <section id="mann">
-      <h2>Mann</h2>
-      <p>Sección futura dedicada al planeta de Mann.</p>
+      <div class="viaje-etapa-header">
+        <h2>Planeta de Mann</h2>
+        <span class="viaje-etapa-id">FASE 04 // EL MANTO HELADO</span>
+      </div>
+      <p>El territorio de nubes congeladas y amoníaco. El límite ético de la supervivencia humana y la fatídica secuencia de despresurización que dañó el módulo de la Endurance.</p>
+      <div class="viaje-etapa-status">
+        <span class="led" aria-hidden="true"></span>
+        <span>ESTADO: SINTETIZANDO BITÁCORAS DE LA MISIÓN LÁZARO</span>
+      </div>
     </section>
 
     <section id="gargantua">
-      <h2>Gargantúa</h2>
-      <p>Sección futura dedicada a la aproximación a Gargantúa.</p>
+      <div class="viaje-etapa-header">
+        <h2>Gargantúa</h2>
+        <span class="viaje-etapa-id">FASE 05 // ASISTENCIA GRAVITATORIA</span>
+      </div>
+      <p>La maniobra final de honda gravitacional para impulsar el módulo de Brand hacia el planeta de Edmunds, sacrificando a TARS y a Cooper en el horizonte de sucesos.</p>
+      <div class="viaje-etapa-status">
+        <span class="led" aria-hidden="true"></span>
+        <span>ESTADO: CALCULANDO VECTORES Y DISCO DE ACRECIÓN</span>
+      </div>
     </section>
 
     <section id="tesseract">
-      <h2>Tesseract</h2>
-      <p>Sección futura dedicada al destino final del Tesseract.</p>
+      <div class="viaje-etapa-header">
+        <h2>El Tesseract</h2>
+        <span class="viaje-etapa-id">FASE 06 // QUINTA DIMENSIÓN</span>
+      </div>
+      <p>La singularidad cuántica construida por los seres del futuro que traduce el tiempo en una dimensión física accesible para transmitir los datos de la gravedad a Murph.</p>
+      <div class="viaje-etapa-status">
+        <span class="led" aria-hidden="true"></span>
+        <span>ESTADO: ESTRUCTURANDO EL CIERRE DE LA TRAVESÍA</span>
+      </div>
     </section>
+    ========================================================================= -->
   </main>
+
   <script type="module" src="js/layout.js"></script>
+  <script type="module" src="js/meme-viewer.js"></script>
 </body>
+
 </html>

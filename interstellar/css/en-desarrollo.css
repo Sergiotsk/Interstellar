@@ -1,0 +1,449 @@
+/* =============================================================================
+   css/en-desarrollo.css — Pantallas en desarrollo + Terminal de Memes (GIPHY)
+   -----------------------------------------------------------------------------
+   Hoja de 5º nivel para viaje.html y minijuegos.html.
+   Integra el lenguaje de interfaz de nave (cockpit), paneles angulares,
+   telemetría de calibración y el visor interactivo de memes.
+   ========================================================================== */
+
+/* ---------------------------------------------------------------------------
+   1. Banner superior de estado de la nave
+   --------------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------------
+   1. Banner superior de estado de la nave (compacto, sin scroll)
+   --------------------------------------------------------------------------- */
+.terminal-intro {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 0.75rem 1.25rem 0.25rem;
+  text-align: center;
+}
+
+.telemetria-alerta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  background: color-mix(in srgb, var(--cockpit-metal-alto) 90%, transparent);
+  border: 1px solid var(--cockpit-bezel);
+  border-left: 3px solid var(--led-ambar);
+  clip-path: var(--recorte-tecla);
+  font-family: var(--font-instrumento);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: var(--color-texto);
+  margin-bottom: 0.4rem;
+  text-transform: uppercase;
+}
+
+.telemetria-alerta .led-pulso {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--led-ambar);
+  box-shadow: 0 0 8px var(--led-ambar);
+  animation: led-parpadeo 1.8s ease-in-out infinite;
+}
+
+@keyframes led-parpadeo {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.35;
+    transform: scale(0.85);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .telemetria-alerta .led-pulso {
+    animation: none;
+  }
+}
+
+.terminal-intro h1 {
+  font-family: var(--font-hero-titulo);
+  font-size: clamp(1.4rem, 2.5vw, 1.85rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--color-texto);
+  margin: 0 0 0.3rem;
+  text-transform: uppercase;
+}
+
+.terminal-intro p.lead {
+  font-family: var(--font-texto);
+  font-size: clamp(0.88rem, 1.2vw, 0.98rem);
+  line-height: 1.45;
+  color: var(--color-texto-atenuado);
+  max-width: 40rem;
+  margin: 0 auto;
+}
+
+/* ---------------------------------------------------------------------------
+   2. Consola de Memes TARS (Meme Viewer Compacto)
+   --------------------------------------------------------------------------- */
+.meme-seccion {
+  max-width: 44rem;
+  margin: 1.25rem auto 2.25rem;
+  padding: 0 1rem;
+}
+
+.meme-consola {
+  background: var(--cockpit-metal);
+  border: 1px solid var(--cockpit-bezel);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.55), inset 0 1px 0 var(--cockpit-bezel-brillo);
+  border-radius: 2px;
+  clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+  overflow: hidden;
+}
+
+.meme-consola-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.45rem 1rem;
+  background: var(--cockpit-metal-alto);
+  border-bottom: 1px solid var(--cockpit-bezel);
+}
+
+.meme-consola-marca {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-hero-titulo);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  color: var(--color-texto);
+  text-transform: uppercase;
+}
+
+.meme-consola-marca .led {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--instrumento-teal);
+  box-shadow: 0 0 6px var(--instrumento-teal);
+}
+
+.meme-contador {
+  font-family: var(--font-instrumento);
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  color: var(--instrumento-teal);
+  background: var(--instrumento-pantalla);
+  padding: 0.15rem 0.5rem;
+  border: 1px solid color-mix(in srgb, var(--instrumento-teal) 30%, transparent);
+}
+
+.meme-pantalla {
+  position: relative;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 0.75rem;
+  min-height: auto;
+}
+
+.meme-frame-container {
+  width: 100%;
+  max-width: 380px;
+  height: clamp(150px, 23vh, 210px);
+  aspect-ratio: 16 / 9;
+  background: var(--instrumento-pantalla);
+  border: 1px solid color-mix(in srgb, var(--instrumento-teal) 22%, transparent);
+  box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.8);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.85rem 0rem;
+}
+
+.meme-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+.meme-info {
+  margin-top: 0.5rem;
+  padding: 0.2rem 0.5rem;
+  text-align: center;
+  max-width: 38rem;
+}
+
+.meme-tagline {
+  font-family: var(--font-texto);
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: var(--color-tierra-oro);
+  margin: 0;
+}
+
+.meme-consola-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.4rem 1rem;
+  background: var(--cockpit-metal-alto);
+  border-top: 1px solid var(--cockpit-bezel);
+}
+
+.meme-controles {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.meme-tecla {
+  font-family: var(--font-nav);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-texto);
+  background: var(--cockpit-metal);
+  border: 1px solid var(--cockpit-bezel);
+  clip-path: var(--recorte-tecla);
+  padding: 0.35rem 0.85rem;
+  min-height: 36px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  transition: all 0.18s ease;
+}
+
+.meme-tecla:hover,
+.meme-tecla:focus-visible {
+  color: #fff;
+  border-color: var(--instrumento-teal);
+  background: color-mix(in srgb, var(--instrumento-teal) 15%, var(--cockpit-metal));
+}
+
+.meme-tecla--destacada {
+  border-color: color-mix(in srgb, var(--color-gargantua) 60%, transparent);
+}
+
+.meme-tecla--destacada:hover,
+.meme-tecla--destacada:focus-visible {
+  border-color: var(--color-gargantua);
+  background: color-mix(in srgb, var(--color-gargantua) 20%, var(--cockpit-metal));
+}
+
+.meme-enlace-giphy {
+  font-family: var(--font-instrumento);
+  font-size: 0.78rem;
+  color: var(--color-texto-atenuado);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: color 0.15s ease;
+}
+
+.meme-enlace-giphy:hover,
+.meme-enlace-giphy:focus-visible {
+  color: var(--instrumento-teal);
+  text-decoration: underline;
+}
+
+/* ---------------------------------------------------------------------------
+   3. Grilla de Etapas de El Viaje (viaje.html)
+   --------------------------------------------------------------------------- */
+.viaje-etapas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.viaje-etapa-card {
+  background: var(--color-superficie);
+  border: 1px solid color-mix(in srgb, var(--color-texto) 14%, transparent);
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  padding: 1.5rem;
+  position: relative;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.viaje-etapa-card:hover {
+  border-color: var(--instrumento-teal);
+  transform: translateY(-2px);
+}
+
+.viaje-etapa-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-texto) 10%, transparent);
+  padding-bottom: 0.5rem;
+}
+
+.viaje-etapa-header h2 {
+  font-family: var(--font-hero-titulo);
+  font-size: 1.25rem;
+  color: var(--color-texto);
+  margin: 0;
+}
+
+.viaje-etapa-id {
+  font-family: var(--font-instrumento);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: var(--instrumento-teal);
+}
+
+.viaje-etapa-card p {
+  font-family: var(--font-texto);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--color-texto-atenuado);
+  margin: 0 0 1rem;
+}
+
+.viaje-etapa-status {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-instrumento);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  color: var(--color-tierra-oro);
+}
+
+.viaje-etapa-status .led {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--led-ambar);
+}
+
+/* ---------------------------------------------------------------------------
+   4. Bahías de Minijuegos (minijuegos.html)
+   --------------------------------------------------------------------------- */
+.minijuegos-bahias-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.bahia-card {
+  background: var(--color-superficie);
+  border: 1px solid var(--cockpit-bezel);
+  clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+  padding: 1.6rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.bahia-card:hover {
+  border-color: var(--color-gargantua);
+  background: color-mix(in srgb, var(--color-gargantua) 4%, var(--color-superficie));
+}
+
+.bahia-badge-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-instrumento);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: var(--instrumento-teal);
+  margin-bottom: 0.75rem;
+}
+
+.bahia-card h2 {
+  font-family: var(--font-hero-titulo);
+  font-size: 1.35rem;
+  color: var(--color-texto);
+  margin: 0 0 0.5rem;
+}
+
+.bahia-tipo {
+  font-family: var(--font-instrumento);
+  font-size: 0.8rem;
+  color: var(--color-tierra-oro);
+  margin: 0 0 0.85rem;
+  display: block;
+}
+
+.bahia-card p {
+  font-family: var(--font-texto);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--color-texto-atenuado);
+  margin: 0 0 1.25rem;
+}
+
+.bahia-footer {
+  border-top: 1px dashed color-mix(in srgb, var(--color-texto) 14%, transparent);
+  padding-top: 0.85rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-instrumento);
+  font-size: 0.8rem;
+  color: var(--color-texto-atenuado);
+}
+
+.bahia-estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--led-ambar);
+}
+
+.bahia-estado .led {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--led-ambar);
+}
+
+/* ---------------------------------------------------------------------------
+   5. Responsividad
+   --------------------------------------------------------------------------- */
+@media (max-width: 48rem) {
+  .terminal-intro {
+    padding-top: 2rem;
+  }
+
+  .meme-consola-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .meme-controles {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .meme-tecla--destacada {
+    grid-column: span 2;
+  }
+
+  .meme-enlace-giphy {
+    justify-content: center;
+    margin-top: 0.25rem;
+  }
+}
