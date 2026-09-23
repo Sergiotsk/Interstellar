@@ -424,11 +424,18 @@ header nav ul ul a {
    las transiciones de las barras y del ▼ se anulan.
    --------------------------------------------------------------------------- */
 
-/* Interruptor de musica de fondo (header). Mismo lenguaje que `.nav-toggle`:
-   sin caja, target tactil pleno (WCAG 2.5.8), gunmetal en reposo -> teal
-   encendido. `position/z-index` para pintar sobre `header::before` (backdrop).
-   Estado ON (`.musica-toggle--on`, lo pone js/layout.js): teal con glow + un
-   pulso sutil mientras suena. */
+/* Interruptor de musica de fondo (header). TECLA de panel — misma caja, recorte
+   diagonal (`--recorte-tecla`) y bezel que las teclas de la nav y del pie —,
+   no un icono flotante: se lee como un instrumento mas del tablero. Target
+   tactil pleno (WCAG 2.5.8). La cara (bezel + metal + recorte) se dibuja en
+   `::before` DETRAS del botón real, con `z-index: -1` dentro del stacking
+   context del propio botón (`position: relative; z-index: 1`): el botón queda
+   sin `clip-path`, asi el anillo de foco global (`base.css`) no se recorta
+   (mismo motivo que las teclas de escritorio, `li::before`). `z-index` tambien
+   lo pinta por encima de `header::before` (backdrop). Estados:
+   reposo = metal, icono gunmetal; hover/foco = bezel teal; ON
+   (`.musica-toggle--on`, lo pone js/layout.js) = tecla "encendida" fija, teal
+   con glow + pulso sutil mientras suena. */
 .musica-toggle {
   /* Feature SOLO DESKTOP: oculta por defecto; la muestra la barra de nav de
      escritorio (>=60rem, mas abajo). El JS tambien se abstiene en mobile. */
@@ -436,8 +443,7 @@ header nav ul ul a {
   align-items: center;
   justify-content: center;
   min-width: 44px;
-  min-height: 44px;
-  padding: 0;
+  padding: 0 0.7rem;
   /* Va al OTRO lado de la navbar: `order` lo manda despues del <nav> (a la
      derecha del menu). El header es flex justify-end -> queda pegado al filo
      derecho. */
@@ -449,25 +455,78 @@ header nav ul ul a {
   cursor: pointer;
   position: relative;
   z-index: 1;
-  transition: color 0.15s ease;
+  transition: color 0.15s ease, text-shadow 0.15s ease;
 }
 
+/* En escritorio el boton es una tecla del MISMO alto que las del nav — por
+   CONSTRUCCION, no por medicion: se clona la receta exacta de la tecla plena
+   (`padding-block: 0.82rem` + `font-size: 1rem` + `line-height: 1`, que la
+   regla de la tecla fuerza igual, ver 4c-*). El icono se mide en `1em` para
+   nunca estirar la caja por encima del ritmo tipografico. El `line-height`
+   por defecto de la tecla era `normal` (depende de la fuente, no medible), por
+   eso tanto la tecla como el boton quedan fijados en `1`. La franja de
+   notebook ("4c-bis", 60-96.99rem) comprime las dos reglas juntas (mas abajo).
+   Sin `min-height`: en desktop manda la receta de la fila, no el target. */
 @media (min-width: 60rem) {
   .musica-toggle {
     display: inline-flex;
+    padding-block: 0.82rem;
+    font-size: 1rem;
+    line-height: 1;
   }
 }
 
-.musica-toggle:hover {
-  color: var(--instrumento-teal);
+/* Cara de la tecla: bezel + metal + recorte diagonal, detras del boton. */
+.musica-toggle::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border: 1px solid var(--cockpit-bezel);
+  box-shadow: inset 0 1px 0 var(--cockpit-bezel-brillo);
+  background: linear-gradient(180deg, var(--cockpit-metal-alto), var(--cockpit-metal));
+  clip-path: var(--recorte-tecla);
+  transition: border-color 0.15s ease, background 0.15s ease;
 }
 
 .musica-toggle .musica-icono {
   display: inline-flex;
 }
 
+/* El icono escala con la tipografia de la tecla (1em = font-size): se encoge
+   junto con el texto de los ejes en la franja comprimida y su caja nunca
+   estira la tecla por encima del ritmo tipografico (= la linea de texto). */
+.musica-toggle .musica-icono svg {
+  width: 1em;
+  height: 1em;
+}
+
+/* Hover / foco: la tecla se enciende como el resto del tablero. */
+.musica-toggle:hover,
+.musica-toggle:focus-visible {
+  color: var(--instrumento-teal);
+}
+
+.musica-toggle:hover::before,
+.musica-toggle:focus-visible::before {
+  border-color: var(--instrumento-teal);
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--instrumento-teal) 34%, var(--cockpit-metal)),
+    color-mix(in srgb, var(--cockpit-metal) 88%, #000));
+}
+
+/* Suena: tecla "encendida" fija — texto pleno + glow, bezel teal tenue y fondo
+   teal (misma señal que la tecla activa de la nav, sin cambiar de color). */
 .musica-toggle--on {
   color: color-mix(in srgb, var(--instrumento-teal) 90%, #fff);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--instrumento-teal) 55%, transparent);
+}
+
+.musica-toggle--on::before {
+  border-color: color-mix(in srgb, var(--instrumento-teal) 42%, transparent);
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--instrumento-teal) 20%, var(--cockpit-metal-alto)),
+    color-mix(in srgb, var(--instrumento-teal) 12%, var(--cockpit-metal)));
 }
 
 .musica-toggle--on .musica-icono svg {
@@ -685,7 +744,10 @@ header nav ul ul a {
   }
 
   /* Enlace del eje: cara de la tecla, sin caja propia. Mas alto de tecla y un
-     pelin mas de cuerpo -> boton, no link. */
+     pelin mas de cuerpo -> boton, no link. `line-height: 1` DEJA de heredar el
+     `normal` de la fuente (dependiente del tipo, no medible): fija el alto de
+     la tecla en `font-size + padding-block x 2`, la misma receta que usa
+     .musica-toggle para quedar clavada al mismo alto. */
   header nav > ul > li > a {
     position: relative;
     z-index: 1;
@@ -696,6 +758,7 @@ header nav ul ul a {
     clip-path: none;
     padding: 0.82rem 0.15rem 0.82rem 0.95rem;   /* right chico: el ▼ va casi pegado */
     font-size: 1rem;
+    line-height: 1;
   }
 
   /* Ejes sin ▼ (Inicio, Galeria, Minijuegos, Trailer): padding derecho pleno. */
@@ -830,6 +893,14 @@ header nav ul ul a {
     padding: 0.28rem 0.25rem;
     margin: 0 0.15rem 0 0;
     font-size: 0.52rem;
+  }
+
+  /* El boton de musica comprime su receta JUNTO con la tecla (mismos valores:
+     `padding-block: 0.68rem` + `font-size: 0.78rem` + line-height 1) para que
+     el alto siga siendo identico en la franja de notebook. */
+  .musica-toggle {
+    padding-block: 0.68rem;
+    font-size: 0.78rem;
   }
 
   /* Con el aviso de spoiler activo, `.spoiler-rotulo` (60rem+, ver mas abajo)
