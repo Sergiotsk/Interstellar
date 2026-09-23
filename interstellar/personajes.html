@@ -8,6 +8,9 @@
   <link rel="preload" href="assets/fonts/exo2-latin-var.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/orbitron-latin-var.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/sharetechmono-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="modulepreload" href="js/personajes.js">
+  <link rel="modulepreload" href="js/vendor/gsap@3.13.0/gsap.mjs">
+  <link rel="modulepreload" href="js/vendor/gsap@3.13.0/ScrollTrigger.mjs">
   <link rel="stylesheet" href="css/reset.css">
   <link rel="stylesheet" href="css/variables.css">
   <link rel="stylesheet" href="css/base.css">
@@ -41,7 +44,7 @@
       <li>
         <figure>
           <a href="#cooper">
-            <img src="assets/img/personajes-cooper.jpg" alt="">
+            <img src="assets/img/personajes-cooper.webp" alt="" decoding="async">
             <figcaption><strong>Cooper</strong><span>Piloto · Endurance</span></figcaption>
           </a>
         </figure>
@@ -49,7 +52,7 @@
       <li>
         <figure>
           <a href="#murph">
-            <img src="assets/img/personajes-murph.jpg" alt="">
+            <img src="assets/img/personajes-murph.webp" alt="" decoding="async">
             <figcaption><strong>Murph</strong><span>Física · NASA</span></figcaption>
           </a>
         </figure>
@@ -57,7 +60,7 @@
       <li>
         <figure>
           <a href="#brand">
-            <img src="assets/img/personajes-brand.jpg" alt="">
+            <img src="assets/img/personajes-brand.webp" alt="" decoding="async">
             <figcaption><strong>Dr. Brand</strong><span>Bióloga · Endurance</span></figcaption>
           </a>
         </figure>
@@ -65,7 +68,7 @@
       <li>
         <figure>
           <a href="#profesor-brand">
-            <img src="assets/img/personajes-profesor-brand.jpg" alt="">
+            <img src="assets/img/personajes-profesor-brand.webp" alt="" decoding="async">
             <figcaption><strong>Profesor Brand</strong><span>Director de la misión</span></figcaption>
           </a>
         </figure>
@@ -73,7 +76,7 @@
       <li>
         <figure>
           <a href="#mann">
-            <img src="assets/img/personajes-mann.jpg" alt="">
+            <img src="assets/img/personajes-mann.webp" alt="" decoding="async">
             <figcaption><strong>Mann</strong><span>Científico · Lázaro</span></figcaption>
           </a>
         </figure>
@@ -81,7 +84,7 @@
       <li>
         <figure>
           <a href="#tars-case">
-            <img src="assets/img/personajes-tars-case.jpg" alt="">
+            <img src="assets/img/personajes-tars-case.webp" alt="" decoding="async">
             <figcaption><strong>TARS &amp; CASE</strong><span>Robots · Endurance</span></figcaption>
           </a>
         </figure>
@@ -91,7 +94,7 @@
     <section id="cooper">
       <div class="personaje-hero">
         <div class="personaje-hero-img-wrap">
-          <img class="personaje-hero-img" src="assets/img/personajes-cooper.jpg" alt="">
+          <img class="personaje-hero-img" src="assets/img/personajes-cooper.webp" alt="" loading="lazy" decoding="async">
         </div>
         <div class="personaje-hero-ficha">
           <p class="personaje-hero-rol">Piloto · Endurance</p>
@@ -147,11 +150,11 @@
           </div>
           <div class="tira-fotogramas">
             <div class="tira-pista" data-pista>
-              <figure class="tira-frame"><img src="assets/img/personajes-cooper-casco.jpg" alt="Cooper con el casco de piloto, antes del despegue."></figure>
-              <figure class="tira-frame"><img src="assets/img/personajes-cooper-sudor.jpg" alt="Cooper bajo tensión durante el acoplamiento de emergencia."></figure>
-              <figure class="tira-frame"><img src="assets/img/personajes-cooper-murph-adios.jpg" alt="Cooper despidiéndose de Murph antes de partir."></figure>
-              <figure class="tira-frame"><img src="assets/img/personajes-cooper-bts-rodaje.jpg" alt="Christopher Nolan dirige a Matthew McConaughey, Mackenzie Foy y Timothée Chalamet durante el rodaje."></figure>
-              <figure class="tira-frame"><img src="assets/img/personajes-cooper-bts-preparacion.jpg" alt="Matthew McConaughey conversa con Christopher Nolan en el set de la granja, durante la preparación del rodaje."></figure>
+              <figure class="tira-frame"><img src="assets/img/personajes-cooper-casco.jpg" alt="Cooper con el casco de piloto, antes del despegue." loading="lazy" decoding="async"></figure>
+              <figure class="tira-frame"><img src="assets/img/personajes-cooper-sudor.jpg" alt="Cooper bajo tensión durante el acoplamiento de emergencia." loading="lazy" decoding="async"></figure>
+              <figure class="tira-frame"><img src="assets/img/personajes-cooper-murph-adios.jpg" alt="Cooper despidiéndose de Murph antes de partir." loading="lazy" decoding="async"></figure>
+              <figure class="tira-frame"><img src="assets/img/personajes-cooper-bts-rodaje.jpg" alt="Christopher Nolan dirige a Matthew McConaughey, Mackenzie Foy y Timothée Chalamet durante el rodaje." loading="lazy" decoding="async"></figure>
+              <figure class="tira-frame"><img src="assets/img/personajes-cooper-bts-preparacion.jpg" alt="Matthew McConaughey conversa con Christopher Nolan en el set de la granja, durante la preparación del rodaje." loading="lazy" decoding="async"></figure>
             </div>
           </div>
         </div>
@@ -182,35 +185,35 @@
           <div class="nav-visor" data-nav-visor data-intervalo="600">
             <p class="nav-visor-cabecera"><span class="nav-visor-rec">REC</span><span>COOPER · DESPEGUE</span></p>
             <div class="nav-visor-pantalla">
-              <img class="nav-visor-frame is-activo" src="assets/img/personajes-cooper-visor-01.jpg" alt="Fotogramas de Cooper bajo la fuerza G del despegue, en la cabina del Ranger.">
-              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-02.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-03.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-04.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-05.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-06.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-07.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-08.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-09.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-10.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-11.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-12.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-13.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-14.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-15.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-16.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-17.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-18.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-19.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-20.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-21.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-22.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-23.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-24.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-25.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-26.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-27.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-28.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-29.jpg" alt="">
+              <img class="nav-visor-frame is-activo" src="assets/img/personajes-cooper-visor-01.jpg" alt="Fotogramas de Cooper bajo la fuerza G del despegue, en la cabina del Ranger." loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-02.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-03.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-04.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-05.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-06.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-07.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-08.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-09.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-10.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-11.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-12.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-13.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-14.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-15.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-16.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-17.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-18.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-19.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-20.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-21.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-22.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-23.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-24.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-25.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-26.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-27.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-28.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-cooper-visor-29.jpg" alt="" loading="lazy" decoding="async">
             </div>
             <p class="nav-visor-pie"><span>LOOP ⟳</span><span data-nav-estado>29 FRM</span></p>
           </div>
@@ -223,7 +226,7 @@
     <section id="murph">
       <div class="personaje-hero">
         <div class="personaje-hero-img-wrap">
-          <img class="personaje-hero-img" src="assets/img/personajes-murph.jpg" alt="">
+          <img class="personaje-hero-img" src="assets/img/personajes-murph.webp" alt="" loading="lazy" decoding="async">
         </div>
         <div class="personaje-hero-ficha">
           <p class="personaje-hero-rol">Física · NASA</p>
@@ -279,11 +282,11 @@
           </div>
           <div class="tira-fotogramas">
             <div class="tira-pista" data-pista>
-              <figure class="tira-frame"><img src="assets/img/personajes-murph-nina.jpg" alt="Murph de niña, en su habitación."></figure>
-              <figure class="tira-frame"><img src="assets/img/personajes-murph-corre.jpg" alt="Murph corriendo, investigando por su cuenta."></figure>
-              <figure class="tira-frame"><img src="assets/img/personajes-murph-anciana.jpg" alt="Murph anciana, rodeada de su familia."></figure>
-              <figure class="tira-frame"><img src="assets/img/personajes-murph-bts-rodaje.jpg" alt="Mackenzie Foy y Matthew McConaughey conversan entre tomas, junto al maizal del rodaje."></figure>
-              <figure class="tira-frame"><img src="assets/img/personajes-murph-bts-preparacion.jpg" alt="Christopher Nolan conversa con Jessica Chastain en el set de la NASA."></figure>
+              <figure class="tira-frame"><img src="assets/img/personajes-murph-nina.jpg" alt="Murph de niña, en su habitación." loading="lazy" decoding="async"></figure>
+              <figure class="tira-frame"><img src="assets/img/personajes-murph-corre.jpg" alt="Murph corriendo, investigando por su cuenta." loading="lazy" decoding="async"></figure>
+              <figure class="tira-frame"><img src="assets/img/personajes-murph-anciana.jpg" alt="Murph anciana, rodeada de su familia." loading="lazy" decoding="async"></figure>
+              <figure class="tira-frame"><img src="assets/img/personajes-murph-bts-rodaje.jpg" alt="Mackenzie Foy y Matthew McConaughey conversan entre tomas, junto al maizal del rodaje." loading="lazy" decoding="async"></figure>
+              <figure class="tira-frame"><img src="assets/img/personajes-murph-bts-preparacion.jpg" alt="Christopher Nolan conversa con Jessica Chastain en el set de la NASA." loading="lazy" decoding="async"></figure>
             </div>
           </div>
         </div>
@@ -314,14 +317,14 @@
           <div class="nav-visor" data-nav-visor data-intervalo="600">
             <p class="nav-visor-cabecera"><span class="nav-visor-rec">REC</span><span>MURPH · DESPEDIDA</span></p>
             <div class="nav-visor-pantalla">
-              <img class="nav-visor-frame is-activo" src="assets/img/personajes-murph-visor-01.jpg" alt="Fotogramas de Murph niña, en la escena de la despedida.">
-              <img class="nav-visor-frame" src="assets/img/personajes-murph-visor-02.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-murph-visor-03.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-murph-visor-04.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-murph-visor-05.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-murph-visor-06.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-murph-visor-07.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-murph-visor-08.jpg" alt="">
+              <img class="nav-visor-frame is-activo" src="assets/img/personajes-murph-visor-01.jpg" alt="Fotogramas de Murph niña, en la escena de la despedida." loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-murph-visor-02.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-murph-visor-03.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-murph-visor-04.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-murph-visor-05.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-murph-visor-06.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-murph-visor-07.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-murph-visor-08.jpg" alt="" loading="lazy" decoding="async">
             </div>
             <p class="nav-visor-pie"><span>LOOP ⟳</span><span data-nav-estado>08 FRM</span></p>
           </div>
@@ -334,7 +337,7 @@
     <section id="brand">
       <div class="personaje-hero">
         <div class="personaje-hero-img-wrap">
-          <img class="personaje-hero-img" src="assets/img/mundos-gargantua-amelia.jpg" alt="">
+          <img class="personaje-hero-img" src="assets/img/mundos-gargantua-amelia.jpg" alt="" loading="lazy" decoding="async">
         </div>
         <div class="personaje-hero-ficha">
           <p class="personaje-hero-rol">Bióloga · Endurance</p>
@@ -390,11 +393,11 @@
           </div>
           <div class="tira-fotogramas">
             <div class="tira-pista" data-pista>
-              <figure class="tira-frame"><img src="assets/img/mundos-miller-brand-restos.jpg" alt="Amelia Brand, empapada y quebrada, sentada entre los restos de la estación de Miller."></figure>
-              <figure class="tira-frame"><img src="assets/img/mundos-mann-brand.jpg" alt="Amelia Brand agachada sobre unas cajas de suministros en el hielo del planeta de Mann."></figure>
-              <figure class="tira-frame"><img src="assets/img/mundos-gargantua-amelia.jpg" alt="Amelia Brand con el casco puesto en la cabina, la cara tensa durante el descenso a Gargantúa."></figure>
-              <figure class="tira-frame"><img src="assets/img/personajes-brand-bts-suits.jpg" alt="Matthew McConaughey y Anne Hathaway, con los trajes espaciales puestos, durante el rodaje."></figure>
-              <figure class="tira-frame"><img src="assets/img/personajes-brand-bts-agua.jpg" alt="Anne Hathaway luchando contra el agua durante la secuencia acuática filmada en Islandia."></figure>
+              <figure class="tira-frame"><img src="assets/img/mundos-miller-brand-restos.jpg" alt="Amelia Brand, empapada y quebrada, sentada entre los restos de la estación de Miller." loading="lazy" decoding="async"></figure>
+              <figure class="tira-frame"><img src="assets/img/mundos-mann-brand.jpg" alt="Amelia Brand agachada sobre unas cajas de suministros en el hielo del planeta de Mann." loading="lazy" decoding="async"></figure>
+              <figure class="tira-frame"><img src="assets/img/mundos-gargantua-amelia.jpg" alt="Amelia Brand con el casco puesto en la cabina, la cara tensa durante el descenso a Gargantúa." loading="lazy" decoding="async"></figure>
+              <figure class="tira-frame"><img src="assets/img/personajes-brand-bts-suits.jpg" alt="Matthew McConaughey y Anne Hathaway, con los trajes espaciales puestos, durante el rodaje." loading="lazy" decoding="async"></figure>
+              <figure class="tira-frame"><img src="assets/img/personajes-brand-bts-agua.jpg" alt="Anne Hathaway luchando contra el agua durante la secuencia acuática filmada en Islandia." loading="lazy" decoding="async"></figure>
             </div>
           </div>
         </div>
@@ -427,7 +430,7 @@
     <section id="profesor-brand">
       <div class="personaje-hero">
         <div class="personaje-hero-img-wrap">
-          <img class="personaje-hero-img" src="assets/img/personajes-profesor-brand-hero.jpg" alt="">
+          <img class="personaje-hero-img" src="assets/img/personajes-profesor-brand-hero.webp" alt="" loading="lazy" decoding="async">
         </div>
         <div class="personaje-hero-ficha">
           <p class="personaje-hero-rol">Director de la misión</p>
@@ -482,11 +485,11 @@
           </div>
           <div class="tira-fotogramas">
             <div class="tira-pista" data-pista>
-              <figure class="tira-frame"><img src="assets/img/personajes-profesor-brand-nasa.jpg" alt="El profesor Brand recibe a Cooper en las instalaciones secretas de la NASA."></figure>
-              <figure class="tira-frame"><img src="assets/img/personajes-profesor-brand-lab.jpg" alt="El profesor Brand le muestra a Cooper los laboratorios de la misión."></figure>
-              <figure class="tira-frame"><img src="assets/img/personajes-profesor-brand-lecho.jpg" alt="El profesor Brand en su lecho de muerte, confesándole la verdad a Murph."></figure>
-              <figure class="tira-frame"><img src="assets/img/personajes-profesor-brand-hero.jpg" alt="Primer plano del profesor Brand, con la barba que Michael Caine dejó crecer para el papel."></figure>
-              <figure class="tira-frame"><img src="assets/img/personajes-profesor-brand-silla.jpg" alt="El profesor Brand en silla de ruedas, en los pasillos de la NASA."></figure>
+              <figure class="tira-frame"><img src="assets/img/personajes-profesor-brand-nasa.jpg" alt="El profesor Brand recibe a Cooper en las instalaciones secretas de la NASA." loading="lazy" decoding="async"></figure>
+              <figure class="tira-frame"><img src="assets/img/personajes-profesor-brand-lab.jpg" alt="El profesor Brand le muestra a Cooper los laboratorios de la misión." loading="lazy" decoding="async"></figure>
+              <figure class="tira-frame"><img src="assets/img/personajes-profesor-brand-lecho.jpg" alt="El profesor Brand en su lecho de muerte, confesándole la verdad a Murph." loading="lazy" decoding="async"></figure>
+              <figure class="tira-frame"><img src="assets/img/personajes-profesor-brand-hero.jpg" alt="Primer plano del profesor Brand, con la barba que Michael Caine dejó crecer para el papel." loading="lazy" decoding="async"></figure>
+              <figure class="tira-frame"><img src="assets/img/personajes-profesor-brand-silla.jpg" alt="El profesor Brand en silla de ruedas, en los pasillos de la NASA." loading="lazy" decoding="async"></figure>
             </div>
           </div>
         </div>
@@ -517,9 +520,9 @@
           <div class="nav-visor" data-nav-visor data-intervalo="600">
             <p class="nav-visor-cabecera"><span class="nav-visor-rec">REC</span><span>BRAND · LA CONFESIÓN</span></p>
             <div class="nav-visor-pantalla">
-              <img class="nav-visor-frame is-activo" src="assets/img/personajes-profesor-brand-visor-01.jpg" alt="Fotogramas del profesor Brand en su lecho de muerte, confesando la verdad del Plan A.">
-              <img class="nav-visor-frame" src="assets/img/personajes-profesor-brand-visor-02.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-profesor-brand-visor-03.jpg" alt="">
+              <img class="nav-visor-frame is-activo" src="assets/img/personajes-profesor-brand-visor-01.jpg" alt="Fotogramas del profesor Brand en su lecho de muerte, confesando la verdad del Plan A." loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-profesor-brand-visor-02.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-profesor-brand-visor-03.jpg" alt="" loading="lazy" decoding="async">
             </div>
             <p class="nav-visor-pie"><span>LOOP ⟳</span><span data-nav-estado>03 FRM</span></p>
           </div>
@@ -532,7 +535,7 @@
     <section id="mann">
       <div class="personaje-hero">
         <div class="personaje-hero-img-wrap">
-          <img class="personaje-hero-img" src="assets/img/mundos-mann-retrato.jpg" alt="">
+          <img class="personaje-hero-img" src="assets/img/mundos-mann-retrato.jpg" alt="" loading="lazy" decoding="async">
         </div>
         <div class="personaje-hero-ficha">
           <p class="personaje-hero-rol">Científico · Lázaro</p>
@@ -588,11 +591,11 @@
           </div>
           <div class="tira-fotogramas">
             <div class="tira-pista" data-pista>
-              <figure class="tira-frame"><img src="assets/img/mundos-mann-mann.jpg" alt="El doctor Mann, con el parche de la misión Lázaro, camina junto a Cooper por una ladera de hielo."></figure>
-              <figure class="tira-frame"><img src="assets/img/mundos-mann-engano.jpg" alt="Cooper boca abajo en la nieve, arrastrándose, con el visor rajado, tras el ataque de Mann."></figure>
-              <figure class="tira-frame"><img src="assets/img/mundos-mann-docking.jpg" alt="El morro del Lander en primer plano y la Endurance como un anillo diminuto en el espacio, durante el acoplamiento fatal."></figure>
-              <figure class="tira-frame"><img src="assets/img/mundos-mann-caminata.jpg" alt="La tripulación camina en fila sobre el glaciar real filmado en Islandia."></figure>
-              <figure class="tira-frame"><img src="assets/img/mundos-mann-nubes.jpg" alt="Dos astronautas avanzan hacia la niebla densa del planeta de Mann."></figure>
+              <figure class="tira-frame"><img src="assets/img/mundos-mann-mann.jpg" alt="El doctor Mann, con el parche de la misión Lázaro, camina junto a Cooper por una ladera de hielo." loading="lazy" decoding="async"></figure>
+              <figure class="tira-frame"><img src="assets/img/mundos-mann-engano.jpg" alt="Cooper boca abajo en la nieve, arrastrándose, con el visor rajado, tras el ataque de Mann." loading="lazy" decoding="async"></figure>
+              <figure class="tira-frame"><img src="assets/img/mundos-mann-docking.jpg" alt="El morro del Lander en primer plano y la Endurance como un anillo diminuto en el espacio, durante el acoplamiento fatal." loading="lazy" decoding="async"></figure>
+              <figure class="tira-frame"><img src="assets/img/mundos-mann-caminata.jpg" alt="La tripulación camina en fila sobre el glaciar real filmado en Islandia." loading="lazy" decoding="async"></figure>
+              <figure class="tira-frame"><img src="assets/img/mundos-mann-nubes.jpg" alt="Dos astronautas avanzan hacia la niebla densa del planeta de Mann." loading="lazy" decoding="async"></figure>
             </div>
           </div>
         </div>
@@ -623,14 +626,14 @@
           <div class="nav-visor" data-nav-visor data-intervalo="600">
             <p class="nav-visor-cabecera"><span class="nav-visor-rec">REC</span><span>MANN · LA CONFESIÓN</span></p>
             <div class="nav-visor-pantalla">
-              <img class="nav-visor-frame is-activo" src="assets/img/personajes-mann-visor-01.jpg" alt="Fotogramas de Mann, entre su llegada y la confesión al borde del glaciar.">
-              <img class="nav-visor-frame" src="assets/img/personajes-mann-visor-02.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-mann-visor-03.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-mann-visor-04.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-mann-visor-05.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-mann-visor-06.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-mann-visor-07.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-mann-visor-08.jpg" alt="">
+              <img class="nav-visor-frame is-activo" src="assets/img/personajes-mann-visor-01.jpg" alt="Fotogramas de Mann, entre su llegada y la confesión al borde del glaciar." loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-mann-visor-02.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-mann-visor-03.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-mann-visor-04.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-mann-visor-05.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-mann-visor-06.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-mann-visor-07.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-mann-visor-08.jpg" alt="" loading="lazy" decoding="async">
             </div>
             <p class="nav-visor-pie"><span>LOOP ⟳</span><span data-nav-estado>08 FRM</span></p>
           </div>
@@ -643,7 +646,7 @@
     <section id="tars-case">
       <div class="personaje-hero">
         <div class="personaje-hero-img-wrap">
-          <img class="personaje-hero-img" src="assets/img/personajes-tars-case.jpg" alt="">
+          <img class="personaje-hero-img" src="assets/img/personajes-tars-case.webp" alt="" loading="lazy" decoding="async">
         </div>
         <div class="personaje-hero-ficha">
           <p class="personaje-hero-rol">Robots · Endurance</p>
@@ -699,11 +702,11 @@
           </div>
           <div class="tira-fotogramas">
             <div class="tira-pista" data-pista>
-              <figure class="tira-frame"><img src="assets/img/personajes-tars.jpg" alt="TARS, con su nombre grabado en el bloque metálico, a bordo del Endurance."></figure>
-              <figure class="tira-frame"><img src="assets/img/personajes-case.jpg" alt="CASE, con Romilly sentado en primer plano, a bordo del Endurance."></figure>
-              <figure class="tira-frame"><img src="assets/img/personajes-tars-case.jpg" alt="CASE, solo frente al mar del planeta de Miller, con la nave descendiendo al fondo."></figure>
-              <figure class="tira-frame"><img src="assets/img/personajes-tars-diseno.jpg" alt="Cooper conversa a bordo del Endurance, con el bloque de TARS visible al fondo."></figure>
-              <figure class="tira-frame"><img src="assets/img/personajes-tars-bloque.jpg" alt="Detalle de la pantalla de datos de uno de los bloques articulados, junto a la escalera del Endurance."></figure>
+              <figure class="tira-frame"><img src="assets/img/personajes-tars.jpg" alt="TARS, con su nombre grabado en el bloque metálico, a bordo del Endurance." loading="lazy" decoding="async"></figure>
+              <figure class="tira-frame"><img src="assets/img/personajes-case.jpg" alt="CASE, con Romilly sentado en primer plano, a bordo del Endurance." loading="lazy" decoding="async"></figure>
+              <figure class="tira-frame"><img src="assets/img/personajes-tars-case.jpg" alt="CASE, solo frente al mar del planeta de Miller, con la nave descendiendo al fondo." loading="lazy" decoding="async"></figure>
+              <figure class="tira-frame"><img src="assets/img/personajes-tars-diseno.jpg" alt="Cooper conversa a bordo del Endurance, con el bloque de TARS visible al fondo." loading="lazy" decoding="async"></figure>
+              <figure class="tira-frame"><img src="assets/img/personajes-tars-bloque.jpg" alt="Detalle de la pantalla de datos de uno de los bloques articulados, junto a la escalera del Endurance." loading="lazy" decoding="async"></figure>
             </div>
           </div>
         </div>
@@ -734,10 +737,10 @@
           <div class="nav-visor" data-nav-visor data-intervalo="600">
             <p class="nav-visor-cabecera"><span class="nav-visor-rec">REC</span><span>TARS · A BORDO</span></p>
             <div class="nav-visor-pantalla">
-              <img class="nav-visor-frame is-activo" src="assets/img/personajes-tars-case-visor-01.jpg" alt="Fotogramas de TARS a bordo del Endurance, con su pantalla de datos encendida.">
-              <img class="nav-visor-frame" src="assets/img/personajes-tars-case-visor-02.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-tars-case-visor-03.jpg" alt="">
-              <img class="nav-visor-frame" src="assets/img/personajes-tars-case-visor-04.jpg" alt="">
+              <img class="nav-visor-frame is-activo" src="assets/img/personajes-tars-case-visor-01.jpg" alt="Fotogramas de TARS a bordo del Endurance, con su pantalla de datos encendida." loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-tars-case-visor-02.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-tars-case-visor-03.jpg" alt="" loading="lazy" decoding="async">
+              <img class="nav-visor-frame" src="assets/img/personajes-tars-case-visor-04.jpg" alt="" loading="lazy" decoding="async">
             </div>
             <p class="nav-visor-pie"><span>LOOP ⟳</span><span data-nav-estado>04 FRM</span></p>
           </div>
