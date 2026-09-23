@@ -242,6 +242,7 @@ header nav > ul {
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  gap: 0.5rem;
 }
 
 header nav li {
@@ -252,7 +253,8 @@ header nav li {
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  min-height: 44px;                 /* target tactil (WCAG 2.5.8) */
+  min-height: 48px;                 /* target tactil pleno (WCAG 2.5.8 / Lighthouse) */
+  gap: 0.5rem;                      /* separacion minima de 8px entre controles contiguos */
 }
 
 /* Enlace del item de nivel superior — "boton retroiluminado de panel":
@@ -276,7 +278,7 @@ header nav a {
    hover/foco/seccion-actual (regla de abajo). */
 header nav > ul > li > a {
   flex: 1;
-  min-height: 44px;
+  min-height: 48px;
   display: flex;
   align-items: center;
   padding-inline: 0.55rem;
@@ -344,8 +346,8 @@ header nav > ul > li > a[aria-current='page']::before {
 header nav button {
   font: inherit;
   font-size: 0.8rem;
-  min-width: 44px;
-  min-height: 44px;
+  min-width: 48px;
+  min-height: 48px;
   color: color-mix(in srgb, var(--instrumento-teal) 50%, var(--color-texto-atenuado));
   background: linear-gradient(180deg, var(--cockpit-metal-alto), var(--cockpit-metal));
   border: 1px solid var(--cockpit-bezel);
@@ -395,9 +397,12 @@ header nav ul ul {
 }
 
 header nav ul ul a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   font-size: 0.82rem;
   letter-spacing: 0.08em;
-  padding: 0.15rem 0;
+  padding: 0.25rem 0.5rem;
   color: color-mix(in srgb, var(--instrumento-teal) 78%, var(--color-texto-atenuado));
   text-shadow: none;
   white-space: normal;

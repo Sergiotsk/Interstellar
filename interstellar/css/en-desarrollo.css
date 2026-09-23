@@ -434,16 +434,16 @@
 
   .meme-controles {
     width: 100%;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 0.4rem;
   }
 
   .meme-tecla--destacada {
     grid-column: span 2;
   }
 
-  .meme-enlace-giphy {
-    justify-content: center;
-    margin-top: 0.25rem;
-  }
 }
