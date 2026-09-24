@@ -2290,3 +2290,13 @@ html.is-rendering main {
     transform: none !important;
   }
 }
+
+/* Blindaje anti-FOUC para componentes con canvas y fallback en SPA */
+#horizonte-fallback {
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+#horizonte-fallback.horizonte-fallback-visible {
+  opacity: 1 !important;
+}
