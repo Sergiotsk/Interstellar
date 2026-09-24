@@ -28,8 +28,16 @@ function soportaWebGL() {
   }
 }
 
+let horizonteListoMostrado = false;
+
 function mostrarFallback() {
   document.getElementById('horizonte-fallback')?.classList.add('horizonte-fallback-visible');
+}
+
+function mostrarHorizonteListo(canvas) {
+  if (horizonteListoMostrado) return;
+  horizonteListoMostrado = true;
+  canvas?.classList.add('horizonte-listo');
 }
 
 async function initHorizonte() {
@@ -821,7 +829,7 @@ void main(){
 		renderer.setRenderTarget(null);
 		renderer.render(escena, camara);
 
-		mostrarHorizonteListo();
+		mostrarHorizonteListo(renderer.domElement);
 	}
 	animando = true;
 	requestAnimationFrame(animar);
@@ -843,6 +851,10 @@ function initHorizonteSeguro() {
 export const mount = () => initHorizonteSeguro();
 export const unmount = () => {
   if (typeof animando !== 'undefined') animando = false;
+  horizonteListoMostrado = false;
+  const contenedor = document.getElementById('horizonte-canvas');
+  const canvas = contenedor?.querySelector('canvas');
+  if (canvas) canvas.remove();
 };
 
 if (typeof document !== 'undefined') {
