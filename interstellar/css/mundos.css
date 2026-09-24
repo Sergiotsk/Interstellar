@@ -1016,6 +1016,9 @@ body.mundo-detalle main > section.mundo-portada .mundo-volver {
    --------------------------------------------------------------------------- */
 .mundo-film {
   position: relative;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   height: clamp(200px, 34vh, 340px);
   overflow: hidden;
   background: #0b0b0d;                 /* base del celuloide */

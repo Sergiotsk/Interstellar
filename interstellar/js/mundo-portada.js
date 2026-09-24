@@ -61,6 +61,10 @@ async function initMundoPortada() {
   }
 
   gsap.registerPlugin(ScrollTrigger);
+  if (typeof window !== 'undefined') {
+    window.ScrollTrigger = ScrollTrigger;
+  }
+  ScrollTrigger.config({ ignoreMobileResize: true });
 
   // `matchMedia` de GSAP: arma la escena que corresponde al viewport y la
   // revierte sola (con el cleanup que devuelve cada callback) si la media query
@@ -81,6 +85,25 @@ async function initMundoPortada() {
   }
 }
 
+// Prefetching y decodificación asíncrona de las capas del mundo activo.
+// Forzar new Image().decode() en background garantiza que al momento de scrollear
+// las imágenes ya estén descomprimidas en memoria GPU sin pantallas negras.
+function precargarCapas(capas) {
+  if (typeof window === 'undefined') return;
+  capas.forEach((capa) => {
+    if (!capa) return;
+    const bg = getComputedStyle(capa).backgroundImage;
+    const match = bg && bg.match(/url\(["']?([^"']+)["']?\)/);
+    if (match && match[1]) {
+      const img = new Image();
+      img.src = match[1];
+      if (typeof img.decode === 'function') {
+        img.decode().catch(() => {});
+      }
+    }
+  });
+}
+
 // --- Tierra: descenso al colapso, 5 fotogramas encadenados ---------------------
 function escenaTierra(gsap, mm, portada) {
   const orbita = portada.querySelector('.mundo-capa--orbita');
@@ -99,6 +122,7 @@ function escenaTierra(gsap, mm, portada) {
   // visibility hidden, no pinta) con su transform de entrada preparado.
   const base = () => {
     portada.classList.add('is-armed');
+    precargarCapas(capas);
     gsap.set(orbita, { autoAlpha: 1, scale: 1, rotation: 0, filter: 'saturate(1) brightness(1)' });
     gsap.set(granja, { autoAlpha: 0, scale: 1.15 });
     gsap.set(maizal, { autoAlpha: 0, scale: 1.12, filter: 'saturate(1) brightness(1)' });
@@ -236,6 +260,7 @@ function escenaGargantua(gsap, mm, portada) {
   // de entrada > 1 da el "empuje" de camara: cada beat se asienta a scale 1.
   const base = () => {
     portada.classList.add('is-armed');
+    precargarCapas(capas);
     gsap.set(lejos, { autoAlpha: 1, scale: 1, rotation: 0 });
     gsap.set(disco, { autoAlpha: 0, scale: 1.12 });
     gsap.set(plano, { autoAlpha: 0, scale: 1.16, yPercent: -4 });
@@ -514,6 +539,7 @@ function escenaMiller(gsap, mm, portada) {
   // para BAJAR encima del Ranger.
   const base = () => {
     portada.classList.add('is-armed');
+    precargarCapas(capas);
     gsap.set(arribo, { autoAlpha: 1, scale: 1, rotation: 0 });
     gsap.set(vadeo, { autoAlpha: 0, scale: 1.14 });
     gsap.set(rasante, { autoAlpha: 0, scale: 1.16, yPercent: -3 });
@@ -649,6 +675,7 @@ function escenaMann(gsap, mm, portada) {
   // traicion; `tunel` entra girado para la caida sin gravedad.
   const base = () => {
     portada.classList.add('is-armed');
+    precargarCapas(capas);
     gsap.set(hielo, { autoAlpha: 1, scale: 1, rotation: 0, xPercent: 0 });
     gsap.set(superficie, { autoAlpha: 0, scale: 1.14 });
     gsap.set(mann, { autoAlpha: 0, scale: 1.12 });
@@ -779,6 +806,7 @@ function escenaTesseract(gsap, mm, portada) {
   // entrada. `caida` entra girada (la caida sin gravedad por la estructura).
   const base = () => {
     portada.classList.add('is-armed');
+    precargarCapas(capas);
     gsap.set(reticula, { autoAlpha: 1, scale: 1, rotation: 0, xPercent: 0 });
     gsap.set(caida, { autoAlpha: 0, scale: 1.2, rotation: 5 });
     gsap.set(estante, { autoAlpha: 0, scale: 1.14 });

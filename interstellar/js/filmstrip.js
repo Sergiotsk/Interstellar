@@ -82,6 +82,10 @@ async function initFilmstrip() {
     return;
   }
   gsap.registerPlugin(ScrollTrigger);
+  if (typeof window !== 'undefined') {
+    window.ScrollTrigger = ScrollTrigger;
+  }
+  ScrollTrigger.config({ ignoreMobileResize: true });
 
   // 4) Loop: un tween por tira, velocidad constante, repetido al infinito.
   for (const { tira, track } of tracks) {

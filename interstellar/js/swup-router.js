@@ -268,18 +268,31 @@ export function initSwupRouter() {
       const archivo = getArchivoActual();
       sincronizarAudioRuta(archivo);
       actualizarPieSeccionesCondicional();
+
+      // Reset de scroll antes de montar módulos para fijar coordenadas base en (0, 0)
+      const hash = window.location.hash;
+      let objetivo = null;
+      if (hash) {
+        objetivo = document.querySelector(hash);
+      }
+      if (objetivo) {
+        objetivo.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        window.scrollTo(0, 0);
+      }
+
       mountCurrentPage(archivo);
 
-      // Manejo de ancla (hash) o scroll al tope
-      const hash = window.location.hash;
-      if (hash) {
-        const objetivo = document.querySelector(hash);
-        if (objetivo) {
-          objetivo.scrollIntoView({ behavior: 'smooth' });
-          return;
-        }
+      // Refresco de ScrollTrigger tras asentar el nuevo DOM
+      if (typeof window !== 'undefined' && window.ScrollTrigger) {
+        requestAnimationFrame(() => {
+          try {
+            window.ScrollTrigger.refresh();
+          } catch (e) {
+            /* noop */
+          }
+        });
       }
-      window.scrollTo(0, 0);
     });
 
     // Montar la página inicial

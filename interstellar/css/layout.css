@@ -32,6 +32,7 @@ body {
 main {
   flex: 1 0 auto;
   width: 100%;
+  min-width: 0;
 }
 
 /* ---------------------------------------------------------------------------
@@ -1869,6 +1870,8 @@ body:not(.home) main > section:first-child p {
    titulo del Hero, FR-018); el contraste de texto y foco se conserva sobre el
    fondo oscuro del sitio (SC-006). */
 section[id] {
+  width: 100%;
+  box-sizing: border-box;
   max-width: 60rem;
   margin: 0 auto;
   padding: 2.25rem 1.25rem;
