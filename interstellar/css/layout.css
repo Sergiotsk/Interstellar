@@ -1830,7 +1830,7 @@ body.home .hero {
    tokens (FR-017), mismas jerarquias tipograficas Orbitron/Exo 2 (FR-018) y
    oscurecimiento de fondos fotograficos con --backdrop-oscurecer (FR-019).
    --------------------------------------------------------------------------- */
-body:not(.home) main > section:first-child {
+body:not(.home) main > section:first-child:not(.portada-tripulacion):not(.mundos-intro):not(.ciencia-portada):not(.galeria-portada):not(.trailer-hero):not(.mundo-portada) {
   /* Bloque de presentacion de cada pagina: mismo ritmo visual que el .intro
      de la home (HU4-E1, FR-018). Texto alineado a la izquierda (legibilidad:
      los parrafos de varias lineas no se centran; ver Constitucion §Diseno). */

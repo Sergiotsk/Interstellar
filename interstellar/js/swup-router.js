@@ -119,22 +119,33 @@ async function sincronizarEstilos(visit) {
 
   const estilosEntrantes = [...nuevoHead.querySelectorAll('link[rel="stylesheet"]')];
   const estilosActuales = [...document.head.querySelectorAll('link[rel="stylesheet"]')];
-  const urlsActuales = new Set(estilosActuales.map((l) => l.getAttribute('href')));
+  const urlsActuales = new Set();
+  estilosActuales.forEach((l) => {
+    const attr = l.getAttribute('href');
+    if (attr) urlsActuales.add(attr);
+    if (l.href) urlsActuales.add(l.href);
+  });
 
   const promesas = [];
 
   estilosEntrantes.forEach((linkEntrante) => {
-    const href = linkEntrante.getAttribute('href');
-    if (href && !urlsActuales.has(href)) {
+    const attrHref = linkEntrante.getAttribute('href');
+    const fullHref = linkEntrante.href;
+    if ((attrHref && urlsActuales.has(attrHref)) || (fullHref && urlsActuales.has(fullHref))) {
+      return;
+    }
+    if (attrHref) {
       const nuevoLink = document.createElement('link');
       nuevoLink.rel = 'stylesheet';
-      nuevoLink.href = href;
+      nuevoLink.href = attrHref;
       const p = new Promise((resolve) => {
         nuevoLink.onload = resolve;
         nuevoLink.onerror = resolve; // si falla la red no bloqueamos la transicion
       });
       promesas.push(p);
       document.head.appendChild(nuevoLink);
+      urlsActuales.add(attrHref);
+      if (nuevoLink.href) urlsActuales.add(nuevoLink.href);
     }
   });
 
@@ -146,18 +157,18 @@ async function sincronizarEstilos(visit) {
 async function sincronizarBodyYLayout(visit) {
   if (typeof document === 'undefined' || !document.body) return;
 
-  // 1. Sincronizar título y hojas de estilo del head
+  // 1. Sincronizar título y clases del body entrante de forma inmediata
   if (visit && visit.to && visit.to.document) {
-    if (visit.to.document.title) {
-      document.title = visit.to.document.title;
-    }
-    await sincronizarEstilos(visit);
-
-    // 2. Sincronizar clases del body entrante (ej. 'home', 'con-cielo')
     const nuevoBody = visit.to.document.body;
     if (nuevoBody) {
       document.body.className = nuevoBody.className;
     }
+    if (visit.to.document.title) {
+      document.title = visit.to.document.title;
+    }
+
+    // 2. Sincronizar hojas de estilo del head
+    await sincronizarEstilos(visit);
   }
 
   // 3. Manejo del cielo espacial decorativo
