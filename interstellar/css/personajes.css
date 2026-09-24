@@ -40,10 +40,12 @@
    La grilla de tarjetas (`.tripulacion-grid`) ya NO vive adentro de esta
    seccion — es HERMANA, igual que `.mundos-grid` con `.mundos-intro` — para
    que el `overflow:hidden` del hero no se la recorte. */
+section.portada-tripulacion,
 body:not(.home) main > section.portada-tripulacion:first-child {
   position: relative;
   overflow: hidden;
   isolation: isolate;
+  width: 100%;
   max-width: none;
   min-height: calc(100svh - 7rem);
   height: calc(100svh - 7rem);
@@ -76,6 +78,7 @@ body:not(.home) main > section.portada-tripulacion:first-child {
 /* Scrim inferior: mismo gradiente que .mundos-intro::after / .mundo-portada-
    escena::after — legibilidad del texto + fusion con --color-fondo hacia el
    borde, para que .tripulacion-grid no corte en seco. */
+section.portada-tripulacion::after,
 body:not(.home) main > section.portada-tripulacion:first-child::after {
   content: "";
   position: absolute;

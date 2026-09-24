@@ -24,7 +24,10 @@ export function loopDuration(widthPx, speedPxPerSec = FILM_SPEED) {
   return widthPx / speedPxPerSec;
 }
 
+let activeFilmstrips = [];
+
 async function initFilmstrip() {
+  unmountFilmstrip();
   const tiras = [...document.querySelectorAll('[data-film]')];
   if (tiras.length === 0) {
     return; // pagina sin tira de celuloide -> nada que hacer
@@ -40,7 +43,10 @@ async function initFilmstrip() {
     if (!track) {
       continue; // DOM inesperado en esta tira -> la dejo estatica y sigo
     }
-    track.innerHTML += track.innerHTML;
+    if (track.dataset.duplicado !== 'true') {
+      track.innerHTML += track.innerHTML;
+      track.dataset.duplicado = 'true';
+    }
     tracks.push({ tira, track });
   }
   if (tracks.length === 0) {
@@ -87,6 +93,12 @@ async function initFilmstrip() {
       repeat: -1,
     });
 
+    const listeners = [];
+    const addSafeListener = (target, type, fn) => {
+      target.addEventListener(type, fn);
+      listeners.push({ target, type, fn });
+    };
+
     // Hover / foco -> desacelera suave (no frena de golpe); al salir, ritmo normal.
     const setRitmo = (lento) =>
       gsap.to(tween, {
@@ -96,20 +108,16 @@ async function initFilmstrip() {
       });
 
     // El "desacelerar al pasar por encima" es SOLO para punteros con hover real.
-    // En tactil, un scroll que arranca sobre la tira dispara `pointerenter` y
-    // despues `pointercancel` (no `pointerleave`): la tira se quedaba clavada en
-    // timeScale 0.12 -> se veia "quieta" en el celular. Ahi no enganchamos el
-    // puntero; el foco (teclado) sigue frenandola en cualquier dispositivo.
     if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
-      tira.addEventListener('pointerenter', () => setRitmo(true));
-      tira.addEventListener('pointerleave', () => setRitmo(false));
-      tira.addEventListener('pointercancel', () => setRitmo(false));
+      addSafeListener(tira, 'pointerenter', () => setRitmo(true));
+      addSafeListener(tira, 'pointerleave', () => setRitmo(false));
+      addSafeListener(tira, 'pointercancel', () => setRitmo(false));
     }
-    tira.addEventListener('focusin', () => setRitmo(true));
-    tira.addEventListener('focusout', () => setRitmo(false));
+    addSafeListener(tira, 'focusin', () => setRitmo(true));
+    addSafeListener(tira, 'focusout', () => setRitmo(false));
 
     // Perf con varias tiras: solo corren cuando estan a la vista.
-    ScrollTrigger.create({
+    const trigger = ScrollTrigger.create({
       trigger: tira,
       start: 'top bottom',
       end: 'bottom top',
@@ -118,14 +126,27 @@ async function initFilmstrip() {
         else tween.pause();
       },
     });
+
+    activeFilmstrips.push({ tween, trigger, listeners });
   }
 }
 
+export function unmountFilmstrip() {
+  activeFilmstrips.forEach(({ tween, trigger, listeners }) => {
+    if (trigger) trigger.kill();
+    if (tween) tween.kill();
+    listeners.forEach(({ target, type, fn }) => target.removeEventListener(type, fn));
+  });
+  activeFilmstrips = [];
+}
+
 if (typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initFilmstrip);
-  } else {
-    initFilmstrip();
+  if (!window.__SWUP_ROUTER_ACTIVE__) {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initFilmstrip);
+    } else {
+      initFilmstrip();
+    }
   }
 }
 

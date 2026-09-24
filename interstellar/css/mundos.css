@@ -97,10 +97,12 @@
    2 clases) y esa tiene 3 tipos contra el nuestro de 1 — el desempate por
    tipos la hacia ganar a ELLA, dejando max-width:60rem/padding sin pisar
    y el mosaico encajonado en vez de full-bleed. */
+section.mundos-intro,
 body:not(.home) main > section.mundos-intro:first-child {
   position: relative;
   overflow: hidden;
   isolation: isolate;
+  width: 100%;
   max-width: none;
   min-height: calc(100svh - 7rem);
   height: calc(100svh - 7rem);

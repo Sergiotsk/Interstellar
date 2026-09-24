@@ -36,10 +36,12 @@
    anclados abajo-izquierda al 5%, alto = 100svh menos el header. Selector
    con la misma especificidad reforzada que las otras 3 paginas (evita perder
    contra `body:not(.home) main > section:first-child`, layout.css §10). */
+section.galeria-portada,
 body:not(.home) main > section.galeria-portada:first-child {
   position: relative;
   overflow: hidden;
   isolation: isolate;
+  width: 100%;
   max-width: none;
   min-height: calc(100svh - 7rem);
   height: calc(100svh - 7rem);

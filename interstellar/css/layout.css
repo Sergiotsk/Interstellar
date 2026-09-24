@@ -1830,7 +1830,7 @@ body.home .hero {
    tokens (FR-017), mismas jerarquias tipograficas Orbitron/Exo 2 (FR-018) y
    oscurecimiento de fondos fotograficos con --backdrop-oscurecer (FR-019).
    --------------------------------------------------------------------------- */
-body:not(.home) main > section:first-child {
+body:not(.home) main > section:first-child:not(.portada-tripulacion):not(.mundos-intro):not(.ciencia-portada):not(.galeria-portada):not(.trailer-hero):not(.mundo-portada) {
   /* Bloque de presentacion de cada pagina: mismo ritmo visual que el .intro
      de la home (HU4-E1, FR-018). Texto alineado a la izquierda (legibilidad:
      los parrafos de varias lineas no se centran; ver Constitucion §Diseno). */
@@ -2257,5 +2257,36 @@ body.spoiler-alerta footer .tele .led {
   .boton-subir svg {
     width: 19px;
     height: 19px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   21. Transiciones de página SPA con Swup (Persistencia Gapless de Audio)
+   ---------------------------------------------------------------------------
+   El header (con el elemento <audio> y el interruptor de música) y el footer
+   quedan fuera de la animación y se mantienen completamente estables.
+   Solo el contenedor <main> realiza una transición suave de disolución y
+   micro-desplazamiento vertical cinematográfico (220ms).
+   --------------------------------------------------------------------------- */
+
+html.is-animating main {
+  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+html.is-leaving main {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+html.is-rendering main {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.is-animating main {
+    transition: none !important;
+    transform: none !important;
   }
 }

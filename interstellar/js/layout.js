@@ -425,7 +425,7 @@ function wireDrawer(header, nav, estado) {
 // si hay `prefers-reduced-motion: reduce` lo PAUSAMOS y lo rebobinamos -> queda
 // el poster fijo (hero-gargantua.jpg). Si la preferencia cambia en caliente,
 // reacciona. Inofensivo si la pagina no tiene ese <video>.
-function initHeroVideo() {
+export function initHeroVideo() {
   if (typeof document.querySelector !== 'function' || typeof matchMedia !== 'function') {
     return;
   }
@@ -693,6 +693,38 @@ function initPieSeccionesCondicional() {
 // se silencia sola, conservando la preferencia para reanudar al salir. Si el
 // navegador bloquea el play() tras navegar (politica de autoplay), se reintenta
 // en la primera interaccion del usuario.
+let audioGlobal = null;
+let botonMusicaGlobal = null;
+let muteadoPorTrailer = false;
+
+export function sincronizarAudioRuta(archivo) {
+  const esTrailer = archivo === 'trailer.html';
+  const CLAVE = 'interstellar:musica';
+  const lee = (k) => {
+    try {
+      return sessionStorage.getItem(k);
+    } catch (e) {
+      return null;
+    }
+  };
+  const preferida = lee(CLAVE) === 'on';
+
+  if (esTrailer) {
+    if (audioGlobal && !audioGlobal.paused) {
+      audioGlobal.pause();
+      muteadoPorTrailer = true;
+    }
+  } else {
+    if (muteadoPorTrailer && preferida) {
+      muteadoPorTrailer = false;
+      if (audioGlobal) {
+        audioGlobal.play().catch(() => {});
+      }
+    }
+  }
+}
+
+// Musica de fondo con interruptor en el header.
 function initMusicaFondo() {
   if (typeof document === 'undefined' || typeof window === 'undefined') {
     return;
@@ -701,6 +733,7 @@ function initMusicaFondo() {
   if (!boton) {
     return;
   }
+  botonMusicaGlobal = boton;
   // Feature SOLO DESKTOP: en mobile el interruptor esta oculto (CSS), asi que
   // aca no se cablea ni suena nada (evita audio sin control visible).
   if (typeof window.matchMedia === 'function' && !window.matchMedia('(min-width: 60rem)').matches) {
@@ -729,26 +762,25 @@ function initMusicaFondo() {
     }
   };
 
-  let audio = null;
   const crearAudio = () => {
-    if (audio) {
-      return audio;
+    if (audioGlobal) {
+      return audioGlobal;
     }
-    audio = new Audio(SRC);
-    audio.loop = true;
-    audio.preload = 'none';
-    audio.volume = VOL;
+    audioGlobal = new Audio(SRC);
+    audioGlobal.loop = true;
+    audioGlobal.preload = 'none';
+    audioGlobal.volume = VOL;
     // En el DOM (no detached): mas robusto ante el GC y consistente entre
     // navegadores. Es solo audio, no aporta nada visual.
-    document.body.appendChild(audio);
+    document.body.appendChild(audioGlobal);
     const t = parseFloat(lee(CLAVE_T) || '0');
     if (t > 0) {
-      audio.addEventListener(
+      audioGlobal.addEventListener(
         'loadedmetadata',
         () => {
           try {
-            if (t < audio.duration) {
-              audio.currentTime = t;
+            if (t < audioGlobal.duration) {
+              audioGlobal.currentTime = t;
             }
           } catch (e) {
             /* algunos navegadores rechazan currentTime antes de bufferear: se ignora */
@@ -757,10 +789,10 @@ function initMusicaFondo() {
         { once: true },
       );
     }
-    audio.addEventListener('timeupdate', () => {
-      guarda(CLAVE_T, String(Math.floor(audio.currentTime)));
+    audioGlobal.addEventListener('timeupdate', () => {
+      guarda(CLAVE_T, String(Math.floor(audioGlobal.currentTime)));
     });
-    return audio;
+    return audioGlobal;
   };
 
   const reflejar = (on) => {
@@ -789,10 +821,10 @@ function initMusicaFondo() {
   const apagar = () => {
     guarda(CLAVE, 'off');
     reflejar(false);
-    if (audio) {
+    if (audioGlobal) {
       try {
-        guarda(CLAVE_T, String(Math.floor(audio.currentTime)));
-        audio.pause();
+        guarda(CLAVE_T, String(Math.floor(audioGlobal.currentTime)));
+        audioGlobal.pause();
       } catch (e) {
         /* noop */
       }
@@ -809,8 +841,8 @@ function initMusicaFondo() {
 
   // Antes de navegar: fijar el punto para reanudar en la proxima pagina.
   window.addEventListener('pagehide', () => {
-    if (audio) {
-      guarda(CLAVE_T, String(Math.floor(audio.currentTime)));
+    if (audioGlobal) {
+      guarda(CLAVE_T, String(Math.floor(audioGlobal.currentTime)));
     }
   });
 
@@ -829,9 +861,8 @@ function initMusicaFondo() {
 // Indicador de seccion actual (FR: descubribilidad de la nav). Marca con
 // `aria-current="page"` el enlace de NIVEL SUPERIOR cuyo destino es la pagina en
 // curso; el CSS lo resalta (LED fijo + acento) tanto en la barra de escritorio
-// como en el drawer. Solo enlaces directos del <ul> raiz: los destinos anidados
-// apuntan a `pagina.html#ancla` y no deben marcarse como "pagina actual".
-function markCurrentPage(nav) {
+// como en el drawer.
+export function markCurrentPage(nav) {
   if (!nav || typeof nav.querySelectorAll !== 'function') {
     return;
   }
@@ -843,6 +874,8 @@ function markCurrentPage(nav) {
     const destino = (enlace.getAttribute('href') || '').split('#')[0].toLowerCase();
     if (destino === archivo) {
       enlace.setAttribute('aria-current', 'page');
+    } else {
+      enlace.removeAttribute('aria-current');
     }
   });
 }
@@ -851,19 +884,20 @@ export function init(navConfig = NavConfig) {
   if (typeof document === 'undefined' || !document.body) {
     return;
   }
-  document.body.insertAdjacentHTML('afterbegin', buildHeader(navConfig));
-  document.body.insertAdjacentHTML('beforeend', buildFooter(navConfig));
-  document.body.insertAdjacentHTML('beforeend', buildBotonSubir());
+  const yaInyectado = typeof document.body.querySelector === 'function' && document.body.querySelector('header');
+  if (!yaInyectado) {
+    document.body.insertAdjacentHTML('afterbegin', buildHeader(navConfig));
+    document.body.insertAdjacentHTML('beforeend', buildFooter(navConfig));
+    document.body.insertAdjacentHTML('beforeend', buildBotonSubir());
 
-  // Cielo: solo en paginas `con-cielo`. `afterbegin` lo deja como primer hijo
-  // del body (por detras del header, que ya se inyecto). `classList` puede no
-  // existir en el DOM de prueba: se consulta con guarda.
-  if (
-    document.body.classList &&
-    typeof document.body.classList.contains === 'function' &&
-    document.body.classList.contains('con-cielo')
-  ) {
-    document.body.insertAdjacentHTML('afterbegin', buildCielo());
+    // Cielo: solo en paginas `con-cielo`.
+    if (
+      document.body.classList &&
+      typeof document.body.classList.contains === 'function' &&
+      document.body.classList.contains('con-cielo')
+    ) {
+      document.body.insertAdjacentHTML('afterbegin', buildCielo());
+    }
   }
 
   // Conecta la interaccion del disclosure. Solo se ejecuta si el DOM de prueba
@@ -887,6 +921,14 @@ export function init(navConfig = NavConfig) {
   initBotonSubir(document.body.querySelector('.boton-subir'));
   initPieSeccionesCondicional();
   initMusicaFondo();
+
+  // Iniciar enrutador Swup en el navegador si estamos en runtime real
+  if (typeof window !== 'undefined' && !window.__SWUP_INITIALIZED__) {
+    window.__SWUP_INITIALIZED__ = true;
+    import('./swup-router.js')
+      .then(({ initSwupRouter }) => initSwupRouter())
+      .catch((e) => console.warn('[layout] no se pudo iniciar swup router:', e));
+  }
 }
 
 if (typeof document !== 'undefined') {

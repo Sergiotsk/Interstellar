@@ -28,16 +28,48 @@ function soportaWebGL() {
   }
 }
 
-function mostrarFallback() {
-  document.getElementById('horizonte-fallback')?.classList.add('horizonte-fallback-visible');
+let horizonteListoMostrado = false;
+let fallbackTimeoutId = null;
+
+function mostrarFallback(delay = 4000) {
+  if (horizonteListoMostrado) return;
+  if (fallbackTimeoutId) clearTimeout(fallbackTimeoutId);
+  if (delay === 0) {
+    document.getElementById('horizonte-fallback')?.classList.add('horizonte-fallback-visible');
+    return;
+  }
+  fallbackTimeoutId = setTimeout(() => {
+    if (!horizonteListoMostrado) {
+      document.getElementById('horizonte-fallback')?.classList.add('horizonte-fallback-visible');
+    }
+  }, delay);
+}
+
+function activarHorizonteListo(canvas) {
+  if (horizonteListoMostrado) return;
+  horizonteListoMostrado = true;
+  if (fallbackTimeoutId) {
+    clearTimeout(fallbackTimeoutId);
+    fallbackTimeoutId = null;
+  }
+  const fallbackImg = document.getElementById('horizonte-fallback');
+  if (fallbackImg) {
+    fallbackImg.classList.remove('horizonte-fallback-visible');
+  }
+  requestAnimationFrame(() => {
+    canvas?.classList.add('horizonte-listo');
+  });
 }
 
 async function initHorizonte() {
   const contenedor = document.getElementById('horizonte-canvas');
   if (!contenedor || !soportaWebGL()) {
-    mostrarFallback(); // sin contenedor o sin WebGL -> la animacion nunca iba a arrancar
+    mostrarFallback(0); // sin contenedor o sin WebGL -> la animacion nunca iba a arrancar
     return;
   }
+
+  // Margen de gracia de 4s para compilacion de shaders pesados; se cancela apenas renderiza el 1er cuadro
+  mostrarFallback(4000);
 
   const THREE = await import('./vendor/three@0.128.0/three.module.js');
   const reducirMovimiento = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -754,9 +786,7 @@ void main(){
 	function mostrarHorizonteListo(){
 		if(primerCuadroListo) return;
 		primerCuadroListo = true;
-		requestAnimationFrame(function(){
-			lienzo.classList.add('horizonte-listo');
-		});
+		activarHorizonteListo(lienzo);
 	}
 
 	/* Bucle de render: 6 pases por cuadro */
@@ -836,14 +866,33 @@ function initHorizonteSeguro() {
   // que retirar.
   initHorizonte().catch((error) => {
     console.error('[ciencia] horizonte animado: no se pudo iniciar, se muestra la imagen de respaldo.', error);
-    mostrarFallback();
+    mostrarFallback(0);
   });
 }
 
+export const mount = () => initHorizonteSeguro();
+export const unmount = () => {
+  if (typeof animando !== 'undefined') animando = false;
+  horizonteListoMostrado = false;
+  if (fallbackTimeoutId) {
+    clearTimeout(fallbackTimeoutId);
+    fallbackTimeoutId = null;
+  }
+  const contenedor = document.getElementById('horizonte-canvas');
+  const canvas = contenedor?.querySelector('canvas');
+  if (canvas) canvas.remove();
+  const fallbackImg = document.getElementById('horizonte-fallback');
+  if (fallbackImg) {
+    fallbackImg.classList.remove('horizonte-fallback-visible');
+  }
+};
+
 if (typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initHorizonteSeguro);
-  } else {
-    initHorizonteSeguro();
+  if (!window.__SWUP_ROUTER_ACTIVE__) {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initHorizonteSeguro);
+    } else {
+      initHorizonteSeguro();
+    }
   }
 }

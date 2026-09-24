@@ -86,10 +86,12 @@
    aviso de spoilers — ese es position:absolute, flota, no suma layout);
    +0.5rem de margen real (no al pixel justo) por las dudas de un renderizado
    de fuente distinto entre navegadores. */
+section.ciencia-portada,
 body:not(.home) main > section.ciencia-portada:first-child {
   position: relative;
   overflow: hidden;
   isolation: isolate;
+  width: 100%;
   max-width: none;
   min-height: calc(100svh - 7rem);
   height: calc(100svh - 7rem);

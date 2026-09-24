@@ -183,10 +183,15 @@ export function init() {
   target.insertAdjacentHTML('beforeend', buildCreditosContent());
 }
 
+export const mount = () => init();
+export const unmount = () => {};
+
 if (typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => init());
-  } else {
-    init();
+  if (!window.__SWUP_ROUTER_ACTIVE__) {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => init());
+    } else {
+      init();
+    }
   }
 }
