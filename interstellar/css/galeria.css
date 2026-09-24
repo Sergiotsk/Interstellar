@@ -209,6 +209,8 @@ body:not(.home) main > section.galeria-portada:first-child .galeria-portada-cont
    lleva "Anterior" (es el primero); El Viaje no lleva "Siguiente" (el ultimo)
    — el <span></span> vacio sostiene el space-between del layout. */
 .galeria-paginacion {
+  width: 100%;
+  box-sizing: border-box;
   max-width: 60rem;
   margin: 2rem auto 0;
   padding: 1.25rem 1.25rem 0;

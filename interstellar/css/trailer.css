@@ -6,13 +6,15 @@
 
 /* Cadena de altura completa. `body` ya trae header/main/footer como hijos en
    flujo (el cielo y el boton-subir son position:fixed, fuera de flujo). */
-body {
+body:has(.trailer-hero),
+body.pagina-trailer {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
 }
 
-main {
+body:has(.trailer-hero) main,
+body.pagina-trailer main {
   flex: 1 1 auto;
   min-height: 0;
   display: flex;
@@ -92,6 +94,7 @@ body:not(.home) main > section.trailer-hero h1 {
 /* En la pagina de trailer el protagonista es el video: tambien se ocultan los
    menus de secciones a los costados del pie. (Las pantallas de monitorizacion
    ya estan ocultas por defecto en todo el sitio — ver layout.css.) */
-.pie-secciones-marco {
+body:has(.trailer-hero) .pie-secciones-marco,
+body.pagina-trailer .pie-secciones-marco {
   display: none;
 }

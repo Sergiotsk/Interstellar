@@ -120,7 +120,6 @@ const HOJAS_ESTILO_SITIO = [
   'css/galeria.css',
   'css/contacto.css',
   'css/en-desarrollo.css',
-  'css/trailer.css',
 ];
 
 export function precargarHojasDeEstilo() {
