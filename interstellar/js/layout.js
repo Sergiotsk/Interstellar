@@ -666,23 +666,28 @@ function initBotonSubir(boton) {
 // fragmento de panel sin contenido flotando en el pie (bug real, agarrado
 // en verificacion visual: la home mostraba dos "muñones" de panel a los
 // costados de la pantalla central).
-function initPieSeccionesCondicional() {
-  if (typeof document.querySelectorAll !== 'function' || typeof window === 'undefined') {
+export function actualizarPieSeccionesCondicional() {
+  if (typeof document === 'undefined' || typeof window === 'undefined') {
     return;
   }
   const grupos = document.querySelectorAll('footer .pie-secciones-marco');
   if (grupos.length === 0) {
     return;
   }
-  const actualizar = () => {
-    const hayScroll = document.documentElement.scrollHeight > window.innerHeight + 1; // +1: margen de redondeo
-    grupos.forEach((marco) => {
-      marco.hidden = !hayScroll;
-    });
-  };
-  actualizar();
-  window.addEventListener('resize', actualizar);
-  window.addEventListener('load', actualizar);
+  const esHome = document.body && document.body.classList.contains('home');
+  const hayScroll = !esHome && (document.documentElement.scrollHeight > window.innerHeight + 1);
+  grupos.forEach((marco) => {
+    marco.hidden = !hayScroll;
+  });
+}
+
+export function initPieSeccionesCondicional() {
+  if (typeof window === 'undefined') {
+    return;
+  }
+  actualizarPieSeccionesCondicional();
+  window.addEventListener('resize', actualizarPieSeccionesCondicional);
+  window.addEventListener('load', actualizarPieSeccionesCondicional);
 }
 
 // Musica de fondo con interruptor en el header. Best-effort en un MPA: la

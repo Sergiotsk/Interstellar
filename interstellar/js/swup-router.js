@@ -2,7 +2,7 @@
 // Constitución v2.0.0, Principio I: librería vendorizada sin bundler ni build step.
 
 import Swup from './vendor/swup@4.10.0/swup.mjs';
-import { markCurrentPage, initHeroVideo, sincronizarAudioRuta } from './layout.js';
+import { markCurrentPage, initHeroVideo, sincronizarAudioRuta, actualizarPieSeccionesCondicional } from './layout.js';
 
 let swupInstance = null;
 let moduloActivo = null;
@@ -112,6 +112,36 @@ export async function mountCurrentPage(archivo = getArchivoActual()) {
   }
 }
 
+const HOJAS_ESTILO_SITIO = [
+  'css/mundos.css',
+  'css/personajes.css',
+  'css/ciencia.css',
+  'css/cielo.css',
+  'css/galeria.css',
+  'css/contacto.css',
+  'css/en-desarrollo.css',
+  'css/trailer.css',
+];
+
+export function precargarHojasDeEstilo() {
+  if (typeof document === 'undefined' || !document.head) return;
+  const urlsActuales = new Set();
+  document.head.querySelectorAll('link[rel="stylesheet"]').forEach((l) => {
+    const attr = l.getAttribute('href');
+    if (attr) urlsActuales.add(attr);
+    if (l.href) urlsActuales.add(l.href);
+  });
+
+  HOJAS_ESTILO_SITIO.forEach((href) => {
+    if (urlsActuales.has(href)) return;
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = href;
+    document.head.appendChild(link);
+    urlsActuales.add(href);
+  });
+}
+
 async function sincronizarEstilos(visit) {
   if (!visit || !visit.to || !visit.to.document) return;
   const nuevoHead = visit.to.document.head;
@@ -198,6 +228,9 @@ async function sincronizarBodyYLayout(visit) {
   document.body
     .querySelectorAll('footer nav.pie-secciones')
     .forEach((navSecciones) => markCurrentPage(navSecciones));
+
+  // 6. Actualizar visibilidad de navbar en el pie según scroll y sección (oculto en home)
+  actualizarPieSeccionesCondicional();
 }
 
 export function initSwupRouter() {
@@ -225,8 +258,8 @@ export function initSwupRouter() {
       unmountCurrentPage();
     });
 
-    // 2. Al reemplazar el contenido: actualizar clases del body, estilos y título
-    swupInstance.hooks.on('content:replace', async (visit) => {
+    // 2. ANTES de reemplazar el contenedor <main>: sincronizar clases, título y esperar hojas CSS
+    swupInstance.hooks.before('content:replace', async (visit) => {
       await sincronizarBodyYLayout(visit);
     });
 
@@ -234,6 +267,7 @@ export function initSwupRouter() {
     swupInstance.hooks.on('page:view', (visit) => {
       const archivo = getArchivoActual();
       sincronizarAudioRuta(archivo);
+      actualizarPieSeccionesCondicional();
       mountCurrentPage(archivo);
 
       // Manejo de ancla (hash) o scroll al tope
@@ -250,6 +284,13 @@ export function initSwupRouter() {
 
     // Montar la página inicial
     mountCurrentPage(getArchivoActual());
+
+    // Precargar en background el resto de las hojas de estilo para que la navegación sea instantánea sin FOUC
+    if (typeof requestIdleCallback === 'function') {
+      requestIdleCallback(precargarHojasDeEstilo);
+    } else {
+      setTimeout(precargarHojasDeEstilo, 50);
+    }
 
     return swupInstance;
   } catch (err) {

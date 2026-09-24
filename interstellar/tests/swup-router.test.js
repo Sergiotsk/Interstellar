@@ -31,4 +31,39 @@ describe('js/swup-router.js — enrutador SPA y persistencia de audio', () => {
     sincronizarAudioRuta('mundos.html');
     assert.equal(sessionStorage.getItem('interstellar:musica'), 'on');
   });
+
+  test('actualizarPieSeccionesCondicional oculta marcos en la home', async () => {
+    const { actualizarPieSeccionesCondicional } = await import('../js/layout.js');
+    const fakeMarco1 = { hidden: false };
+    const fakeMarco2 = { hidden: false };
+    globalThis.window = { innerHeight: 800 };
+    globalThis.document = {
+      body: { classList: { contains: (cls) => cls === 'home' } },
+      documentElement: { scrollHeight: 1200 },
+      querySelectorAll: (sel) => (sel === 'footer .pie-secciones-marco' ? [fakeMarco1, fakeMarco2] : []),
+    };
+
+    actualizarPieSeccionesCondicional();
+    assert.equal(fakeMarco1.hidden, true);
+    assert.equal(fakeMarco2.hidden, true);
+  });
+
+  test('actualizarPieSeccionesCondicional muestra marcos solo si hay scroll fuera de home', async () => {
+    const { actualizarPieSeccionesCondicional } = await import('../js/layout.js');
+    const fakeMarco = { hidden: true };
+    globalThis.window = { innerHeight: 800 };
+    globalThis.document = {
+      body: { classList: { contains: () => false } },
+      documentElement: { scrollHeight: 1200 },
+      querySelectorAll: (sel) => (sel === 'footer .pie-secciones-marco' ? [fakeMarco] : []),
+    };
+
+    actualizarPieSeccionesCondicional();
+    assert.equal(fakeMarco.hidden, false);
+
+    // Sin scroll
+    globalThis.document.documentElement.scrollHeight = 800;
+    actualizarPieSeccionesCondicional();
+    assert.equal(fakeMarco.hidden, true);
+  });
 });

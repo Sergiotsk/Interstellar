@@ -68,9 +68,6 @@ async function initHorizonte() {
     return;
   }
 
-  // Margen de gracia de 4s para compilacion de shaders pesados; se cancela apenas renderiza el 1er cuadro
-  mostrarFallback(4000);
-
   const THREE = await import('./vendor/three@0.128.0/three.module.js');
   const reducirMovimiento = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
