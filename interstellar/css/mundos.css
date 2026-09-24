@@ -479,6 +479,16 @@ body.mundo-detalle main > section.mundo-portada {
   -webkit-mask-repeat: no-repeat;
 }
 
+@media (max-width: 47.99rem) {
+  .mundo-capa--orbita {
+    background-position: center 10%;
+  }
+  .mundo-capa--orbita::after {
+    mask-position: center 10%;
+    -webkit-mask-position: center 10%;
+  }
+}
+
 .mundo-capa--granja {
   background-image: url("../assets/img/terra-granja.webp");
   opacity: 0;
@@ -731,7 +741,7 @@ body.mundo-detalle main > section.mundo-portada .mundo-volver {
     background-position: 60% center;
   }
   .mundo-capa--miller-cabina {
-    background-position: 66% center;
+    background-position: 45% center;
   }
   .mundo-capa--miller-vadeo {
     background-position: 70% center;  /* los exploradores estan a la derecha */
