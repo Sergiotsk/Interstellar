@@ -168,7 +168,7 @@ export function initSwupRouter() {
   try {
     swupInstance = new Swup({
       containers: ['main'],
-      animationSelector: '[class*="transition-"]',
+      animationSelector: 'main',
       cache: true,
     });
 

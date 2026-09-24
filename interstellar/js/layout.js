@@ -425,7 +425,7 @@ function wireDrawer(header, nav, estado) {
 // si hay `prefers-reduced-motion: reduce` lo PAUSAMOS y lo rebobinamos -> queda
 // el poster fijo (hero-gargantua.jpg). Si la preferencia cambia en caliente,
 // reacciona. Inofensivo si la pagina no tiene ese <video>.
-function initHeroVideo() {
+export function initHeroVideo() {
   if (typeof document.querySelector !== 'function' || typeof matchMedia !== 'function') {
     return;
   }
