@@ -112,18 +112,55 @@ export async function mountCurrentPage(archivo = getArchivoActual()) {
   }
 }
 
-function sincronizarBodyYLayout(visit) {
+async function sincronizarEstilos(visit) {
+  if (!visit || !visit.to || !visit.to.document) return;
+  const nuevoHead = visit.to.document.head;
+  if (!nuevoHead || typeof document.head?.querySelectorAll !== 'function') return;
+
+  const estilosEntrantes = [...nuevoHead.querySelectorAll('link[rel="stylesheet"]')];
+  const estilosActuales = [...document.head.querySelectorAll('link[rel="stylesheet"]')];
+  const urlsActuales = new Set(estilosActuales.map((l) => l.getAttribute('href')));
+
+  const promesas = [];
+
+  estilosEntrantes.forEach((linkEntrante) => {
+    const href = linkEntrante.getAttribute('href');
+    if (href && !urlsActuales.has(href)) {
+      const nuevoLink = document.createElement('link');
+      nuevoLink.rel = 'stylesheet';
+      nuevoLink.href = href;
+      const p = new Promise((resolve) => {
+        nuevoLink.onload = resolve;
+        nuevoLink.onerror = resolve; // si falla la red no bloqueamos la transicion
+      });
+      promesas.push(p);
+      document.head.appendChild(nuevoLink);
+    }
+  });
+
+  if (promesas.length > 0) {
+    await Promise.all(promesas);
+  }
+}
+
+async function sincronizarBodyYLayout(visit) {
   if (typeof document === 'undefined' || !document.body) return;
 
-  // 1. Sincronizar clases del body entrante (ej. 'home', 'con-cielo')
+  // 1. Sincronizar título y hojas de estilo del head
   if (visit && visit.to && visit.to.document) {
+    if (visit.to.document.title) {
+      document.title = visit.to.document.title;
+    }
+    await sincronizarEstilos(visit);
+
+    // 2. Sincronizar clases del body entrante (ej. 'home', 'con-cielo')
     const nuevoBody = visit.to.document.body;
     if (nuevoBody) {
       document.body.className = nuevoBody.className;
     }
   }
 
-  // 2. Manejo del cielo espacial decorativo
+  // 3. Manejo del cielo espacial decorativo
   const tieneCielo = document.body.classList.contains('con-cielo');
   const cieloExistente = document.body.querySelector('.cielo');
   if (tieneCielo && !cieloExistente) {
@@ -134,7 +171,7 @@ function sincronizarBodyYLayout(visit) {
     cieloExistente.remove();
   }
 
-  // 3. Cerrar el drawer de navegación móvil si estaba abierto
+  // 4. Cerrar el drawer de navegación móvil si estaba abierto
   const header = document.body.querySelector('header');
   const nav = header && header.querySelector('nav');
   const toggle = header && header.querySelector('.nav-toggle');
@@ -143,7 +180,7 @@ function sincronizarBodyYLayout(visit) {
     if (toggle) toggle.setAttribute('aria-expanded', 'false');
   }
 
-  // 4. Actualizar estado de sección activa (LED teal)
+  // 5. Actualizar estado de sección activa (LED teal)
   if (nav) {
     markCurrentPage(nav);
   }
@@ -177,9 +214,9 @@ export function initSwupRouter() {
       unmountCurrentPage();
     });
 
-    // 2. Al reemplazar el contenido: actualizar clases del body y título
-    swupInstance.hooks.on('content:replace', (visit) => {
-      sincronizarBodyYLayout(visit);
+    // 2. Al reemplazar el contenido: actualizar clases del body, estilos y título
+    swupInstance.hooks.on('content:replace', async (visit) => {
+      await sincronizarBodyYLayout(visit);
     });
 
     // 3. Cuando la nueva página está a la vista: sincronizar audio, montar módulo y scroll
