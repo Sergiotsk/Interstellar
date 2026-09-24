@@ -218,11 +218,24 @@ function initGaleria() {
   wireVisor(items, filtro);
 }
 
+export function mount() {
+  initGaleria();
+}
+
+export function unmount() {
+  const dialogo = document.getElementById('galeria-visor');
+  if (dialogo && typeof dialogo.close === 'function' && dialogo.open) {
+    dialogo.close();
+  }
+}
+
 if (typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initGaleria);
-  } else {
-    initGaleria();
+  if (!window.__SWUP_ROUTER_ACTIVE__) {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', mount);
+    } else {
+      mount();
+    }
   }
 }
 

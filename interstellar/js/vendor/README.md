@@ -68,3 +68,20 @@ Cada archivo es un bundle autocontenido (cero imports internos). Único retoque:
 quitó la línea final `//# sourceMappingURL=…` (el `.map` no se versiona). GSAP se
 distribuye bajo su [Standard License](https://gsap.com/standard-license) (gratis
 para este uso).
+
+### `swup@4.10.0/`
+
+| Archivo | Qué es | Peso |
+|---|---|---|
+| `swup.mjs` | core de Swup v4 (enrutador SPA gapless, transiciones y hooks) | ~27 KB (~9 KB gzip) |
+
+- **Problema que resuelve**: navegación SPA gapless en el cliente sin recarga completa de página para mantener la reproducción continua del audio de fondo (`<audio>` en el `<header>`) entre todas las páginas del sitio.
+- **Dónde carga**: cargado globalmente desde `js/layout.js` / enrutador para orquestar transiciones sobre el contenedor `<main>`.
+- **Degradación**: si el módulo o JS no están disponibles, cada página HTML sigue funcionando como MPA estándar nativo vía enlaces `<a>`.
+
+**Origen (reproducible):** build ESM `es2022` bundle de esm.sh, versión fijada:
+
+```
+curl -sL https://esm.sh/swup@4.10.0/es2022/swup.bundle.mjs -o swup.mjs
+```
+

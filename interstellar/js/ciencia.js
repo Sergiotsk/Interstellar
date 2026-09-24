@@ -840,10 +840,17 @@ function initHorizonteSeguro() {
   });
 }
 
+export const mount = () => initHorizonteSeguro();
+export const unmount = () => {
+  if (typeof animando !== 'undefined') animando = false;
+};
+
 if (typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initHorizonteSeguro);
-  } else {
-    initHorizonteSeguro();
+  if (!window.__SWUP_ROUTER_ACTIVE__) {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initHorizonteSeguro);
+    } else {
+      initHorizonteSeguro();
+    }
   }
 }

@@ -2259,3 +2259,34 @@ body.spoiler-alerta footer .tele .led {
     height: 19px;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   21. Transiciones de página SPA con Swup (Persistencia Gapless de Audio)
+   ---------------------------------------------------------------------------
+   El header (con el elemento <audio> y el interruptor de música) y el footer
+   quedan fuera de la animación y se mantienen completamente estables.
+   Solo el contenedor <main> realiza una transición suave de disolución y
+   micro-desplazamiento vertical cinematográfico (220ms).
+   --------------------------------------------------------------------------- */
+
+html.is-animating main {
+  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+html.is-leaving main {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+html.is-rendering main {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.is-animating main {
+    transition: none !important;
+    transform: none !important;
+  }
+}

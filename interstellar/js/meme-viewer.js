@@ -171,15 +171,22 @@ export function initMemeViewer(container, memes = MEMES_DATA) {
   return state;
 }
 
+export const mount = () => {
+  const containers = document.querySelectorAll('[data-meme-viewer]');
+  containers.forEach((c) => initMemeViewer(c));
+};
+
+export const unmount = () => {
+  // El contenedor se destruye con el swap de main
+};
+
 // Auto-inicializacion si existe en el DOM al cargar
 if (typeof document !== 'undefined') {
-  const mount = () => {
-    const containers = document.querySelectorAll('[data-meme-viewer]');
-    containers.forEach((c) => initMemeViewer(c));
-  };
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', mount);
-  } else {
-    mount();
+  if (!window.__SWUP_ROUTER_ACTIVE__) {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', mount);
+    } else {
+      mount();
+    }
   }
 }

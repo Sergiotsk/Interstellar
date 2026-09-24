@@ -13,6 +13,11 @@
 //      GSAP + ScrollTrigger, scrub, corte duro. Degrada a flujo normal sin
 //      GSAP / con reduced-motion.
 
+let activeObserver = null;
+let activeIntervals = [];
+let activeInstancias = [];
+let activeResizeHandler = null;
+
 // Visor Nav-Ranger: ciclador de fotogramas que se reemplazan en loop (estilo
 // stop-motion, sin crossfade). reduced-motion -> queda fijo en el primer
 // fotograma (ya lo muestra el CSS vía .is-activo). IntersectionObserver ->
@@ -24,7 +29,7 @@ function initNavVisores() {
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduced) return;
 
-  const observer = new IntersectionObserver((entradas) => {
+  activeObserver = new IntersectionObserver((entradas) => {
     entradas.forEach((entrada) => {
       const ciclador = entrada.target._ciclador;
       if (!ciclador) return;
@@ -41,14 +46,15 @@ function initNavVisores() {
     const ciclador = { activo: false };
     visor._ciclador = ciclador;
 
-    setInterval(() => {
+    const timer = setInterval(() => {
       if (!ciclador.activo) return;
       frames[indice].classList.remove('is-activo');
       indice = (indice + 1) % frames.length;
       frames[indice].classList.add('is-activo');
     }, intervaloMs);
+    activeIntervals.push(timer);
 
-    observer.observe(visor);
+    activeObserver.observe(visor);
   });
 }
 
@@ -74,8 +80,6 @@ async function armarGalerias() {
   gsap.registerPlugin(ScrollTrigger);
   document.body.classList.add('js-armado');
 
-  const instancias = [];
-
   function armar(riel) {
     const datos = [...riel.querySelectorAll('.tira-datos-item')];
     const frames = [...riel.querySelectorAll('.tira-frame')];
@@ -94,12 +98,7 @@ async function armarGalerias() {
 
     // Centro (en x) de cada fotograma dentro de la pista, medido con el
     // layout SIN transformar (offsetLeft ignora `transform`, así que da
-    // igual el x actual). BUGFIX: antes la pista se desplazaba con un pan
-    // lineal atado a `progress` de punta a punta de la tira — el primer y el
-    // último fotograma quedaban pegados a un borde del viewport (nunca
-    // centrados) y, como el `activa` (corte duro de texto/marco) cambia en
-    // umbrales no lineales (ver `segmentos` abajo), el paneo del último tramo
-    // se sentía desparejo/apurado frente a los anteriores.
+    // igual el x actual).
     const centros = frames.map(
       (f) => f.offsetLeft + f.offsetWidth / 2 - tiraViewport.clientWidth / 2,
     );
@@ -111,11 +110,6 @@ async function armarGalerias() {
       end: 'bottom bottom',
       scrub: 0.3,
       onUpdate(self) {
-        // `cruda` recorre 0..segmentos: cada tramo entero mueve la pista
-        // desde el centro del fotograma `piso` hasta el centro del
-        // siguiente, en línea recta y a ritmo parejo — el primero arranca
-        // centrado (cruda=0) y el último TERMINA centrado (cruda=segmentos),
-        // sin pegarse a ningún borde.
         const cruda = self.progress * segmentos;
         const piso = Math.min(segmentos, Math.floor(cruda));
         const siguiente = Math.min(segmentos, piso + 1);
@@ -135,26 +129,67 @@ async function armarGalerias() {
 
   rieles.forEach((riel) => {
     const inst = armar(riel);
-    if (inst) instancias.push(inst);
+    if (inst) activeInstancias.push(inst);
   });
 
   let resizeTimer;
-  window.addEventListener('resize', () => {
+  activeResizeHandler = () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
-      instancias.forEach(({ trigger, riel }) => {
+      activeInstancias.forEach(({ trigger, riel }) => {
         trigger.kill();
         riel.classList.remove('is-armada');
       });
-      instancias.length = 0;
+      activeInstancias.length = 0;
       rieles.forEach((riel) => {
         const inst = armar(riel);
-        if (inst) instancias.push(inst);
+        if (inst) activeInstancias.push(inst);
       });
       ScrollTrigger.refresh();
     }, 200);
-  });
+  };
+  window.addEventListener('resize', activeResizeHandler);
 }
 
-initNavVisores();
-armarGalerias();
+export function mount() {
+  unmount();
+  initNavVisores();
+  armarGalerias();
+}
+
+export function unmount() {
+  activeIntervals.forEach(clearInterval);
+  activeIntervals = [];
+
+  if (activeObserver) {
+    activeObserver.disconnect();
+    activeObserver = null;
+  }
+
+  if (activeResizeHandler) {
+    window.removeEventListener('resize', activeResizeHandler);
+    activeResizeHandler = null;
+  }
+
+  activeInstancias.forEach(({ trigger, riel }) => {
+    try {
+      trigger.kill();
+    } catch (e) {}
+    riel.classList.remove('is-armada');
+  });
+  activeInstancias = [];
+
+  if (typeof document !== 'undefined' && document.body) {
+    document.body.classList.remove('js-armado');
+  }
+}
+
+if (typeof document !== 'undefined') {
+  if (!window.__SWUP_ROUTER_ACTIVE__) {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', mount);
+    } else {
+      mount();
+    }
+  }
+}

@@ -40,7 +40,10 @@
 // `.is-armed`, cosa que hace UNICAMENTE cuando logro construir el timeline.
 // GSAP solo MEJORA; nunca es requisito para leer la pagina.
 
+let activeMM = null;
+
 async function initMundoPortada() {
+  unmountMundoPortada();
   const portada = document.querySelector('.mundo-portada');
   if (!portada) {
     return; // no es una pagina de mundo con portada -> nada que hacer
@@ -63,6 +66,7 @@ async function initMundoPortada() {
   // revierte sola (con el cleanup que devuelve cada callback) si la media query
   // deja de matchear. Con reduced-motion no matchea ninguna -> hero estatico.
   const mm = gsap.matchMedia();
+  activeMM = mm;
 
   if (portada.querySelector('.mundo-capa--orbita')) {
     escenaTierra(gsap, mm, portada);
@@ -874,11 +878,22 @@ function escenaTesseract(gsap, mm, portada) {
   mm.add('(max-width: 47.99rem) and (prefers-reduced-motion: no-preference)', armar(0.5, true));
 }
 
+export function unmountMundoPortada() {
+  if (activeMM) {
+    try {
+      activeMM.revert();
+    } catch (e) {}
+    activeMM = null;
+  }
+}
+
 if (typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initMundoPortada);
-  } else {
-    initMundoPortada();
+  if (!window.__SWUP_ROUTER_ACTIVE__) {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initMundoPortada);
+    } else {
+      initMundoPortada();
+    }
   }
 }
 
