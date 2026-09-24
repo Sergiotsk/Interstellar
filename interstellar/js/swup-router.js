@@ -2,7 +2,7 @@
 // Constitución v2.0.0, Principio I: librería vendorizada sin bundler ni build step.
 
 import Swup from './vendor/swup@4.10.0/swup.mjs';
-import { markCurrentPage, initHeroVideo, sincronizarAudioRuta } from './layout.js';
+import { markCurrentPage, initHeroVideo, sincronizarAudioRuta, actualizarPieSeccionesCondicional } from './layout.js';
 
 let swupInstance = null;
 let moduloActivo = null;
@@ -198,6 +198,9 @@ async function sincronizarBodyYLayout(visit) {
   document.body
     .querySelectorAll('footer nav.pie-secciones')
     .forEach((navSecciones) => markCurrentPage(navSecciones));
+
+  // 6. Actualizar visibilidad de navbar en el pie según scroll y sección (oculto en home)
+  actualizarPieSeccionesCondicional();
 }
 
 export function initSwupRouter() {
@@ -234,6 +237,7 @@ export function initSwupRouter() {
     swupInstance.hooks.on('page:view', (visit) => {
       const archivo = getArchivoActual();
       sincronizarAudioRuta(archivo);
+      actualizarPieSeccionesCondicional();
       mountCurrentPage(archivo);
 
       // Manejo de ancla (hash) o scroll al tope

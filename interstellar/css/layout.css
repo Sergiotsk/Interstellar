@@ -1759,6 +1759,11 @@ body.home .hero {
   flex: 1 0 auto;                       /* ocupa el espacio restante del <main> */
 }
 
+/* Home sin scroll: el header ya esta en la misma pantalla; nunca duplicar navbar en el pie */
+body.home .pie-secciones-marco {
+  display: none !important;
+}
+
 /* Backdrop a pantalla completa. Es un <video> decorativo (aria-hidden). Su
    `poster` (hero-gargantua.jpg) cubre el hueco mientras carga y cuando el video
    NO se reproduce (prefers-reduced-motion -> js/layout.js lo pausa). Si la carga
