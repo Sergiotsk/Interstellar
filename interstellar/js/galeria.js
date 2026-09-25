@@ -180,6 +180,7 @@ function wireVisor(items, filtro) {
         return;
       }
       evento.preventDefault();
+      evento.stopPropagation();
       abrir(indice);
     });
   });

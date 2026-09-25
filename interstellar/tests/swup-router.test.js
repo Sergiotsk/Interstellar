@@ -66,4 +66,25 @@ describe('js/swup-router.js — enrutador SPA y persistencia de audio', () => {
     actualizarPieSeccionesCondicional();
     assert.equal(fakeMarco.hidden, true);
   });
+
+  test('shouldIgnoreVisit ignora archivos estáticos, multimedia y atributos especiales', async () => {
+    const { shouldIgnoreVisit } = await import('../js/swup-router.js');
+    assert.equal(shouldIgnoreVisit('assets/img/foto.jpg'), true);
+    assert.equal(shouldIgnoreVisit('assets/img/foto.png'), true);
+    assert.equal(shouldIgnoreVisit('assets/img/foto.webp'), true);
+    assert.equal(shouldIgnoreVisit('assets/doc.pdf'), true);
+    assert.equal(shouldIgnoreVisit('assets/audio/cancion.mp3'), true);
+
+    // Páginas HTML válidas para SPA
+    assert.equal(shouldIgnoreVisit('personajes.html'), false);
+    assert.equal(shouldIgnoreVisit('galeria.html'), false);
+    assert.equal(shouldIgnoreVisit('/mundos-miller.html'), false);
+
+    // Elementos con data-no-swup o download
+    const fakeElNoSwup = { closest: (sel) => (sel === '[data-no-swup]' ? {} : null) };
+    assert.equal(shouldIgnoreVisit('personajes.html', fakeElNoSwup), true);
+
+    const fakeElDownload = { closest: (sel) => (sel === '[download]' ? {} : null) };
+    assert.equal(shouldIgnoreVisit('archivo.html', fakeElDownload), true);
+  });
 });

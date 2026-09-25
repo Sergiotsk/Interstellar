@@ -232,6 +232,16 @@ async function sincronizarBodyYLayout(visit) {
   actualizarPieSeccionesCondicional();
 }
 
+export function shouldIgnoreVisit(url, el = null) {
+  if (el?.closest?.('[data-no-swup]') || el?.closest?.('[download]')) {
+    return true;
+  }
+  if (/\.(jpe?g|png|webp|gif|svg|avif|mp4|webm|mp3|ogg|wav|pdf|zip)$/i.test(url)) {
+    return true;
+  }
+  return false;
+}
+
 export function initSwupRouter() {
   if (typeof window === 'undefined' || typeof document === 'undefined') {
     return null;
@@ -250,6 +260,7 @@ export function initSwupRouter() {
       containers: ['main'],
       animationSelector: 'main',
       cache: true,
+      ignoreVisit: (url, { el } = {}) => shouldIgnoreVisit(url, el),
     });
 
     // 1. Antes de abandonar la página actual: desmontar módulo y ScrollTriggers
