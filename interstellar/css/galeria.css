@@ -483,13 +483,24 @@ body:not(.home) main > section.galeria-portada:first-child .galeria-portada-cont
   justify-content: center;
   min-width: 44px;
   min-height: 44px;
-  font-size: 1.1rem;
   color: var(--color-texto);
-  background: color-mix(in srgb, var(--color-fondo) 55%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-texto) 20%, transparent);
+  background: color-mix(in srgb, var(--color-fondo) 75%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid color-mix(in srgb, var(--color-texto) 25%, transparent);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
   cursor: pointer;
-  transition: border-color 0.15s ease, color 0.15s ease;
-  z-index: 1;
+  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  z-index: 10;
+}
+
+.galeria-visor-cerrar svg,
+.galeria-visor-prev svg,
+.galeria-visor-next svg {
+  display: block;
+  pointer-events: none;
+  stroke: currentColor;
+  transition: transform 0.2s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 .galeria-visor-cerrar:hover,
@@ -499,7 +510,24 @@ body:not(.home) main > section.galeria-portada:first-child .galeria-portada-cont
 .galeria-visor-next:hover,
 .galeria-visor-next:focus-visible {
   color: var(--color-gargantua);
-  border-color: color-mix(in srgb, var(--color-gargantua) 60%, transparent);
+  background: color-mix(in srgb, var(--color-fondo) 92%, transparent);
+  border-color: color-mix(in srgb, var(--color-gargantua) 80%, transparent);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--color-gargantua) 40%, transparent);
+}
+
+.galeria-visor-cerrar:hover svg,
+.galeria-visor-cerrar:focus-visible svg {
+  transform: rotate(90deg);
+}
+
+.galeria-visor-prev:hover svg,
+.galeria-visor-prev:focus-visible svg {
+  transform: translateX(-2px);
+}
+
+.galeria-visor-next:hover svg,
+.galeria-visor-next:focus-visible svg {
+  transform: translateX(2px);
 }
 
 .galeria-visor-cerrar {

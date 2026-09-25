@@ -621,14 +621,27 @@
       </nav>
     </section>
 
-    <dialog class="galeria-visor" aria-label="Visor de imagen">
-      <button type="button" class="galeria-visor-cerrar" aria-label="Cerrar visor">✕</button>
-      <button type="button" class="galeria-visor-prev" aria-label="Imagen anterior">‹</button>
+    <dialog class="galeria-visor" id="galeria-visor" aria-label="Visor de imagen">
+      <button type="button" class="galeria-visor-cerrar" aria-label="Cerrar visor">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <button type="button" class="galeria-visor-prev" aria-label="Imagen anterior">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
       <figure class="galeria-visor-figura">
         <img class="galeria-visor-img" src="" alt="">
         <figcaption class="galeria-visor-caption"></figcaption>
       </figure>
-      <button type="button" class="galeria-visor-next" aria-label="Imagen siguiente">›</button>
+      <button type="button" class="galeria-visor-next" aria-label="Imagen siguiente">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
     </dialog>
 
   </main>
