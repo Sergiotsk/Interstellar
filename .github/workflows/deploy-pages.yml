@@ -14,6 +14,7 @@ on:
       - "interstellar/css/**"
       - "interstellar/js/**"
       - "interstellar/assets/**"
+      - "interstellar/favicon.ico"
       - ".github/workflows/deploy-pages.yml"
   workflow_dispatch: {}  # redeploy manual a demanda desde la pestaña Actions
 
@@ -45,7 +46,7 @@ jobs:
         run: |
           mkdir -p _site
           cp -r interstellar/*.html interstellar/css interstellar/js interstellar/assets _site/
-          cp interstellar/sitemap.xml _site/
+          cp interstellar/favicon.ico interstellar/sitemap.xml _site/
           touch _site/.nojekyll
 
       - name: Upload artifact
