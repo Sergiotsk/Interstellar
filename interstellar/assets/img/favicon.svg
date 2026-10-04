@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Gargantúa">
+  <!-- Favicon de Gargantúa (feature favicon). FUENTE de verdad: los rasters
+       (.ico, PNG, apple-touch) se generan de ESTE archivo con
+       tools/make-favicon.mjs, así todos los formatos se ven iguales.
+       Diseño: esfera negra (sombra del agujero) + anillo de fotones brillante +
+       halo del disco de acreción + los "picos" horizontales del disco, sobre un
+       tile oscuro redondeado. Legible a 16px (el disco fino se lee como línea). -->
+  <defs>
+    <linearGradient id="disk" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ff8a1e" stop-opacity="0"/>
+      <stop offset="18%" stop-color="#ffab45"/>
+      <stop offset="50%" stop-color="#fff4dd"/>
+      <stop offset="82%" stop-color="#ffab45"/>
+      <stop offset="100%" stop-color="#ff8a1e" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="1"/>
+    </filter>
+  </defs>
+  <rect width="64" height="64" rx="13" fill="#0a0b12"/>
+  <circle cx="32" cy="32" r="18" fill="none" stroke="#ff9a2e" stroke-width="6" opacity=".45" filter="url(#blur)"/>
+  <circle cx="32" cy="32" r="15.5" fill="none" stroke="#ffc879" stroke-width="2.4"/>
+  <ellipse cx="32" cy="32" rx="28" ry="2.6" fill="url(#disk)" filter="url(#blur)"/>
+  <circle cx="32" cy="32" r="13" fill="#000"/>
+  <circle cx="32" cy="32" r="13" fill="none" stroke="#fff0d2" stroke-width="1.1"/>
+</svg>

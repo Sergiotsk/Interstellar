@@ -5,7 +5,8 @@
   "packageManager": "pnpm@10.33.0",
   "scripts": {
     "test": "node --test",
-    "optimize": "node tools/optimize-img.mjs"
+    "optimize": "node tools/optimize-img.mjs",
+    "favicon": "node tools/make-favicon.mjs"
   },
   "devDependencies": {
     "sharp": "0.35.4"
