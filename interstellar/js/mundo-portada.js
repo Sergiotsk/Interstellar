@@ -1,44 +1,8 @@
-// Portadas animadas de las paginas de mundo (`.mundo-portada`).
-//   - Tierra  -> "caida al polvo": cinco fotogramas (FILMGRAB) que el scroll
-//     encadena (orbita -> granja -> maizal -> tormenta -> granja sepultada).
-//   - Gargantua -> "descenso": seis fotogramas que el scroll encadena (la
-//     Endurance frente a Gargantua -> el disco de cerca -> el descenso por el
-//     plano del disco -> la Endurance minima -> el Ranger con las chispas del
-//     roce -> Cooper a la deriva). Al irse el ultimo fotograma queda el negro y
-//     un canvas de chispas que salen disparadas del centro hacia afuera
-//     acelerando (avance a velocidad, como Cooper cayendo) y DISMINUYEN a medida
-//     que scrolleas. Riel mas largo que la Tierra.
-//   - Miller -> "el amerizaje": siete fotogramas (plano abierto del Ranger y el
-//     pecio -> por la ventana del Ranger -> la camara al ras del oceano -> Doyle
-//     corre del muro de agua -> Doyle mira los restos zarandeados -> el muro
-//     BAJANDO sobre el Ranger volcado -> Brand quebrada).
-//     Encima, un reloj que cuenta los años que se pierden
-//     afuera mientras bajas: 0 -> 23 (una hora ahi = siete años arriba). El
-//     reloj es a Miller lo que las chispas a Gargantua: solo aparece con la
-//     escena armada.
-//   - Mann -> "el señuelo": seis fotogramas (vista cenital del hielo -> dos
-//     figuras en las crestas -> el doctor Mann -> la traicion, Cooper boca
-//     abajo con el visor rajado -> aproximacion a la Endurance -> caida por el
-//     tunel de acoplamiento). Encima, una baliza SEÑAL: HABITABLE que se
-//     CORROMPE a ENGAÑO (verde -> rojo, con glitch) en cuanto el scroll llega
-//     a la traicion. La baliza es a Mann lo que el reloj a Miller.
-//   - Tesseract -> "el pasillo del tiempo": seis fotogramas (la reticula
-//     infinita de estanterias -> la caida por la estructura -> detras del
-//     estante -> Cooper tensandose -> la vista cenital del cuarto -> Murph
-//     adulta entendiendo). Encima, un tren de morse que ENCIENDE sus grupos
-//     (S T A Y) en orden con el scroll y se decodifica en la palabra al final.
-// En las cinco la camara "baja" atada al scroll y suelta el sticky sobre el
-// contenido de la pagina.
-//
-// Libreria: GSAP 3.13 + ScrollTrigger (Constitucion v2.0.0, Principio I:
-// libreria acotada sin build). VENDORIZADA en js/vendor/gsap@3.13.0/ e importada
-// por ruta relativa: no depende de un CDN en runtime (ver js/vendor/README.md).
-//
-// Degradado: sin JS / GSAP no carga / prefers-reduced-motion -> el CSS deja la
-// portada como un hero estatico (primer plano a pantalla completa + titulo +
-// lead). El riel alto y el sticky solo se activan si este modulo agrega
-// `.is-armed`, cosa que hace UNICAMENTE cuando logro construir el timeline.
-// GSAP solo MEJORA; nunca es requisito para leer la pagina.
+// Portadas animadas de las paginas de mundo (`.mundo-portada`): una escena GSAP scroll-scrubbed por mundo.
+// Escenas: Tierra, Gargantua (+ chispas), Miller (+ reloj), Mann (+ baliza), Tesseract (+ morse).
+// GSAP 3.13 + ScrollTrigger vendorizados en js/vendor/gsap@3.13.0/ (ruta relativa, sin CDN).
+// Degradado: sin JS / sin GSAP / reduced-motion -> hero estatico; `.is-armed` solo lo agrega este modulo.
+// Detalle y porques: docs/20-notas-de-codigo/portadas-de-mundos.md
 
 let activeMM = null;
 
@@ -66,9 +30,7 @@ async function initMundoPortada() {
   }
   ScrollTrigger.config({ ignoreMobileResize: true });
 
-  // `matchMedia` de GSAP: arma la escena que corresponde al viewport y la
-  // revierte sola (con el cleanup que devuelve cada callback) si la media query
-  // deja de matchear. Con reduced-motion no matchea ninguna -> hero estatico.
+  // matchMedia de GSAP: arma la escena segun viewport y la revierte sola; con reduced-motion no matchea -> hero estatico.
   const mm = gsap.matchMedia();
   activeMM = mm;
 
@@ -83,11 +45,12 @@ async function initMundoPortada() {
   } else if (portada.querySelector('.mundo-capa--tesseract-reticula')) {
     escenaTesseract(gsap, mm, portada);
   }
+
+  // El pin agrega espacio: los triggers creados antes (tira de celuloide) deben recalcularse.
+  ScrollTrigger.refresh();
 }
 
-// Prefetching y decodificación asíncrona de las capas del mundo activo.
-// Forzar new Image().decode() en background garantiza que al momento de scrollear
-// las imágenes ya estén descomprimidas en memoria GPU sin pantallas negras.
+// Prefetch + decode de las capas del mundo activo para evitar pantallas negras al scrollear.
 function precargarCapas(capas) {
   if (typeof window === 'undefined') return;
   capas.forEach((capa) => {
@@ -118,8 +81,7 @@ function escenaTierra(gsap, mm, portada) {
     return; // DOM inesperado -> mejor el hero estatico que una escena rota
   }
 
-  // Estado inicial comun: solo la orbita visible; el resto oculto (autoAlpha 0 ->
-  // visibility hidden, no pinta) con su transform de entrada preparado.
+  // Estado inicial: solo la orbita visible; el resto oculto (autoAlpha 0) con su transform de entrada.
   const base = () => {
     portada.classList.add('is-armed');
     precargarCapas(capas);
@@ -151,37 +113,30 @@ function escenaTierra(gsap, mm, portada) {
       defaults: { ease: 'none' },
     });
 
-    // Timeline normalizado 0..1 (el scrub lo mapea al riel de scroll). Cada beat
-    // tiene ~0.20 de recorrido; los crossfades son cortos (0.06) para que casi
-    // todo el scroll se vea UNA sola imagen y no una doble exposicion larga (dos
-    // fotogramas mezclados se leen sucios). El transform de cada capa sigue
-    // corriendo despues del fade -> asentamiento sobre la imagen ya opaca.
+    // Timeline normalizado 0..1; crossfades cortos (0.06) para evitar doble exposicion.
     tl
       // el texto se va temprano, antes de "bajar" del planeta
       .to([texto, volver], { autoAlpha: 0, y: -40, duration: 0.08 }, 0)
 
-      // 1 · orbita: el full-disk aguanta bien el zoom (2200px) -> se puede
-      //     "bajar" mas hacia el planeta. Deriva de unos grados (foto plana:
-      //     parallax con vida, no rotacion esferica) y corte rapido al final.
+      // 1 · orbita: zoom + deriva de unos grados
       .to(orbita, { rotation: 5, duration: 0.34 }, 0)
       .to(orbita, { scale: 1.4, duration: 0.22 }, 0)
       .to(orbita, { autoAlpha: 0, ease: 'power2.in', duration: 0.06 }, 0.16)
 
-      // 2 · granja: la granja verde; la camara se asienta durante el beat
+      // 2 · granja
       .to(granja, { autoAlpha: 1, duration: 0.06 }, 0.16)
       .to(granja, { scale: 1, duration: 0.2 }, 0.16)
 
-      // 3 · maizal: el aereo del maizal; el color se drena hacia el final del beat
+      // 3 · maizal: el color se drena al final del beat
       .to(maizal, { autoAlpha: 1, duration: 0.06 }, 0.38)
       .to(maizal, { scale: 1, duration: 0.2 }, 0.38)
       .to(maizal, { filter: 'saturate(0.4) brightness(0.85)', duration: 0.12 }, 0.46)
 
-      // 4 · tormenta: entra opaca y despues "se asienta" (baja + escala) sobre si
-      //     misma, no como panel translucido moviendose sobre el maizal.
+      // 4 · tormenta: entra opaca y se asienta sobre si misma
       .to(tormenta, { autoAlpha: 1, duration: 0.06 }, 0.58)
       .to(tormenta, { yPercent: 0, scale: 1, duration: 0.16 }, 0.6)
 
-      // 5 · abandonada: el polvo se asienta -> la granja sepultada, muerta
+      // 5 · abandonada: la granja sepultada
       .to(abandonada, { autoAlpha: 1, duration: 0.06 }, 0.78)
       .to(abandonada, { scale: 1, duration: 0.16 }, 0.78)
       // remate: leve empuje final antes de soltar el sticky
@@ -190,9 +145,7 @@ function escenaTierra(gsap, mm, portada) {
     return cleanup(tl);
   });
 
-  // --- Movil: los mismos 5 beats que escritorio (antes eran 3 y se saltaba la
-  //     granja verde y la granja sepultada — el remate de la secuencia), con un
-  //     zoom de entrada mas contenido. Riel algo mas corto (ver mundos.css). ---
+  // --- Movil: mismos 5 beats, zoom mas contenido (riel mas corto, ver mundos.css) ---
   mm.add('(max-width: 47.99rem) and (prefers-reduced-motion: no-preference)', () => {
     base();
 
@@ -206,8 +159,7 @@ function escenaTierra(gsap, mm, portada) {
       defaults: { ease: 'none' },
     });
 
-    // Mismas posiciones normalizadas que escritorio (0.16 / 0.38 / 0.58 / 0.78);
-    // solo se contiene la deriva y el zoom de la orbita para no ampliar de mas.
+    // Mismas posiciones que escritorio; deriva y zoom de la orbita contenidos.
     tl
       .to([texto, volver], { autoAlpha: 0, y: -24, duration: 0.08 }, 0)
 
@@ -229,7 +181,7 @@ function escenaTierra(gsap, mm, portada) {
       .to(tormenta, { autoAlpha: 1, duration: 0.06 }, 0.58)
       .to(tormenta, { yPercent: 0, scale: 1, duration: 0.16 }, 0.6)
 
-      // 5 · abandonada: la granja sepultada, muerta
+      // 5 · abandonada
       .to(abandonada, { autoAlpha: 1, duration: 0.06 }, 0.78)
       .to(abandonada, { scale: 1, duration: 0.16 }, 0.78)
       .to(abandonada, { scale: 1.04, duration: 0.06 }, 0.94);
@@ -255,9 +207,7 @@ function escenaGargantua(gsap, mm, portada) {
     return; // DOM inesperado -> hero estatico
   }
 
-  // Estado inicial: solo el primer fotograma visible; el resto oculto con su
-  // transform de entrada preparado (mismo criterio que la Tierra). El `scale`
-  // de entrada > 1 da el "empuje" de camara: cada beat se asienta a scale 1.
+  // Estado inicial: solo el primer fotograma; el `scale` de entrada > 1 da el empuje de camara.
   const base = () => {
     portada.classList.add('is-armed');
     precargarCapas(capas);
@@ -267,22 +217,13 @@ function escenaGargantua(gsap, mm, portada) {
     gsap.set(endurance, { autoAlpha: 0, scale: 1.12 });
     gsap.set(ranger, { autoAlpha: 0, scale: 1.16, xPercent: 3 });
     gsap.set(deriva, { autoAlpha: 0, scale: 1.18 });
-    // los dos campos de chispas siempre visibles; el `pulso` controla la intensidad
+    // los dos campos de chispas siempre visibles; `pulso` controla la intensidad
     if (fx) gsap.set(fx, { autoAlpha: 1 });
     if (fxFondo) gsap.set(fxFondo, { autoAlpha: 1 });
   };
 
-  // Campo de chispas del cruce (Cooper cayendo a velocidad). Un <canvas> con N
-  // trazos que nacen en el punto de fuga (centro) y salen DISPARADOS hacia
-  // afuera ACELERANDO -> pasan de largo la camara. El trazo se alarga con la
-  // velocidad; al salir de cuadro renacen en el centro. rAF propio; el objeto
-  // `pulso` (que mueve el timeline con el scroll, `pulso.v` 0..1) modula cuantas
-  // chispas se dibujan y con cuanto brillo -> disminuyen a medida que scrolleas.
-  //
-  // Se llama DOS veces: una capa por delante del fotograma (`fx`, z-index 3) y
-  // otra por detras (`.mundo-chispas-fx--fondo`, detras de las `.mundo-capa`).
-  // Mientras `deriva` es opaco, las de atras quedan tapadas por Cooper; cuando
-  // el fotograma baja a autoAlpha 0.22, asoman -> sensacion de profundidad.
+  // Campo de chispas: canvas con trazos que salen del punto de fuga acelerando; `pulso.v` (0..1) modula cuantas y con que brillo.
+  // Se usa dos veces: capa delante y detras del fotograma (profundidad, ver docs/20-notas-de-codigo/portadas-de-mundos.md#canvas-de-chispas).
   const arrancarChispas = (fxEl, opts) => {
     if (!fxEl) return null;
     const { n, pulso, brilloMax = 1, escala = 1, velMul = 1 } = opts;
@@ -392,10 +333,7 @@ function escenaGargantua(gsap, mm, portada) {
     if (fxFondo) gsap.set(fxFondo, { clearProps: 'all' });
   };
 
-  // Un beat = fade-in corto + asentamiento del transform + fade-out corto. Los
-  // crossfades son cortos (0.05) para que casi todo el scroll se vea UN solo
-  // fotograma (dos mezclados se leen sucios). `pos` = donde entra en el timeline
-  // normalizado 0..1; cada beat ocupa ~0.13.
+  // Beat = fade-in corto + asentamiento del transform; crossfades de 0.05, ~0.13 por beat.
   const beat = (tl, capa, pos, extra) => {
     tl.to(capa, { autoAlpha: 1, duration: 0.05 }, pos)
       .to(capa, { scale: 1, yPercent: 0, xPercent: 0, duration: 0.12, ...extra }, pos);
@@ -423,9 +361,9 @@ function escenaGargantua(gsap, mm, portada) {
     });
 
     tl
-      // el texto se va temprano, antes de empezar a caer
+      // el texto se va temprano
       .to([texto, volver], { autoAlpha: 0, y: -40, duration: 0.07 }, 0)
-      // 1 · lejos: la Endurance frente a Gargantua; push-in largo + deriva minima
+      // 1 · lejos: push-in largo + deriva minima
       .to(lejos, { scale: 1.35, duration: 0.4 }, 0)
       .to(lejos, { rotation: 2, duration: 0.4 }, 0);
     salida(tl, lejos, 0.12);
@@ -446,26 +384,20 @@ function escenaGargantua(gsap, mm, portada) {
     beat(tl, ranger, 0.52);
     salida(tl, ranger, 0.66);
 
-    // 6 · deriva: ultimo fotograma. AGUANTA y se disuelve LENTO hasta casi el
-    //     final del riel, solapado con las chispas -> nunca queda pantalla negra
-    //     y vacia esperando que suelte el sticky.
+    // 6 · deriva: ultimo fotograma; aguanta y se disuelve lento, solapado con las chispas.
     beat(tl, deriva, 0.66);
     tl.to(deriva, { scale: 1.12, ease: 'power1.inOut', duration: 0.34 }, 0.7);
-    // NO se apaga del todo: queda un fantasma de Cooper hasta que suelta el
-    // sticky -> el ultimo tramo nunca es pantalla negra vacia.
+    // No se apaga del todo: queda un fantasma hasta soltar el sticky (sin pantalla negra).
     tl.to(deriva, { autoAlpha: 0.22, ease: 'power1.in', duration: 0.16 }, 0.86);
 
-    // Campo de chispas: sube y con el scroll baja algo, pero se mantiene bien
-    // presente hasta el final; el resto se lo lleva el sticky al soltarse.
+    // Chispas: bajan algo con el scroll pero siguen presentes hasta el final.
     tl.to(pulso, { v: 1, duration: 0.08 }, 0.8);
     tl.to(pulso, { v: 0.6, ease: 'power1.in', duration: 0.16 }, 0.86);
 
     return cleanup(tl, paradas);
   });
 
-  // --- Movil: los mismos 6 fotogramas que escritorio (antes eran menos y las
-  //     transiciones se sentian apuradas), con un riel algo mas corto y un zoom
-  //     de entrada mas contenido. ---
+  // --- Movil: mismos 6 fotogramas, riel mas corto y zoom contenido ---
   mm.add('(max-width: 47.99rem) and (prefers-reduced-motion: no-preference)', () => {
     base();
     const pulso = { v: 0 };
@@ -486,7 +418,7 @@ function escenaGargantua(gsap, mm, portada) {
 
     tl
       .to([texto, volver], { autoAlpha: 0, y: -28, duration: 0.07 }, 0)
-      // en movil `cover` ya amplia bastante en vertical -> deriva minima, sin zoom
+      // en movil `cover` ya amplia en vertical -> sin zoom
       .to(lejos, { rotation: 1, duration: 0.4 }, 0);
     salida(tl, lejos, 0.12);
 
@@ -502,8 +434,7 @@ function escenaGargantua(gsap, mm, portada) {
     beat(tl, ranger, 0.52);
     salida(tl, ranger, 0.66);
 
-    // deriva aguanta hasta casi el final y se disuelve lento, solapado con las
-    // chispas -> sin pantalla vacia al terminar. Sin zoom extra en movil.
+    // deriva: aguanta y se disuelve lento; sin zoom extra en movil.
     beat(tl, deriva, 0.66);
     tl.to(deriva, { xPercent: -2, ease: 'power1.inOut', duration: 0.34 }, 0.7);
     tl.to(deriva, { autoAlpha: 0.22, ease: 'power1.in', duration: 0.16 }, 0.86);
@@ -533,10 +464,7 @@ function escenaMiller(gsap, mm, portada) {
     return; // DOM inesperado -> hero estatico
   }
 
-  // Estado inicial: solo el primer fotograma; el resto oculto con su transform
-  // de entrada preparado. `scale` > 1 en las capas que "empujan" la camara; la
-  // ola entra hundida (yPercent) para TREPAR con el scroll; el muro entra alto
-  // para BAJAR encima del Ranger.
+  // Estado inicial: solo el primer fotograma; la ola entra hundida (trepa) y el muro entra alto (baja).
   const base = () => {
     portada.classList.add('is-armed');
     precargarCapas(capas);
@@ -560,9 +488,7 @@ function escenaMiller(gsap, mm, portada) {
     if (relojNum) relojNum.textContent = '0';
   };
 
-  // Beat = fade-in corto + asentamiento del transform + fade-out corto. Mismo
-  // criterio que Gargantua: crossfades de 0.05 para que casi todo el scroll se
-  // vea UN fotograma. `pos` = entrada en el timeline normalizado 0..1.
+  // Beat = fade-in + asentamiento + fade-out cortos (crossfades de 0.05).
   const beat = (tl, capa, pos, extra) => {
     tl.to(capa, { autoAlpha: 1, duration: 0.05 }, pos)
       .to(capa, { scale: 1, yPercent: 0, xPercent: 0, duration: 0.11, ...extra }, pos);
@@ -570,9 +496,7 @@ function escenaMiller(gsap, mm, portada) {
   const salida = (tl, capa, pos) =>
     tl.to(capa, { autoAlpha: 0, ease: 'power2.in', duration: 0.05 }, pos);
 
-  // El reloj de la dilatacion: un proxy 0..23 que el scrub arrastra y vuelca al
-  // <span>. Arranca al dejar el planeta y se clava en 23 cerca del final (una
-  // hora en Miller = siete años arriba; la parada les costo veintitres).
+  // Reloj de dilatacion: proxy 0..23 que el scrub vuelca al <span> (1 h en Miller = 7 años arriba).
   const contador = (tl, movil) => {
     if (!reloj || !relojNum) return;
     const proxy = { v: 0 };
@@ -587,15 +511,15 @@ function escenaMiller(gsap, mm, portada) {
       },
       0.12,
     );
-    // golpe seco cuando el muro cae sobre el Ranger: el costo se siente
+    // golpe seco cuando el muro cae sobre el Ranger
     tl.to(reloj, { scale: 1.18, duration: 0.06 }, 0.62)
       .to(reloj, { scale: 1, duration: 0.1 }, 0.68);
   };
 
-  // Construye los 7 beats sobre `tl`. `amp` (0..1) atenua los zooms para movil.
+  // Construye los 7 beats sobre `tl`; `amp` (0..1) atenua los zooms en movil.
   const coreografia = (tl, amp) => {
     tl
-      // el texto se va temprano, antes de "bajar" al agua
+      // el texto se va temprano
       .to([texto, volver], { autoAlpha: 0, y: -40 * amp, duration: 0.07 }, 0)
       // 1 · arribo: plano abierto (Ranger + pecio + exploradores); push-in + deriva
       .to(arribo, { scale: 1 + 0.2 * amp, duration: 0.34 }, 0)
@@ -610,8 +534,7 @@ function escenaMiller(gsap, mm, portada) {
     beat(tl, rasante, 0.22, { xPercent: -4 * amp });
     salida(tl, rasante, 0.35);
 
-    // 4 · ola: Doyle corre hacia camara con el muro de agua ya levantandose
-    //     detras. Push-in con urgencia + sacudida corta (no "trepa": eso es el muro).
+    // 4 · ola: Doyle corre hacia camara con el muro detras; push-in + sacudida corta
     tl.to(ola, { autoAlpha: 1, duration: 0.05 }, 0.35);
     tl.to(ola, { scale: 1, xPercent: 0, ease: 'power2.out', duration: 0.13 }, 0.35);
     tl.to(ola, { xPercent: -2.5 * amp, duration: 0.04 }, 0.41).to(ola, { xPercent: 0, duration: 0.04 }, 0.46);
@@ -623,15 +546,12 @@ function escenaMiller(gsap, mm, portada) {
     tl.to(impacto, { xPercent: 2, duration: 0.04 }, 0.52).to(impacto, { xPercent: 0, duration: 0.04 }, 0.58);
     salida(tl, impacto, 0.63);
 
-    // 6 · muro: el Ranger volcado y la pared de agua tapando el cuadro. Entra alto
-    //     y BAJA creciendo -> se siente que se viene encima. Aguanta.
+    // 6 · muro: entra alto y baja creciendo (se viene encima); aguanta
     tl.to(muro, { autoAlpha: 1, duration: 0.05 }, 0.63);
     tl.to(muro, { yPercent: 4, scale: 1.12 + 0.08 * amp, ease: 'power1.in', duration: 0.16 }, 0.63);
     salida(tl, muro, 0.79);
 
-    // 7 · cabina: Brand quebrada tras perder a Doyle -> el costo, hecho cara.
-    //     AGUANTA y se disuelve LENTO hasta casi el final del riel -> nunca queda
-    //     pantalla vacia esperando que suelte el sticky.
+    // 7 · cabina: Brand quebrada; aguanta y se disuelve lento (sin pantalla vacia)
     beat(tl, cabina, 0.79);
     tl.to(cabina, { scale: 1 + 0.09 * amp, ease: 'power1.inOut', duration: 0.24 }, 0.82);
     tl.to(cabina, { autoAlpha: 0.22, ease: 'power1.in', duration: 0.14 }, 0.88);
@@ -648,7 +568,7 @@ function escenaMiller(gsap, mm, portada) {
     return cleanup(tl);
   };
 
-  // Escritorio: zooms plenos. Movil: `cover` ya amplia en vertical -> `amp` 0.5.
+  // Escritorio: zooms plenos. Movil: `amp` 0.5 porque `cover` ya amplia en vertical.
   mm.add('(min-width: 48rem) and (prefers-reduced-motion: no-preference)', armar(1, false));
   mm.add('(max-width: 47.99rem) and (prefers-reduced-motion: no-preference)', armar(0.5, true));
 }
@@ -670,9 +590,7 @@ function escenaMann(gsap, mm, portada) {
     return; // DOM inesperado -> hero estatico
   }
 
-  // Estado inicial: solo la cenital del hielo; el resto oculto con su transform
-  // de entrada. `engano` entra con un tiron (yPercent) para el corte seco de la
-  // traicion; `tunel` entra girado para la caida sin gravedad.
+  // Estado inicial: solo la cenital; `engano` entra con tiron (corte de la traicion), `tunel` entra girado.
   const base = () => {
     portada.classList.add('is-armed');
     precargarCapas(capas);
@@ -706,9 +624,7 @@ function escenaMann(gsap, mm, portada) {
   const salida = (tl, capa, pos) =>
     tl.to(capa, { autoAlpha: 0, ease: 'power2.in', duration: 0.05 }, pos);
 
-  // La baliza: un proxy 0..1 que el scrub arrastra. Cuando pasa 0.5 (la
-  // traicion) conmuta la lectura HABITABLE -> ENGAÑO y prende `.is-mentira`
-  // (verde -> rojo). onUpdate = funciona en los dos sentidos del scroll.
+  // Baliza: proxy 0..1; al pasar 0.5 (la traicion) conmuta HABITABLE -> ENGAÑO via onUpdate (reversible con el scroll).
   const balizaSenal = (tl, movil) => {
     if (!baliza || !balizaEstado) return;
     tl.to(baliza, { autoAlpha: 0.92, duration: 0.06 }, movil ? 0.14 : 0.1);
@@ -734,7 +650,7 @@ function escenaMann(gsap, mm, portada) {
       .to(baliza, { autoAlpha: 0.92, duration: 0.05 }, 0.5);
   };
 
-  // Construye los 6 beats sobre `tl`. `amp` (0..1) atenua los zooms en movil.
+  // Construye los 6 beats sobre `tl`; `amp` (0..1) atenua los zooms en movil.
   const coreografia = (tl, amp) => {
     tl
       .to([texto, volver], { autoAlpha: 0, y: -40 * amp, duration: 0.07 }, 0)
@@ -762,8 +678,7 @@ function escenaMann(gsap, mm, portada) {
     beat(tl, docking, 0.58, { scale: 1.06 });
     salida(tl, docking, 0.72);
 
-    // 6 · tunel: la caida por el tunel de acoplamiento. AGUANTA girando lento y
-    //     se disuelve a un fantasma hasta que suelta el sticky (sin negro vacio).
+    // 6 · tunel: aguanta girando lento y queda como fantasma (sin negro vacio)
     beat(tl, tunel, 0.72, { rotation: 0 });
     tl.to(tunel, { rotation: -3 * amp, scale: 1.08, ease: 'power1.inOut', duration: 0.3 }, 0.76);
     tl.to(tunel, { autoAlpha: 0.22, ease: 'power1.in', duration: 0.16 }, 0.86);
@@ -802,8 +717,7 @@ function escenaTesseract(gsap, mm, portada) {
     return; // DOM inesperado -> hero estatico
   }
 
-  // Estado inicial: solo la reticula; el resto oculto con su transform de
-  // entrada. `caida` entra girada (la caida sin gravedad por la estructura).
+  // Estado inicial: solo la reticula; `caida` entra girada.
   const base = () => {
     portada.classList.add('is-armed');
     precargarCapas(capas);
@@ -833,9 +747,7 @@ function escenaTesseract(gsap, mm, portada) {
   const salida = (tl, capa, pos) =>
     tl.to(capa, { autoAlpha: 0, ease: 'power2.in', duration: 0.05 }, pos);
 
-  // El tren de morse (S T A Y). Un proxy 0..4 que el scrub arrastra; cada grupo
-  // se enciende cuando el proxy pasa su indice. Al final asoma la palabra
-  // decodificada y el tren baja de intensidad (transmision cerrada).
+  // Tren de morse: proxy 0..N; cada grupo se enciende al pasar su indice; al final asoma la palabra.
   const morseTren = (tl, movil) => {
     if (!morse || grupos.length === 0) return;
     tl.to(morse, { autoAlpha: 0.9, duration: 0.06 }, movil ? 0.14 : 0.1);
@@ -858,7 +770,7 @@ function escenaTesseract(gsap, mm, portada) {
     }
   };
 
-  // Construye los 6 beats sobre `tl`. `amp` (0..1) atenua los zooms en movil.
+  // Construye los 6 beats sobre `tl`; `amp` (0..1) atenua los zooms en movil.
   const coreografia = (tl, amp) => {
     tl
       .to([texto, volver], { autoAlpha: 0, y: -40 * amp, duration: 0.07 }, 0)
@@ -884,8 +796,7 @@ function escenaTesseract(gsap, mm, portada) {
     beat(tl, mensaje, 0.56);
     salida(tl, mensaje, 0.72);
 
-    // 6 · murph: Murph adulta frente al estante, entendiendo. AGUANTA y se
-    //     disuelve a un fantasma hasta que suelta el sticky (sin negro vacio).
+    // 6 · murph: aguanta y se disuelve a un fantasma (sin negro vacio)
     beat(tl, murph, 0.72);
     tl.to(murph, { scale: 1 + 0.06 * amp, ease: 'power1.inOut', duration: 0.28 }, 0.76);
     tl.to(murph, { autoAlpha: 0.22, ease: 'power1.in', duration: 0.16 }, 0.86);

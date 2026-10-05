@@ -1,8 +1,5 @@
 #!/usr/bin/env node
-// Genera el favicon de Gargantúa desde su SVG fuente (assets/img/favicon.svg).
-// Corre LOCAL, nunca en CI: los derivados se commitean y se sirven tal cual
-// (mismo criterio que tools/optimize-img.mjs). Sin dependencias nuevas: el .ico
-// se arma a mano (tools/make-favicon.lib.mjs).
+// Genera el favicon desde assets/img/favicon.svg. Corre LOCAL; los derivados se commitean.
 // Uso:  node tools/make-favicon.mjs [--dry-run]
 
 import { readFile, writeFile, access } from 'node:fs/promises';
@@ -16,7 +13,7 @@ import { ICO_SIZES, buildIco } from './make-favicon.lib.mjs';
 const ROOT = path.resolve(import.meta.dirname, '..');
 const IMG_DIR = path.join(ROOT, 'assets', 'img');
 const SVG_SRC = path.join(IMG_DIR, 'favicon.svg');
-const TILE = '#0a0b12'; // fondo del tile del SVG: para iOS (sin alpha)
+const TILE = '#0a0b12'; // fondo para iOS (sin alpha)
 const SVG_REL = 'assets/img/favicon.svg';
 
 const PNG_OUT = [
@@ -24,14 +21,13 @@ const PNG_OUT = [
   { size: 32, file: path.join(IMG_DIR, 'favicon-32.png') },
 ];
 const APPLE = { size: 180, file: path.join(IMG_DIR, 'apple-touch-icon.png') };
-const ICO_OUT = path.join(ROOT, 'favicon.ico'); // raíz del sitio (convención)
+const ICO_OUT = path.join(ROOT, 'favicon.ico'); // raíz del sitio
 
 async function exists(p) {
   try { await access(p, FS.F_OK); return true; } catch { return false; }
 }
 
-// Rasteriza el SVG al tamaño pedido. La `density` alta evita el render borroso:
-// sharp primero rasteriza el SVG (64 unidades) y recién después hace resize.
+// `density` alta: sharp rasteriza el SVG (64 unidades) antes del resize; sin ella sale borroso.
 function render(svg, size, { flatten = false } = {}) {
   const density = Math.max(72, Math.ceil((size / 64) * 72 * 2));
   let img = sharp(svg, { density }).resize(size, size);

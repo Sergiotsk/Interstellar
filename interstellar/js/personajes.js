@@ -1,27 +1,16 @@
-// Personajes (personajes.html) — feature 008.
-// Módulo dedicado a esta página (un módulo por responsabilidad, cargado solo
-// acá), separado de js/mundo-portada.js y js/filmstrip.js a propósito: reusa
-// el MISMO mecanismo que esos dos (riel + sticky + scrub con GSAP/ScrollTrigger,
-// import dinámico vendorizado, degradado a prefers-reduced-motion / fallo de
-// carga), pero resuelve un problema propio (galería de escenas + visor
-// Nav-Ranger) y no debe acoplar Personajes a cambios futuros de Mundos.
-//
-// Dos piezas independientes entre sí:
-//   1. initNavVisores() — ciclador del visor Nav-Ranger (US4). No está atado
-//      a scroll, no depende de GSAP: setInterval + IntersectionObserver.
-//   2. armarGalerias() — riel de escenas con texto sincronizado (US3).
-//      GSAP + ScrollTrigger, scrub, corte duro. Degrada a flujo normal sin
-//      GSAP / con reduced-motion.
+// Personajes (personajes.html) — feature 008. Módulo propio, desacoplado de mundo-portada.js.
+// Dos piezas independientes:
+//   1. initNavVisores() — ciclador del visor Nav-Ranger (setInterval + IntersectionObserver, sin GSAP).
+//   2. armarGalerias() — riel de escenas con GSAP/ScrollTrigger; degrada a flujo normal.
+// ver docs/20-notas-de-codigo/paginas-interactivas.md#personajes
 
 let activeObserver = null;
 let activeIntervals = [];
 let activeInstancias = [];
 let activeResizeHandler = null;
 
-// Visor Nav-Ranger: ciclador de fotogramas que se reemplazan en loop (estilo
-// stop-motion, sin crossfade). reduced-motion -> queda fijo en el primer
-// fotograma (ya lo muestra el CSS vía .is-activo). IntersectionObserver ->
-// pausa el setInterval cuando el visor no está en pantalla.
+// Visor Nav-Ranger: fotogramas en loop sin crossfade; pausa fuera de pantalla.
+// Con reduced-motion queda fijo en el primer fotograma (lo muestra el CSS vía .is-activo).
 function initNavVisores() {
   const visores = [...document.querySelectorAll('[data-nav-visor]')];
   if (visores.length === 0) return;
@@ -58,10 +47,8 @@ function initNavVisores() {
   });
 }
 
-// Galería de escenas: riel + sticky + scrub. El texto (`.tira-datos-item`)
-// cambia en corte duro según qué fotograma (`.tira-frame`) queda activo,
-// calculado a partir del `progress` del ScrollTrigger — mismo patrón de
-// riel vertical que js/mundo-portada.js, pero desplazando la tira en `x`.
+// Galería de escenas: riel + sticky + scrub. El texto cambia en corte duro según el
+// fotograma activo, calculado desde el `progress` del ScrollTrigger.
 async function armarGalerias() {
   const rieles = [...document.querySelectorAll('[data-riel-t]')];
   if (rieles.length === 0) return;
@@ -96,9 +83,7 @@ async function armarGalerias() {
     frames.forEach((el, n) => el.classList.toggle('activa', n === 0));
     if (progreso) progreso.textContent = `1 / ${total}`;
 
-    // Centro (en x) de cada fotograma dentro de la pista, medido con el
-    // layout SIN transformar (offsetLeft ignora `transform`, así que da
-    // igual el x actual).
+    // Centro (en x) de cada fotograma; offsetLeft ignora `transform`, asi que no depende del x actual.
     const centros = frames.map(
       (f) => f.offsetLeft + f.offsetWidth / 2 - tiraViewport.clientWidth / 2,
     );

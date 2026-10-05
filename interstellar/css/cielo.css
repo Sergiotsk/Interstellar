@@ -1,25 +1,7 @@
-/* Cielo: campo estelar + estrella fugaz (paginas con-cielo)
-   Extraido de css/layout.css (seccion 15) el 2026-09-10. Hoja de 5o nivel
-   segun el contrato 006 C5: se enlaza con un <link> DESPUES de layout.css,
-   solo en las paginas que la usan. Cut-paste textual, sin cambio de valor. */
+/* Cielo: campo estelar + estrella fugaz (paginas con-cielo). Hoja de 5o nivel, enlazada tras layout.css */
 
-/* ---------------------------------------------------------------------------
-   15. Cielo — campo estelar + estrella fugaz (capa de CONTENIDO)
-   ---------------------------------------------------------------------------
-   `js/layout.js` inyecta `<div class="cielo" aria-hidden>` como PRIMER hijo del
-   <body>, pero SOLO en las paginas con `class="... con-cielo"` (opt-in: `viaje`
-   trae su propia escena 3js; `creditos` es minima). Antes vivia en
-   `css/mundos.css` acotado a `body.mundos-hub`; se promovio a modulo compartido.
-
-   Estructura:  .cielo > i x3   (las <i> son las estrellas fugaces)
-   - `.cielo::before` capa LEJANA (muchas, tenues) · `.cielo::after` capa CERCANA
-     (menos, brillantes). Cada una deriva y titila a distinto ritmo.
-   - Color crema `rgba(239,231,214,*)`, nunca blanco puro (DESIGN.md regla 3).
-   - Mobile (<=48rem): se apaga la capa cercana y la deriva (el `translate` de una
-     capa grande con `box-shadow` es lo caro); queda un cielo sutil casi quieto.
-   - `prefers-reduced-motion`: el reset global congela la deriva; las fugaces se
-     RETIRAN (`display:none`) para que no queden clavadas a mitad de vuelo.
-   --------------------------------------------------------------------------- */
+/* 15. Cielo - campo estelar + estrella fugaz (capa de CONTENIDO)
+   ver docs/20-notas-de-codigo/css-paginas.md#cielo-y-campo-estelar */
 .cielo {
   position: fixed;
   inset: 0;
@@ -29,9 +11,7 @@
   contain: layout paint;
 }
 
-/* Contenido y chrome por ENCIMA del cielo (z-index 0). El <header> ya lleva
-   `position: relative; z-index: 20` en todas las paginas (seccion 4); aca solo
-   hay que elevar <main> y <footer>. */
+/* Contenido y chrome por ENCIMA del cielo: el header ya es z-index 20; aca se eleva <main> y <footer> */
 body.con-cielo > main,
 body.con-cielo > footer {
   position: relative;
@@ -520,9 +500,7 @@ body.con-cielo > footer {
   45%      { opacity: 1; }
 }
 
-/* Estrella fugaz: 3 <i> con arranque, duracion y demora distintos -> irregular,
-   "cada tanto". Cada raya viaja hacia abajo-izquierda y solo se ve ~1s de un
-   ciclo largo. La cola (`i::before`) apunta al reves del viaje. */
+/* Estrella fugaz: 3 <i> con arranque y duracion distintos (irregular). La cola (i::before) apunta al reves del viaje */
 .cielo i {
   position: absolute;
   width: 2px;

@@ -1,16 +1,5 @@
-// Maquina de estados del submenu (data-model.md §6, contracts/navigation.md).
-// Modulo PURO: sin DOM. Modela las transiciones del submenu de un eje y sus
-// invariantes (maximo uno abierto, objetivo de foco al cerrar por dismiss).
-//
-// Estados: `cerrado` (openSubmenuId === null) / `abierto` (openSubmenuId === id).
-// Eventos:
-//   - toggle(id): alterna abrir/cerrar. Al abrir, cierra cualquier otro abierto
-//     (abrir-otro, maximo uno abierto — FR-009).
-//   - open(id): abre, cerrando cualquier otro. NO cierra si ya esta abierto
-//     (re-entrada por hover — BUGFIX SC-010).
-//   - navigate(): cierra al activar un destino anidado (HU1-E4).
-//   - dismiss(): cierra y devuelve el id del control para restaurar foco
-//     (Escape / clic fuera / abandono — FR-010).
+// Maquina de estados del submenu (data-model.md §6, contracts/navigation.md). Modulo PURO: sin DOM.
+// Invariante: maximo un submenu abierto. Eventos: toggle(id), open(id), navigate(), dismiss().
 
 export function createSubmenuState() {
   let openSubmenuId = null;
@@ -29,9 +18,7 @@ export function createSubmenuState() {
       }
     },
 
-    // Abrir un submenu (hover desktop): si ya esta abierto para el mismo id, no
-    // hace nada (re-entrada no debe cerrar, a diferencia de toggle). Si abre uno
-    // distinto, cierra el actual (maximo uno abierto).
+    // Abre id sin cerrar si ya esta abierto (a diferencia de toggle; BUGFIX SC-010, re-entrada).
     open(id) {
       if (openSubmenuId === id) {
         return; // ya abierto: mantener, no cerrar
@@ -44,8 +31,7 @@ export function createSubmenuState() {
       openSubmenuId = null;
     },
 
-    // Escape / clic fuera / abandono: cierra y devuelve el id del control para
-    // restaurar el foco. Si no habia submenu abierto, devuelve null.
+    // Cierra y devuelve el id del control para restaurar el foco (null si no habia abierto).
     dismiss() {
       const controlObjetivo = openSubmenuId;
       openSubmenuId = null;

@@ -1,20 +1,8 @@
-// Horizonte de eventos animado (#agujeros-negros, ciencia.html): agujero
-// negro renderizado con Three.js + shaders GLSL en tiempo real, adaptado de
-// "Event Horizon (Three.js + GLSL)" de Daniel Muñoz (CodePen).
-//
-// Three.js VENDORIZADO en js/vendor/three@0.128.0/ (mismo criterio que GSAP,
-// ver js/vendor/README.md): import dinámico después del primer paint, nunca
-// un <script> de CDN en runtime (Constitución, Principio I).
-//
-// Degradado: la <img id="horizonte-fallback"> (ya en el DOM, ver ciencia.html)
-// arranca en opacity:0 -- css/ciencia.css. Nunca se ve la secuencia "aparece
-// el fallback y despues desaparece": mientras se decide si la animación va a
-// arrancar, la pantalla queda en negro (background-color de .ciencia-portada).
-// Recién se hace visible con `mostrarFallback()`, y solo en los casos donde
-// ya se sabe que la animación no va a cargar (sin WebGL, import caído,
-// excepción en cualquier línea de abajo) — ver soportaWebGL() e
-// initHorizonteSeguro(). Sin JS, el <noscript> de ciencia.html la muestra
-// directo por CSS. Nunca es requisito para ver la sección.
+// Horizonte de eventos animado (#agujeros-negros, ciencia.html): agujero negro con
+// Three.js + GLSL en tiempo real, adaptado de "Event Horizon" de Daniel Muñoz (CodePen).
+// Three.js vendorizado en js/vendor/three@0.128.0/, import dinámico tras el primer paint.
+// Degradado: la imagen de respaldo solo se muestra si la animación no arranca.
+// ver docs/20-notas-de-codigo/ciencia.md#degradado-y-fallback
 
 function soportaWebGL() {
   try {
@@ -71,25 +59,7 @@ async function initHorizonte() {
   const THREE = await import('./vendor/three@0.128.0/three.module.js');
   const reducirMovimiento = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // =====================================================================
-  // ACA VA EL JS DEL PEN — pegar el contenido completo del panel JS tal
-  // cual viene, CON ESTOS DOS CAMBIOS (son los únicos necesarios):
-  //
-  // 1. Sacar el chequeo `if (typeof THREE === 'undefined') { ...; return; }`
-  //    (ya no aplica: la constante THREE de arriba siempre está definida).
-  //
-  // 2. Donde el Pen haga `document.body.appendChild(canvas)` (o similar) ->
-  //    cambiarlo por `contenedor.appendChild(canvas)`. Y donde mida el
-  //    tamaño con `window.innerWidth` / `window.innerHeight` (para el
-  //    renderer, la cámara o el resize) -> cambiarlo por
-  //    `contenedor.clientWidth` / `contenedor.clientHeight`.
-  //
-  // La lógica de la lente gravitacional, los shaders GLSL y el loop de
-  // render se pegan TAL CUAL. Si el Pen tiene un loop de rotación/órbita
-  // automática, `reducirMovimiento` (arriba) está para que lo frenes si es
-  // true — no es obligatorio, pero es el mismo criterio que usa el resto
-  // del sitio (cielo.css, el Hero) para prefers-reduced-motion.
-  // =====================================================================
+  // Cuerpo adaptado del Pen: canvas dentro de `contenedor` y medidas con clientWidth/clientHeight.
    (function(){
 	'use strict';
 
@@ -101,14 +71,8 @@ async function initHorizonte() {
 	}
 
 	/*
-	   Renderizador y pipeline de post-procesado
-	   1) simulación (geodésicas + disco volumétrico)  -> RT escena
-	   2) brightpass (extrae lo que brilla)            -> RT bloom A
-	   3) blur gaussiano H y V, dos iteraciones        -> RT bloom A/B
-	   4) composición: escena + bloom, ACES, viñeta,
-	   aberración cromática, grano                  -> pantalla
-	   El HDR se codifica como e = c/(1+c) para viajar en texturas de
-	   8 bits y se decodifica en cada pase: c = e/(1-e).
+	   Pipeline: simulación -> brightpass -> blur H/V -> composición (ACES, viñeta, aberración, grano).
+	   HDR codificado como e = c/(1+c) para texturas de 8 bits; se decodifica en cada pase.
 	*/
 	var renderer;
 	try{
@@ -522,10 +486,7 @@ void main(){
 	var matBlur   = new THREE.ShaderMaterial({uniforms: uBlur,   vertexShader: VERT_UV, fragmentShader: FRAG_BLUR});
 	var matComp   = new THREE.ShaderMaterial({uniforms: uComp,   vertexShader: VERT_UV, fragmentShader: FRAG_COMP});
 
-	/*
-	   Textura de texto: tipografía dibujada en un canvas 2D y colgada
-	   como cartel en el espacio, donde la gravedad la deforma.
-	*/
+	/* Textura de texto: cartel dibujado en canvas 2D, deformado por la lente. */
 	var lienzoTexto = document.createElement('canvas');
 	lienzoTexto.width = 2048; lienzoTexto.height = 1024;
 	var ctxT = lienzoTexto.getContext('2d');
@@ -679,10 +640,7 @@ void main(){
 	lienzo.addEventListener('pointerup',     function(){ arrastrando = false; });
 	lienzo.addEventListener('pointercancel', function(){ arrastrando = false; });
 
-	/* Sin zoom con rueda: el canvas ahora es el hero de portada, arriba de
-	   todo — capturar la rueda (preventDefault) ahi mismo le robaria el
-	   scroll de bajada a cualquiera que entre a la pagina. Arrastrar para
-	   orbitar y el pellizco en touch siguen andando igual. */
+	/* Sin zoom con rueda: capturarla (preventDefault) le robaria el scroll al hero de portada. */
 
 	lienzo.addEventListener('touchstart', function(e){
 		if(e.touches.length === 2){
@@ -705,23 +663,13 @@ void main(){
 
 	lienzo.addEventListener('dblclick', function(){ yaw = 0; pitch = 0.12; dist = 27; });
 
-	/* Sin panel (se decidió no traerlo): nada que conectar a sliders,
-	   input de texto ni botones — quedan uDoppler/uFondo en su valor
-	   inicial (1.0, ver uSim arriba) y uVel/uTemp fijos en el `.value` con
-	   que se declararon. `reducirMovimiento` es el mismo chequeo que ya
-	   hace el resto del sitio (cielo.css, el Hero) para prefers-reduced-motion. */
+	/* Sin panel de controles: los uniforms quedan en su valor inicial. */
 	if(reducirMovimiento){ autoOrbita = false; }
 
 	window.addEventListener('resize', function(){ aplicarCalidad(calidadActual); });
 
-	/* Freeze en mobile (reportado): el bucle de render (6 pases de shader por
-	   cuadro) no tenia freno -- corria para siempre aunque el hero quedara
-	   scrolleado fuera de pantalla, la pestaña pasara a segundo plano, o el
-	   usuario reprodujera uno de los <video> de mas abajo. En un celular, GPU
-	   decodificando video + WebGL renderizando en simultaneo (la seccion
-	   "Dilatacion temporal", el primer video de la pagina, esta a un scroll
-	   del hero) es lo que tildaba el navegador. Estas tres condiciones
-	   combinadas deciden si el loop debe seguir pidiendo el proximo cuadro. */
+	/* Freno del loop (freeze en mobile): hero fuera de pantalla, pestaña oculta o <video> reproduciendose.
+	   ver docs/20-notas-de-codigo/ciencia.md#pausa-del-loop-de-render */
 	var heroVisible = true;
 	var pestanaVisible = document.visibilityState !== 'hidden';
 	var videoReproduciendo = false;
@@ -751,9 +699,7 @@ void main(){
 		reanudarSiCorresponde();
 	});
 
-	/* Cualquier <video> de la pagina (no solo si el hero sigue a la vista):
-	   en algunos moviles el costo real es decodificar video + WebGL a la vez,
-	   sin importar si el canvas quedo tapado por el scroll. */
+	/* Cualquier <video> de la pagina, aunque el hero siga a la vista. */
 	Array.prototype.forEach.call(document.querySelectorAll('video'), function(video){
 		var actualizarEstadoVideos = function(){
 			videoReproduciendo = Array.prototype.some.call(
@@ -770,15 +716,7 @@ void main(){
 	/* degradación automática si no alcanza ~28 fps */
 	var muestrasFPS = 0, acumFPS = 0, degradado = false;
 
-	/* Recien se hace visible el canvas despues del PRIMER render real (no
-	   apenas existe el <canvas> -- entre appendChild y el primer pase de
-	   shaders hay un instante en que el canvas esta vacio/negro). Un rAF
-	   extra de margen le da tiempo al compositor a presentar ese primer
-	   cuadro antes de empezar el fundido. La <img> de respaldo NUNCA se
-	   toca aca: en este camino (exito) jamas llego a mostrarse, asi que no
-	   hay nada que retirar -- ver mostrarFallback(), que es la unica
-	   funcion que la hace visible, y solo en los casos confirmados de
-	   fallo. */
+	/* El canvas se hace visible tras el PRIMER render real (rAF extra de margen). */
 	var primerCuadroListo = false;
 	function mostrarHorizonteListo(){
 		if(primerCuadroListo) return;
@@ -857,10 +795,7 @@ void main(){
 }
 
 function initHorizonteSeguro() {
-  // Si algo de lo pegado tira una excepcion, la dejamos en consola y recien
-  // ahi mostramos la imagen de respaldo -- hasta ese momento la pantalla
-  // se mantuvo en negro, nunca hubo un fallback visible que despues haya
-  // que retirar.
+  // Excepcion -> consola y recien ahi se muestra la imagen de respaldo.
   initHorizonte().catch((error) => {
     console.error('[ciencia] horizonte animado: no se pudo iniciar, se muestra la imagen de respaldo.', error);
     mostrarFallback(0);

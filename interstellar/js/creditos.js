@@ -1,15 +1,7 @@
-// Página de créditos y fuentes (creditos.html): registro de atribución de cada
-// material visual del sitio. Antes vivía en el pie común; se movió a una página
-// dedicada, enlazada desde el pie (contrato assets.md §"Atribución obligatoria",
-// contracts/footer-credits.md).
-//
-// `ASSET_CREDITS` es la fuente de verdad en código, sincronizada 1:1 con
-// assets/img/CREDITOS.md (invariante del contrato). Solo se listan los assets
-// DESCARGADOS; los pendientes se suman cuando el archivo entra a assets/img/
-// (misma convención de honestidad que el resto del sitio: nada que produzca 404).
-//
-// `buildCreditosContent()` es pura e importable sin navegador para el test TDD
-// (Principio V); `init()` hace la inyección real en el <main> de creditos.html.
+// Página de créditos y fuentes (creditos.html): atribución de cada material visual del sitio.
+// `ASSET_CREDITS` se sincroniza 1:1 con assets/img/CREDITOS.md y lista solo assets ya descargados.
+// `buildCreditosContent()` es pura (testeable); `init()` inyecta en creditos.html.
+// ver docs/20-notas-de-codigo/paginas-interactivas.md#creditos
 
 const INTRO =
   'Fuentes del material visual: catálogo aprobado (Wikimedia Commons, NASA Image Library, ESA/Hubble) y fotogramas de la película (FILMGRAB, uso académico con atribución al titular del copyright). Atribución por asset:';
@@ -157,9 +149,7 @@ function escapeHtml(value) {
     .replaceAll('"', '&quot;');
 }
 
-// Devuelve el HTML a inyectar dentro de la sección de créditos: la nota de
-// fuentes + la lista de atribución por asset. Sin datos propios: sin argumento
-// usa ASSET_CREDITS (misma convención de pureza que buildHeader en layout.js).
+// Devuelve el HTML de la sección: nota de fuentes + lista de atribución (por defecto ASSET_CREDITS).
 export function buildCreditosContent(credits = ASSET_CREDITS) {
   const items = credits
     .map((credit) => `      <li>${escapeHtml(credit)}</li>`)
@@ -174,8 +164,7 @@ export function init() {
   if (typeof document === 'undefined') {
     return;
   }
-  // Contenedor marcado en creditos.html; si no está (otra página, DOM de prueba)
-  // el módulo es inofensivo.
+  // Sin el contenedor [data-creditos] (otra página) el módulo no hace nada.
   const target = document.querySelector('[data-creditos]');
   if (!target || typeof target.insertAdjacentHTML !== 'function') {
     return;

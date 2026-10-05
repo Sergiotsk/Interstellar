@@ -1,22 +1,8 @@
-// Tira de celuloide (filmstrip) — port del prototipo _lab/filmstrip-mundos.html
-// (spike/librerias, commit 33eb00a). Una tira de película con perforaciones que
-// desfila en loop infinito mientras está a la vista:
-//   - loop cerrado sin salto (los fotogramas se duplican antes de medir)
-//   - velocidad constante en px/s (SPEED) -> el ritmo no depende del largo de la tira
-//   - hover / foco -> desacelera (timeScale bajo, no frena de golpe)
-//   - pausa cuando la tira sale de vista (ScrollTrigger)
-//
-// Librería: GSAP 3.13 + ScrollTrigger (Constitucion v2.0.0, Principio I:
-// libreria acotada sin build). Mismo criterio de `js/mundo-portada.js`:
-// VENDORIZADA en js/vendor/gsap@3.13.0/ e importada por ruta relativa, sin
-// depender de un CDN en runtime (ver js/vendor/README.md).
-//
-// Degradado: sin JS / GSAP no carga / prefers-reduced-motion -> la tira queda
-// estatica con scroll horizontal manual (`overflow-x: auto` y sin mascara).
-// GSAP solo MEJORA; nunca es requisito para ver los fotogramas.
+// Tira de celuloide (filmstrip): loop infinito de fotogramas con GSAP, pausado fuera de vista.
+// GSAP 3.13 + ScrollTrigger vendorizados. Sin JS / sin GSAP / reduced-motion -> scroll horizontal manual.
+// Detalle y porques: docs/20-notas-de-codigo/portadas-de-mundos.md#tira-de-celuloide-filmstrip
 
-// Ritmo base del desfile, en px/s. Constante exportada: es parte del contrato
-// del componente (los tests la usan para validar la duracion del loop).
+// Ritmo base del desfile en px/s (los tests la usan para validar la duracion del loop).
 export const FILM_SPEED = 28;
 
 // Duracion (s) de una vuelta completa para una tira de `widthPx` px.
@@ -35,8 +21,7 @@ async function initFilmstrip() {
 
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // 1) Duplicar los fotogramas ANTES de medir: el loop cierra sin salto (lo que
-  //    se ve en x=0 es identico a lo que se ve en x=-anchoDeUnSet).
+  // 1) Duplicar los fotogramas ANTES de medir: el loop cierra sin salto.
   const tracks = [];
   for (const tira of tiras) {
     const track = tira.querySelector('.mundo-film-track');
@@ -53,9 +38,7 @@ async function initFilmstrip() {
     return;
   }
 
-  // micro-yield: deja asentar el DOM duplicado antes de medir (resuelve aunque
-  // la pestana este en segundo plano; el ancho NO depende de que carguen las
-  // imagenes: el .frame tiene width por CSS).
+  // micro-yield: deja asentar el DOM duplicado antes de medir (el ancho no depende de las imagenes).
   await new Promise((r) => setTimeout(r, 0));
 
   // Tira estatica con scroll manual: usable sin GSAP y con reduced-motion.
@@ -133,6 +116,9 @@ async function initFilmstrip() {
 
     activeFilmstrips.push({ tween, trigger, listeners });
   }
+
+  // Si la portada (pin) se arma despues, el rango de la tira queda corrido: recalcular.
+  ScrollTrigger.refresh();
 }
 
 export function unmountFilmstrip() {

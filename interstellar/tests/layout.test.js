@@ -42,39 +42,31 @@ describe('js/layout.js — contrato layout-injection.md', () => {
   });
 
   test('el header incluye el toggle de navegación con aria-controls hacia el nav (T030)', () => {
-    // El boton ☰ se inyecta ANTES del <nav> y fuera de el, para que
-    // collectDisclosures(nav) nunca lo confunda con un disclosure de submenu.
+    // El boton va fuera del <nav> para que collectDisclosures no lo tome por un submenu.
     assert.ok(header.includes('<header>'));
     assert.ok(header.includes('<button type="button" class="nav-toggle"'));
     assert.ok(header.includes('aria-expanded="false"'));
     assert.ok(header.includes('aria-controls="nav-principal"'));
     assert.ok(header.includes('aria-label="Abrir menú de navegación"'));
     assert.ok(header.includes('<nav id="nav-principal"'));
-    // El toggle va fuera del <nav>: despues del <header> y antes del <nav>.
     const toggleIdx = header.indexOf('class="nav-toggle"');
     const navIdx = header.indexOf('<nav');
     assert.ok(toggleIdx < navIdx, 'el toggle va antes del <nav>');
   });
 
   test('el header incluye la marca (Interstellar + NAV · ENDURANCE) como enlace al inicio', () => {
-    // Antes era un pseudo-elemento (header::after); ahora es un <a> real para
-    // que sea navegable y accesible. Dos lineas: la marca "Interstellar" arriba
-    // y el rotulo de instrumento "NAV · ENDURANCE" (con sus LED) abajo —
-    // "RANGER" paso a "ENDURANCE" (commit 65c4e59, nombre de la nave).
+    // Marca como <a> real (navegable y accesible): "Interstellar" arriba, "NAV · ENDURANCE" abajo.
     assert.match(header, /<a class="cockpit-brand" href="index\.html"[^>]*aria-label="[^"]+"/);
     assert.ok(header.includes('<span class="cockpit-marca">Interstellar</span>'));
     assert.ok(header.includes('>NAV<'));
     assert.ok(header.includes('ENDURANCE'));
-    // La marca "Interstellar" va antes de la linea NAV · ENDURANCE.
     assert.ok(header.indexOf('cockpit-marca') < header.indexOf('cockpit-brand-linea'));
-    // Va antes del toggle (extremo izquierdo de la banda).
+    // Extremo izquierdo de la banda: antes del toggle.
     assert.ok(header.indexOf('class="cockpit-brand"') < header.indexOf('class="nav-toggle"'));
   });
 
   test('el header incluye el interruptor de música de fondo (button aria-pressed, fuera del nav)', () => {
-    // Control global de la banda: prende/apaga la musica de fondo. Nace en OFF
-    // (aria-pressed="false"); js/layout.js lo cablea con sessionStorage. Va
-    // ANTES del <nav> (fuera del drawer), como el toggle de nav.
+    // Nace en OFF y va antes del <nav> (fuera del drawer), como el toggle de nav.
     assert.match(header, /<button type="button" class="musica-toggle" aria-pressed="false"/);
     assert.ok(header.includes('aria-label="Música de fondo: activar"'));
     assert.ok(header.indexOf('class="musica-toggle"') < header.indexOf('<nav'));
@@ -94,8 +86,7 @@ describe('js/layout.js — contrato layout-injection.md', () => {
     const children = items.flatMap((item) => item.children);
     assert.equal(children.length, 22);
     for (const child of children) {
-      // Los ejes con pagina propia por destino (Mundos -> mundos-<slug>.html)
-      // no llevan ancla; el resto sigue apuntando a <pagina>.html#<ancla>.
+      // Mundos usa pagina propia por destino (sin ancla); el resto apunta a <pagina>.html#<ancla>.
       assert.match(child.href, /^[a-z-]+\.html(#[a-z-]+)?$/);
       assert.ok(header.includes(`href="${escapeHtml(child.href)}"`));
       assert.ok(header.includes(`>${escapeHtml(child.label)}<`));
@@ -104,8 +95,7 @@ describe('js/layout.js — contrato layout-injection.md', () => {
 
   test('cada eje renderiza un <button> de disclosure, un <ul> anidado y sus hijos', () => {
     const axes = NavConfig.items.filter((item) => item.hasChildren);
-    // En el header hay `axes.length` disclosure de submenu + 2 controles: el
-    // toggle de nav (T030) y el interruptor de musica de fondo.
+    // Un disclosure por eje + 2 controles: toggle de nav e interruptor de musica.
     assert.equal(countMatches(header, /<button\b/g), axes.length + 2);
     assert.equal(countMatches(header, /<ul\b/g), 1 + axes.length);
     for (const axis of axes) {
@@ -124,7 +114,7 @@ describe('js/layout.js — contrato layout-injection.md', () => {
     assert.ok(footer.startsWith('<footer>'));
     assert.ok(countMatches(footer, /<footer>/g) === 1);
     assert.match(footer, /Interstellar/i);
-    // La atribución por asset se movió a creditos.html: el pie solo la enlaza.
+    // La atribución por asset vive en creditos.html: el pie solo la enlaza.
     assert.ok(footer.includes('href="creditos.html"'));
     assert.ok(footer.includes('https://github.com/Sergiotsk/Interstellar.git'));
   });
@@ -136,16 +126,13 @@ describe('js/layout.js — contrato layout-injection.md', () => {
   });
 
   test('el pie suma la tecla de Contacto y las de compartir (WhatsApp/Facebook/Compartir)', () => {
-    // Contacto: enlace directo a la página propia.
     assert.ok(footer.includes('href="contacto.html"'));
-    // WhatsApp y Facebook: enlaces de "share" con la home como destino sin JS.
+    // WhatsApp y Facebook: enlaces de share que funcionan sin JS.
     assert.match(footer, /<a href="https:\/\/wa\.me\/\?text=[^"]+" data-share="whatsapp"/);
     assert.match(footer, /<a href="https:\/\/www\.facebook\.com\/sharer\/sharer\.php\?u=[^"]+" data-share="facebook"/);
-    // "Compartir": <button> (Web Share API) dentro de un <li> oculto hasta que
-    // el JS confirme soporte de navigator.share.
+    // "Compartir" (Web Share API): oculto hasta que el JS confirme navigator.share.
     assert.match(footer, /<li class="tele tele-accion" data-share-nativo hidden>/);
     assert.match(footer, /<button type="button" data-share="nativo"/);
-    // Siguen las teclas de créditos y repo; ya NO está el display "Interstellar".
     assert.ok(footer.includes('href="creditos.html"'));
     assert.ok(footer.includes('https://github.com/Sergiotsk/Interstellar.git'));
     assert.doesNotMatch(footer, /<span class="tele-v">Interstellar<\/span>/);
@@ -153,11 +140,7 @@ describe('js/layout.js — contrato layout-injection.md', () => {
   });
 
   test('el pie es una consola de 3 zonas: 3 secciones a la izquierda, acciones al centro, 3 a la derecha ("botones finitos")', () => {
-    // `.pie-consola` envuelve los 3 grupos; los dos <nav class="pie-secciones">
-    // duplican secciones del header (grupos FIJOS por id, no "los primeros/
-    // ultimos N" — ver js/layout.js) y flanquean `<ul class="pie-acciones">`
-    // (la fila de siempre: contacto/compartir/creditos), sin colores nuevos
-    // por seccion (Constitucion: un unico acento saturado).
+    // Dos <nav class="pie-secciones"> (grupos fijos por id) flanquean `.pie-acciones`.
     const izquierda = ['mundos', 'personajes', 'la-ciencia'];
     const derecha = ['el-viaje', 'galeria', 'minijuegos'];
     const porId = Object.fromEntries(NavConfig.items.map((item) => [item.id, item]));
@@ -181,8 +164,7 @@ describe('js/layout.js — contrato layout-injection.md', () => {
       );
     }
 
-    // Inicio y Trailer NO se duplican en el pie (Inicio: redundante con la
-    // marca del header; Trailer: se saco para que cierre 3+3 simetrico).
+    // Inicio y Trailer no se duplican en el pie (queda 3+3 simetrico).
     assert.ok(!footer.includes('>Inicio</span>'));
     assert.ok(!footer.includes('>Trailer</span>'));
   });
@@ -220,8 +202,7 @@ describe('js/layout.js — contrato layout-injection.md', () => {
     const boton = buildBotonSubir();
     assert.ok(boton.startsWith('<button type="button" class="boton-subir"'));
     assert.match(boton, /aria-label="[^"]+"/);
-    // Icono propio en <svg fill="currentColor">, no el emoji 🚀 (no se puede
-    // teñir con los tokens del sitio) — ver css/layout.css §18.
+    // SVG con currentColor, no el emoji (no se tiñe con los tokens del sitio).
     assert.ok(boton.includes('<svg'));
     assert.ok(boton.includes('aria-hidden="true"'));
     assert.ok(boton.includes('fill="currentColor"'));
@@ -237,8 +218,7 @@ describe('js/layout.js — contrato layout-injection.md', () => {
   });
 
   test('init: sin `con-cielo` no inyecta cielo; con `con-cielo` lo agrega primero', () => {
-    // Sin classList (DOM de prueba minimo): la guarda evita el cielo ->
-    // header + footer + boton subir = 3 calls.
+    // Sin classList no hay cielo: header + footer + boton subir = 3 calls.
     const sin = [];
     globalThis.document = {
       body: { insertAdjacentHTML: (position, html) => sin.push({ position, html }) },
@@ -247,7 +227,7 @@ describe('js/layout.js — contrato layout-injection.md', () => {
     assert.equal(sin.length, 3);
     assert.ok(!sin.some((c) => c.html.includes('class="cielo"')));
 
-    // Con `con-cielo`: 4ta llamada = cielo, en `afterbegin` (queda primer hijo).
+    // Con `con-cielo`: 4ta llamada = cielo, en `afterbegin`.
     const con = [];
     globalThis.document = {
       body: {

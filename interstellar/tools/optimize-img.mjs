@@ -1,8 +1,6 @@
 #!/usr/bin/env node
-// Pipeline de optimización de imágenes (feature 007). Corre LOCAL, nunca en CI.
-// Uso:  node tools/optimize-img.mjs <seccion> [--dry-run] [--force]
-//       node tools/optimize-img.mjs --all       [--dry-run] [--force]
-// Contrato: specs/007-optimizacion-imagenes-webp/contracts/optimize-img-cli.md
+// Optimiza imágenes a WebP + respaldo. Corre LOCAL, nunca en CI (ver docs/20-notas-de-codigo/).
+// Uso:  node tools/optimize-img.mjs <seccion>|--all [--dry-run] [--force]
 
 import { readFile, writeFile, access, stat, rm } from 'node:fs/promises';
 import { constants as FS } from 'node:fs';
@@ -25,9 +23,9 @@ const IMG_DIR = path.join(ROOT, 'assets', 'img');
 const SRC_DIR = path.join(ROOT, 'assets', '_source', 'img');
 const SRC_EXTS = ['jpg', 'jpeg', 'png'];
 
-// Topes de peso heredados de features previas (FR-013). Solo advertencia.
+// Topes de peso heredados; solo advertencia.
 const SECTION_BUDGETS = {
-  'mundos-hub': { perFile: 250 * 1024, total: 1200 * 1024 }, // feature 002
+  'mundos-hub': { perFile: 250 * 1024, total: 1200 * 1024 },
 };
 
 const EXIT = { OK: 0, BAD_ARG: 1, SRC_MISSING: 2, PROCESS_ERR: 3 };
@@ -48,9 +46,7 @@ async function exists(p) {
   try { await access(p, FS.F_OK); return true; } catch { return false; }
 }
 
-// Devuelve { file, format, fromSource }, o null si no hay fuente.
-// fromSource = true cuando el original vive en assets/_source/ (pristino y
-// determinista); false cuando la fuente es el propio assets/img/ ya servido.
+// Devuelve { file, format, fromSource } o null. fromSource: el original vive en assets/_source/.
 async function resolveSource(section, logicalName) {
   for (const ext of SRC_EXTS) {
     for (const dir of [path.join(SRC_DIR, section), SRC_DIR]) {
@@ -66,9 +62,7 @@ async function resolveSource(section, logicalName) {
 }
 
 async function buildBuffers(srcFile, context, format) {
-  // Leemos la fuente a un Buffer: varias imágenes se optimizan sobre sí mismas
-  // (source === destino) y en Windows libvips deja el archivo tomado si se pasa
-  // la ruta, lo que rompe el writeFile posterior.
+  // Buffer y no ruta: en Windows libvips retiene el archivo y rompe el writeFile posterior.
   const input = await readFile(srcFile);
   const meta = await sharp(input).metadata();
   const outWidth = resolveTargetWidth(context, meta.width);
@@ -122,11 +116,8 @@ async function processSection(section, dryRun, force) {
     const webpPath = path.join(IMG_DIR, webp);
     const nowebpPath = path.join(IMG_DIR, `${logicalName}.nowebp`);
 
-    // Idempotencia (SC-005): si la fuente es el propio assets/img/ (no hay
-    // original en _source/) y ya existe un derivado (el .webp, o el marcador
-    // .nowebp si el webp se descartó por no convenir), la imagen ya pasó por el
-    // pipeline. Re-encodear recomprimiría (pérdida generacional) y el árbol
-    // nunca se estabilizaría → se saltea salvo --force.
+    // Idempotencia: sin original en _source/ y con derivado (.webp o .nowebp), se saltea
+    // para no recomprimir (pérdida generacional), salvo --force.
     if (
       !src.fromSource && !force &&
       ((await exists(webpPath)) || (await exists(nowebpPath)))
@@ -136,7 +127,6 @@ async function processSection(section, dryRun, force) {
       continue;
     }
 
-    // Peso "antes": lo que hoy sirve la página (el fallback si existe, si no la fuente).
     const beforeBytes =
       (await sizeOf(path.join(IMG_DIR, fallback))) || (await sizeOf(src.file));
 
@@ -149,14 +139,10 @@ async function processSection(section, dryRun, force) {
       continue;
     }
 
-    // El respaldo (jpg/png) se escribe siempre. Para backdrops de CSS queda
-    // disponible aunque el CSS apunte al .webp.
+    // El respaldo (jpg/png) se escribe siempre.
     const f = await maybeWrite(path.join(IMG_DIR, fallback), bufs.fallbackBuf, dryRun);
 
-    // Guard: el .webp solo se escribe si le gana en peso a su respaldo. Si no
-    // conviene, se escribe un marcador .nowebp (para la idempotencia y para que
-    // la migración de markup sepa apuntar al .jpg) y se borra cualquier .webp
-    // viejo que hubiera quedado.
+    // El .webp solo se escribe si pesa menos que el respaldo; si no, marcador .nowebp.
     const vale = webpConviene(bufs.webpBuf.length, bufs.fallbackBuf.length);
     let w;
     if (vale) {

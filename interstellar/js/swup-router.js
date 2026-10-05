@@ -1,5 +1,6 @@
 // Enrutador SPA con Swup v4 — Persistencia Gapless de Audio y Ciclo de Vida Limpio
 // Constitución v2.0.0, Principio I: librería vendorizada sin bundler ni build step.
+// Notas de diseño: docs/20-notas-de-codigo/layout-y-router.md#swup-y-persistencia-de-audio
 
 import Swup from './vendor/swup@4.10.0/swup.mjs';
 import { markCurrentPage, initHeroVideo, sincronizarAudioRuta, actualizarPieSeccionesCondicional } from './layout.js';

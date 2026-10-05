@@ -1,45 +1,9 @@
-/* Ficha de personaje con retrato en linea (personajes.html)
-   Extraido de css/layout.css (seccion 12) el 2026-09-10. Hoja de 5o nivel
-   segun el contrato 006 C5: se enlaza con un <link> DESPUES de layout.css,
-   solo en las paginas que la usan. Cut-paste textual, sin cambio de valor.
+/* Ficha de personaje con retrato en linea (personajes.html). Hoja de 5o nivel; la feature 008 suma al final
+   portada, hero, galeria y visor. ver docs/20-notas-de-codigo/css-paginas.md#personajes */
 
-   Ampliada por la feature 008 (specs/008-personajes-visual): rediseño
-   visual de Personajes — portada en mosaico, hero full-bleed, galería de
-   escenas y visor Nav-Ranger. Secciones nuevas agregadas al final del
-   archivo, sin tocar la ficha del contrato 003 de arriba (sigue vigente
-   para los personajes en patrón "degradado" — ver FR-009). */
-
-/* ===========================================================================
-   PORTADA (feature 008, User Story 1)
-   ---------------------------------------------------------------------------
-   Reemplaza la intro de texto plano de personajes.html por un mosaico de los
-   6 personajes, clickeables, a pantalla casi completa. El <h1>Personajes</h1>
-   de esta sección es el UNICO <h1> de toda la página (contrato 008 C1).
-
-   Ajuste posterior (mismo feature 008): la portada toma el lenguaje visual
-   del hub de Mundos (css/mundos.css `.mundos-grid`/`.mundo-tarjeta*`) para
-   las TARJETAS — grandes, zoom + brillo al hover/foco, texto que se desliza
-   hacia arriba y una barra de acento que "barre" desde la izquierda en
-   `--color-gargantua` (el único color saturado del sitio — mismo acento que
-   usa Mundos, el nav y el resto del cockpit; no se introduce un segundo
-   color saturado). El H1/subtítulo, en cambio, NO copian el ancho angosto
-   de `.mundos-intro` (46rem): quedan alineados al mismo margen de lectura
-   que el resto de las secciones de esta página (`personaje-texto`, etc.),
-   no pegados al borde de la pantalla. Estructura de tarjeta PORTADA de
-   `.mundo-tarjeta`, adaptada al markup existente (figure > a > img +
-   figcaption) para no romper el HTML de esta página.
-   --------------------------------------------------------------------------- */
-/* --- Intro = hero full-bleed con mosaico de fondo (los mismos 6 retratos
-   que usan las tarjetas de .tripulacion-grid, atenuados) + H1/lead anclados
-   abajo-izquierda. Mismo patron que .ciencia-portada (css/ciencia.css) y
-   .mundos-intro (css/mundos.css): alto = 100svh menos el header (esta en
-   flujo normal en paginas que no son home, DESIGN.md §6.1), +0.5rem de
-   margen real. SUPERA la decision anterior de la feature 008 (mantener el
-   h1 en el margen de lectura angosto, sin full-bleed): pedido explicito de
-   alinear las 3 portadas (Mundos/Personajes/Ciencia) al mismo patron.
-   La grilla de tarjetas (`.tripulacion-grid`) ya NO vive adentro de esta
-   seccion — es HERMANA, igual que `.mundos-grid` con `.mundos-intro` — para
-   que el `overflow:hidden` del hero no se la recorte. */
+/* PORTADA (feature 008): mosaico de 6 personajes; tarjetas con el lenguaje de .mundo-tarjeta (acento --color-gargantua) */
+/* Intro = hero full-bleed con mosaico de fondo (mismo patron que .ciencia-portada y .mundos-intro); alto = 100svh
+   menos el header. .tripulacion-grid es HERMANA de la seccion para que el overflow:hidden no la recorte. */
 section.portada-tripulacion,
 body:not(.home) main > section.portada-tripulacion:first-child {
   position: relative;
@@ -55,9 +19,7 @@ body:not(.home) main > section.portada-tripulacion:first-child {
   background-color: var(--color-fondo);
 }
 
-/* Mosaico: 6 franjas verticales (una por personaje), mismas fotos que
-   .tripulacion-grid usa mas abajo — cero asset nuevo, preview de la grilla
-   que sigue. brightness(0.4) = --backdrop-oscurecer del sitio. */
+/* Mosaico: 6 franjas (una por personaje); brightness(0.4) = --backdrop-oscurecer */
 .portada-tripulacion-mosaico {
   position: absolute;
   inset: 0;
@@ -75,9 +37,7 @@ body:not(.home) main > section.portada-tripulacion:first-child {
   object-fit: cover;
 }
 
-/* Scrim inferior: mismo gradiente que .mundos-intro::after / .mundo-portada-
-   escena::after — legibilidad del texto + fusion con --color-fondo hacia el
-   borde, para que .tripulacion-grid no corte en seco. */
+/* Scrim inferior: legibilidad + fusion con --color-fondo (como .mundos-intro::after) */
 section.portada-tripulacion::after,
 body:not(.home) main > section.portada-tripulacion:first-child::after {
   content: "";
@@ -100,8 +60,7 @@ body:not(.home) main > section.portada-tripulacion:first-child::after {
   z-index: 2;
   max-width: 60rem;
   width: 100%;
-  margin: 0 auto 0 5%;                  /* anclado a la izquierda, no centrado —
-                                          mismo patron que .ciencia-portada-contenido */
+  margin: 0 auto 0 5%;                  /* anclado a la izquierda, no centrado */
   padding: 4rem 1.25rem 3rem;
   text-align: left;
 }
@@ -112,12 +71,7 @@ body:not(.home) main > section.portada-tripulacion:first-child::after {
   }
 }
 
-/* Selector reforzado con el prefijo `section.portada-tripulacion:first-child`:
-   con solo `.portada-tripulacion-contenido h1/p` (1 clase) la regla generica
-   de intro de pagina (layout.css §10) le gana el empate por tener mas tipos
-   — el margin-bottom del h1 quedaba en 0.75rem (no 1rem) y el color del p
-   en `--color-texto-atenuado` (no `--color-texto`, mas apagado de lo
-   pensado). Mismo bug que .ciencia-portada-contenido, agarrado al auditarla. */
+/* Selector reforzado con section.portada-tripulacion:first-child: sin el prefijo la intro generica (layout.css §10) gana por tipos */
 body:not(.home) main > section.portada-tripulacion:first-child .portada-tripulacion-contenido h1 {
   margin-bottom: 1rem;
   text-shadow: 0 0 1.5rem var(--color-fondo);
@@ -128,13 +82,7 @@ body:not(.home) main > section.portada-tripulacion:first-child .portada-tripulac
   text-shadow: 0 0 1rem var(--color-fondo);
 }
 
-/* --- Grilla a lo ANCHO: tarjetas grandes, poster-vertical, image-forward.
-   BUGFIX: `auto-fit` dejaba el número de columnas a merced del ancho
-   disponible (5, a veces 4) — con 6 tarjetas, la última fila quedaba con UNA
-   sola tarjeta huérfana. 6 se divide parejo por 1, 2 y 3: mobile 1 columna,
-   tablet 2, desktop 3 — las 6 fichas entran en dos filas de tres, visibles
-   casi de punta a punta en una pantalla de escritorio sin quedar ninguna
-   sola. --- */
+/* --- Grilla a lo ANCHO. BUGFIX: auto-fit dejaba una tarjeta huerfana; 6 se divide parejo por 1, 2 y 3 columnas --- */
 .tripulacion-grid {
   list-style: none;
   width: min(100% - 2.5rem, 75rem);
@@ -260,25 +208,12 @@ body:not(.home) main > section.portada-tripulacion:first-child .portada-tripulac
   transform: scaleX(1);
 }
 
-/* ===========================================================================
-   HERO FULL-BLEED (feature 008, User Story 2)
-   ---------------------------------------------------------------------------
-   Solo para los personajes en patrón "completo" (hoy: Cooper y Murph — ver
-   FR-009 / data-model.md). Reemplaza el <figure class="ficha-retrato"> chico
-   por una imagen de fondo casi a pantalla completa + scrim + ficha apoyada
-   abajo. Mismo PRINCIPIO que .mundo-portada-escena (css/mundos.css): min-height
-   svh + flex align-items:flex-end + scrim degradado + isolation. NO se copian
-   las clases .mundo-portada-*/.mundo-capa-* (esas son especificas del
+/* HERO FULL-BLEED (feature 008): personajes en patron "completo" (Cooper y Murph); mismo principio que .mundo-portada-escena */.mundo-capa-* (esas son especificas del
    descenso multi-capa de Tierra/Gargantua, con su propio GSAP) — acá el hero
    es una sola imagen estática, sin animación (portado de
    spikes/personajes-galeria-vertical.html).
    --------------------------------------------------------------------------- */
-/* `section[id]:has(> .personaje-hero)` (0,0,2,1) le gana a `section[id]`
-   (0,0,1,0) de layout.css por specificity -> full-bleed, sin la caja de
-   lectura de 60rem ni el borde superior. Mismo criterio que
-   `body.mundo-detalle main > section.mundo-portada` en css/mundos.css, pero
-   con :has() en vez de una clase nueva en el <section> (ya se usa :has() en
-   esta misma hoja, ver .ficha-retrato:not(:has(img)) arriba). */
+/* section[id]:has(> .personaje-hero) (0,0,2,1) vence a section[id] de layout.css -> full-bleed sin caja de lectura ni borde */
 section[id]:has(> .personaje-hero) {
   max-width: none;
   margin: 0;
@@ -347,9 +282,7 @@ section[id]:has(> .personaje-hero) {
   line-height: 1.75;
 }
 
-/* Bloque de texto suelto "Quién es" (entre el hero y la galería) — se reusa
-   también DENTRO de .personaje-cierre para "Su papel en la historia" +
-   "Rasgos distintivos" (ver bloque CIERRE + VISOR más abajo). */
+/* Bloque "Quién es"; tambien se reusa dentro de .personaje-cierre */
 .personaje-texto {
   max-width: 42rem;
   margin: 0 auto;
@@ -376,18 +309,8 @@ section[id]:has(> .personaje-hero) {
   padding-left: 1.25rem;
 }
 
-/* ===========================================================================
-   GALERIA DE ESCENAS — riel-tira (feature 008, User Story 3)
-   ---------------------------------------------------------------------------
-   Portado 1:1 de spikes/personajes-galeria-vertical.html (v6, ya validado).
-   Panel de texto/datos arriba (30% de la pantalla) + tira de fotogramas abajo
-   (70%), ambos dentro de un riel con scroll horizontal atado a scroll
-   vertical (riel + sticky + scrub con GSAP/ScrollTrigger — mismo mecanismo
-   que js/mundo-portada.js). El texto de arriba cambia en corte duro según
-   qué fotograma está activo en la tira — se lee frame a frame, "estilo
-   stop-motion". Degradado sin JS/GSAP/reduced-motion: sin `body.js-armado`,
-   texto y tira quedan en flujo normal (la tira es scrolleable a mano).
-   --------------------------------------------------------------------------- */
+/* GALERIA DE ESCENAS - riel-tira (feature 008): panel de datos arriba + tira de fotogramas abajo en un riel de scroll
+   horizontal atado al vertical (GSAP/ScrollTrigger). Sin body.js-armado queda en flujo normal. ver docs/20-notas-de-codigo/css-paginas.md#personajes */
 .riel-tira {
   position: relative;
 }
@@ -407,10 +330,7 @@ body.js-armado .riel-tira.is-armada .riel-tira-vista {
   height: 100vh;
 }
 
-/* Desktop grande (≥64rem): a pantalla completa el riel se siente demasiado
-   "tomado" por el componente — se baja el alto fijado a 85vh para que quede
-   algo de la página visible arriba/abajo mientras se scrollea, sin restarle
-   proporción a las fotos (siguen siendo 70% de este alto, ahora menor). */
+/* Desktop grande (≥64rem): el alto fijado baja a 85vh para dejar algo de pagina visible */
 @media (min-width: 64rem) {
   body.js-armado .riel-tira.is-armada .riel-tira-vista {
     height: 85vh;
@@ -429,10 +349,7 @@ body.js-armado .riel-tira.is-armada .tira-datos {
 }
 
 .tira-datos-item {
-  /* Vertical desacoplado de vw (BUGFIX): el padding vertical usa clamp en vh
-     para no comerse el alto en pantallas anchas (1080p/4K), y justify-content
-     usa `safe center` para garantizar que ante cualquier eventual desborde el
-     título superior nunca se corte en coordenadas negativas. */
+  /* BUGFIX: padding vertical en clamp de vh (no vw) y justify-content: safe center para que el titulo nunca se corte */
   padding: clamp(0.75rem, 1.8vh, 1.25rem) clamp(1.5rem, 5vw, 4rem);
   display: flex;
   flex-direction: column;
@@ -482,9 +399,7 @@ body.js-armado .riel-tira.is-armada .tira-datos-item > * {
   margin: 0;
 }
 
-/* "Dato curioso": ficha de instrumento, no un callout generico — mismo
-   lenguaje que el resto del cockpit (metal + bezel + recorte diagonal), con
-   un LED encendido en vez de un simple borde de color. */
+/* "Dato curioso": ficha de instrumento (metal + bezel + recorte diagonal) con un LED */
 .tira-datos-dato {
   position: relative;
   margin-top: 0.25rem;
@@ -549,14 +464,7 @@ body.js-armado .riel-tira.is-armada .tira-fotogramas {
   padding: 0 1.25rem;
 }
 
-/* BUGFIX: el riel NO centra cada fotograma activo — `js/personajes.js`
-   desplaza la pista con un paneo lineal continuo (de punta a punta segun el
-   scroll), no lo snapea al centro del viewport. Con el fotograma ocupando
-   casi todo el ancho/alto disponible (como era antes), en la mayoria de las
-   posiciones de scroll el activo quedaba cortado por un borde de la pantalla
-   — se perdia el marco naranja de `--color-gargantua`. Se lo achica (alto +
-   `max-width` en vw) para que, panee donde panee la pista, siempre quede aire
-   real a los costados y arriba/abajo. */
+/* BUGFIX: el riel paneea lineal (no centra el activo); el fotograma se achica para que el marco naranja siempre quede visible */
 .tira-frame {
   flex: 0 0 auto;
   height: calc(78% - 2rem);
@@ -601,17 +509,9 @@ body.js-armado .riel-tira.is-armada .tira-progreso {
   display: block;
 }
 
-/* Mobile (≤48rem): el fotograma calculaba su ancho a partir de la altura
-   (aspect-ratio 3:2 sobre el 70% de la pantalla) — en una pantalla angosta
-   eso da un ancho MAYOR que el viewport y desborda. Acá se lo topea por
-   ancho en vez de por alto, y se achica texto/padding en general. */
+/* Mobile (≤48rem): el ancho se topea por ancho (no por alto) para no desbordar */
 @media (max-width: 48rem) {
-  /* BUGFIX: el panel de datos mide 30% de un `100vh` con `overflow: hidden`
-     (igual que en el caso de notebooks bajitas, ver mas abajo) — en mobile
-     los "dato curioso" mas largos (varios personajes combinan 2 datos en
-     una sola tarjeta) no entraban en esos 253px aprox. y se cortaban a
-     mitad de oracion. Se le da mas alto al panel (30% -> 42%) y menos a la
-     tira de fotogramas, con tipografia un poco mas chica para compensar. */
+  /* BUGFIX: los "dato curioso" largos se cortaban con 30% de alto; panel 30% -> 42% y tipografia menor */
   body.js-armado .riel-tira.is-armada .tira-datos {
     height: 42%;
   }
@@ -651,16 +551,8 @@ body.js-armado .riel-tira.is-armada .tira-progreso {
   }
 }
 
-/* Notebook (ancho de escritorio, ALTO bajo — ~768-900px, sin monitor externo):
-   BUGFIX — el panel de datos mide 30% de un `100vh` y `.tira-datos-item` tiene
-   `overflow: hidden`, pero su padding usa `clamp(1.5rem, 5vw, 4rem)` — crece
-   con el ANCHO, no con el alto. En una notebook ancha y baja ese padding
-   queda casi en su tope (4rem) justo cuando el 30% de alto es mas chico
-   (~230px a 768px), y el contenido (label + h3 + parrafo + tarjeta de "dato
-   curioso") no entra — la tarjeta de dato curioso, al ir ultima, es la que se
-   ve recortada. Se agranda la porcion del panel de datos (30% -> 40%) y se
-   achica tipografia/padding, esta vez en funcion del ALTO disponible — con
-   margen real, no al limite exacto del contenido medido. */
+/* Notebook (ancho, ALTO bajo ~768-900px): BUGFIX - el padding crece con el ANCHO y el panel de 30% de alto cortaba
+   el dato curioso; panel 30% -> 40% y tipografia/padding segun el alto */
 @media (min-width: 48.01rem) and (max-height: 56.25rem) {
   body.js-armado .riel-tira.is-armada .tira-datos {
     height: 42%;
@@ -706,16 +598,8 @@ body.js-armado .riel-tira.is-armada .tira-progreso {
   }
 }
 
-/* ===========================================================================
-   CIERRE + VISOR NAV-RANGER (feature 008, User Story 4)
-   ---------------------------------------------------------------------------
-   Portado 1:1 de spikes/personajes-galeria-vertical.html (v6). "Su papel en
-   la historia" + "Rasgos distintivos" (.personaje-texto, reusa las reglas de
-   arriba sin cambios propios) en fila junto al visor Nav-Ranger. El visor
-   NO es la tira de celuloide de #en-celuloide/js/filmstrip.js (mecanismo
-   distinto): cicla fotogramas por reemplazo in-situ (setInterval), no por
-   desplazamiento continuo.
-   --------------------------------------------------------------------------- */
+/* CIERRE + VISOR NAV-RANGER (feature 008): "papel en la historia" + "rasgos" junto al visor, que cicla fotogramas
+   por reemplazo (setInterval), no por desplazamiento como #en-celuloide */
 .personaje-cierre {
   max-width: 74rem;
   margin: 0 auto;
@@ -842,30 +726,16 @@ body.js-armado .riel-tira.is-armada .tira-progreso {
   color: color-mix(in srgb, var(--instrumento-teal) 70%, var(--color-texto-atenuado));
 }
 
-/* .ficha-reparto (hereda estilo del contrato 003 sin cambios, ver bloque de
-   arriba) queda como <p> suelto, hijo directo de una section full-bleed en
-   las fichas "completo" — le devolvemos su propia caja de lectura. */
+/* .ficha-reparto suelto en fichas "completo": se le devuelve su propia caja de lectura */
 section[id]:has(> .personaje-hero) > .ficha-reparto {
   max-width: 42rem;
   margin: 0 auto clamp(2rem, 6vw, 3.5rem);
   padding: 0 1.25rem;
 }
 
-/* ===========================================================================
-   FICHA DEGRADADA (contrato 003, sin cambios) — ver debajo
-   =========================================================================== */
+/* FICHA DEGRADADA (contrato 003, sin cambios) */
 
-/* ---------------------------------------------------------------------------
-   12. Ficha de personaje con retrato en linea (feature 003 — personajes-content)
-   ---------------------------------------------------------------------------
-   Patron para el eje Personajes (reutilizable por La Ciencia / El Viaje si
-   necesitan contenido con imagen en linea). Cada `section[id]` lleva su <h2>
-   como hijo directo y un <div class="ficha-personaje"> que agrupa el retrato
-   (<figure class="ficha-retrato">) y el texto de la ficha. NO usa el patron
-   backdrop de la feature 002: el retrato es informativo, sin oscurecimiento.
-
-   Contrato: specs/003-personajes-content/contracts/personajes-page.md
-   --------------------------------------------------------------------------- */
+/* 12. Ficha de personaje con retrato en linea (feature 003): h2 + .ficha-personaje; retrato informativo, sin backdrop */
 .ficha-personaje {
   margin-top: 0.5rem;
 }
@@ -877,9 +747,7 @@ section[id]:has(> .personaje-hero) > .ficha-reparto {
   clear: both;
 }
 
-/* Marco del retrato. Imagen INFORMATIVA: sin --backdrop-oscurecer, sin
-   posicionamiento absoluto. Respaldo de paleta si la imagen no carga
-   (caso limite, FR-006). */
+/* Marco del retrato: imagen informativa (sin --backdrop-oscurecer) con respaldo de paleta (FR-006) */
 .ficha-retrato {
   margin: 0 0 1.25rem;
   background-color: var(--color-superficie);
@@ -888,8 +756,7 @@ section[id]:has(> .personaje-hero) > .ficha-reparto {
   overflow: hidden;
 }
 
-/* Figura vacia (estado previo a incorporar el archivo del still): no reserva
-   un bloque roto en la maqueta. */
+/* Figura vacia: no reserva un bloque roto en la maqueta */
 .ficha-retrato:not(:has(img)) {
   display: none;
 }
@@ -908,8 +775,7 @@ section[id]:has(> .personaje-hero) > .ficha-reparto {
   color: var(--color-texto-atenuado);
 }
 
-/* Bloques de texto de la ficha: no heredan del patron .eje-con-backdrop,
-   asi que se estilan aca con las variables ya definidas. */
+/* Bloques de texto de la ficha (no heredan de .eje-con-backdrop) */
 .ficha-personaje h3 {
   font-family: var(--font-hero-titulo);
   font-size: clamp(1rem, 2.2vw, 1.15rem);
@@ -937,8 +803,7 @@ section[id]:has(> .personaje-hero) > .ficha-reparto {
   margin: 0.3rem 0;
 }
 
-/* Linea de credito de reparto: diferenciada del cuerpo y separada del
-   ultimo bloque (aclaracion 2026-08-29: va fuera del <figure>). */
+/* Credito de reparto: separado del cuerpo, fuera del <figure> */
 .ficha-reparto {
   margin-top: 1.25rem;
   font-style: italic;
@@ -946,9 +811,7 @@ section[id]:has(> .personaje-hero) > .ficha-reparto {
   color: var(--color-texto-atenuado);
 }
 
-/* Escritorio: el retrato flota a la izquierda y el texto lo rodea (maqueta
-   tipo ficha de revista). Mobile (por defecto): sin float, el retrato queda
-   arriba del texto por orden de DOM. Sin anchos fijos que rompan a 320 px. */
+/* Escritorio: el retrato flota a la izquierda y el texto lo rodea; mobile: sin float, retrato arriba */
 @media (min-width: 48rem) {
   .ficha-retrato {
     float: left;

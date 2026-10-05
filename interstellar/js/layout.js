@@ -1,18 +1,12 @@
-// Inyección del layout compartido (FR-001): header con nav y footer únicos por página.
-// El árbol de navegación proviene exclusivamente de nav-data.js (única fuente de verdad).
-// Las funciones puras (buildHeader/buildFooter/renderLayout) son importables sin browser
-// para el test TDD (Principio V); init() hace la inyección real en el DOM del navegador.
+// Layout compartido (FR-001): header con nav y footer unicos por pagina; el arbol sale de nav-data.js.
+// Las funciones build*/renderLayout son puras (testeables sin browser); init() inyecta en el DOM.
 
 import { NavConfig } from './nav-data.js';
 import { createSubmenuState } from './submenu-state.js';
 
 const REPO_URL = 'https://github.com/Sergiotsk/Interstellar.git';
 const SITE_URL = 'https://sergiotsk.github.io/Interstellar/';
-// El pie es una consola de TECLAS cortas: enlaza creditos.html, el repo, la
-// página de contacto y suma teclas para compartir el sitio (WhatsApp/Facebook
-// como enlaces de "share"; "Compartir" usa la Web Share API, solo si existe).
-// El disclaimer completo ("sitio académico de fan, sin fines de lucro") vive en
-// creditos.html; la atribución por asset también (módulo js/creditos.js).
+// Pie: consola de teclas cortas (contacto, compartir, creditos, repo). Disclaimer y atribucion viven en creditos.html.
 
 function escapeHtml(value) {
   return String(value)
@@ -44,23 +38,9 @@ function buildTopLevelItem(item) {
 
 export function buildHeader(navConfig = NavConfig) {
   const items = navConfig.items.map(buildTopLevelItem).join('\n');
-  // Marca del header: enlace al inicio con aspecto de placa de instrumento en la
-  // banda. Antes era `header::after` (pseudo, no enlazable); es un <a> real para
-  // que sea navegable y accesible (aria-label da el destino). Dos lineas:
-  //   1. `.cockpit-marca` -> "Interstellar" (la marca).
-  //   2. `.cockpit-brand-linea` -> los dos LED (SYS/PWR) + "NAV · ENDURANCE".
-  // Visible <60rem (en escritorio la fila de nav ocupa el centro; la placa
-  // vuelve a la izquierda a partir de ~68rem, salvo con el aviso de spoiler
-  // activo). El sufijo " · ENDURANCE" se oculta en pantallas muy angostas.
-  //
-  // Boton CASE: menu-hamburguesa "girado" a 4 barras VERTICALES (guiño al robot
-  // de la pelicula). Abre/cierra el drawer de navegacion por debajo de 60rem.
-  // Las 4 <span> internas son DECORATIVAS (el <span.case-icon> lleva
-  // aria-hidden): el nombre accesible del control lo da el aria-label; el icono
-  // se dibuja por completo con CSS. Vive FUERA del <nav> (antes del <nav>) para
-  // que collectDisclosures(nav) —que consulta `button[aria-controls]` dentro del
-  // nav— nunca lo confunda con un disclosure de submenu. El nav lleva
-  // id="nav-principal" (target del aria-controls y hook del CSS del drawer).
+  // Marca del header: <a> real (navegable y accesible) con placa de instrumento; visible <60rem.
+  // Boton CASE: 4 barras verticales dibujadas solo con CSS. Va FUERA del <nav> para que
+  // collectDisclosures no lo confunda con un disclosure de submenu.
   return `<header>
   <a class="cockpit-brand" href="index.html" aria-label="Interstellar — ir al inicio"><span class="cockpit-marca">Interstellar</span><span class="cockpit-brand-linea"><span>NAV</span><span class="cockpit-brand-ext"> · ENDURANCE</span></span></a>
   <button type="button" class="musica-toggle" aria-pressed="false" aria-label="Música de fondo: activar"><span class="musica-icono" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V6l10-2v10" /><circle cx="6" cy="18" r="3" fill="currentColor" stroke="none" /><circle cx="16" cy="16" r="3" fill="currentColor" stroke="none" /></svg></span></button>
@@ -73,24 +53,8 @@ ${items}
 </header>`;
 }
 
-// Consola de tres zonas (pedido de Sergio, 2a vuelta: no queria dos filas
-// apiladas — un unico tablero con las secciones flanqueando la fila de
-// acciones de siempre). Izquierda y derecha son GRUPOS FIJOS por id, no "los
-// primeros/ultimos N": Inicio queda afuera (redundante con la marca del
-// header) y de los 7 restantes tambien queda afuera Trailer, para llegar a
-// 3+3 simetrico. El criterio de la izquierda es real, no arbitrario: son los
-// 4 ejes con submenu propio en el header (`hasChildren: true`,
-// js/nav-data.js) menos El Viaje, que se corrio a la derecha junto con las 2
-// paginas sueltas (Galeria, Minijuegos) para completar el 3+3.
-//
-// MISMA paleta que el resto del chrome — teal, un solo acento — nunca un
-// color por seccion: eso rompia la regla de "un unico acento saturado"
-// (naranja Gargantua, reservado al CONTENIDO) que sostiene toda la identidad
-// visual del sitio. La seccion activa se distingue igual que en el header:
-// `aria-current="page"` (lo pone `markCurrentPage`, se llama sobre CADA uno
-// de los dos <nav> en `init()`) enciende el LED y el texto, no un color
-// nuevo. `.tele-fina` = mismo componente `.tele`/`.tele-accion` del pie, con
-// menos padding y letra mas chica ("botones finitos", css/layout.css).
+// Consola de tres zonas: grupos laterales FIJOS por id (3+3 simetrico, sin Inicio ni Trailer).
+// Misma paleta que el chrome; la seccion activa se marca con aria-current (ver docs/20-notas-de-codigo/layout-y-router.md#pie).
 const PIE_IZQUIERDA_IDS = ['mundos', 'personajes', 'la-ciencia'];
 const PIE_DERECHA_IDS = ['el-viaje', 'galeria', 'minijuegos'];
 
@@ -103,11 +67,7 @@ function buildPieSeccionesGrupo(navConfig, ids, etiqueta) {
         `          <li class="tele tele-accion tele-fina"><a href="${escapeHtml(item.href)}"><span class="led" aria-hidden="true"></span><span class="tele-v">${escapeHtml(item.label)}</span></a></li>`,
     )
     .join('\n');
-  // `.pie-secciones-marco`: panel angular (clip-path, css/layout.css) que
-  // ENVUELVE al <nav> — el recorte en punta va en el marco, nunca en el
-  // <nav>/<ul> real, para no arriesgar que un focus-ring o un tap target
-  // quede cortado por el clip-path. El <nav> adentro sigue siendo la unidad
-  // real de navegacion (markCurrentPage la recorre igual que antes).
+  // El clip-path va en el marco, no en el <nav>/<ul>, para no cortar focus-rings ni tap targets.
   return `<div class="pie-secciones-marco">
     <nav class="pie-secciones" aria-label="${escapeHtml(etiqueta)}">
       <ul>
@@ -118,32 +78,10 @@ ${items}
 }
 
 export function buildFooter(navConfig = NavConfig) {
-  // Pie mínimo: disclaimer + enlaces (créditos y repo). La lista de atribución
-  // por asset vive en creditos.html (FR-012, FR-013; contrato assets.md).
-  //
-  // Consola inferior del cockpit (constitución v2.1.0): cada entrada es una
-  // "tecla" de panel — misma caja con recorte diagonal, bezel y LED que las de
-  // la nav. Cada tecla es UNA palabra (`.tele-v`) + un LED (`.led`, decorativo),
-  // sin etiqueta previa. El LED va a la izquierda (como en la nav). Todas son
-  // `.tele-accion`: tecla-BOTÓN — un <a> (o <button>) ocupa toda la caja y es el
-  // destino (`aria-label` da el destino sin sumar texto visible). El disclaimer
-  // completo vive en creditos.html.
-  // WhatsApp y Facebook: sin JS comparten la home; wireFooterShare() los sube a
-  // la página actual. La tecla "Compartir" (Web Share API) nace oculta y solo la
-  // muestra el JS si navigator.share existe.
-  //
-  // `.pie-placa`: rediseño visual (referencia: panel "ENDURANCE · CONTROL
-  // PANEL") — SOLO decoración, `aria-hidden`, no agrega informacion nueva
-  // (el nombre del sitio ya lo anuncia la marca del header). El <svg> es el
-  // MISMO cohete de `buildBotonSubir` (mismo lenguaje de icono en todo el
-  // sitio, no uno nuevo). Las `.pie-placa-linea` son lineas de brillo CSS
-  // (gradiente), no imagenes.
-  //
-  // `.pie-pantalla`: envuelve la fila de acciones en una "pantalla" con
-  // marco propio + barra de estado decorativa debajo (referencia: la tira
-  // larga con los botones adentro). `.pie-secciones-marco`: panel angular
-  // (recorte en punta, css/layout.css) que envuelve cada grupo lateral —
-  // ver el comentario en `buildPieSeccionesGrupo`.
+  // Teclas del cockpit (.tele-accion): una palabra + LED decorativo; aria-label da el destino.
+  // WhatsApp/Facebook comparten la home sin JS (wireFooterShare los sube a la pagina actual);
+  // "Compartir" (Web Share API) nace oculta y el JS la muestra solo si navigator.share existe.
+  // .pie-placa y .pie-pantalla son decoracion aria-hidden (CSS en css/layout.css).
   const waFallback = `https://wa.me/?text=${encodeURIComponent(`Interstellar — ${SITE_URL}`)}`;
   const fbFallback = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(SITE_URL)}`;
   return `<footer>
@@ -204,20 +142,8 @@ export function buildFooter(navConfig = NavConfig) {
 </footer>`;
 }
 
-// Botón "volver arriba": cohete, acorde a la paleta del sitio. Es una tecla
-// más del cockpit (misma caja, --recorte-tecla, bezel) pero FLOTANTE
-// (position:fixed) — no vive en el header ni en el pie, por eso se inyecta
-// aparte, como último hijo del body (initBotonSubir la conecta). Arranca
-// oculto vía CSS (opacity/visibility, no `hidden`): así se puede animar la
-// entrada/salida con transición en vez de un corte seco.
-//
-// El ícono es un <svg> propio (silueta cuerpo+aletas+llama en un solo
-// <path>, más una "ventanilla" recortada con el color del metal de fondo),
-// NO el emoji 🚀: un emoji es un glifo a color de la fuente del sistema —
-// no admite teñirse con los tokens del sitio (--color-case en reposo,
-// --instrumento-teal al hover/foco, igual que el ícono CASE del menú,
-// css/layout.css) sin filtros CSS que lo dejan turbio, y varía de dibujo
-// entre SO/navegador. `fill="currentColor"` hereda el `color` del botón.
+// Boton "volver arriba" (cohete SVG): tecla flotante, ultimo hijo del body; initBotonSubir lo conecta.
+// SVG propio y no emoji, para teñirlo con los tokens del sitio (ver docs/20-notas-de-codigo/layout-y-router.md#boton-subir).
 export function buildBotonSubir() {
   return (
     '<button type="button" class="boton-subir" aria-label="Volver arriba de la página">' +
@@ -237,20 +163,14 @@ export function renderLayout(navConfig = NavConfig) {
   };
 }
 
-// Cielo compartido (css/layout.css §15): campo estelar + 3 estrellas fugaces
-// (los <i>). Es puramente decorativo (`aria-hidden`); todo el movimiento vive en
-// CSS. Se inyecta como PRIMER hijo del <body> —detras de header/main/footer— y
-// SOLO en las paginas marcadas con `class="... con-cielo"` (opt-in).
+// Cielo compartido (css/layout.css §15): decorativo, primer hijo del <body>, solo en paginas con-cielo.
 export function buildCielo() {
   return '<div class="cielo" aria-hidden="true"><i></i><i></i><i></i></div>';
 }
 
 /* -----------------------------------------------------------------------------
    Disclosure de submenus (T011) — contracts/navigation.md + data-model.md §6.
-   La logica de la maquina de estados vive en submenu-state.js (puro); aca solo
-   se conectan los eventos del DOM con esa maquina y se sincroniza el `hidden` /
-   `aria-expanded` de cada submenu. La funcion devuelve la maquina para permitir
-   pruebas, y es inofensiva sobre un DOM de prueba que no expone querySelector.
+   La maquina de estados vive en submenu-state.js; aca solo se conectan los eventos del DOM.
    ----------------------------------------------------------------------------- */
 function collectDisclosures(nav) {
   const disclosures = [];
@@ -280,8 +200,7 @@ function wireDisclosure(nav, estado) {
   }
   syncDisclosures(estado, disclosures);
 
-  // Abrir/alternar: un solo listener de `click` cubre clic, toque, Enter y Space,
-  // porque un <button> nativo dispara `click` en todos esos casos (contracts).
+  // Un solo listener de `click` cubre clic, toque, Enter y Space (<button> nativo).
   disclosures.forEach(({ button, axisId }) => {
     button.addEventListener('click', () => {
       estado.toggle(axisId);
@@ -289,8 +208,7 @@ function wireDisclosure(nav, estado) {
     });
   });
 
-  // Elegir un destino anidado: navega y cierra el submenu (HU1-E4). Se deja
-  // actuar al enlace por defecto (la navegacion real).
+  // Elegir un destino anidado cierra el submenu; la navegacion sigue por defecto (HU1-E4).
   nav.querySelectorAll('ul ul a').forEach((link) => {
     link.addEventListener('click', () => {
       estado.navigate();
@@ -298,8 +216,7 @@ function wireDisclosure(nav, estado) {
     });
   });
 
-  // Cierre restaurando foco: para cierres por teclado/clic (Escape, focusout,
-  // clic fuera), que devuelven el foco al control que estaba abierto (FR-010).
+  // Cierre con restauracion de foco al control que estaba abierto (FR-010).
   const dismissConFoco = () => {
     const controlId = estado.dismiss(); // devuelve el id del control objetivo
     syncDisclosures(estado, disclosures);
@@ -325,8 +242,7 @@ function wireDisclosure(nav, estado) {
     }
   });
 
-  // Abandonar la navegacion con el teclado: si el foco sale del area del nav,
-  // cierra y restaura el foco.
+  // Foco fuera del nav: cierra y restaura el foco.
   nav.addEventListener('focusout', (event) => {
     const nextTarget = event.relatedTarget;
     if (nextTarget && !nav.contains(nextTarget)) {
@@ -334,20 +250,13 @@ function wireDisclosure(nav, estado) {
     }
   });
 
-  // El submenu se abre y se cierra SOLO por intencion explicita: clic/tecla en el
-  // boton ▼ (toggle, arriba), Escape, seleccion de un destino anidado o clic
-  // fuera de la navegacion. Sin hover-open: cruzar la barra con el raton ya no
-  // despliega nada (evita disparos accidentales y que el menu "persiga" al
-  // cursor). Sin cierre por `mouseleave`: una vez abierto queda abierto hasta un
-  // gesto de cierre, aunque el raton se aleje del area del nav.
+  // Sin hover-open ni cierre por mouseleave: solo gestos explicitos abren/cierran
+  // (ver docs/20-notas-de-codigo/layout-y-router.md#drawer-y-submenus).
 }
 
 /* -----------------------------------------------------------------------------
    Drawer de navegacion — contracts/navigation.md + FR-022, SC-003, SC-005.
-   El nav queda oculto por defecto en TODOS los viewports (CSS) y se muestra
-   como panel flotante al pulsar el boton CASE. Mecanismo elegido: JS alterna
-   (a) el `aria-expanded` del boton CASE y (b) la clase `nav-abierto` sobre el
-   `<nav id="nav-principal">`; el CSS usa esa clase para mostrar el panel.
+   Oculto por defecto (CSS); el boton CASE alterna aria-expanded y la clase `nav-abierto` del nav.
    ----------------------------------------------------------------------------- */
 function wireDrawer(header, nav, estado) {
   const toggle = header.querySelector('.nav-toggle');
@@ -398,8 +307,7 @@ function wireDrawer(header, nav, estado) {
     alternarDrawer();
   });
 
-  // Seleccionar CUALQUIER destino del drawer cierra el drawer; la navegacion
-  // nativa continua. Solo si el drawer esta abierto.
+  // Elegir CUALQUIER destino cierra el drawer; la navegacion nativa continua.
   nav.addEventListener('click', (event) => {
     if (nav.classList.contains('nav-abierto') && event.target.closest('a')) {
       cerrarDrawer();
@@ -421,10 +329,7 @@ function wireDrawer(header, nav, estado) {
   });
 }
 
-// Hero de la home: el <video> de fondo lleva `autoplay muted` en el HTML, pero
-// si hay `prefers-reduced-motion: reduce` lo PAUSAMOS y lo rebobinamos -> queda
-// el poster fijo (hero-gargantua.jpg). Si la preferencia cambia en caliente,
-// reacciona. Inofensivo si la pagina no tiene ese <video>.
+// Hero de la home: con prefers-reduced-motion se pausa el <video> y queda el poster. Reacciona en caliente.
 export function initHeroVideo() {
   if (typeof document.querySelector !== 'function' || typeof matchMedia !== 'function') {
     return;
@@ -451,12 +356,8 @@ export function initHeroVideo() {
   }
 }
 
-// Compartir desde el pie. WhatsApp y Facebook son enlaces a sus URLs de "share":
-// sin JS comparten la home; aca se actualizan a la pagina actual (`location.href`).
-// El boton "Compartir" usa la Web Share API (`navigator.share`) y SOLO se muestra
-// si el navegador la soporta —tipico en movil—: abre la bandeja nativa del
-// sistema, el unico camino real para compartir a Instagram desde una web (no
-// existe una URL de "share" de Instagram). Inofensivo si el pie no esta.
+// Compartir desde el pie: WhatsApp/Facebook se actualizan a la pagina actual; "Compartir"
+// (Web Share API) solo se muestra si navigator.share existe.
 function wireFooterShare(footer) {
   if (!footer || typeof footer.querySelector !== 'function') {
     return;
@@ -488,13 +389,8 @@ function wireFooterShare(footer) {
   }
 }
 
-// Aviso de spoiler (css/layout.css §17). El sitio comenta la trama completa
-// —final incluido— en casi todas las paginas. En la primera visita se pone
-// `body.spoiler-alerta` (los LED del header pasan a rojo y parpadean), se inyecta
-// un rotulo "SPOILERS" en la banda y una tira de aviso debajo del header con un
-// boton "Ya la vi". Al confirmar se guarda en localStorage y todo vuelve a teal.
-// `localStorage` puede tirar (modo privado): las lecturas/escrituras van en
-// try/catch y si falla, el aviso simplemente aparece cada vez.
+// Aviso de spoiler (css/layout.css §17): en la primera visita alerta en el header hasta confirmar.
+// localStorage puede tirar (modo privado): va en try/catch y, si falla, el aviso reaparece.
 const SPOILER_KEY = 'interstellar:spoiler-ack';
 
 function spoilerReconocido() {
@@ -526,9 +422,7 @@ function initSpoilerAviso(header) {
     'afterbegin',
     '<span class="spoiler-rotulo" aria-hidden="true"><span class="led led-alerta"></span>Spoilers</span>',
   );
-  // DENTRO del <header> (no como hermano): asi el panel CUELGA del tablero
-  // (`position: absolute; top: 100%`) y flota sobre el contenido en vez de
-  // reservar un bloque full-width que lo empuja hacia abajo.
+  // DENTRO del <header>: el panel cuelga del tablero (absolute) y flota sin empujar el contenido.
   header.insertAdjacentHTML(
     'beforeend',
     '<div class="spoiler-aviso" role="alert">' +
@@ -543,11 +437,8 @@ function initSpoilerAviso(header) {
   if (boton) {
     boton.addEventListener('click', () => {
       guardarSpoilerReconocido();
-      // "Check del tablero": al reconocerlo, las luces vuelven a la normalidad
-      // AL INSTANTE (quitar la clase deja que las transiciones de color hagan el
-      // rojo -> teal/ambar) y el panel de aviso se RETRAE hacia el header antes
-      // de quitarse del DOM. `animationend` cierra; el timeout es el respaldo
-      // para prefers-reduced-motion (sin animacion, no dispara `animationend`).
+      // Las luces vuelven a normal al instante y el panel se retrae antes de quitarse;
+      // el timeout respalda a animationend (no dispara con prefers-reduced-motion).
       document.body.classList.remove('spoiler-alerta');
       const cerrar = () => {
         if (rotulo) rotulo.remove();
@@ -567,15 +458,8 @@ function initSpoilerAviso(header) {
   }
 }
 
-// Botón "volver arriba": aparece recién despues de scrollear un poco (60% de
-// un viewport — evita mostrarlo en paginas cortas donde no aporta nada) y se
-// oculta de nuevo cuando el pie ya está a la vista (ahí abajo sobra: el
-// usuario ya llegó al final, y en mobile el pie es una grilla que ocupa todo
-// el ancho — el botón fijo se le superpondría). Un solo booleano combinado
-// (`pasoUmbral && !pieVisible`) decide la clase que dispara la transición
-// CSS (ver css/layout.css). El listener de scroll va con rAF-throttle: un
-// scroll dispara decenas de eventos por segundo, no hace falta recalcular en
-// cada uno.
+// Boton "volver arriba": aparece tras scrollear 60% de viewport y se oculta con el pie a la vista.
+// Un booleano combinado decide la clase; el scroll va con rAF-throttle.
 function initBotonSubir(boton) {
   if (!boton || typeof window === 'undefined' || typeof window.scrollTo !== 'function') {
     return;
@@ -617,11 +501,7 @@ function initBotonSubir(boton) {
     observador.observe(pie);
   }
 
-  // Secuencia de "despegue" (css/layout.css: @keyframes cohete-despegar-*):
-  // la clase dispara la animacion del <svg> + la llama del ::after, y se
-  // saca sola al terminar -- `animationend` es la senal real, el `setTimeout`
-  // es solo la red de contencion (mismo patron que `.spoiler-aviso--retrae`)
-  // por si el navegador no lo dispara (p. ej. display:none de por medio).
+  // Despegue (css/layout.css): animationend lo termina; el setTimeout es red de contencion.
   const disparaDespegue = () => {
     boton.classList.remove('boton-subir--despega');
     void boton.offsetWidth; // fuerza reflow: reinicia la animacion si se clickea de nuevo rapido
@@ -639,33 +519,15 @@ function initBotonSubir(boton) {
     window.scrollTo({ top: 0, behavior: sinMovimiento ? 'auto' : 'smooth' });
     disparaDespegue();
     setTimeout(() => boton.classList.remove('boton-subir--despega'), 900); // respaldo: > que la animacion de 0.6s
-    // Foco al enlace de marca del header: quien navega con teclado/lector de
-    // pantalla queda "parado" en un lugar con sentido tras el salto, no
-    // perdido en el <body>. Es el primer elemento enfocable de la pagina.
+    // Foco al enlace de marca: teclado/lector de pantalla no quedan perdidos en el <body>.
     document.querySelector('header .cockpit-brand')?.focus();
   });
 
   actualizar(); // estado inicial, por si la pagina se carga ya scrolleada (anchor #hash)
 }
 
-// El menu duplicado del pie (`.pie-secciones-marco`, izquierda y derecha)
-// solo aporta si hay que SCROLLEAR para llegar al pie -- si la pagina entra
-// entera en la pantalla (la home, con su hero "sin scroll" a proposito; o
-// cualquier otra pagina corta), el header ya esta a la vista todo el tiempo
-// y duplicarlo abajo es ruido. No se puede fijar por pagina en el HTML: la
-// MISMA pagina puede tener scroll en un celular y no en un monitor grande —
-// se mide en runtime contra la altura real del documento, y se re-mide en
-// cada resize (cambia el viewport) y en `load` (fonts/imagenes pueden correr
-// la altura despues del DOMContentLoaded). El bloque central de acciones
-// (contacto/compartir/creditos) NO se toca: ese es util siempre, con o sin
-// scroll.
-//
-// Se oculta el `.pie-secciones-marco` COMPLETO, no solo el <nav> de adentro:
-// el marco es el panel angular con fondo/borde/recorte propio (rediseño
-// visual) — ocultar solo el <nav> dejaba el marco vacio pero visible, un
-// fragmento de panel sin contenido flotando en el pie (bug real, agarrado
-// en verificacion visual: la home mostraba dos "muñones" de panel a los
-// costados de la pantalla central).
+// El menu duplicado del pie solo aporta si hay que scrollear para llegar a el: se mide en runtime
+// (resize y load). Se oculta el marco COMPLETO, no solo el <nav> (ver docs/20-notas-de-codigo/layout-y-router.md#pie).
 export function actualizarPieSeccionesCondicional() {
   if (typeof document === 'undefined' || typeof window === 'undefined') {
     return;
@@ -690,17 +552,9 @@ export function initPieSeccionesCondicional() {
   window.addEventListener('load', actualizarPieSeccionesCondicional);
 }
 
-// Musica de fondo con interruptor en el header (desktop Y mobile). La
-// preferencia (on/off) y el segundo actual viven en sessionStorage; con la
-// navegacion Swup (js/swup-router.js) el <audio> persiste entre paginas sin
-// corte, y ante una recarga completa REANUDA desde el segundo guardado. NUNCA
-// suena en trailer.html (tiene su propio video): ahi se silencia sola,
-// conservando la preferencia para reanudar al salir. Si el navegador bloquea el
-// play() (politica de autoplay), se reintenta en la primera interaccion.
-//
-// Mobile: (1) se pausa al ocultarse la pagina (bloqueo de pantalla / cambio de
-// app) para no gastar bateria; (2) iOS Safari ignora `audio.volume` (solo
-// lectura) y sonaria a volumen pleno: ahi se atenua con un GainNode de Web Audio.
+// Musica de fondo con interruptor en el header (desktop y mobile). Preferencia y segundo actual en
+// sessionStorage; nunca suena en trailer.html. En mobile se pausa al ocultarse la pagina y en iOS se
+// atenua con un GainNode (ver docs/20-notas-de-codigo/layout-y-router.md#musica-de-fondo).
 // Intenta fijar el volumen nativo. Devuelve false si el navegador lo ignora
 // (iOS Safari: `volume` es de solo lectura) y hay que atenuar por Web Audio.
 export function aplicarVolumenNativo(audio, vol) {
@@ -814,9 +668,7 @@ function initMusicaFondo() {
   const debeSonar = () =>
     boton.getAttribute('aria-pressed') === 'true' && !esTrailer && !muteadoPorTrailer;
 
-  // Reintenta en el primer gesto del usuario (autoplay bloqueado o contexto de
-  // Web Audio suspendido). Guardado por debeSonar: si el usuario apago la
-  // musica entre medio, no la revive.
+  // Reintenta en el primer gesto (autoplay bloqueado o Web Audio suspendido); debeSonar evita revivir musica apagada.
   const esperarGesto = (a) => {
     const reintento = () => {
       if (debeSonar()) {
@@ -837,8 +689,7 @@ function initMusicaFondo() {
     if (!aplicarVolumenNativo(audioGlobal, VOL)) {
       atenuarConGain(audioGlobal);
     }
-    // En el DOM (no detached): mas robusto ante el GC y consistente entre
-    // navegadores. Es solo audio, no aporta nada visual.
+    // En el DOM (no detached): mas robusto ante el GC.
     document.body.appendChild(audioGlobal);
     const t = parseFloat(lee(CLAVE_T) || '0');
     if (t > 0) {
@@ -914,8 +765,7 @@ function initMusicaFondo() {
     }
   });
 
-  // Mobile (pantalla tactil): pausar al ocultarse la pagina (bloqueo de pantalla,
-  // cambio de app) y reanudar al volver. En desktop se deja sonar en segundo plano.
+  // Mobile (tactil): pausar al ocultarse la pagina y reanudar al volver; en desktop sigue sonando.
   if (typeof window.matchMedia === 'function' && window.matchMedia('(hover: none) and (pointer: coarse)').matches) {
     document.addEventListener('visibilitychange', () => {
       const accion = accionPorVisibilidad({
@@ -950,10 +800,7 @@ function initMusicaFondo() {
   }
 }
 
-// Indicador de seccion actual (FR: descubribilidad de la nav). Marca con
-// `aria-current="page"` el enlace de NIVEL SUPERIOR cuyo destino es la pagina en
-// curso; el CSS lo resalta (LED fijo + acento) tanto en la barra de escritorio
-// como en el drawer.
+// Indicador de seccion actual: marca con aria-current="page" el enlace de nivel superior de la pagina en curso.
 export function markCurrentPage(nav) {
   if (!nav || typeof nav.querySelectorAll !== 'function') {
     return;
@@ -992,9 +839,7 @@ export function init(navConfig = NavConfig) {
     }
   }
 
-  // Conecta la interaccion del disclosure. Solo se ejecuta si el DOM de prueba
-  // (layout.test.js usa un fake body sin querySelector) expone la API real;
-  // en el navegador siempre esta disponible.
+  // Conecta el disclosure solo si el DOM expone la API real (layout.test.js usa un fake body).
   if (typeof document.body.querySelector !== 'function') {
     return;
   }

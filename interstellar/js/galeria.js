@@ -1,17 +1,10 @@
 // Filtro por eje + visor (lightbox) de la galeria (galeria.html).
-// Dos piezas PURAS sin DOM (testeadas en tests/galeria.test.js) + init() que
-// conecta con el DOM real. Mismo criterio que js/submenu-state.js.
-//
-// Degradado: sin JS, cada <a> sigue enlazando directo al archivo de imagen (se
-// nunca se le saca el href) y las 4 secciones se ven todas juntas, como antes
-// de este cambio. El filtro y el visor solo MEJORAN — nunca son requisito
-// para ver las imagenes.
+// Piezas puras sin DOM (tests/galeria.test.js) + init() que conecta con el DOM.
+// Degradado: sin JS cada <a> enlaza directo a la imagen y se ven las 4 secciones.
 
 export const EJE_TODAS = 'todas';
 
-// Filtro: un unico eje activo ('todas' por defecto). Clic en el eje ya activo
-// vuelve a 'todas' — mismo criterio de toggle que el submenu del header
-// (submenu-state.js).
+// Filtro: un unico eje activo ('todas' por defecto); clic en el activo vuelve a 'todas'.
 export function createFiltroState() {
   let activo = EJE_TODAS;
   return {
@@ -24,8 +17,7 @@ export function createFiltroState() {
   };
 }
 
-// Indices de `items` visibles bajo el filtro activo. `items` es un array de
-// objetos con `{ eje }`. EJE_TODAS devuelve todos los indices, en orden.
+// Indices de `items` ({ eje }) visibles bajo el filtro; EJE_TODAS devuelve todos.
 export function visibleIndices(items, filtro) {
   if (filtro === EJE_TODAS) {
     return items.map((_, indice) => indice);
@@ -38,9 +30,7 @@ export function visibleIndices(items, filtro) {
   }, []);
 }
 
-// Avanza `pos` (posicion dentro de una lista de largo `length`, no un indice
-// de `items`) `delta` pasos, con wraparound. `length <= 0` -> 0 (lista vacia,
-// caso limite: no hay nada que recorrer).
+// Avanza `pos` (posicion en la lista visible, no indice de `items`) `delta` pasos, con wraparound.
 export function wrapIndex(pos, delta, length) {
   if (length <= 0) {
     return 0;
@@ -52,8 +42,7 @@ export function wrapIndex(pos, delta, length) {
 // DOM — no se ejecuta en los tests (node:test no define `document`).
 // ---------------------------------------------------------------------------
 
-// Solo las <li> DENTRO de una .galeria-grid (nunca todo el document): el
-// drawer de navegacion tambien usa <li> y no tiene nada que ver con esto.
+// Solo las <li> dentro de una .galeria-grid (el drawer de navegacion tambien usa <li>).
 function leerItems(grids) {
   return grids.flatMap((grid) => {
     const eje = grid.dataset.eje ?? EJE_TODAS;
@@ -74,13 +63,9 @@ function wireFiltro(items, grids) {
   const teclas = [...barra.querySelectorAll('.galeria-filtro-tecla')];
   const contador = barra.querySelector('.galeria-filtro-contador');
   const filtro = createFiltroState();
-  // Cada grid vive dentro de un section[id] (el eje): section.hidden cuando
-  // el filtro activo la deja sin ninguna imagen visible. Sin esto, el titulo
-  // + CTA de esa seccion quedarian flotando solos sobre una grilla vacia.
+  // section[id] de cada eje: se oculta entera si no le queda ninguna imagen visible.
   const secciones = grids.map((grid) => grid.closest('section[id]'));
-  // Paginacion Anterior/Siguiente al pie de cada eje: solo tiene sentido con
-  // un filtro puntual activo (en "Todas" los 4 ejes ya estan uno debajo del
-  // otro en el mismo scroll — ver css/galeria.css).
+  // Paginacion Anterior/Siguiente: solo con un filtro puntual activo (ver css/galeria.css).
   const paginaciones = [...document.querySelectorAll('.galeria-paginacion')];
   const botonesPaginacion = [...document.querySelectorAll('.galeria-anterior, .galeria-siguiente')];
 
@@ -116,10 +101,8 @@ function wireFiltro(items, grids) {
     });
   }
 
-  // Anterior/Siguiente siempre apuntan a un eje DISTINTO del activo, asi que
-  // filtro.set() nunca cae en la rama de toggle-a-"todas". Tras conmutar,
-  // la seccion recien mostrada puede quedar fuera de vista (el usuario venia
-  // scrolleado al pie del eje anterior) -> la llevamos al tope.
+  // Apuntan siempre a un eje distinto del activo (set() no cae en el toggle a "todas");
+  // tras conmutar se lleva la seccion nueva al tope.
   for (const boton of botonesPaginacion) {
     boton.addEventListener('click', () => {
       filtro.set(boton.dataset.filtro);

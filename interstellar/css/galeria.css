@@ -1,41 +1,8 @@
-/* Galeria (galeria.html)
-   Extraido de css/layout.css (seccion 14) el 2026-09-10. Hoja de 5o nivel
-   segun el contrato 006 C5: se enlaza con un <link> DESPUES de layout.css,
-   solo en las paginas que la usan. Cut-paste textual, sin cambio de valor. */
+/* Galeria (galeria.html). Hoja de 5o nivel, enlazada tras layout.css */
 
-/* ---------------------------------------------------------------------------
-   14. Galeria (feature 005 — galeria; redisenada — filtro + visor + hover)
-   ---------------------------------------------------------------------------
-   La galeria agrupa las imagenes del sitio en cuatro `section[id]` (una por
-   eje). El `section[id]` base (seccion 10) ya da el `h2` y el `border-top`;
-   el `max-width` se pisa mas abajo (78rem — pagina image-forward, no de
-   lectura). Tiles uniformes 3:2 con `object-fit: cover` (FR-002a): el
-   recorte de miniatura es intencional, no un defecto. `minmax(min(100%,
-   19rem), 1fr)` garantiza 1 columna sin desbordamiento a 320 px (FR-012) — el
-   `min(100%, …)` es lo que evita el overflow, no el valor base. Solo tokens
-   existentes; sin custom properties nuevas, sin segundo color saturado (FR-014).
-
-   Redisenio (sec/galeria): tres piezas nuevas, todas capa CONTENIDO (naranja
-   Gargantua como unico acento saturado — nunca teal, ese es del chrome):
-   - Hover/foco de tile: mismo idioma que `.mundo-tarjeta` (css/mundos.css) —
-     zoom sutil de imagen + caption en overlay que se asienta, filo naranja.
-     El caption NUNCA se oculta del todo (legible en reposo, mobile y sin JS):
-     evita el problema de accesibilidad de un reveal-on-hover puro.
-   - `.galeria-filtro`: teclas con el mismo `--recorte-tecla` angular del
-     chrome, pero en paleta de contenido (superficie/bezel neutros en reposo,
-     naranja solo en la tecla activa).
-   - `.galeria-visor`: <dialog> nativo (sin libreria) que reemplaza navegar al
-     archivo de imagen suelto. Grado: si el navegador no soporta
-     dialog.showModal (o no hay JS), js/galeria.js no la conecta y los <a>
-     siguen yendo directo al archivo, como antes.
-   --------------------------------------------------------------------------- */
-/* Intro de la galeria = mismo hero full-bleed que .ciencia-portada /
-   .mundos-intro / .portada-tripulacion: 1 imagen representativa de cada uno
-   de los 4 ejes (el mismo orden que las teclas de .galeria-filtro), cero
-   asset nuevo — ya estan mas abajo en sus respectivas grillas. Titulo/lead
-   anclados abajo-izquierda al 5%, alto = 100svh menos el header. Selector
-   con la misma especificidad reforzada que las otras 3 paginas (evita perder
-   contra `body:not(.home) main > section:first-child`, layout.css §10). */
+/* 14. Galeria (feature 005) - tiles 3:2 con object-fit: cover; minmax(min(100%, 19rem), 1fr) evita overflow a 320 px
+   ver docs/20-notas-de-codigo/css-paginas.md#galeria */
+/* Intro = hero full-bleed (1 imagen por eje, mismo orden que el filtro); alto = 100svh menos el header */
 section.galeria-portada,
 body:not(.home) main > section.galeria-portada:first-child {
   position: relative;
@@ -100,11 +67,7 @@ body:not(.home) main > section.galeria-portada:first-child {
   }
 }
 
-/* Selector reforzado con el prefijo `section.galeria-portada:first-child`:
-   con solo `.galeria-portada-contenido h1/p` (1 clase) la regla generica de
-   intro de pagina (layout.css §10) le gana el empate por tener mas tipos —
-   mismo bug ya encontrado y corregido en .ciencia-portada-contenido,
-   .mundos-intro-contenido y .portada-tripulacion-contenido. */
+/* Selector reforzado: sin el prefijo section.galeria-portada:first-child la regla generica de intro (layout.css §10) gana por tipos */
 body:not(.home) main > section.galeria-portada:first-child .galeria-portada-contenido h1 {
   margin-bottom: 1rem;
   font-family: var(--font-hero-titulo);
@@ -124,12 +87,7 @@ body:not(.home) main > section.galeria-portada:first-child .galeria-portada-cont
   text-shadow: 0 0 1rem var(--color-fondo);
 }
 
-/* Las 4 secciones de eje rompen el ancho de lectura estandar (60rem, pensado
-   para prosa — section[id] base, layout.css) porque esta pagina es
-   image-forward, no texto: mismo criterio que `.mundos-grid` en
-   css/mundos.css (full-bleed dentro de un tope). La barra de filtro y la
-   paginacion Anterior/Siguiente se alinean al mismo ancho para que todo el
-   bloque quede prolijo. */
+/* Los ejes rompen el ancho de lectura (60rem): pagina image-forward; filtro y paginacion se alinean al mismo ancho */
 #mundos,
 #personajes,
 #ciencia,
@@ -142,12 +100,7 @@ body:not(.home) main > section.galeria-portada:first-child .galeria-portada-cont
   max-width: 78rem;
 }
 
-/* Header de eje = TODO el bloque (título + CTA) es un unico <a> clickeable.
-   Antes era un h2 suelto + un link de texto subrayado chico debajo — cuando
-   el filtro dejaba una seccion sin imagenes visibles, ese combo quedaba
-   flotando solo sobre una grilla vacia (ver js/galeria.js: la seccion entera
-   se oculta con `hidden` cuando su filtro no tiene resultados, asi que esto
-   solo se ve en secciones CON imagenes — nunca como "cascara" vacia). */
+/* Header de eje: todo el bloque (titulo + CTA) es un unico <a>. js/galeria.js oculta las secciones sin resultados */
 .galeria-eje-header {
   display: flex;
   align-items: baseline;
@@ -201,13 +154,8 @@ body:not(.home) main > section.galeria-portada:first-child .galeria-portada-cont
   transform: translateX(0.3rem);
 }
 
-/* Paginacion al pie de cada eje: Anterior/Siguiente, mismo idioma visual que
-   `.mundo-paginacion` (css/mundos.css) pero con <button> en vez de <a> —
-   ac  no se navega a otra pagina, se conmuta el filtro (js/galeria.js).
-   Solo tiene sentido con un filtro puntual activo: en "Todas" los 4 ejes ya
-   estan uno debajo del otro en el mismo scroll, no hace falta. Mundos no
-   lleva "Anterior" (es el primero); El Viaje no lleva "Siguiente" (el ultimo)
-   — el <span></span> vacio sostiene el space-between del layout. */
+/* Paginacion al pie de cada eje: <button> que conmuta el filtro (js/galeria.js), solo con filtro puntual.
+   El <span> vacio sostiene el space-between */
 .galeria-paginacion {
   width: 100%;
   box-sizing: border-box;
@@ -273,11 +221,7 @@ body:not(.home) main > section.galeria-portada:first-child .galeria-portada-cont
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
 }
 
-/* Flotacion suave tipo ingravidez: cada tile deriva en Y a su propio ritmo.
-   3 variantes desincronizadas por nth-child (mismo criterio que
-   cockpit-led-pulso en layout.css: nunca todas en fase, o se lee robotico).
-   Se pausa en hover/foco para no competir con el zoom de la imagen.
-   prefers-reduced-motion la congela via la regla global de reset.css. */
+/* Flotacion tipo ingravidez: 3 variantes desincronizadas por nth-child; se pausa en hover/foco */
 @keyframes galeria-flotar {
   0%,
   100% {
@@ -330,9 +274,7 @@ body:not(.home) main > section.galeria-portada:first-child .galeria-portada-cont
   transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1), filter 0.3s ease;
 }
 
-/* Caption en overlay sobre el pie de la imagen — SIEMPRE legible (nunca
-   opacity: 0), solo se "asienta" en hover/foco. Evita el problema de
-   accesibilidad de un reveal-on-hover puro (mobile, teclado sin :hover). */
+/* Caption en overlay: SIEMPRE legible (nunca opacity: 0), solo se asienta en hover/foco */
 .galeria-grid figcaption {
   position: absolute;
   inset: auto 0 0 0;
@@ -352,8 +294,7 @@ body:not(.home) main > section.galeria-portada:first-child .galeria-portada-cont
   transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-/* Filo de acento naranja que barre desde la izquierda — mismo criterio que
-   `.mundo-tarjeta::after` en css/mundos.css. */
+/* Filo de acento naranja que barre desde la izquierda (como .mundo-tarjeta::after) */
 .galeria-grid figure::after {
   content: "";
   position: absolute;
@@ -382,9 +323,7 @@ body:not(.home) main > section.galeria-portada:first-child .galeria-portada-cont
   transform: scaleX(1);
 }
 
-/* Filtro por eje: fila de "teclas" angulares en paleta de CONTENIDO (nunca
-   teal — eso es del chrome). Reposo neutro; la tecla activa se enciende en
-   naranja Gargantua, el unico acento saturado que tiene el contenido. */
+/* Filtro por eje: teclas en paleta de CONTENIDO (naranja solo en la activa, nunca teal) */
 .galeria-filtro {
   display: flex;
   flex-wrap: wrap;
@@ -428,10 +367,7 @@ body:not(.home) main > section.galeria-portada:first-child .galeria-portada-cont
   color: var(--color-texto-atenuado);
 }
 
-/* Visor (lightbox): <dialog> nativo, marco angular de la misma familia que el
-   resto del cockpit pero en paleta de CONTENIDO. Sin JS, o sin soporte de
-   dialog.showModal, js/galeria.js no lo conecta: los <a> de la grilla
-   navegan directo al archivo, como antes del redisenio. */
+/* Visor (lightbox): <dialog> nativo; sin JS o sin showModal los <a> navegan directo al archivo */
 .galeria-visor {
   position: fixed;
   inset: 0;

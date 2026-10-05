@@ -1,6 +1,5 @@
-// Visor de memes de Interstellar y "Estamos trabajando en ello" (GIPHY)
-// Arquitectura modular en Vanilla JS: maquina de estados desacoplada del DOM
-// para testing unitario puro, mas funcion de conexion accesible al DOM.
+// Visor de memes (GIPHY): maquina de estados sin DOM (testeable) + initMemeViewer() que la conecta.
+// ver docs/20-notas-de-codigo/paginas-interactivas.md#visor-de-memes
 
 export const MEMES_DATA = [
   {

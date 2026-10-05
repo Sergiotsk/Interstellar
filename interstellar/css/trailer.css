@@ -1,11 +1,7 @@
-/* Página de tráiler = HERO de video. El objetivo: que el iframe ocupe el
-   maximo espacio posible entre el header y el pie, sin scroll, manteniendo
-   16:9. Se logra con una cadena flex que llena el viewport
-   (body -> main -> section -> stage) y un embed que crece hasta el 16:9 mas
-   grande que entre en el "stage". */
+/* Pagina de trailer = hero de video: el iframe ocupa el 16:9 maximo entre header y pie, sin scroll.
+   ver docs/20-notas-de-codigo/css-paginas.md#trailer */
 
-/* Cadena de altura completa. `body` ya trae header/main/footer como hijos en
-   flujo (el cielo y el boton-subir son position:fixed, fuera de flujo). */
+/* Cadena flex de altura completa (body -> main -> section -> stage) */
 body:has(.trailer-hero),
 body.pagina-trailer {
   min-height: 100dvh;
@@ -21,9 +17,7 @@ body.pagina-trailer main {
   flex-direction: column;
 }
 
-/* La seccion de intro (regla base `body:not(.home) main > section:first-child`)
-   pasa a ocupar todo el alto disponible y a lo ancho completo (sin el cap de
-   60rem); el video llena todo el espacio (el h1 no ocupa lugar, ver abajo). */
+/* La seccion de intro ocupa todo el alto disponible y el ancho completo (sin el cap de 60rem) */
 body:not(.home) main > section.trailer-hero {
   flex: 1 1 auto;
   min-height: 0;
@@ -34,11 +28,7 @@ body:not(.home) main > section.trailer-hero {
   padding: 1rem clamp(0.75rem, 3vw, 2rem) 1.25rem;
 }
 
-/* `<h1>` OCULTO VISUALMENTE, no eliminado: el video es el protagonista, pero
-   la pagina conserva su encabezado principal para SEO (senal de tema) y para
-   accesibilidad (lectores de pantalla + outline del documento). Tecnica
-   estandar `visually-hidden` (fuera de pantalla, sin `display:none`, que si lo
-   sacaria del arbol de accesibilidad). */
+/* h1 oculto visualmente (no display:none) para conservar SEO y accesibilidad */
 body:not(.home) main > section.trailer-hero h1 {
   position: absolute;
   width: 1px;
@@ -61,15 +51,9 @@ body:not(.home) main > section.trailer-hero h1 {
   justify-content: center;
 }
 
-/* El embed es el 16:9 mas grande que entra en el stage: `max-width` y
-   `max-height` al 100% + `aspect-ratio` -> el navegador elige la caja 16:9
-   maxima que cabe (limitada por ancho o por alto, lo que toque primero). */
+/* El embed es el 16:9 mas grande que cabe en el stage */
 .trailer-embed {
-  /* Alto = viewport menos el chrome fijo (header + pie + paddings ~= 20rem,
-     con margen anti-scroll; el h1 ya no cuenta, esta fuera de flujo); el ancho
-     se deriva del 16:9. Se dimensiona contra `dvh` (definido) en vez de `%`
-     sobre la cadena flex (que no resuelve). El stage flex lo mantiene centrado
-     -> look de hero. `max-width: 100%` lo acota en viewports altos y angostos. */
+  /* Alto = viewport menos chrome fijo (~20rem); se usa dvh porque % no resuelve en la cadena flex */
   aspect-ratio: 16 / 9;
   height: min(calc(100dvh - 20rem), 60rem);
   width: auto;
@@ -91,9 +75,7 @@ body:not(.home) main > section.trailer-hero h1 {
   border: 0;
 }
 
-/* En la pagina de trailer el protagonista es el video: tambien se ocultan los
-   menus de secciones a los costados del pie. (Las pantallas de monitorizacion
-   ya estan ocultas por defecto en todo el sitio — ver layout.css.) */
+/* En trailer tambien se ocultan los menus de secciones a los costados del pie */
 body:has(.trailer-hero) .pie-secciones-marco,
 body.pagina-trailer .pie-secciones-marco {
   display: none;

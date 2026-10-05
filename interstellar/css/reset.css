@@ -1,18 +1,5 @@
-/* =============================================================================
-   css/reset.css — Reset y normalizacion entre navegadores (feature 006)
-   -----------------------------------------------------------------------------
-   PRIMERA hoja del sitio. Se carga antes que variables.css, base.css y
-   layout.css (contrato specs/006-reset-css/contracts/hojas-css.md C1).
-
-   Selectores `:where(...)` -> especificidad (0,0,0,0): cualquier regla de las
-   otras hojas (o de un CSS de pagina) sobreescribe SIN `!important` y sin subir
-   especificidad. UNICA excepcion permitida (FR-016): el bloque
-   `@media (prefers-reduced-motion: reduce)`, que usa `*` + `!important`.
-
-   Esta hoja NO impone decisiones de diseno (FR-018): nada de paleta, familias
-   tipograficas ni escalas de tamano. Esos valores viven en variables.css /
-   base.css / layout.css.
-   ========================================================================== */
+/* css/reset.css - reset y normalizacion. Selectores :where() (especificidad 0) y sin decisiones de diseno (FR-018).
+   Unica excepcion: el bloque prefers-reduced-motion. ver docs/20-notas-de-codigo/css-paginas.md#base-y-reset */
 
 /* box-sizing heredable y global (FR-007) */
 :where(*, *::before, *::after) {
@@ -34,8 +21,7 @@
   min-height: 100vh;
 }
 
-/* Listas sin vinetas ni sangria por defecto (FR-009). El margen ya lo cubre el
-   reset total de arriba. */
+/* Listas sin vinetas ni sangria (FR-009) */
 :where(ul, ol) {
   list-style: none;
   padding: 0;
@@ -59,8 +45,7 @@
   border-spacing: 0;
 }
 
-/* Enlaces neutros: el estilo del sitio (subrayado, color) lo pone base.css
-   (FR-013) */
+/* Enlaces neutros: el estilo real lo pone base.css (FR-013) */
 :where(a) {
   text-decoration: none;
   color: inherit;
@@ -73,22 +58,13 @@
   cursor: pointer;
 }
 
-/* Texto y encabezados: las palabras largas cortan en vez de desbordar (FR-015).
-   Evita scroll horizontal a 320 px. */
+/* Palabras largas cortan en vez de desbordar (FR-015); evita scroll horizontal a 320 px */
 :where(p, li, h1, h2, h3, h4, h5, h6, figcaption, dd) {
   overflow-wrap: break-word;
 }
 
-/* ---------------------------------------------------------------------------
-   Movimiento reducido — global y agresivo (FR-016)
-   ---------------------------------------------------------------------------
-   UNICA excepcion a la especificidad 0 de esta hoja: usa `*` + `!important`.
-   Neutraliza toda animacion/transicion CSS del sitio de un saque (barra CASE,
-   futuros efectos scroll-driven / Canvas). `0.01ms` (no `0s`) es el patron
-   canonico: no rompe los eventos `animationend` / `transitionend` de los que
-   puede depender un script. El <video> del Hero lo pausa js/layout.js con esta
-   misma media query.
-   --------------------------------------------------------------------------- */
+/* Movimiento reducido (FR-016): unica excepcion a la especificidad 0 (`*` + !important).
+   0.01ms y no 0s: no rompe animationend / transitionend. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

@@ -1,17 +1,6 @@
-/* =============================================================================
-   css/en-desarrollo.css — Pantallas en desarrollo + Terminal de Memes (GIPHY)
-   -----------------------------------------------------------------------------
-   Hoja de 5º nivel para viaje.html y minijuegos.html.
-   Integra el lenguaje de interfaz de nave (cockpit), paneles angulares,
-   telemetría de calibración y el visor interactivo de memes.
-   ========================================================================== */
+/* css/en-desarrollo.css - pantallas en desarrollo + Terminal de Memes (viaje.html, minijuegos.html) */
 
-/* ---------------------------------------------------------------------------
-   1. Banner superior de estado de la nave
-   --------------------------------------------------------------------------- */
-/* ---------------------------------------------------------------------------
-   1. Banner superior de estado de la nave (compacto, sin scroll)
-   --------------------------------------------------------------------------- */
+/* 1. Banner superior de estado de la nave (compacto, sin scroll) */
 .terminal-intro {
   max-width: 52rem;
   margin: 0 auto;
@@ -84,9 +73,7 @@
   margin: 0 auto;
 }
 
-/* ---------------------------------------------------------------------------
-   2. Consola de Memes TARS (Meme Viewer Compacto)
-   --------------------------------------------------------------------------- */
+/* 2. Consola de Memes TARS (visor compacto) */
 .meme-seccion {
   max-width: 44rem;
   margin: 1.25rem auto 2.25rem;
@@ -261,9 +248,7 @@
   text-decoration: underline;
 }
 
-/* ---------------------------------------------------------------------------
-   3. Grilla de Etapas de El Viaje (viaje.html)
-   --------------------------------------------------------------------------- */
+/* 3. Grilla de Etapas de El Viaje (viaje.html) */
 .viaje-etapas-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
@@ -333,9 +318,7 @@
   background: var(--led-ambar);
 }
 
-/* ---------------------------------------------------------------------------
-   4. Bahías de Minijuegos (minijuegos.html)
-   --------------------------------------------------------------------------- */
+/* 4. Bahias de Minijuegos (minijuegos.html) */
 .minijuegos-bahias-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
@@ -419,9 +402,7 @@
   background: var(--led-ambar);
 }
 
-/* ---------------------------------------------------------------------------
-   5. Responsividad
-   --------------------------------------------------------------------------- */
+/* 5. Responsividad */
 @media (max-width: 48rem) {
   .terminal-intro {
     padding-top: 2rem;

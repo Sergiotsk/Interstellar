@@ -1,19 +1,7 @@
-/* Concepto de ciencia + etiqueta de rigor (ciencia.html)
-   Extraido de css/layout.css (seccion 13) el 2026-09-10. Hoja de 5o nivel
-   segun el contrato 006 C5: se enlaza con un <link> DESPUES de layout.css,
-   solo en las paginas que la usan. Cut-paste textual, sin cambio de valor. */
+/* Concepto de ciencia + etiqueta de rigor (ciencia.html). Hoja de 5o nivel, enlazada tras layout.css */
 
-/* ---------------------------------------------------------------------------
-   13. Concepto de ciencia + etiqueta de rigor (feature 004 — ciencia-content)
-   ---------------------------------------------------------------------------
-   Patron para el eje La Ciencia (reutilizable por El Viaje). Cada `section[id]`
-   de concepto lleva la clase `.concepto`; el `section[id]` base solo estiliza
-   `h2` y `p`, asi que aca se cubren `h3`, `ul`, `li` y `figure`. La etiqueta de
-   rigor (`.rigor`) es un `<span>` inline con el nivel escrito: la distincion
-   entre niveles la da el TEXTO, no el color (FR-016).
-
-   Contrato: specs/004-ciencia-content/contracts/ciencia-page.md
-   --------------------------------------------------------------------------- */
+/* 13. Concepto de ciencia + etiqueta de rigor (feature 004)
+   ver docs/20-notas-de-codigo/css-paginas.md#ciencia */
 .concepto h3 {
   font-family: var(--font-hero-titulo);
   font-size: clamp(1rem, 2.2vw, 1.2rem);
@@ -43,8 +31,7 @@
   font-size: 0.95rem;
 }
 
-/* Figura ilustrativa (solo en #agujeros-negros): imagen INFORMATIVA, sin
-   --backdrop-oscurecer y sin posicionamiento absoluto. */
+/* Figura ilustrativa (#agujeros-negros): imagen informativa, sin --backdrop-oscurecer */
 .concepto figure {
   margin: 0 0 1.25rem;
   max-width: 32rem;
@@ -68,24 +55,8 @@
   color: var(--color-texto-atenuado);
 }
 
-/* Portada de La Ciencia: hero full-bleed con el agujero negro animado de
-   fondo (Three.js + GLSL, adaptado de "Event Horizon" de Daniel Munoz,
-   CodePen) y el H1 + intro + leyenda de rigor superpuestos. Mismo criterio
-   que .eje-con-backdrop (seccion 11, css/mundos.css): imagen/canvas DECORATIVO
-   de fondo + contenido en su propia capa, con el mismo --backdrop-oscurecer
-   que usa cualquier backdrop fotografico del sitio (contraste del texto,
-   SC-006/SC-007). Pisa el bloque de presentacion generico de layout.css
-   (`body:not(.home) main > section:first-child`, max-width 60rem/padding
-   chico) con mas especificidad al sumar `.ciencia-portada`.
-
-   Alto = 100svh MENOS el header (el <header> va en flujo normal en esta
-   pagina, no absolute como en la home — DESIGN.md §6.1 — asi que un
-   100svh liso se pasa exactamente esa altura y el titulo/intro, anclados
-   abajo con flex-end, quedan fuera de la pantalla sin scrollear). 6.51rem
-   medido en vivo (header.getBoundingClientRect().height a 1920px, sin el
-   aviso de spoilers — ese es position:absolute, flota, no suma layout);
-   +0.5rem de margen real (no al pixel justo) por las dudas de un renderizado
-   de fuente distinto entre navegadores. */
+/* Portada de La Ciencia: hero full-bleed con el agujero negro animado (Three.js) de fondo.
+   Alto = 100svh menos el header (6.51rem medido + 0.5rem de margen). ver docs/20-notas-de-codigo/css-paginas.md#ciencia */
 section.ciencia-portada,
 body:not(.home) main > section.ciencia-portada:first-child {
   position: relative;
@@ -125,13 +96,7 @@ body:not(.home) main > section.ciencia-portada:first-child {
   }
 }
 
-/* Selector reforzado (con el prefijo de .ciencia-portada, no solo la clase
-   del contenido): la regla generica de intro de pagina (layout.css §10,
-   `body:not(.home) main > section:first-child h1/p`) tiene mas tipos (4)
-   que clases-de-mas necesita vencer; con solo `.ciencia-portada-contenido
-   h1` (1 clase) esa regla generica seguia ganando el empate y el h1 quedaba
-   clavado en 3rem/48px en vez de este clamp — bug real, no cosmetico,
-   agarrado recien al auditar el mismo patron en galeria.css. */
+/* Selector reforzado: sin el prefijo, la regla generica de intro (layout.css §10) gana por tipos y el h1 queda en 3rem */
 body:not(.home) main > section.ciencia-portada:first-child .ciencia-portada-contenido h1 {
   font-size: clamp(2.5rem, 5vw, 4rem);
   letter-spacing: 0.05em;
@@ -147,17 +112,7 @@ body:not(.home) main > section.ciencia-portada:first-child .ciencia-portada-cont
   text-shadow: 0 0 1rem var(--color-fondo);
 }
 
-/* El <canvas> que arma el JS y la <img> de respaldo ocupan la MISMA caja,
-   superpuestos (position:absolute). Decision de UX: NUNCA se ve la
-   secuencia "aparece el fallback -> desaparece" -- si la animacion va a
-   cargar, la pantalla se queda en negro (background-color de
-   .ciencia-portada) hasta que hay un cuadro real; el fallback solo se
-   hace visible cuando ya se sabe que la animacion NO va a arrancar (sin
-   WebGL, import caido, excepcion en el pase de shaders). Por eso la <img>
-   arranca en opacity:0 por defecto y SOLO el JS, en esos casos de fallo
-   confirmados, le suma `.horizonte-fallback-visible` (ver js/ciencia.js).
-   El canvas hace lo mismo con `.horizonte-listo`, pero recien despues del
-   primer cuadro real pintado -- nunca hay una imagen que se retire. */
+/* Canvas e <img> de respaldo superpuestos. La <img> arranca en opacity:0: solo el JS la muestra si la animacion no arranca (js/ciencia.js) */
 .horizonte-canvas canvas,
 .horizonte-canvas img {
   display: block;
@@ -175,30 +130,8 @@ body:not(.home) main > section.ciencia-portada:first-child .ciencia-portada-cont
   opacity: 1;
 }
 
-/* =============================================================================
-   ACA VA EL CSS DEL PEN — pegar debajo de este comentario, tal cual, EXCEPTO:
-
-   1. `:root { --ink: ...; --dim: ...; --line: ...; --amber: ...; }`
-      -> cambiar el selector a `.horizonte-canvas` (scopeado al contenedor,
-      nunca al :root real del sitio — aunque los nombres no choquen con los
-      tokens del sitio, mejor no ensuciar el :root global por las dudas).
-
-   2. `html, body { height:100%; overflow:hidden; background:#000 }`
-      -> BORRAR esta regla entera. Tal cual viene del Pen, "overflow:hidden"
-      en <body> mata el scroll de TODO EL SITIO, no solo esta seccion.
-
-   3. `canvas { width:100vw; height:100vh; ... }`
-      -> BORRAR el width/height (ya los pone `.horizonte-canvas canvas` arriba,
-      relativos al contenedor). El resto de esa regla (cursor:grab, touch-action,
-      etc.) se puede pegar tal cual, prefijado: `.horizonte-canvas canvas { cursor: grab; ... }`.
-
-   4. Cualquier otra regla generica del Pen (`*{...}`, `body{font-family:...}`)
-      -> prefijarla con `.horizonte-canvas` para que no se escape a otras
-      paginas ni a otras secciones de esta misma.
-
-   Todo lo que NO toque html/body/canvas-fullscreen/:root se puede pegar
-   directo, sin pensar.
-   ============================================================================= */
+/* Zona del CSS del Pen (Event Horizon). Al pegarlo: scopear :root a .horizonte-canvas, borrar html/body y
+   el width/height del canvas, prefijar reglas genericas. ver docs/20-notas-de-codigo/css-paginas.md#ciencia */
 .horizonte-canvas{
 	--ink:#e8e4da;
 	--dim:#8a8578;
@@ -292,11 +225,7 @@ input[type=range]::-moz-range-thumb{
 	#panel{width:calc(100vw - 52px)}
 	#ayuda,#datos{display:none}
 }
-/* Video opcional de resumen animado (uno por concepto). Reusa la misma caja
-   que .concepto figure; el <video> imita la regla de <img> (bloque, ancho
-   completo). Sin max-width propio: ocupa el ancho completo del contenedor,
-   igual que los parrafos de .concepto (que tampoco tienen max-width propio
-   — heredan section[id], layout.css). */
+/* Video opcional de resumen animado: misma caja que .concepto figure, ancho completo */
 .concepto figure.video-opcional {
   max-width: none;
 }
@@ -307,8 +236,7 @@ input[type=range]::-moz-range-thumb{
   height: auto;
 }
 
-/* Etiqueta de rigor: comun a los tres niveles. El nivel se lee en el texto
-   del <span> ("✓ Ciencia real", etc.), nunca solo por color (FR-011, FR-016). */
+/* Etiqueta de rigor: el nivel se lee en el texto, nunca solo por color (FR-011, FR-016) */
 .rigor {
   display: inline-block;
   white-space: nowrap;
@@ -324,9 +252,7 @@ input[type=range]::-moz-range-thumb{
   vertical-align: baseline;
 }
 
-/* Variacion minima dentro de la paleta aprobada: el borde izquierdo marca el
-   nivel como refuerzo (nunca como unica senal). El unico acento saturado del
-   sitio (naranja de Gargantua) se reserva para la licencia narrativa. */
+/* Variacion minima de paleta: el borde marca el nivel como refuerzo; el naranja se reserva para la licencia narrativa */
 .rigor-real {
   border-left-width: 3px;
   border-left-style: solid;

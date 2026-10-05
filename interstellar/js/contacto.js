@@ -1,14 +1,7 @@
-// Formulario de contacto (contacto.html). El sitio es estatico (GitHub Pages):
-// no hay backend propio. El envio real lo hace Web3Forms (endpoint publico y
-// gratuito): el <form> postea ahi con una `access_key` y Web3Forms reenvia el
-// contenido por correo. SIN JS el POST nativo del <form> ya alcanza (Web3Forms
-// redirige a gracias.html via el campo `redirect`). CON JS interceptamos para
-// correr la puesta en escena "del otro lado del estante" (css/layout.css §16) y
-// resolver el envio con fetch() sin salir de la pagina; si el fetch falla, se
-// ofrece un enlace `mailto:` de respaldo.
-//
-// `construirMailto()` y `direccionDestino()` son puras e importables sin
-// navegador (test TDD, Principio V) y hoy son el camino de respaldo.
+// Formulario de contacto (contacto.html). Envio por Web3Forms (sitio estatico, sin backend);
+// con JS se intercepta para la animacion "El estante" (css/layout.css §16) y se usa fetch().
+// Si falla, enlace `mailto:` de respaldo. construirMailto() y direccionDestino() son puras.
+// ver docs/20-notas-de-codigo/paginas-interactivas.md#contacto
 
 const DESTINO_USUARIO = 'stschernitschek377';
 const DESTINO_DOMINIO = 'alumnos.frh.utn.edu.ar';
@@ -17,10 +10,7 @@ export function direccionDestino() {
   return `${DESTINO_USUARIO}@${DESTINO_DOMINIO}`;
 }
 
-// Chequeo de formato liviano (no pretende cubrir todo RFC 5322): alcanza
-// para pescar los typos típicos de un formulario ("nombre@", "nombre@dominio",
-// espacios sueltos) antes de mandarlo a Web3Forms. La validación real y
-// completa la hace el navegador via `type="email"` + `required` en el HTML.
+// Chequeo liviano de formato (no cubre RFC 5322); la validacion real la hace type="email" en el HTML.
 export function emailValido(email) {
   const valor = (email || '').trim();
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valor);
@@ -90,9 +80,7 @@ export function init() {
     }
   };
 
-  // Muestra la linea de log y reinicia la animacion de "tipeo" (CSS §16).
-  // `estado` pinta el color (ok / error) y solo el caso 'error' usa innerHTML,
-  // siempre con cadenas controladas + un unico <a>.
+  // Muestra la linea de log y reinicia el "tipeo" (CSS §16); solo 'error' usa innerHTML (cadenas controladas).
   const avisar = (contenido, estado) => {
     if (!nota) {
       return;
@@ -150,9 +138,7 @@ export function init() {
     }
     if (boton) boton.disabled = true;
 
-    // El pulso de luz que cruza hacia Cooper dura ~1600ms (css §16). Si la
-    // respuesta llega antes, esperamos a que termine para recién cambiar de
-    // estado; si el visitante prefiere sin movimiento, no hay espera.
+    // El pulso de luz dura ~1600ms (css §16): si la respuesta llega antes, se espera (salvo reduced-motion).
     const t0 = Date.now();
     const quieto =
       typeof matchMedia === 'function' &&

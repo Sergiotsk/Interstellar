@@ -1,24 +1,5 @@
-/* =============================================================================
-   tests/submenu-state.test.js — Maquina de estados del submenu (ROJO)
-   -----------------------------------------------------------------------------
-   Especificacion de la maquina de estados del submenu segun data-model.md §6
-   (SubmenuState) y contracts/navigation.md (disclosure).
-
-   ROJO: js/submenu-state.js todavia NO existe — este test DEBE fallar al
-   importarlo. La implementacion (T010) lo deja en verde.
-
-   API publica esperada del modulo:
-     - createSubmenuState() -> estado con `openSubmenuId` (null inicial) y los
-       metodos:
-         toggle(id)  : alterna abrir/cerrar; abrir uno cierra cualquier otro
-                       (abrir-otro, maximo-uno-abierto, FR-009/SC-005)
-         navigate()  : cierra el submenu abierto al activar un destino (HU1-E4)
-         dismiss()   : cierra y devuelve el id del control objetivo para
-                       restaurar el foco (Escape/clic-fuera/abandono, FR-010)
-
-   Se ejecuta con el corredor integrado de Node:
-       node --test tests/
-   ========================================================================== */
+// Maquina de estados del submenu (js/submenu-state.js): toggle(id), navigate(), dismiss().
+// Ejecutar: node --test tests/
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';

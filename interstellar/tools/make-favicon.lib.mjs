@@ -1,14 +1,11 @@
-// Lógica pura del favicon (feature favicon). Sin dependencias: el contenedor
-// .ico se arma a mano con PNG embebido (formato Vista+) para no sumar librerías.
+// Lógica pura del favicon: arma el .ico a mano (PNG embebido, formato Vista+).
 // Testeado en tests/make-favicon.test.js.
 
-// Tamaños que se embeben en el .ico. Es el mismo trío que incluye
-// sharp al rasterizar; Windows/Chrome/Firefox eligen el que corresponde.
+// Tamaños embebidos en el .ico; el navegador elige el que corresponde.
 export const ICO_SIZES = [16, 32, 48];
 
-// Arma un .ico multi-size a partir de imágenes PNG ya rasterizadas.
-// Formato ICO: ICONDIR (6 B) + ICONDIRENTRY (16 B c/u) + blobs PNG pegados.
-// images: [{ size: number, png: Buffer }]
+// .ico multi-size desde PNGs: ICONDIR (6 B) + ICONDIRENTRY (16 B c/u) + blobs PNG.
+// images: [{ size, png: Buffer }]
 export function buildIco(images) {
   const count = images.length;
   const header = Buffer.alloc(6);

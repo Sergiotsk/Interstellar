@@ -1,24 +1,7 @@
-/* Contacto / gracias (contacto.html, gracias.html)
-   Extraido de css/layout.css (seccion 16) el 2026-09-10. Hoja de 5o nivel
-   segun el contrato 006 C5: se enlaza con un <link> DESPUES de layout.css,
-   solo en las paginas que la usan. Cut-paste textual, sin cambio de valor. */
+/* Contacto / gracias (contacto.html, gracias.html). Hoja de 5o nivel, enlazada tras layout.css */
 
-/* ---------------------------------------------------------------------------
-   16. Contacto (contacto.html / gracias.html) — "Del otro lado del estante"
-   ---------------------------------------------------------------------------
-   Concepto: Cooper le habla a Murph a traves de la estanteria del tesseract.
-   Desktop: pantalla partida a ancho completo — el visor con la imagen de Cooper
-   mirando desde la biblioteca a la izquierda, la consola del formulario a la
-   derecha; Cooper queda sobre la costura, mirando hacia quien escribe. Mobile:
-   el visor pasa a una banda superior y el formulario debajo.
-   El envio real lo hace Web3Forms (endpoint publico, sin backend): el <form>
-   postea ahi con una access_key. Al enviar (`.is-enviando` en `.contacto-split`,
-   la agrega js/contacto.js) un pulso de luz cruza la costura hacia Cooper y el
-   rotulo de la consola cambia de estado. Todo es MEJORA: sin JS el <form> postea
-   igual y con `prefers-reduced-motion` no hay movimiento.
-   Los campos son "pantallas" (fondo --instrumento-pantalla, borde bezel, foco
-   teal) y el boton de envio es una tecla (recorte diagonal), como pie y nav.
-   --------------------------------------------------------------------------- */
+/* 16. Contacto - pantalla partida visor + consola; todo es mejora progresiva (sin JS el <form> postea igual)
+   ver docs/20-notas-de-codigo/css-paginas.md#contacto */
 .form-contacto {
   max-width: 42rem;
   display: flex;
@@ -132,10 +115,7 @@
   to   { clip-path: inset(0 0 0 0); }
 }
 
-/* --- Pantalla partida: visor + consola --------------------------------------
-   `.contacto-split` es hijo directo de <main> (no es un <section>), asi que
-   ninguna de las reglas de "paginas internas" (§10) lo encajona: ocupa el ancho
-   completo del <main>, que es el del viewport. */
+/* --- Pantalla partida: visor + consola (hijo directo de <main>, ocupa el ancho completo) --- */
 .contacto-split {
   position: relative;
   width: 100%;
@@ -230,8 +210,7 @@
   color: var(--color-texto-atenuado);
 }
 
-/* La consola: el formulario como panel de instrumento (bezel + metal + esquina
-   recortada, mismo lenguaje que las teclas de la nav y el pie). */
+/* La consola: el formulario como panel de instrumento (bezel + metal + esquina recortada) */
 .contacto-consola {
   position: relative;
   max-width: 34rem;
@@ -308,9 +287,7 @@
   }
 }
 
-/* Mobile / tablet angosta: el visor es una banda superior y el form va debajo.
-   El DOM lleva la consola primero (orden de lectura y foco), asi que aca se
-   reordena con flex para que la imagen quede arriba. */
+/* Mobile: el visor pasa arriba; el DOM lleva la consola primero (lectura/foco) y se reordena con flex */
 @media (max-width: 59.99rem) {
   .contacto-split {
     display: flex;
