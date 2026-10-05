@@ -443,8 +443,9 @@ header nav ul ul a {
    (`.musica-toggle--on`, lo pone js/layout.js) = tecla "encendida" fija, teal
    con glow + pulso sutil mientras suena. */
 .musica-toggle {
-  /* Feature SOLO DESKTOP: oculta por defecto; la muestra la barra de nav de
-     escritorio (>=60rem, mas abajo). El JS tambien se abstiene en mobile. */
+  /* Desktop (>=60rem): tecla de la barra de nav, ver bloque siguiente. Mobile
+     (<60rem): boton plano de 44px junto al CASE, ver bloque "max-width" mas
+     abajo. */
   display: none;
   align-items: center;
   justify-content: center;
@@ -479,6 +480,26 @@ header nav ul ul a {
     padding-block: 0.82rem;
     font-size: 1rem;
     line-height: 1;
+  }
+}
+
+/* Mobile (<60rem): sin barra de nav, el interruptor es un boton plano de 44px
+   (target tactil WCAG 2.5.8) igual que el CASE, SIN la cara de tecla. `order: 0`
+   lo deja a la IZQUIERDA del CASE (que queda en el filo derecho, donde esta el
+   pulgar). `font-size` fija el tamaño del icono (svg en `1em`). */
+@media (max-width: 59.99rem) {
+  .musica-toggle {
+    display: inline-flex;
+    order: 0;
+    min-height: 44px;
+    margin-left: 0;
+    padding: 0;
+    font-size: 1.4rem;
+    line-height: 1;
+  }
+
+  .musica-toggle::before {
+    display: none;
   }
 }
 

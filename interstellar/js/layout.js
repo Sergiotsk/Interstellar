@@ -690,15 +690,42 @@ export function initPieSeccionesCondicional() {
   window.addEventListener('load', actualizarPieSeccionesCondicional);
 }
 
-// Musica de fondo con interruptor en el header. Best-effort en un MPA: la
-// preferencia (on/off) y el segundo actual viven en sessionStorage, asi la
-// musica REANUDA al cambiar de pagina (con el microcorte inevitable de una
-// recarga completa; la version gapless con una lib de transiciones tipo swup
-// quedo en backlog). NUNCA suena en trailer.html (tiene su propio video): ahi
-// se silencia sola, conservando la preferencia para reanudar al salir. Si el
-// navegador bloquea el play() tras navegar (politica de autoplay), se reintenta
-// en la primera interaccion del usuario.
+// Musica de fondo con interruptor en el header (desktop Y mobile). La
+// preferencia (on/off) y el segundo actual viven en sessionStorage; con la
+// navegacion Swup (js/swup-router.js) el <audio> persiste entre paginas sin
+// corte, y ante una recarga completa REANUDA desde el segundo guardado. NUNCA
+// suena en trailer.html (tiene su propio video): ahi se silencia sola,
+// conservando la preferencia para reanudar al salir. Si el navegador bloquea el
+// play() (politica de autoplay), se reintenta en la primera interaccion.
+//
+// Mobile: (1) se pausa al ocultarse la pagina (bloqueo de pantalla / cambio de
+// app) para no gastar bateria; (2) iOS Safari ignora `audio.volume` (solo
+// lectura) y sonaria a volumen pleno: ahi se atenua con un GainNode de Web Audio.
+// Intenta fijar el volumen nativo. Devuelve false si el navegador lo ignora
+// (iOS Safari: `volume` es de solo lectura) y hay que atenuar por Web Audio.
+export function aplicarVolumenNativo(audio, vol) {
+  audio.volume = vol;
+  return Math.abs(audio.volume - vol) < 0.01;
+}
+
+// Decide que hacer con la musica cuando cambia la visibilidad de la pagina.
+// Pura (sin DOM) para poder testearla: 'pausar' | 'reanudar' | null.
+export function accionPorVisibilidad({
+  oculto,
+  sonando,
+  pausadoPorOculto,
+  preferida,
+  silenciadoPorTrailer,
+}) {
+  if (oculto) {
+    return sonando ? 'pausar' : null;
+  }
+  return pausadoPorOculto && preferida && !silenciadoPorTrailer ? 'reanudar' : null;
+}
+
 let audioGlobal = null;
+let ctxAudio = null; // AudioContext, solo en iOS (atenuacion por GainNode)
+let pausadoPorOculto = false;
 let botonMusicaGlobal = null;
 let muteadoPorTrailer = false;
 
@@ -739,12 +766,6 @@ function initMusicaFondo() {
     return;
   }
   botonMusicaGlobal = boton;
-  // Feature SOLO DESKTOP: en mobile el interruptor esta oculto (CSS), asi que
-  // aca no se cablea ni suena nada (evita audio sin control visible).
-  if (typeof window.matchMedia === 'function' && !window.matchMedia('(min-width: 60rem)').matches) {
-    return;
-  }
-
   const CLAVE = 'interstellar:musica'; // 'on' | 'off'
   const CLAVE_T = 'interstellar:musica-t'; // segundo actual
   const SRC = 'assets/audio/stay-ambient.m4a';
@@ -767,6 +788,45 @@ function initMusicaFondo() {
     }
   };
 
+  // iOS: volume de solo lectura -> el audio pasa por un GainNode fijo en VOL.
+  const atenuarConGain = (a) => {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) {
+      return;
+    }
+    try {
+      ctxAudio = new Ctx();
+      const gain = ctxAudio.createGain();
+      gain.gain.value = VOL;
+      ctxAudio.createMediaElementSource(a).connect(gain).connect(ctxAudio.destination);
+    } catch (e) {
+      ctxAudio = null;
+    }
+  };
+
+  const reproducir = (a) => {
+    if (ctxAudio && ctxAudio.state === 'suspended') {
+      ctxAudio.resume().catch(() => {});
+    }
+    return a.play();
+  };
+
+  const debeSonar = () =>
+    boton.getAttribute('aria-pressed') === 'true' && !esTrailer && !muteadoPorTrailer;
+
+  // Reintenta en el primer gesto del usuario (autoplay bloqueado o contexto de
+  // Web Audio suspendido). Guardado por debeSonar: si el usuario apago la
+  // musica entre medio, no la revive.
+  const esperarGesto = (a) => {
+    const reintento = () => {
+      if (debeSonar()) {
+        reproducir(a).catch(() => {});
+      }
+    };
+    window.addEventListener('pointerdown', reintento, { once: true });
+    window.addEventListener('keydown', reintento, { once: true });
+  };
+
   const crearAudio = () => {
     if (audioGlobal) {
       return audioGlobal;
@@ -774,7 +834,9 @@ function initMusicaFondo() {
     audioGlobal = new Audio(SRC);
     audioGlobal.loop = true;
     audioGlobal.preload = 'none';
-    audioGlobal.volume = VOL;
+    if (!aplicarVolumenNativo(audioGlobal, VOL)) {
+      atenuarConGain(audioGlobal);
+    }
     // En el DOM (no detached): mas robusto ante el GC y consistente entre
     // navegadores. Es solo audio, no aporta nada visual.
     document.body.appendChild(audioGlobal);
@@ -813,18 +875,19 @@ function initMusicaFondo() {
       return; // en el trailer no suena: su video manda
     }
     const a = crearAudio();
-    const p = a.play();
-    if (p && typeof p.catch === 'function') {
-      p.catch(() => {
-        const reintento = () => a.play().catch(() => {});
-        window.addEventListener('pointerdown', reintento, { once: true });
-        window.addEventListener('keydown', reintento, { once: true });
-      });
-    }
+    pausadoPorOculto = false;
+    reproducir(a)
+      .then(() => {
+        if (ctxAudio && ctxAudio.state !== 'running') {
+          esperarGesto(a);
+        }
+      })
+      .catch(() => esperarGesto(a));
   };
 
   const apagar = () => {
     guarda(CLAVE, 'off');
+    pausadoPorOculto = false;
     reflejar(false);
     if (audioGlobal) {
       try {
@@ -850,6 +913,30 @@ function initMusicaFondo() {
       guarda(CLAVE_T, String(Math.floor(audioGlobal.currentTime)));
     }
   });
+
+  // Mobile (pantalla tactil): pausar al ocultarse la pagina (bloqueo de pantalla,
+  // cambio de app) y reanudar al volver. En desktop se deja sonar en segundo plano.
+  if (typeof window.matchMedia === 'function' && window.matchMedia('(hover: none) and (pointer: coarse)').matches) {
+    document.addEventListener('visibilitychange', () => {
+      const accion = accionPorVisibilidad({
+        oculto: document.hidden,
+        sonando: !!audioGlobal && !audioGlobal.paused,
+        pausadoPorOculto,
+        preferida: lee(CLAVE) === 'on',
+        silenciadoPorTrailer: muteadoPorTrailer || esTrailer,
+      });
+      if (accion === 'pausar') {
+        guarda(CLAVE_T, String(Math.floor(audioGlobal.currentTime)));
+        audioGlobal.pause();
+        pausadoPorOculto = true;
+      } else if (accion === 'reanudar') {
+        pausadoPorOculto = false;
+        reproducir(audioGlobal).catch(() => esperarGesto(audioGlobal));
+      } else if (!document.hidden) {
+        pausadoPorOculto = false;
+      }
+    });
+  }
 
   // Estado inicial segun la preferencia guardada.
   if (lee(CLAVE) === 'on') {
