@@ -69,7 +69,7 @@ body:not(.home) main > section.mundos-intro:first-child {
   background-color: var(--color-fondo);
 }
 
-/* Mosaico: 5 franjas (una por mundo); brightness(0.4) = --backdrop-oscurecer sobre todo el mosaico */
+/* Mosaico: 5 franjas (una por mundo; 4 en mobile); brightness(0.4) = --backdrop-oscurecer sobre todo el mosaico */
 .mundos-intro-mosaico {
   position: absolute;
   inset: 0;
@@ -85,6 +85,13 @@ body:not(.home) main > section.mundos-intro:first-child {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* Mobile: 4 franjas en vez de 5 (mas anchas, se ven mejor) */
+@media (max-width: 47.99rem) {
+  .mundos-intro-mosaico img:nth-child(n+5) {
+    display: none;
+  }
 }
 
 /* Scrim inferior: legibilidad + fusion con --color-fondo hacia la grilla */

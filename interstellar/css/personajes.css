@@ -19,7 +19,7 @@ body:not(.home) main > section.portada-tripulacion:first-child {
   background-color: var(--color-fondo);
 }
 
-/* Mosaico: 6 franjas (una por personaje); brightness(0.4) = --backdrop-oscurecer */
+/* Mosaico: 6 franjas (una por personaje; 4 en mobile); brightness(0.4) = --backdrop-oscurecer */
 .portada-tripulacion-mosaico {
   position: absolute;
   inset: 0;
@@ -35,6 +35,14 @@ body:not(.home) main > section.portada-tripulacion:first-child {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* Mobile: 4 franjas en vez de 6 (a 390px, 6 quedaban de ~65px y no se leian) */
+@media (max-width: 48rem) {
+  .portada-tripulacion-mosaico img:nth-child(4),
+  .portada-tripulacion-mosaico img:nth-child(5) {
+    display: none;
+  }
 }
 
 /* Scrim inferior: legibilidad + fusion con --color-fondo (como .mundos-intro::after) */
