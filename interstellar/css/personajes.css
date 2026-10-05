@@ -208,12 +208,7 @@ body:not(.home) main > section.portada-tripulacion:first-child .portada-tripulac
   transform: scaleX(1);
 }
 
-/* HERO FULL-BLEED (feature 008): personajes en patron "completo" (Cooper y Murph); mismo principio que .mundo-portada-escena */.mundo-capa-* (esas son especificas del
-   descenso multi-capa de Tierra/Gargantua, con su propio GSAP) — acá el hero
-   es una sola imagen estática, sin animación (portado de
-   spikes/personajes-galeria-vertical.html).
-   --------------------------------------------------------------------------- */
-/* section[id]:has(> .personaje-hero) (0,0,2,1) vence a section[id] de layout.css -> full-bleed sin caja de lectura ni borde */
+/* Hero full-bleed (Cooper y Murph): :has() (0,0,2,1) vence a section[id] de layout.css; ver docs/20-notas-de-codigo/css-paginas.md */
 section[id]:has(> .personaje-hero) {
   max-width: none;
   margin: 0;
