@@ -367,6 +367,30 @@ description: "Task list — 009 Hub de Minijuegos + acople"
 
 ---
 
+## Phase 10: Acople manual con Enter (FR-014 revisado tras el primer playtest)
+
+**Goal**: acoplar es una decisión del jugador. Enter dentro del rango y con todo en tolerancia acopla; fuera de tolerancia, el acople se rechaza (con motivo, 1 s de espera, costo de combustible y penalización de suavidad). Tocar el puerto lento y alineado rebota.
+
+**Independent Test**: `quickstart.md` §2 paso 4 y §3b.
+
+- [X] T065 Actualizar `spec.md` (FR-010, FR-014, FR-020, edge case), `data-model.md` y `contracts/logica-acople.md`.
+- [X] T066 Tests en rojo:
+  - `acople-docking`: el contacto en tolerancia rebota;
+  - `acople-mision`: `solicitarAcople` (acople, rechazo, prioridad de motivos, espera, costo, penalización), `DOCKING REJECTED` e `indicacionHud`, rebote sin combustible;
+  - `acople-config`: el bloque `acople`;
+  - `acople-scoring`: la penalización por rechazo;
+  - `acople-balance`: el piloto aprieta Enter en DOCKING RANGE.
+- [X] T067 Implementar `config.acople` y `puntaje.penalizacionRechazo`, `motivoRechazo` y el rebote en `docking.js`, `solicitarAcople` / `indicacionHud` / la espera en `mision.js`, y la penalización en `scoring.js`.
+- [X] T068 Presentación:
+  - Enter en `main.js`, ignorando `e.repeat` también en Reintentar;
+  - la orden centrada `.acople-orden` y la línea de indicación en el HUD;
+  - el zumbido de rechazo en `audio-acople.js`;
+  - el destello ámbar en la escena;
+  - Enter en la línea de controles de la intro.
+- [ ] T069 Playtest: sensación del acople manual, tamaño del rango de acople (`rangoAcople` = 40 u) y costo del rechazo.
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies

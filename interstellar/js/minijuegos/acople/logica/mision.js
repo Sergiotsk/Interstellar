@@ -1,6 +1,6 @@
 // Maquina de estados de la partida de acople; unica funcion que mueve el tiempo es avanzar (data-model: Partida).
 import { crearNave, crearEstacion, pasoFisica } from './fisica.js';
-import { evaluarSincronia, evaluarContacto, deltaOmega, deltaTheta } from './docking.js';
+import { evaluarSincronia, evaluarContacto, deltaOmega, deltaTheta, motivoRechazo } from './docking.js';
 import { factores, calcularPuntaje } from './scoring.js';
 
 export function crearPartida(config, { conIntro = true } = {}) {
@@ -14,6 +14,9 @@ export function crearPartida(config, { conIntro = true } = {}) {
     tiempoSinControl: 0,
     tiempoEnRango: 0,
     tiempoEnRangoSeguro: 0,
+    esperaRechazo: 0,
+    rechazos: 0,
+    motivoRechazo: null,
     desenlace: null,
   };
 }
@@ -54,6 +57,7 @@ function terminar(p, exito, causa, config) {
         tiempoTotal: p.tiempo,
         tiempoEnRango: p.tiempoEnRango,
         tiempoEnRangoSeguro: p.tiempoEnRangoSeguro,
+        rechazos: p.rechazos,
         velocidadFinal: p.nave.velAproximacion,
       },
       config,
@@ -77,10 +81,12 @@ function pasoUnico(p, dt, config) {
     tiempoSinControl: sinControl ? p.tiempoSinControl + dt : 0,
     tiempoEnRango: p.tiempoEnRango + (s.enRango ? dt : 0),
     tiempoEnRangoSeguro: p.tiempoEnRangoSeguro + (s.enRango && s.seguro ? dt : 0),
+    esperaRechazo: Math.max(0, p.esperaRechazo - dt),
   };
   if (nave.distancia === 0) {
     const contacto = evaluarContacto(nave, estacion, config);
-    return terminar(q, contacto.exito, contacto.exito ? null : contacto.causa, config);
+    if (!contacto.rebote) return terminar(q, false, contacto.causa, config);
+    q.nave = { ...nave, velAproximacion: -config.acople.velRebote };
   }
   if (q.tiempoSinControl > config.margenSinControl) return terminar(q, false, 'control', config);
   // Sin combustible y sin acercarse ya no hay forma de llegar al puerto.
@@ -105,6 +111,21 @@ export function avanzar(partida, dtReal, config) {
   return p;
 }
 
+// Enter: acopla si la nave esta en rango y todo en tolerancia; si no, rechazo con espera (FR-014).
+export function solicitarAcople(partida, config) {
+  if (partida.fase !== 'en-curso' || partida.esperaRechazo > 0) return partida;
+  const s = evaluarSincronia(partida.nave, partida.estacion, config);
+  const motivo = motivoRechazo(s, partida.nave, config);
+  if (!motivo) return terminar(partida, true, null, config);
+  return {
+    ...partida,
+    esperaRechazo: config.acople.esperaRechazo,
+    rechazos: partida.rechazos + 1,
+    motivoRechazo: motivo,
+    nave: { ...partida.nave, combustible: Math.max(0, partida.nave.combustible - config.acople.costoRechazo) },
+  };
+}
+
 export function reintentar(_partida, config) {
   return crearPartida(config, { conIntro: false });
 }
@@ -112,6 +133,7 @@ export function reintentar(_partida, config) {
 export function estadoHud(partida, config) {
   if (partida.fase === 'acoplada') return 'DOCKED';
   if (partida.fase === 'fallida') return 'MISSION FAILED';
+  if (partida.esperaRechazo > 0) return 'DOCKING REJECTED';
   const s = evaluarSincronia(partida.nave, partida.estacion, config);
   const cerca = partida.nave.distancia <= config.zonaCercana;
   if (cerca && s.peligro) return 'UNSAFE APPROACH';
@@ -127,7 +149,17 @@ const NIVELES = {
   DOCKED: 'seguro',
   'UNSAFE APPROACH': 'peligro',
   'MISSION FAILED': 'peligro',
+  'DOCKING REJECTED': 'atencion',
 };
+
+const MOTIVOS = { distancia: 'TOO FAR', velocidad: 'TOO FAST', giro: 'SPIN MISMATCH', angulo: 'MISALIGNED' };
+
+// Linea de ayuda del HUD: invita a acoplar o explica el rechazo.
+export function indicacionHud(partida, estado) {
+  if (estado === 'DOCKING RANGE') return 'PRESS ENTER TO DOCK';
+  if (estado === 'DOCKING REJECTED') return `REJECTED · ${MOTIVOS[partida.motivoRechazo] ?? ''}`;
+  return '';
+}
 
 export function nivelDeEstado(estado) {
   return NIVELES[estado] ?? 'neutro';

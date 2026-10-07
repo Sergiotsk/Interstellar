@@ -11,6 +11,8 @@ import {
   reintentar,
   pausar,
   reanudar,
+  solicitarAcople,
+  indicacionHud,
 } from '../js/minijuegos/acople/logica/mision.js';
 
 const W = CONFIG.estacion.velAngular;
@@ -65,14 +67,11 @@ describe('acople/logica/mision.js — fases y avance', () => {
     assert.equal(p.nave.distancia, intro.nave.distancia);
   });
 
-  test('contacto sincronizado y lento -> acoplada con puntaje entero', () => {
+  test('tocar el puerto lento y alineado NO acopla: rebota', () => {
     let p = sincronizada({ distancia: 0.01, velAproximacion: 2 });
     p = avanzar(p, 0.05, CONFIG);
-    assert.equal(p.fase, 'acoplada');
-    assert.equal(p.desenlace.exito, true);
-    assert.equal(p.desenlace.causa, null);
-    assert.ok(Number.isInteger(p.desenlace.puntaje) && p.desenlace.puntaje > 0);
-    assert.ok(p.desenlace.precision >= 0 && p.desenlace.precision <= 1);
+    assert.equal(p.fase, 'en-curso');
+    assert.ok(p.nave.velAproximacion < 0, 'rebota hacia atras');
   });
 
   test('contacto rapido -> fallida por impacto, sin puntaje', () => {
@@ -84,7 +83,7 @@ describe('acople/logica/mision.js — fases y avance', () => {
   });
 
   test('terminada, avanzar ya no cambia nada', () => {
-    const p = avanzar(sincronizada({ distancia: 0.01, velAproximacion: 2 }), 0.05, CONFIG);
+    const p = solicitarAcople(sincronizada({ distancia: CONFIG.rangoAcople - 1, velAproximacion: 2 }), CONFIG);
     assert.equal(avanzar(p, 0.05, CONFIG), p);
   });
 
@@ -116,7 +115,7 @@ describe('acople/logica/mision.js — estado del HUD', () => {
   });
 
   test('DOCKED y MISSION FAILED segun la fase', () => {
-    const ok = avanzar(sincronizada({ distancia: 0.01, velAproximacion: 2 }), 0.05, CONFIG);
+    const ok = solicitarAcople(sincronizada({ distancia: CONFIG.rangoAcople - 1, velAproximacion: 2 }), CONFIG);
     assert.equal(estadoHud(ok, CONFIG), 'DOCKED');
     const mal = avanzar(sincronizada({ distancia: 0.01, velAproximacion: 99 }), 0.05, CONFIG);
     assert.equal(estadoHud(mal, CONFIG), 'MISSION FAILED');
@@ -129,6 +128,69 @@ describe('acople/logica/mision.js — estado del HUD', () => {
     assert.equal(nivelDeEstado('DOCKED'), 'seguro');
     assert.equal(nivelDeEstado('UNSAFE APPROACH'), 'peligro');
     assert.equal(nivelDeEstado('MISSION FAILED'), 'peligro');
+    assert.equal(nivelDeEstado('DOCKING REJECTED'), 'atencion');
+  });
+});
+
+describe('acople/logica/mision.js — acople manual con Enter (FR-014 revisado)', () => {
+  const enRango = (extra = {}) => sincronizada({ distancia: CONFIG.rangoAcople - 1, velAproximacion: 2, ...extra });
+
+  test('en rango y todo en tolerancia: acopla con puntaje', () => {
+    const p = solicitarAcople(enRango(), CONFIG);
+    assert.equal(p.fase, 'acoplada');
+    assert.equal(p.desenlace.exito, true);
+    assert.ok(Number.isInteger(p.desenlace.puntaje) && p.desenlace.puntaje > 0);
+    assert.ok(p.desenlace.precision >= 0 && p.desenlace.precision <= 1);
+    assert.equal(p.desenlace.velocidadFinal, 2);
+  });
+
+  test('fuera de tolerancia: rechazo con motivo, espera y costo, sin fallar', () => {
+    const lejos = solicitarAcople(sincronizada({ distancia: CONFIG.rangoAcople + 50 }), CONFIG);
+    assert.equal(lejos.fase, 'en-curso');
+    assert.equal(lejos.motivoRechazo, 'distancia');
+    assert.equal(lejos.esperaRechazo, CONFIG.acople.esperaRechazo);
+    assert.equal(lejos.rechazos, 1);
+    assert.ok(Math.abs(lejos.nave.combustible - (1 - CONFIG.acople.costoRechazo)) < 1e-12);
+  });
+
+  test('el motivo sigue la prioridad distancia > velocidad > giro > angulo', () => {
+    const motivo = (extra) => solicitarAcople(enRango(extra), CONFIG).motivoRechazo;
+    assert.equal(motivo({ velAproximacion: CONFIG.tol.velocidad + 1, angulo: 1 }), 'velocidad');
+    assert.equal(motivo({ velAngular: W + CONFIG.tol.omega * 2, angulo: 1 }), 'giro');
+    assert.equal(motivo({ angulo: CONFIG.tol.angulo * 2 }), 'angulo');
+  });
+
+  test('durante la espera, Enter se ignora; al terminar la espera se puede reintentar', () => {
+    let p = solicitarAcople(sincronizada({ distancia: CONFIG.rangoAcople + 50 }), CONFIG);
+    assert.equal(solicitarAcople(p, CONFIG), p);
+    p = { ...p, nave: { ...p.nave, distancia: CONFIG.rangoAcople - 1, velAproximacion: 0 } };
+    for (let t = 0; t < CONFIG.acople.esperaRechazo + 0.2; t += 0.1) p = avanzar(p, 0.1, CONFIG);
+    assert.equal(p.esperaRechazo, 0);
+    assert.equal(solicitarAcople(p, CONFIG).fase, 'acoplada');
+  });
+
+  test('fuera de en-curso se ignora', () => {
+    const intro = crearPartida(CONFIG);
+    assert.equal(solicitarAcople(intro, CONFIG), intro);
+  });
+
+  test('cada rechazo baja el puntaje final', () => {
+    const limpio = solicitarAcople(enRango(), CONFIG).desenlace.puntaje;
+    let p = solicitarAcople(enRango({ velAproximacion: CONFIG.tol.velocidad + 1 }), CONFIG);
+    p = { ...p, esperaRechazo: 0, nave: { ...p.nave, velAproximacion: 2, combustible: 1 } };
+    assert.ok(solicitarAcople(p, CONFIG).desenlace.puntaje < limpio);
+  });
+
+  test('estadoHud muestra DOCKING REJECTED durante la espera', () => {
+    const p = solicitarAcople(enRango({ velAproximacion: CONFIG.tol.velocidad + 1 }), CONFIG);
+    assert.equal(estadoHud(p, CONFIG), 'DOCKING REJECTED');
+  });
+
+  test('indicacionHud: invita a acoplar en rango y explica el rechazo', () => {
+    assert.equal(indicacionHud(enRango(), 'DOCKING RANGE'), 'PRESS ENTER TO DOCK');
+    const r = solicitarAcople(sincronizada({ distancia: CONFIG.rangoAcople + 50 }), CONFIG);
+    assert.equal(indicacionHud(r, 'DOCKING REJECTED'), 'REJECTED · TOO FAR');
+    assert.equal(indicacionHud(crearPartida(CONFIG, { conIntro: false }), 'APPROACHING'), '');
   });
 });
 
@@ -160,11 +222,16 @@ describe('acople/logica/mision.js — causas de fallo y reintento (US2)', () => 
     assert.equal(p.desenlace.causa, 'combustible');
   });
 
-  test('sin combustible pero acercandose: no falla hasta el contacto', () => {
-    let p = avanzar(sincronizada({ combustible: 0, velAproximacion: 2, distancia: 5 }), 0.05, CONFIG);
+  test('sin combustible pero acercandose: no falla y todavia puede acoplar', () => {
+    const p = avanzar(sincronizada({ combustible: 0, velAproximacion: 2, distancia: CONFIG.rangoAcople - 1 }), 0.05, CONFIG);
     assert.equal(p.fase, 'en-curso');
-    p = correr(p, 10);
-    assert.equal(p.fase, 'acoplada');
+    assert.equal(solicitarAcople(p, CONFIG).fase, 'acoplada');
+  });
+
+  test('sin combustible, el rebote en el puerto deja a la nave alejandose -> combustible', () => {
+    const p = correr(sincronizada({ combustible: 0, velAproximacion: 2, distancia: 1 }), 2);
+    assert.equal(p.fase, 'fallida');
+    assert.equal(p.desenlace.causa, 'combustible');
   });
 
   test('todo fallo trae estadisticas completas y puntaje null (FR-026)', () => {
@@ -207,7 +274,7 @@ describe('acople/logica/mision.js — pausa por foco (US5, FR-036)', () => {
   test('pausar fuera de en-curso no tiene efecto', () => {
     const intro = crearPartida(CONFIG);
     assert.equal(pausar(intro), intro);
-    const ok = avanzar(sincronizada({ distancia: 0.01, velAproximacion: 2 }), 0.05, CONFIG);
+    const ok = solicitarAcople(sincronizada({ distancia: CONFIG.rangoAcople - 1, velAproximacion: 2 }), CONFIG);
     assert.equal(pausar(ok), ok);
   });
 });

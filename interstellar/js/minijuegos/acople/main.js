@@ -10,8 +10,10 @@ import {
   conAcciones,
   avanzar,
   reintentar,
+  solicitarAcople,
   estadoHud,
   nivelDeEstado,
+  indicacionHud,
 } from './logica/mision.js';
 import { guardarSiMejor } from './logica/record.js';
 import { debeMostrarAvisoDesktop } from './logica/dispositivo.js';
@@ -117,7 +119,7 @@ function tick(s, dt) {
   const ahora = performance.now();
   if (ahora - s.ultimoHud > INTERVALO_HUD_MS || s.partida.fase !== fase) {
     s.ultimoHud = ahora;
-    s.ui.pintarHud(lecturasHud(s.partida, CONFIG), s.estado, nivelDeEstado(s.estado));
+    s.ui.pintarHud(lecturasHud(s.partida, CONFIG), s.estado, nivelDeEstado(s.estado), indicacionHud(s.partida, s.estado));
   }
   if (fase === 'en-curso' && (s.partida.fase === 'acoplada' || s.partida.fase === 'fallida')) terminarPartida(s);
 }
@@ -138,16 +140,30 @@ function alPresionar(s, e) {
     return;
   }
   const terminada = fase === 'acoplada' || fase === 'fallida';
-  if (terminada && (e.code === 'KeyR' || (e.code === 'Enter' && !e.target.closest?.('a, button')))) {
+  if (terminada && !e.repeat && (e.code === 'KeyR' || (e.code === 'Enter' && !e.target.closest?.('a, button')))) {
     e.preventDefault();
     volverAJugar(s);
     return;
   }
   if (fase !== 'en-curso') return;
+  if (e.code === CONFIG.acople.tecla) {
+    e.preventDefault();
+    if (!e.repeat) pedirAcople(s);
+    return;
+  }
   const accion = accionDeTecla(e.code);
   if (!accion) return;
   e.preventDefault();
   s.acciones = presionar(s.acciones, accion);
+}
+
+// Enter en plena partida: acopla o rechaza. La transicion a 'acoplada' la detecta tick() en el proximo frame.
+function pedirAcople(s) {
+  const rechazosAntes = s.partida.rechazos;
+  const fase = s.partida.fase;
+  s.partida = solicitarAcople(s.partida, CONFIG);
+  if (s.partida.rechazos > rechazosAntes) s.audio.evento('rechazo');
+  if (fase === 'en-curso' && s.partida.fase === 'acoplada') terminarPartida(s);
 }
 
 function alSoltar(s, e) {

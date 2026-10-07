@@ -30,10 +30,14 @@ export const CONFIG = congelar({
 
   combustible: { inicial: 1, consumoRotacion: 0.01, consumoImpulso: 0.03, consumoFreno: 0.03 },
 
+  // Acople manual (FR-014 revisado): Enter dentro del rango; fuera de tolerancia se rechaza.
+  acople: { tecla: 'Enter', esperaRechazo: 1, costoRechazo: 0.02, velRebote: 2 },
+
   puntaje: {
     max: 10000,
     tMin: 30,
     tMax: 90,
+    penalizacionRechazo: 0.2,
     pesos: { precision: 0.3, combustible: 0.2, tiempo: 0.15, suavidad: 0.2, velocidad: 0.15 },
   },
 

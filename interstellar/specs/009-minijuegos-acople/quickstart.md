@@ -82,6 +82,21 @@ Provocar cada causa y confirmar el texto de la pantalla de resultado:
 8. Redimensionar la ventana en medio de una partida.
    - **Esperado**: el lienzo se adapta sin reiniciar la partida.
 
+## 3b. Acople manual (FR-014 revisado)
+
+1. Con la partida en curso, lejos del puerto, apretar Enter.
+   - **Esperado**: `DOCKING REJECTED` en el HUD, el cartel `REJECTED · TOO FAR` bajo la retícula (ámbar), un destello ámbar, un zumbido y −2 % de combustible. La misión **no** falla.
+2. Apretar Enter de nuevo durante el segundo de espera.
+   - **Esperado**: no pasa nada.
+3. Igualar el giro y alinear, y acercarse lento hasta la zona de acople.
+   - **Esperado**: `DOCKING RANGE` y el cartel `PRESS ENTER TO DOCK` latiendo en teal.
+4. Enter.
+   - **Esperado**: acople completo con puntaje. Si hubo rechazos antes, la suavidad (y el puntaje) baja.
+5. Pasarse de largo despacio y alineado, sin apretar Enter.
+   - **Esperado**: la nave rebota hacia atrás.
+6. Dejar Enter apretado al acoplar.
+   - **Esperado**: la pantalla de resultado se queda; no se dispara Reintentar solo.
+
 ## 4b. Pantalla completa (FR-042)
 
 1. Abrir el simulador y apretar "Saltear" o Espacio en la intro.

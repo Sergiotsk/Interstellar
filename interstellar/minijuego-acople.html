@@ -31,13 +31,15 @@
 
       <button type="button" class="acople-tecla acople-pantalla" data-accion="pantalla" hidden>Pantalla completa</button>
 
+      <p class="acople-orden" data-orden-acople aria-hidden="true" hidden></p>
+
       <section class="acople-intro" data-pantalla="intro" aria-label="Introducción" hidden>
         <p class="acople-intro-linea acople-intro-linea--fecha">AÑO 2067</p>
         <p class="acople-intro-linea">La Tierra se muere.</p>
         <p class="acople-intro-linea">La <span data-nombre="estacion">Endurance</span> gira.</p>
         <p class="acople-intro-linea acople-intro-linea--orden">Sincronizá. Acercate despacio. Acoplá.</p>
         <p class="acople-intro-controles">
-          <kbd>←</kbd> <kbd>→</kbd> rotar · <kbd>↑</kbd> impulso · <kbd>Espacio</kbd> freno
+          <kbd>←</kbd> <kbd>→</kbd> rotar · <kbd>↑</kbd> impulso · <kbd>Espacio</kbd> freno · <kbd>Enter</kbd> acoplar
         </p>
         <button type="button" class="acople-tecla" data-accion="saltar-intro">Saltear</button>
       </section>
@@ -54,6 +56,7 @@
           <span class="acople-estado-led" aria-hidden="true"></span>
           <span class="acople-estado-etiqueta">Docking Status</span>
           <span data-hud-estado-texto>APPROACHING</span>
+          <span class="acople-estado-indicacion" data-hud-indicacion></span>
         </p>
         <button type="button" class="acople-tecla acople-tecla--mute" data-accion="mute" aria-pressed="false">Sonido del simulador</button>
       </section>

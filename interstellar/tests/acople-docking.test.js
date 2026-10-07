@@ -84,7 +84,7 @@ describe('acople/logica/docking.js — sincronia y contacto', () => {
     assert.equal(evaluarContacto(nav({ velAproximacion: 99, angulo: 1 }), est(), CONFIG).causa, 'impacto');
   });
 
-  test('contacto con todo en tolerancia es exito', () => {
-    assert.deepEqual(evaluarContacto(nav(), est(), CONFIG), { exito: true });
+  test('contacto con todo en tolerancia rebota (tocar no acopla)', () => {
+    assert.deepEqual(evaluarContacto(nav(), est(), CONFIG), { rebote: true });
   });
 });

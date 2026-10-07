@@ -35,5 +35,16 @@ export function evaluarContacto(nave, estacion, config) {
   if (deltaTheta(nave, estacion) > tol.angulo || deltaOmega(nave, estacion) > tol.omega) {
     return { exito: false, causa: 'angulo' };
   }
-  return { exito: true };
+  // Tocar el puerto no acopla: acoplar es una decision del jugador (Enter).
+  return { rebote: true };
+}
+
+// Por que se rechaza un pedido de acople; null si se puede acoplar.
+export function motivoRechazo(sincronia, nave, config) {
+  const { tol } = config;
+  if (!sincronia.enRango) return 'distancia';
+  if (nave.velAproximacion > tol.velocidad) return 'velocidad';
+  if (sincronia.deltaOmega > tol.omega) return 'giro';
+  if (sincronia.deltaTheta > tol.angulo) return 'angulo';
+  return null;
 }

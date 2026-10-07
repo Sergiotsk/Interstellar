@@ -9,7 +9,10 @@ export function factores(datos, config) {
     precision: acotar(1 - 0.5 * (datos.deltaOmega / tol.omega + datos.deltaTheta / tol.angulo)),
     combustible: acotar(datos.combustibleRestante),
     tiempo: acotar((tMax - datos.tiempoTotal) / (tMax - tMin)),
-    suavidad: datos.tiempoEnRango > 0 ? acotar(datos.tiempoEnRangoSeguro / datos.tiempoEnRango) : 1,
+    suavidad: acotar(
+      (datos.tiempoEnRango > 0 ? datos.tiempoEnRangoSeguro / datos.tiempoEnRango : 1) -
+        config.puntaje.penalizacionRechazo * (datos.rechazos ?? 0),
+    ),
     velocidad: acotar(1 - datos.velocidadFinal / tol.velocidad),
   };
 }

@@ -72,7 +72,8 @@ cualquier fase ──(unmount)──▶ [destruida]
 | `DOCKED` | `fase === 'acoplada'` |
 | `MISSION FAILED` | `fase === 'fallida'` |
 | `UNSAFE APPROACH` | `distancia ≤ zonaCercana && peligro` |
-| `DOCKING RANGE` | `enRango && seguro` |
+| `DOCKING REJECTED` | `esperaRechazo > 0` (espera posterior a un Enter fuera de tolerancia) |
+| `DOCKING RANGE` | `enRango && seguro` (se puede acoplar con Enter) |
 | `MATCHING ROTATION` | `distancia ≤ zonaCercana` (cerca, pero sin todas las variables en tolerancia) |
 | `APPROACHING` | resto |
 
@@ -80,7 +81,14 @@ cualquier fase ──(unmount)──▶ [destruida]
 
 1. `velAproximacion > tol.velocidad` → fallo `'impacto'`.
 2. `deltaTheta > tol.angulo || deltaOmega > tol.omega` → fallo `'angulo'`.
-3. Si no → **acople** (éxito).
+3. Si no → **rebote**: `velAproximacion = −acople.velRebote`. Tocar el puerto **no** acopla (revisado el 2026-10-07).
+
+### Solicitud de acople (`solicitarAcople`, al apretar Enter)
+
+- Fuera de `'en-curso'`, o con `esperaRechazo > 0`, se ignora.
+- Si `enRango && seguro` → **acople** (éxito). Precisión y velocidad final se miden en ese instante.
+- Si no → **rechazo**: `esperaRechazo = acople.esperaRechazo` (1 s), el combustible baja `acople.costoRechazo`, `rechazos += 1` y `motivoRechazo` toma, por prioridad, `'distancia' | 'velocidad' | 'giro' | 'angulo'`.
+- Cada rechazo resta `puntaje.penalizacionRechazo` (0,2) a la *suavidad*.
 
 ### Otras causas de fallo (evaluadas en cada paso)
 

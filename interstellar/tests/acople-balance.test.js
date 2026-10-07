@@ -1,7 +1,7 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { CONFIG } from '../js/minijuegos/acople/config.js';
-import { crearPartida, conAcciones, avanzar } from '../js/minijuegos/acople/logica/mision.js';
+import { crearPartida, conAcciones, avanzar, solicitarAcople, estadoHud } from '../js/minijuegos/acople/logica/mision.js';
 import { normalizarAngulo } from '../js/minijuegos/acople/logica/docking.js';
 
 const DT = 1 / 60;
@@ -11,6 +11,8 @@ function simular(politica) {
   let p = crearPartida(CONFIG, { conIntro: false });
   while (p.fase === 'en-curso' && p.tiempo < LIMITE_S) {
     p = avanzar(conAcciones(p, politica(p)), DT, CONFIG);
+    // El piloto aprieta Enter apenas el HUD le avisa que puede acoplar.
+    if (politica.acopla && estadoHud(p, CONFIG) === 'DOCKING RANGE') p = solicitarAcople(p, CONFIG);
   }
   return p;
 }
@@ -31,6 +33,8 @@ function pilotoReferencia({ nave, estacion }) {
   if (nave.velAproximacion > vObjetivo + 0.5) acciones.add('freno');
   return acciones;
 }
+
+pilotoReferencia.acopla = true;
 
 describe('acople — balance de dificultad (research R9, SC-002)', () => {
   test('el piloto de referencia acopla entre 30 y 90 s simulados', () => {

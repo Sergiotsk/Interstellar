@@ -34,6 +34,14 @@ describe('acople/config.js — parametros centralizados (FR-018)', () => {
     });
   });
 
+  test('acople manual: tecla Enter y parametros de rechazo y rebote', () => {
+    assert.equal(CONFIG.acople.tecla, 'Enter');
+    assert.ok(CONFIG.acople.esperaRechazo > 0);
+    assert.ok(CONFIG.acople.costoRechazo > 0 && CONFIG.acople.costoRechazo < 1);
+    assert.ok(CONFIG.acople.velRebote > 0);
+    assert.ok(CONFIG.puntaje.penalizacionRechazo > 0);
+  });
+
   test('clave del record namespaced', () => {
     assert.equal(CONFIG.record.clave, 'interstellar:minijuegos:acople:best');
     assert.equal(CONFIG.record.version, 1);

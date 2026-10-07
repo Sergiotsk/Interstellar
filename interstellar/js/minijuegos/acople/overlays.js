@@ -37,6 +37,9 @@ export function crearOverlays(raiz, { pantallaCompleta = false } = {}) {
   const datos = Object.fromEntries([...raiz.querySelectorAll('[data-resultado]')].map((el) => [el.dataset.resultado, el]));
   const soloExito = [...raiz.querySelectorAll('[data-resultado-solo-exito]')];
   const botonPantalla = raiz.querySelector('[data-accion="pantalla"]');
+  const indicacionEl = raiz.querySelector('[data-hud-indicacion]');
+  const ordenEl = raiz.querySelector('[data-orden-acople]');
+  let ultimaIndicacion = null;
   let ultimoEstado = null;
 
   function mostrar(nombre) {
@@ -44,13 +47,14 @@ export function crearOverlays(raiz, { pantallaCompleta = false } = {}) {
       const p = el.dataset.pantalla;
       el.hidden = !(p === nombre || (p === 'hud' && nombre === 'pausa'));
     });
+    if (nombre !== 'hud') ordenEl.hidden = true;
     // El control de pantalla completa solo acompana a la partida y al resultado.
     if (botonPantalla) botonPantalla.hidden = !pantallaCompleta || !['hud', 'resultado'].includes(nombre);
     // El foco va al titulo recien cuando la seccion es visible (un elemento hidden no acepta foco).
     if (nombre === 'resultado') titulo.focus();
   }
 
-  function pintarHud(lecturas, estado, nivel) {
+  function pintarHud(lecturas, estado, nivel, indicacion = '') {
     Object.entries(lecturas).forEach(([k, v]) => {
       if (hud[k] && hud[k].textContent !== v) hud[k].textContent = v;
     });
@@ -58,6 +62,13 @@ export function crearOverlays(raiz, { pantallaCompleta = false } = {}) {
       ultimoEstado = estado;
       estadoTexto.textContent = estado;
       estadoEl.dataset.nivel = nivel;
+    }
+    if (indicacion !== ultimaIndicacion) {
+      ultimaIndicacion = indicacion;
+      indicacionEl.textContent = indicacion;
+      ordenEl.textContent = indicacion;
+      ordenEl.dataset.nivel = nivel;
+      ordenEl.hidden = indicacion === '';
     }
   }
 

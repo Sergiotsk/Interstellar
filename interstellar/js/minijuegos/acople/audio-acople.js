@@ -118,10 +118,26 @@ export function crearAudioAcople() {
     });
   }
 
+  // Zumbido grave y corto: "acople rechazado".
+  function zumbido() {
+    const t = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(140, t);
+    osc.frequency.linearRampToValueAtTime(90, t + 0.35);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.08, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+    osc.connect(g).connect(maestro);
+    osc.start(t);
+    osc.stop(t + 0.45);
+  }
+
   function evento(nombre) {
     if (!ctx) return;
     if (nombre === 'impacto') golpe();
     if (nombre === 'acople') acorde();
+    if (nombre === 'rechazo') zumbido();
   }
 
   function setMute(on) {

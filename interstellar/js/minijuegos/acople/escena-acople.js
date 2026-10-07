@@ -15,6 +15,7 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       this.faseAnterior = null;
       this.giroResidual = 0;
       this.giroAcumulado = 0;
+      this.rechazosVistos = 0;
     }
 
     create() {
@@ -177,6 +178,13 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
         if (this.faseAnterior === 'en-curso') this.reaccionarAFin(partida);
         this.faseAnterior = partida.fase;
       }
+      // Acople rechazado: destello ambar breve (sin sacudida: no es un choque).
+      if (partida.rechazos > this.rechazosVistos) {
+        const c = Phaser.Display.Color.IntegerToRGB(paleta.ambar);
+        this.cameras.main.flash(180, c.r, c.g, c.b);
+      }
+      this.rechazosVistos = partida.rechazos;
+
       if (nivel !== this.nivelDibujado) {
         this.dibujarEstacion(nivel);
         this.nivelDibujado = nivel;

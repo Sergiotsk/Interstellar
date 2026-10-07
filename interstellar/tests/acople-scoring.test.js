@@ -43,6 +43,12 @@ describe('acople/logica/scoring.js — puntaje deterministico (FR-025)', () => {
     assert.equal(factores({ ...perfecto, tiempoEnRango: 0, tiempoEnRangoSeguro: 0 }, CONFIG).suavidad, 1);
   });
 
+  test('suavidad: cada rechazo de acople resta la penalizacion configurada', () => {
+    const pen = CONFIG.puntaje.penalizacionRechazo;
+    assert.ok(Math.abs(factores({ ...perfecto, rechazos: 1 }, CONFIG).suavidad - (1 - pen)) < 1e-9);
+    assert.equal(factores({ ...perfecto, rechazos: 99 }, CONFIG).suavidad, 0);
+  });
+
   test('velocidad: 1 parado, 0 en la tolerancia', () => {
     assert.equal(factores({ ...perfecto, velocidadFinal: 0 }, CONFIG).velocidad, 1);
     assert.equal(factores({ ...perfecto, velocidadFinal: CONFIG.tol.velocidad }, CONFIG).velocidad, 0);

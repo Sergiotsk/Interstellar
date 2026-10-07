@@ -139,7 +139,7 @@ El simulador es una página más del sitio: tiene el header y el footer, se lleg
 
 **Mecánica de acople**
 
-- **FR-010**: El jugador MUST poder rotar a la izquierda (ArrowLeft), rotar a la derecha (ArrowRight), impulsarse hacia adelante (ArrowUp) y frenar o aplicar retropropulsión (Space).
+- **FR-010**: El jugador MUST poder rotar a la izquierda (ArrowLeft), rotar a la derecha (ArrowRight), impulsarse hacia adelante (ArrowUp), frenar o aplicar retropropulsión (Space) y **acoplar (Enter)**. *(Enter agregado el 2026-10-07, tras el primer playtest.)*
 - **FR-011**: Los controles MUST modelarse como **acciones del jugador** (rotar izquierda, rotar derecha, impulso, freno), independientes del dispositivo de entrada, para poder sumar otros métodos sin cambiar las reglas del juego.
 - **FR-012**: La estación MUST rotar a velocidad constante durante toda la partida.
 - **FR-013**: El juego MUST evaluar de forma continua tres variables:
@@ -147,7 +147,10 @@ El simulador es una página más del sitio: tiene el header y el footer, se lleg
   - la velocidad relativa de aproximación;
   - la distancia al puerto de acople.
   También MUST evaluar la alineación de la nave con el puerto.
-- **FR-014**: La misión MUST completarse cuando la nave entra en la zona de acople con la diferencia de giro, la velocidad relativa y la alineación dentro de sus tolerancias.
+- **FR-014**: La misión MUST completarse **solo cuando el jugador aprieta Acoplar (Enter)** estando en la zona de acople (distancia ≤ rango de acople) con la diferencia de giro, la velocidad relativa y la alineación dentro de sus tolerancias. *(Revisado el 2026-10-07: antes el acople era automático al tocar el puerto.)*
+  - Si se aprieta Acoplar fuera de esas condiciones, el acople se **rechaza**: el HUD muestra DOCKING REJECTED con el motivo (TOO FAR, TOO FAST, SPIN MISMATCH o MISALIGNED), hay una espera de 1 s antes de poder volver a intentarlo, se gasta un poco de combustible y baja la suavidad del puntaje. **No falla la misión.**
+  - Si la nave llega al puerto (distancia 0) sin haber acoplado, lenta y alineada, **rebota** hacia atrás. Si llega rápida o desalineada, falla (FR-015 a/b).
+  - En la zona de acople, con todo en tolerancia, el HUD indica PRESS ENTER TO DOCK.
 - **FR-015**: La misión MUST fallar en cuatro casos:
   - (a) contacto con el puerto a velocidad relativa por encima del límite;
   - (b) contacto con ángulo fuera de tolerancia;
@@ -171,7 +174,8 @@ El simulador es una página más del sitio: tiene el header y el footer, se lleg
 - **FR-020**: La partida MUST tener estados explícitos y mutuamente excluyentes, que el HUD muestra con etiquetas en inglés:
   - APPROACHING: lejos del puerto;
   - MATCHING ROTATION: cerca, con la rotación todavía fuera de tolerancia;
-  - DOCKING RANGE: cerca y con todas las variables en tolerancia;
+  - DOCKING RANGE: cerca y con todas las variables en tolerancia (se puede acoplar);
+  - DOCKING REJECTED: durante la espera posterior a un acople rechazado;
   - UNSAFE APPROACH: cerca y con alguna variable fuera de un umbral de peligro;
   - DOCKED;
   - MISSION FAILED.
@@ -255,7 +259,7 @@ La constitución exige que toda feature que introduzca una librería la justifiq
 - **Plataforma objetivo**: desktop con teclado, en navegadores evergreen (últimas 2 versiones). Los controles táctiles quedan fuera del MVP; el modelo de acciones (FR-011) los habilita a futuro.
 - **Una sola dificultad**: no hay selector de niveles, y el balance fino se ajusta por configuración.
 - **Solo el éxito puntúa**: una misión fallida no genera puntaje (decisión tomada ante la ambigüedad del brief, que pedía "recibir un score" al completar o fallar).
-- **Contacto con el casco**: el contacto con la estación fuera del puerto cuenta como fallo por "impacto" si supera el límite de velocidad. Por debajo de ese límite, el roce no es fallo.
+- **Contacto con el casco**: llegar al puerto sin acoplar cuenta como fallo por "impacto" si supera el límite de velocidad, y como "ángulo" si llega desalineado. Lento y alineado, rebota (revisado el 2026-10-07).
 - **Intro corta en reintentos**: la intro completa se muestra la primera vez de cada visita a la página. Los reintentos van directo a la partida.
 - **Récord por navegador**: no hay perfiles ni sincronización entre dispositivos. Borrar los datos del sitio borra el récord.
 - **Textos de bahías 2 a 4**: se reutilizan los títulos y descripciones que ya están redactados (y comentados) en `minijuegos.html`. Lo que hoy aparece como "67 RPM" se etiqueta como licencia narrativa o se quita.

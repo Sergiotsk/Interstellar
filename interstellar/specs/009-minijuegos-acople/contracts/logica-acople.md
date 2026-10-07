@@ -57,7 +57,8 @@ normalizarAngulo(rad) → rad en (−π, π]
 deltaOmega(nave, estacion) → ≥ 0
 deltaTheta(nave, estacion) → [0, π]
 evaluarSincronia(nave, estacion, config) → { deltaOmega, deltaTheta, enRango, seguro, peligro }
-evaluarContacto(nave, estacion, config) → { exito: true } | { exito: false, causa: 'impacto' | 'angulo' }
+evaluarContacto(nave, estacion, config) → { rebote: true } | { exito: false, causa: 'impacto' | 'angulo' }
+motivoRechazo(sincronia, nave, config) → null | 'distancia' | 'velocidad' | 'giro' | 'angulo'
 ```
 
 ## `mision.js`
@@ -71,6 +72,8 @@ conAcciones(partida, acciones: Set) → Partida                // ignorado si fa
 avanzar(partida, dtReal, config) → Partida                   // acumula y aplica pasos fijos de config.pasoFijoS; dtReal recortado a deltaMaxS
 estadoHud(partida, config) → 'APPROACHING' | 'MATCHING ROTATION' | 'DOCKING RANGE' | 'UNSAFE APPROACH' | 'DOCKED' | 'MISSION FAILED'
 reintentar(partida, config) → Partida                        // nueva, conIntro: false
+solicitarAcople(partida, config) → Partida                   // Enter: acople si enRango && seguro; si no, rechazo con espera
+indicacionHud(partida, estado) → string                      // 'PRESS ENTER TO DOCK' | 'REJECTED · TOO FAR' | … | ''
 ```
 
 - `avanzar` es la única función que mueve el tiempo. Detecta los fallos (`control`, `combustible`) y el contacto, y al terminar fija `desenlace`, incluido el `puntaje` vía `scoring.js`.
