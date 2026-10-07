@@ -100,23 +100,83 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       const g = this.estacion;
       const color = this.colorDeNivel(nivel);
       g.clear();
-      g.lineStyle(5, paleta.texto, 0.85);
+
+      // Armazon circular concéntrico (truss del anillo)
+      g.lineStyle(1.5, paleta.texto, 0.4);
+      g.strokeCircle(0, 0, RADIO_ANILLO - 7);
+      g.strokeCircle(0, 0, RADIO_ANILLO + 7);
+      g.lineStyle(2.5, paleta.texto, 0.7);
       g.strokeCircle(0, 0, RADIO_ANILLO);
+
+      // 12 módulos habitables prismáticos orientados tangencialmente
+      const hl = 8.5; // semilargo tangencial
+      const hw = 5.5; // semiancho radial
       for (let i = 0; i < 12; i += 1) {
         const a = (i / 12) * Math.PI * 2;
-        g.fillStyle(paleta.texto, 0.9);
-        g.fillCircle(Math.cos(a) * RADIO_ANILLO, Math.sin(a) * RADIO_ANILLO, 8);
+        const cosA = Math.cos(a);
+        const sinA = Math.sin(a);
+        const cx = cosA * RADIO_ANILLO;
+        const cy = sinA * RADIO_ANILLO;
+        const tx = -sinA;
+        const ty = cosA;
+
+        // Vértices del módulo rectangular rotado
+        const p1 = { x: cx - tx * hl - cosA * hw, y: cy - ty * hl - sinA * hw };
+        const p2 = { x: cx + tx * hl - cosA * hw, y: cy + ty * hl - sinA * hw };
+        const p3 = { x: cx + tx * hl + cosA * hw, y: cy + ty * hl + sinA * hw };
+        const p4 = { x: cx - tx * hl + cosA * hw, y: cy - ty * hl + sinA * hw };
+
+        // Fuselaje con relleno metálico oscuro y borde claro
+        g.fillStyle(paleta.fondo, 0.95);
+        g.fillPoints([p1, p2, p3, p4], true);
+        g.lineStyle(1.8, paleta.texto, 0.95);
+        g.strokePoints([p1, p2, p3, p4], true);
+
+        // Ventana / textura central del módulo
+        g.lineStyle(1, paleta.texto, 0.5);
+        g.lineBetween(cx - tx * 3, cy - ty * 3, cx + tx * 3, cy + ty * 3);
+
+        // Paneles radiadores disipadores en módulos pares
+        if (i % 2 === 0) {
+          g.lineStyle(1.2, paleta.texto, 0.45);
+          g.lineBetween(cx + cosA * hw, cy + sinA * hw, cx + cosA * (hw + 5), cy + sinA * (hw + 5));
+        }
       }
-      g.lineStyle(2, paleta.texto, 0.5);
+
+      // 4 brazos estructurales dobles con celosía hacia el hub
       for (let i = 0; i < 4; i += 1) {
         const a = (i / 4) * Math.PI * 2 + Math.PI / 4;
-        g.lineBetween(Math.cos(a) * RADIO_HUB, Math.sin(a) * RADIO_HUB, Math.cos(a) * RADIO_ANILLO, Math.sin(a) * RADIO_ANILLO);
+        const deltaA = 0.04;
+        const a1 = a - deltaA;
+        const a2 = a + deltaA;
+
+        g.lineStyle(1.5, paleta.texto, 0.65);
+        g.lineBetween(Math.cos(a1) * RADIO_HUB, Math.sin(a1) * RADIO_HUB, Math.cos(a - 0.015) * (RADIO_ANILLO - 7), Math.sin(a - 0.015) * (RADIO_ANILLO - 7));
+        g.lineBetween(Math.cos(a2) * RADIO_HUB, Math.sin(a2) * RADIO_HUB, Math.cos(a + 0.015) * (RADIO_ANILLO - 7), Math.sin(a + 0.015) * (RADIO_ANILLO - 7));
+
+        // Travesaños diagonales de celosía
+        for (let k = 0.35; k <= 0.85; k += 0.25) {
+          const rK = RADIO_HUB + (RADIO_ANILLO - 7 - RADIO_HUB) * k;
+          g.lineStyle(1, paleta.texto, 0.4);
+          g.lineBetween(Math.cos(a1) * rK, Math.sin(a1) * rK, Math.cos(a2) * (rK + 6), Math.sin(a2) * (rK + 6));
+        }
       }
+
+      // Hub de atraque central cilíndrico
+      g.fillStyle(paleta.fondo, 0.95);
+      g.fillCircle(0, 0, RADIO_HUB);
+      g.lineStyle(2, paleta.texto, 0.5);
+      g.strokeCircle(0, 0, RADIO_HUB * 0.6);
       g.lineStyle(3, color, 1);
       g.strokeCircle(0, 0, RADIO_HUB);
-      // Ranura del puerto: apunta hacia arriba cuando el angulo relativo es 0.
+
+      // Ranura guía del puerto de acople (apunta a -Y cuando ángulo relativo es 0)
       g.fillStyle(color, 1);
-      g.fillRect(-4, -RADIO_HUB - 12, 8, 14);
+      g.fillRect(-5, -RADIO_HUB - 13, 10, 15);
+
+      // Muescas guía trapezoidales
+      g.fillTriangle(-5, -RADIO_HUB - 13, -11, -RADIO_HUB - 7, -5, -RADIO_HUB - 7);
+      g.fillTriangle(5, -RADIO_HUB - 13, 11, -RADIO_HUB - 7, 5, -RADIO_HUB - 7);
     }
 
     dibujarReticula(radioHub, nivel) {

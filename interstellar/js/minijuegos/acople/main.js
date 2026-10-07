@@ -122,8 +122,12 @@ function terminarPartida(s) {
 
 function tick(s, dt) {
   const fase = s.partida.fase;
+  const estadoAnterior = s.estado;
   s.partida = avanzar(conAcciones(s.partida, s.acciones), dt, CONFIG);
   s.estado = estadoHud(s.partida, CONFIG);
+  if (s.estado === 'DOCKING RANGE' && estadoAnterior !== 'DOCKING RANGE' && s.partida.fase === 'en-curso') {
+    s.audio.evento('lock-in');
+  }
   s.audio.actualizar(s.estado, s.acciones, s.partida.fase === 'en-curso');
   const ahora = performance.now();
   if (ahora - s.ultimoHud > INTERVALO_HUD_MS || s.partida.fase !== fase) {

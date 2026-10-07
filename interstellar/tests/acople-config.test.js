@@ -25,12 +25,16 @@ describe('acople/config.js — parametros centralizados (FR-018)', () => {
     assert.ok(Object.isFrozen(CONFIG.puntaje.pesos));
   });
 
-  test('mapea las 4 teclas a las 4 acciones', () => {
+  test('mapea flechas y WASD a las 4 acciones del juego', () => {
     assert.deepEqual({ ...CONFIG.teclas }, {
       ArrowLeft: 'rotarIzquierda',
       ArrowRight: 'rotarDerecha',
       ArrowUp: 'impulso',
       Space: 'freno',
+      KeyA: 'rotarIzquierda',
+      KeyD: 'rotarDerecha',
+      KeyW: 'impulso',
+      KeyS: 'freno',
     });
   });
 

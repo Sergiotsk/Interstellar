@@ -133,11 +133,29 @@ export function crearAudioAcople() {
     osc.stop(t + 0.45);
   }
 
+  // Doble tono armonico suave: alineado en rango de acople (lock-in).
+  function tonoLockIn() {
+    const t = ctx.currentTime;
+    [587.33, 880].forEach((hz, i) => {
+      const osc = ctx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(hz, t + i * 0.07);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0, t + i * 0.07);
+      g.gain.linearRampToValueAtTime(0.08, t + i * 0.07 + 0.015);
+      g.gain.exponentialRampToValueAtTime(0.001, t + i * 0.07 + 0.1);
+      osc.connect(g).connect(maestro);
+      osc.start(t + i * 0.07);
+      osc.stop(t + i * 0.07 + 0.12);
+    });
+  }
+
   function evento(nombre) {
     if (!ctx) return;
     if (nombre === 'impacto') golpe();
     if (nombre === 'acople') acorde();
     if (nombre === 'rechazo') zumbido();
+    if (nombre === 'lock-in') tonoLockIn();
   }
 
   function setMute(on) {

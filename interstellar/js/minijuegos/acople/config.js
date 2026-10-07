@@ -10,7 +10,16 @@ const congelar = (obj) => {
 
 export const CONFIG = congelar({
   nombres: { estacion: 'Endurance', nave: 'Ranger' },
-  teclas: { ArrowLeft: 'rotarIzquierda', ArrowRight: 'rotarDerecha', ArrowUp: 'impulso', Space: 'freno' },
+  teclas: {
+    ArrowLeft: 'rotarIzquierda',
+    ArrowRight: 'rotarDerecha',
+    ArrowUp: 'impulso',
+    Space: 'freno',
+    KeyA: 'rotarIzquierda',
+    KeyD: 'rotarDerecha',
+    KeyW: 'impulso',
+    KeyS: 'freno',
+  },
 
   pasoFijoS: 1 / 60,
   deltaMaxS: 0.1,

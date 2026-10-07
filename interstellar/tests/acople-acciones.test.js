@@ -3,15 +3,20 @@ import assert from 'node:assert/strict';
 import { accionDeTecla, presionar, soltar, soltarTodo } from '../js/minijuegos/acople/logica/acciones.js';
 
 describe('acople/logica/acciones.js — input como acciones (FR-011)', () => {
-  test('traduce las 4 teclas del juego', () => {
+  test('traduce las teclas del juego (flechas y WASD)', () => {
     assert.equal(accionDeTecla('ArrowLeft'), 'rotarIzquierda');
     assert.equal(accionDeTecla('ArrowRight'), 'rotarDerecha');
     assert.equal(accionDeTecla('ArrowUp'), 'impulso');
     assert.equal(accionDeTecla('Space'), 'freno');
+    assert.equal(accionDeTecla('KeyA'), 'rotarIzquierda');
+    assert.equal(accionDeTecla('KeyD'), 'rotarDerecha');
+    assert.equal(accionDeTecla('KeyW'), 'impulso');
+    assert.equal(accionDeTecla('KeyS'), 'freno');
   });
 
   test('cualquier otra tecla devuelve null', () => {
-    assert.equal(accionDeTecla('KeyA'), null);
+    assert.equal(accionDeTecla('KeyJ'), null);
+    assert.equal(accionDeTecla('KeyX'), null);
     assert.equal(accionDeTecla('ArrowDown'), null);
     assert.equal(accionDeTecla(undefined), null);
   });
