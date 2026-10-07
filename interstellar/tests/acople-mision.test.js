@@ -8,6 +8,7 @@ import {
   avanzar,
   estadoHud,
   nivelDeEstado,
+  reintentar,
 } from '../js/minijuegos/acople/logica/mision.js';
 
 const W = CONFIG.estacion.velAngular;
@@ -126,5 +127,59 @@ describe('acople/logica/mision.js — estado del HUD', () => {
     assert.equal(nivelDeEstado('DOCKED'), 'seguro');
     assert.equal(nivelDeEstado('UNSAFE APPROACH'), 'peligro');
     assert.equal(nivelDeEstado('MISSION FAILED'), 'peligro');
+  });
+});
+
+describe('acople/logica/mision.js — causas de fallo y reintento (US2)', () => {
+  const correr = (p, segundos) => {
+    let q = p;
+    for (let t = 0; t < segundos && q.fase === 'en-curso'; t += CONFIG.deltaMaxS) q = avanzar(q, CONFIG.deltaMaxS, CONFIG);
+    return q;
+  };
+
+  test('giro sobre el limite de control sostenido mas alla del margen -> control', () => {
+    const p = correr(sincronizada({ velAngular: CONFIG.limiteControl + 0.5 }), CONFIG.margenSinControl + 0.5);
+    assert.equal(p.fase, 'fallida');
+    assert.equal(p.desenlace.causa, 'control');
+  });
+
+  test('si el giro vuelve bajo el limite antes del margen, el contador se resetea', () => {
+    let p = correr(sincronizada({ velAngular: CONFIG.limiteControl + 0.5 }), CONFIG.margenSinControl / 2);
+    assert.ok(p.tiempoSinControl > 0);
+    p = { ...p, nave: { ...p.nave, velAngular: W } };
+    p = avanzar(p, CONFIG.deltaMaxS, CONFIG);
+    assert.equal(p.tiempoSinControl, 0);
+    assert.equal(p.fase, 'en-curso');
+  });
+
+  test('sin combustible y sin acercarse -> combustible', () => {
+    const p = avanzar(sincronizada({ combustible: 0, velAproximacion: 0 }), 0.05, CONFIG);
+    assert.equal(p.fase, 'fallida');
+    assert.equal(p.desenlace.causa, 'combustible');
+  });
+
+  test('sin combustible pero acercandose: no falla hasta el contacto', () => {
+    let p = avanzar(sincronizada({ combustible: 0, velAproximacion: 2, distancia: 5 }), 0.05, CONFIG);
+    assert.equal(p.fase, 'en-curso');
+    p = correr(p, 10);
+    assert.equal(p.fase, 'acoplada');
+  });
+
+  test('todo fallo trae estadisticas completas y puntaje null (FR-026)', () => {
+    const p = avanzar(sincronizada({ combustible: 0, velAproximacion: 0 }), 0.05, CONFIG);
+    const d = p.desenlace;
+    assert.equal(d.exito, false);
+    assert.equal(d.puntaje, null);
+    for (const k of ['tiempoTotal', 'combustibleRestante', 'velocidadFinal']) assert.equal(typeof d[k], 'number', k);
+  });
+
+  test('reintentar devuelve una partida nueva en curso, sin intro y con valores iniciales', () => {
+    const fallida = avanzar(sincronizada({ distancia: 0.01, velAproximacion: 99 }), 0.05, CONFIG);
+    const p = reintentar(fallida, CONFIG);
+    assert.equal(p.fase, 'en-curso');
+    assert.equal(p.tiempo, 0);
+    assert.equal(p.desenlace, null);
+    assert.equal(p.nave.distancia, CONFIG.distanciaInicial);
+    assert.equal(p.nave.combustible, CONFIG.combustible.inicial);
   });
 });

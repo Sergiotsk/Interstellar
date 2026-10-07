@@ -173,27 +173,27 @@ description: "Task list — 009 Hub de Minijuegos + acople"
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T026 [P] [US2] Ampliar `tests/acople-mision.test.js` (rojo):
+- [X] T026 [P] [US2] Ampliar `tests/acople-mision.test.js` (rojo):
   - con `|velAngular| > limiteControl` sostenido más de `margenSinControl`, la partida pasa a `'fallida'` con causa `'control'`;
   - si baja antes del margen, el contador se resetea;
   - `combustible === 0 && velAproximacion ≤ 0` lleva a causa `'combustible'`;
   - `combustible === 0` acercándose no falla hasta el contacto, y ahí se juzga por `evaluarContacto`;
   - todo fallo tiene `puntaje: null` y las estadísticas completas (FR-026);
   - `reintentar` devuelve una partida nueva en `'en-curso'` (sin intro) con las variables iniciales.
-- [ ] T027 [P] [US2] Ampliar `tests/acople-balance.test.js` (rojo): una política torpe (impulso constante, sin rotar) termina en `'fallida'`.
+- [X] T027 [P] [US2] Ampliar `tests/acople-balance.test.js` (rojo): una política torpe (impulso constante, sin rotar) termina en `'fallida'`.
 
 ### Implementation for User Story 2
 
-- [ ] T028 [US2] Completar `js/minijuegos/acople/logica/mision.js`: el contador `tiempoSinControl`, las causas `control` y `combustible`, y `reintentar(partida, config)`. T026 y T027 tienen que pasar.
-- [ ] T029 [US2] En `js/minijuegos/acople/overlays.js`: un mapa `CAUSAS` → texto en español:
+- [X] T028 [US2] Completar `js/minijuegos/acople/logica/mision.js`: el contador `tiempoSinControl`, las causas `control` y `combustible`, y `reintentar(partida, config)`. T026 y T027 tienen que pasar.
+- [X] T029 [US2] En `js/minijuegos/acople/overlays.js`: un mapa `CAUSAS` → texto en español:
   - impacto → "Impacto a velocidad excesiva";
   - ángulo → "Ángulo de entrada incorrecto";
   - control → "Pérdida de control";
   - combustible → "Sin combustible".
 
   `pintarResultado` muestra "Misión fallida", la causa y las estadísticas sin puntaje.
-- [ ] T030 [US2] En `js/minijuegos/acople/main.js`: el botón `[data-accion="reintentar"]` llama a `reintentar`, muestra el `'hud'`, enfoca el lienzo y reinicia la escena **sin** volver a importar Phaser ni recrear el `Game`. También se reintenta con Enter o R estando en el resultado.
-- [ ] T031 [US2] En `js/minijuegos/acople/escena-acople.js`: una reacción visual al fallo. En el impacto, un destello en `--led-alerta` y la sacudida (respetando `reducirMovimiento`). En la pérdida de control, la nave queda girando.
+- [X] T030 [US2] En `js/minijuegos/acople/main.js`: el botón `[data-accion="reintentar"]` llama a `reintentar`, muestra el `'hud'`, enfoca el lienzo y reinicia la escena **sin** volver a importar Phaser ni recrear el `Game`. También se reintenta con Enter o R estando en el resultado.
+- [X] T031 [US2] En `js/minijuegos/acople/escena-acople.js`: una reacción visual al fallo. En el impacto, un destello en `--led-alerta` y la sacudida (respetando `reducirMovimiento`). En la pérdida de control, la nave queda girando.
 - [ ] T032 [US2] Validar `quickstart.md` §3: las 4 causas, Reintentar en menos de 2 s y el récord intacto tras un fallo.
 
 **Checkpoint**: US1 y US2 juntas son el ciclo completo de juego.

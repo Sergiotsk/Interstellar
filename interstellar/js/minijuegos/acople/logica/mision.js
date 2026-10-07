@@ -60,11 +60,13 @@ function terminar(p, exito, causa, config) {
 function pasoUnico(p, dt, config) {
   const { nave, estacion } = pasoFisica(p, p.acciones, dt, config);
   const s = evaluarSincronia(nave, estacion, config);
+  const sinControl = Math.abs(nave.velAngular) > config.limiteControl;
   const q = {
     ...p,
     nave,
     estacion,
     tiempo: p.tiempo + dt,
+    tiempoSinControl: sinControl ? p.tiempoSinControl + dt : 0,
     tiempoEnRango: p.tiempoEnRango + (s.enRango ? dt : 0),
     tiempoEnRangoSeguro: p.tiempoEnRangoSeguro + (s.enRango && s.seguro ? dt : 0),
   };
@@ -72,6 +74,9 @@ function pasoUnico(p, dt, config) {
     const contacto = evaluarContacto(nave, estacion, config);
     return terminar(q, contacto.exito, contacto.exito ? null : contacto.causa, config);
   }
+  if (q.tiempoSinControl > config.margenSinControl) return terminar(q, false, 'control', config);
+  // Sin combustible y sin acercarse ya no hay forma de llegar al puerto.
+  if (nave.combustible === 0 && nave.velAproximacion <= 0) return terminar(q, false, 'combustible', config);
   return q;
 }
 
@@ -90,6 +95,10 @@ export function avanzar(partida, dtReal, config) {
     p = { ...pasoUnico(p, paso, config), acumulador: p.acumulador - paso };
   }
   return p;
+}
+
+export function reintentar(_partida, config) {
+  return crearPartida(config, { conIntro: false });
 }
 
 export function estadoHud(partida, config) {

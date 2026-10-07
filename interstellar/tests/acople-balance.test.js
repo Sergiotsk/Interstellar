@@ -39,3 +39,10 @@ describe('acople — balance de dificultad (research R9, SC-002)', () => {
     assert.ok(p.desenlace.tiempoTotal >= 30 && p.desenlace.tiempoTotal <= 90, `tiempo ${p.desenlace.tiempoTotal.toFixed(1)} s`);
   });
 });
+
+describe('acople — una politica torpe falla', () => {
+  test('impulso constante sin rotar termina en fallida', () => {
+    const p = simular(() => new Set(['impulso']));
+    assert.equal(p.fase, 'fallida');
+  });
+});

@@ -2,7 +2,7 @@
 // Ciclo de vida y cancelacion del import: docs/20-notas-de-codigo/minijuegos-acople.md
 import { CONFIG } from './config.js';
 import { accionDeTecla, presionar, soltar, soltarTodo } from './logica/acciones.js';
-import { crearPartida, iniciar, conAcciones, avanzar, estadoHud, nivelDeEstado } from './logica/mision.js';
+import { crearPartida, iniciar, conAcciones, avanzar, estadoHud, nivelDeEstado, reintentar } from './logica/mision.js';
 import { crearOverlays, lecturasHud } from './overlays.js';
 import { crearEscenaAcople } from './escena-acople.js';
 
@@ -40,6 +40,14 @@ function comenzarPartida(s) {
   s.lienzo.focus({ preventScroll: true });
 }
 
+// Reintentar reusa el Game ya creado: solo se reemplaza la partida (sin intro, FR-009).
+function volverAJugar(s) {
+  s.partida = reintentar(s.partida, CONFIG);
+  s.acciones = soltarTodo();
+  s.ui.mostrar('hud');
+  s.lienzo.focus({ preventScroll: true });
+}
+
 function terminarPartida(s) {
   s.acciones = soltarTodo();
   s.ui.pintarResultado(s.partida.desenlace);
@@ -65,6 +73,12 @@ function alPresionar(s, e) {
     comenzarPartida(s);
     return;
   }
+  const terminada = fase === 'acoplada' || fase === 'fallida';
+  if (terminada && (e.code === 'KeyR' || (e.code === 'Enter' && !e.target.closest?.('a, button')))) {
+    e.preventDefault();
+    volverAJugar(s);
+    return;
+  }
   if (fase !== 'en-curso') return;
   const accion = accionDeTecla(e.code);
   if (!accion) return;
@@ -81,6 +95,7 @@ function alClic(s, e) {
   const boton = e.target.closest('[data-accion]');
   if (!boton) return;
   if (boton.dataset.accion === 'saltar-intro') comenzarPartida(s);
+  if (boton.dataset.accion === 'reintentar') volverAJugar(s);
 }
 
 async function crearJuego(s) {
