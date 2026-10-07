@@ -1,0 +1,14 @@
+/* css/minijuegos.css - hub de minijuegos y simulador de acople; carga despues de reset -> variables -> base -> layout */
+
+/* 1. Utilidad: oculto a la vista, legible por lectores de pantalla */
+.visualmente-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}

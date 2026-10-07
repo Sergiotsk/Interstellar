@@ -29,8 +29,8 @@ description: "Task list — 009 Hub de Minijuegos + acople"
 
 **Purpose**: archivos base que no dependen de ninguna historia.
 
-- [ ] T001 Crear `css/minijuegos.css`: comentario de cabecera de una línea (hoja propia de Minijuegos, carga después de reset → variables → base → layout) y la utilidad `.visualmente-oculto` (patrón clip/1px, porque no existe en el sitio). Por ahora no lleva más reglas.
-- [ ] T002 [P] Agregar en `sitemap.xml` una entrada `<url>` para `https://sergiotsk.github.io/Interstellar/minijuego-acople.html`, con el mismo formato que la de `minijuegos.html`.
+- [X] T001 Crear `css/minijuegos.css`: comentario de cabecera de una línea (hoja propia de Minijuegos, carga después de reset → variables → base → layout) y la utilidad `.visualmente-oculto` (patrón clip/1px, porque no existe en el sitio). Por ahora no lleva más reglas.
+- [X] T002 [P] Agregar en `sitemap.xml` una entrada `<url>` para `https://sergiotsk.github.io/Interstellar/minijuego-acople.html`, con el mismo formato que la de `minijuegos.html`.
 
 ---
 
@@ -40,20 +40,20 @@ description: "Task list — 009 Hub de Minijuegos + acople"
 
 **⚠️ CRITICAL**: ninguna historia empieza antes de que esta fase esté en verde con `pnpm test`.
 
-- [ ] T003 [P] Test (rojo) `tests/acople-config.test.js`:
+- [X] T003 [P] Test (rojo) `tests/acople-config.test.js`:
   - la suma de `CONFIG.puntaje.pesos` es 1 (con tolerancia de 1e-9);
   - cada `CONFIG.peligro.*` es mayor que su `CONFIG.tol.*`;
   - `rangoAcople < zonaCercana < distanciaInicial`;
   - `CONFIG` está congelado;
   - `CONFIG.teclas` mapea `ArrowLeft`, `ArrowRight`, `ArrowUp` y `Space` a las 4 acciones;
   - `CONFIG.record.clave === 'interstellar:minijuegos:acople:best'`.
-- [ ] T004 Implementar `js/minijuegos/acople/config.js`: `export const CONFIG = Object.freeze({...})`, con la forma exacta de `contracts/logica-acople.md` (nombres, teclas, pasoFijoS = 1/60, deltaMaxS = 0.1, estacion, nave, distancias, tol, peligro, limiteControl, margenSinControl, combustible, puntaje con max 10000 / tMin 30 / tMax 90 / pesos, record). Los valores numéricos iniciales son razonables y se ajustan en T020. Freezar también los objetos anidados.
-- [ ] T005 [P] Test (rojo) `tests/acople-acciones.test.js`:
+- [X] T004 Implementar `js/minijuegos/acople/config.js`: `export const CONFIG = Object.freeze({...})`, con la forma exacta de `contracts/logica-acople.md` (nombres, teclas, pasoFijoS = 1/60, deltaMaxS = 0.1, estacion, nave, distancias, tol, peligro, limiteControl, margenSinControl, combustible, puntaje con max 10000 / tMin 30 / tMax 90 / pesos, record). Los valores numéricos iniciales son razonables y se ajustan en T020. Freezar también los objetos anidados.
+- [X] T005 [P] Test (rojo) `tests/acople-acciones.test.js`:
   - `accionDeTecla` devuelve la acción para las 4 teclas y `null` para cualquier otra;
   - `presionar` y `soltar` devuelven un Set **nuevo** sin mutar el de entrada;
   - `soltarTodo()` devuelve un Set vacío.
-- [ ] T006 Implementar `js/minijuegos/acople/logica/acciones.js` (`accionDeTecla`, `presionar`, `soltar`, `soltarTodo`) según el contrato (R8).
-- [ ] T007 [P] Test (rojo) `tests/acople-fisica.test.js`:
+- [X] T006 Implementar `js/minijuegos/acople/logica/acciones.js` (`accionDeTecla`, `presionar`, `soltar`, `soltarTodo`) según el contrato (R8).
+- [X] T007 [P] Test (rojo) `tests/acople-fisica.test.js`:
   - `crearNave` y `crearEstacion` toman sus valores de CONFIG;
   - `rotarIzquierda` y `rotarDerecha` cambian `velAngular` en sentidos opuestos;
   - `impulso` sube `velAproximacion` y `freno` la baja (puede quedar negativa);
@@ -62,8 +62,8 @@ description: "Task list — 009 Hub de Minijuegos + acople"
   - la estación avanza `angulo += velAngular·dt`;
   - `distancia` se clampa en 0;
   - la función es pura (no muta la entrada).
-- [ ] T008 Implementar `js/minijuegos/acople/logica/fisica.js` (`crearNave`, `crearEstacion`, `pasoFisica`) según el contrato y `data-model.md`: modelo de 2 ejes de R2, con fricción angular leve.
-- [ ] T009 [P] Test (rojo) `tests/acople-docking.test.js`:
+- [X] T008 Implementar `js/minijuegos/acople/logica/fisica.js` (`crearNave`, `crearEstacion`, `pasoFisica`) según el contrato y `data-model.md`: modelo de 2 ejes de R2, con fricción angular leve.
+- [X] T009 [P] Test (rojo) `tests/acople-docking.test.js`:
   - `normalizarAngulo` cae en (−π, π] para ±3π, 2π y 0;
   - `deltaTheta` está en [0, π] y es simétrico;
   - `evaluarSincronia` marca `seguro` y `peligro` según tol/peligro, y `enRango` según `rangoAcople`;
@@ -71,8 +71,8 @@ description: "Task list — 009 Hub de Minijuegos + acople"
   - `evaluarContacto` da `causa:'angulo'` con deltaTheta o deltaOmega > tol;
   - `evaluarContacto` da `{exito:true}` con todo en tolerancia;
   - el impacto tiene prioridad sobre el ángulo.
-- [ ] T010 Implementar `js/minijuegos/acople/logica/docking.js` (`normalizarAngulo`, `deltaOmega`, `deltaTheta`, `evaluarSincronia`, `evaluarContacto`).
-- [ ] T011 [P] Test (rojo) `tests/acople-record.test.js`, con un storage fake (objeto con `getItem`/`setItem`):
+- [X] T010 Implementar `js/minijuegos/acople/logica/docking.js` (`normalizarAngulo`, `deltaOmega`, `deltaTheta`, `evaluarSincronia`, `evaluarContacto`).
+- [X] T011 [P] Test (rojo) `tests/acople-record.test.js`, con un storage fake (objeto con `getItem`/`setItem`):
   - si no hay nada guardado, devuelve `null`;
   - si hay JSON inválido, `v !== 1` o un `puntaje` negativo, decimal o `Infinity`, devuelve `null`;
   - si el storage lanza en `getItem`, devuelve `null` sin lanzar;
@@ -81,7 +81,7 @@ description: "Task list — 009 Hub de Minijuegos + acople"
   - con desenlace fallido (`puntaje: null`) no guarda;
   - si el storage lanza en `setItem`, devuelve `{guardado:false}` sin lanzar;
   - la `fecha` usa el `ahora` inyectado.
-- [ ] T012 Implementar `js/minijuegos/acople/logica/record.js` (`leerRecord`, `guardarSiMejor`) según R13, con el storage inyectado y todo en try/catch.
+- [X] T012 Implementar `js/minijuegos/acople/logica/record.js` (`leerRecord`, `guardarSiMejor`) según R13, con el storage inyectado y todo en try/catch.
 
 **Checkpoint**: `pnpm test` en verde. La lógica base está lista.
 
