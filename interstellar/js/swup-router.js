@@ -16,7 +16,7 @@ if (typeof window !== 'undefined') {
 const PAGE_MODULES = {
   'personajes.html': () => import('./personajes.js'),
   'galeria.html': () => import('./galeria.js'),
-  'minijuegos.html': () => import('./meme-viewer.js'),
+  'minijuegos.html': () => import('./minijuegos/hub.js'),
   'viaje.html': () => import('./meme-viewer.js'),
   'ciencia.html': () => import('./ciencia.js'),
   'creditos.html': () => import('./creditos.js'),

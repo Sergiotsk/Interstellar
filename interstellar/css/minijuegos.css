@@ -334,3 +334,181 @@
 .acople-aviso-led .acople-estado-led {
   background: var(--led-ambar);
 }
+
+/* 3. Hub de misiones (minijuegos.html); bloque mudado desde en-desarrollo.css */
+.minijuegos-bahias {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 0 1.25rem 4rem;
+}
+
+.minijuegos-bahias > h2 {
+  font-family: var(--font-instrumento);
+  font-size: 0.85rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--instrumento-teal);
+  margin: 0;
+}
+
+.minijuegos-bahias-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: 1.5rem;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.minijuegos-bahias-grid > li {
+  display: flex;
+}
+
+.bahia-card {
+  flex: 1;
+  background: var(--color-superficie);
+  border: 1px solid var(--cockpit-bezel);
+  clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+  padding: 1.6rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.bahia-card[data-estado='disponible']:hover,
+.bahia-card[data-estado='disponible']:focus-within {
+  border-color: var(--instrumento-teal);
+  background: color-mix(in srgb, var(--instrumento-teal) 4%, var(--color-superficie));
+}
+
+.bahia-card[data-estado='bloqueada'] {
+  opacity: 0.62;
+}
+
+.bahia-badge-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-instrumento);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: var(--instrumento-teal);
+  margin-bottom: 0.75rem;
+}
+
+.bahia-card h3 {
+  font-family: var(--font-hero-titulo);
+  font-size: 1.35rem;
+  color: var(--color-texto);
+  margin: 0 0 0.5rem;
+}
+
+.bahia-tipo {
+  font-family: var(--font-instrumento);
+  font-size: 0.8rem;
+  color: var(--color-tierra-oro);
+  margin: 0 0 0.85rem;
+  display: block;
+}
+
+.bahia-card p {
+  font-family: var(--font-texto);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--color-texto-atenuado);
+  margin: 0 0 1.25rem;
+}
+
+.bahia-card p.bahia-record {
+  font-family: var(--font-instrumento);
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  color: var(--instrumento-teal);
+  margin: 0 0 1rem;
+}
+
+.bahia-accion {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.1rem;
+  margin: 0 0 1.25rem;
+  font-family: var(--font-instrumento);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--instrumento-teal);
+  background: color-mix(in srgb, var(--instrumento-pantalla) 85%, transparent);
+  border: 1px solid var(--instrumento-teal);
+  clip-path: var(--recorte-tecla);
+}
+
+.bahia-accion:hover {
+  color: var(--color-texto);
+}
+
+.bahia-accion:focus-visible {
+  outline: 2px solid var(--instrumento-teal);
+  outline-offset: 2px;
+}
+
+.bahia-footer {
+  border-top: 1px dashed color-mix(in srgb, var(--color-texto) 14%, transparent);
+  padding-top: 0.85rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-instrumento);
+  font-size: 0.8rem;
+  color: var(--color-texto-atenuado);
+}
+
+.bahia-estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--led-ambar);
+}
+
+.bahia-estado .led {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--led-ambar);
+}
+
+.bahia-card[data-estado='disponible'] .bahia-estado {
+  color: var(--instrumento-teal);
+}
+
+.bahia-card[data-estado='disponible'] .bahia-estado .led {
+  background: var(--instrumento-teal);
+  box-shadow: 0 0 6px var(--instrumento-teal);
+}
+
+.bahia-card[data-estado='bloqueada'] .bahia-estado .led {
+  background: var(--color-texto-atenuado);
+}
+
+/* 4. Movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+  .acople-intro-linea,
+  .acople-intro-controles {
+    opacity: 1;
+    animation: none;
+  }
+
+  .acople-estado[data-nivel='peligro'] .acople-estado-led {
+    animation: none;
+  }
+
+  .bahia-card {
+    transition: none;
+  }
+}

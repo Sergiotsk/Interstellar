@@ -1,4 +1,4 @@
-/* css/en-desarrollo.css - pantallas en desarrollo + Terminal de Memes (viaje.html, minijuegos.html) */
+/* css/en-desarrollo.css - pantallas en desarrollo + Terminal de Memes (viaje.html) */
 
 /* 1. Banner superior de estado de la nave (compacto, sin scroll) */
 .terminal-intro {
@@ -318,91 +318,7 @@
   background: var(--led-ambar);
 }
 
-/* 4. Bahias de Minijuegos (minijuegos.html) */
-.minijuegos-bahias-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
-  gap: 1.5rem;
-  margin-top: 2rem;
-}
-
-.bahia-card {
-  background: var(--color-superficie);
-  border: 1px solid var(--cockpit-bezel);
-  clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
-  padding: 1.6rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  position: relative;
-  transition: all 0.2s ease;
-}
-
-.bahia-card:hover {
-  border-color: var(--color-gargantua);
-  background: color-mix(in srgb, var(--color-gargantua) 4%, var(--color-superficie));
-}
-
-.bahia-badge-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-family: var(--font-instrumento);
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  color: var(--instrumento-teal);
-  margin-bottom: 0.75rem;
-}
-
-.bahia-card h2 {
-  font-family: var(--font-hero-titulo);
-  font-size: 1.35rem;
-  color: var(--color-texto);
-  margin: 0 0 0.5rem;
-}
-
-.bahia-tipo {
-  font-family: var(--font-instrumento);
-  font-size: 0.8rem;
-  color: var(--color-tierra-oro);
-  margin: 0 0 0.85rem;
-  display: block;
-}
-
-.bahia-card p {
-  font-family: var(--font-texto);
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: var(--color-texto-atenuado);
-  margin: 0 0 1.25rem;
-}
-
-.bahia-footer {
-  border-top: 1px dashed color-mix(in srgb, var(--color-texto) 14%, transparent);
-  padding-top: 0.85rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-family: var(--font-instrumento);
-  font-size: 0.8rem;
-  color: var(--color-texto-atenuado);
-}
-
-.bahia-estado {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  color: var(--led-ambar);
-}
-
-.bahia-estado .led {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--led-ambar);
-}
-
-/* 5. Responsividad */
+/* 4. Responsividad */
 @media (max-width: 48rem) {
   .terminal-intro {
     padding-top: 2rem;

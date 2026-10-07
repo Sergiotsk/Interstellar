@@ -208,11 +208,11 @@ description: "Task list — 009 Hub de Minijuegos + acople"
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T033 [P] [US3] Test (rojo) `tests/minijuegos-hub.test.js` para la función pura `textoRecord(record)` exportada por `js/minijuegos/hub.js`. Devuelve `'Sin registro'` si es `null`; si hay récord, el puntaje formateado con separador de miles es-AR más " pts" (por ejemplo `'7.421 pts'`).
+- [X] T033 [P] [US3] Test (rojo) `tests/minijuegos-hub.test.js` para la función pura `textoRecord(record)` exportada por `js/minijuegos/hub.js`. Devuelve `'Sin registro'` si es `null`; si hay récord, el puntaje formateado con separador de miles es-AR más " pts" (por ejemplo `'7.421 pts'`).
 
 ### Implementation for User Story 3
 
-- [ ] T034 [US3] Mudar el bloque "4. Bahías de Minijuegos" de `css/en-desarrollo.css` a `css/minijuegos.css` (incluidos sus media queries del §5 si los hay) y actualizar el comentario de cabecera de `en-desarrollo.css` (queda "viaje.html + terminal de memes"). En `minijuegos.css`, sumar:
+- [X] T034 [US3] Mudar el bloque "4. Bahías de Minijuegos" de `css/en-desarrollo.css` a `css/minijuegos.css` (incluidos sus media queries del §5 si los hay) y actualizar el comentario de cabecera de `en-desarrollo.css` (queda "viaje.html + terminal de memes"). En `minijuegos.css`, sumar:
   - el encabezado `.minijuegos-intro`;
   - la grilla como `<ol>` sin viñetas;
   - `h3` en la tarjeta;
@@ -220,7 +220,7 @@ description: "Task list — 009 Hub de Minijuegos + acople"
   - `.bahia-accion`, con estilo de tecla y foco visible;
   - `[data-estado="bloqueada"]`, atenuada y con LED apagado;
   - el modo responsive, con las tarjetas apiladas a 320 px.
-- [ ] T035 [US3] Rehacer `minijuegos.html` según `contracts/integracion-sitio.md` §1:
+- [X] T035 [US3] Rehacer `minijuegos.html` según `contracts/integracion-sitio.md` §1:
   - quitar la `.meme-seccion` y el link a `css/en-desarrollo.css`, y agregar `css/minijuegos.css` después de `cielo.css`;
   - `section.minijuegos-intro` con el `h1`;
   - la sección de bahías con `h2` y `<ol class="minijuegos-bahias-grid">` de 4 `<li><article class="bahia-card" data-mision data-estado>`;
@@ -228,9 +228,9 @@ description: "Task list — 009 Hub de Minijuegos + acople"
   - la bahía 1 lleva `<p class="bahia-record" data-record-acople>Sin registro</p>` y `<a class="bahia-accion" href="minijuego-acople.html">Iniciar simulación</a>`;
   - el script `js/minijuegos/hub.js` reemplaza a `js/meme-viewer.js`;
   - actualizar la `meta description`, porque deja de estar "en construcción".
-- [ ] T036 [US3] Implementar `js/minijuegos/hub.js`: `textoRecord` (T033 en verde), `mount()` que lee con `leerRecord(globalThis.localStorage, CONFIG)` y escribe en `[data-record-acople]`, `unmount()` como noop, y la autoinicialización si `!window.__SWUP_ROUTER_ACTIVE__`.
-- [ ] T037 [US3] En `js/swup-router.js`, cambiar `'minijuegos.html': () => import('./meme-viewer.js')` por `() => import('./minijuegos/hub.js')`. `viaje.html` sigue con `meme-viewer.js`.
-- [ ] T038 [US3] Validar `quickstart.md` §1: las 4 bahías, el orden de tabulación, que Network no muestre Phaser y los 320 px sin scroll horizontal.
+- [X] T036 [US3] Implementar `js/minijuegos/hub.js`: `textoRecord` (T033 en verde), `mount()` que lee con `leerRecord(globalThis.localStorage, CONFIG)` y escribe en `[data-record-acople]`, `unmount()` como noop, y la autoinicialización si `!window.__SWUP_ROUTER_ACTIVE__`.
+- [X] T037 [US3] En `js/swup-router.js`, cambiar `'minijuegos.html': () => import('./meme-viewer.js')` por `() => import('./minijuegos/hub.js')`. `viaje.html` sigue con `meme-viewer.js`.
+- [X] T038 [US3] Validar `quickstart.md` §1: las 4 bahías, el orden de tabulación, que Network no muestre Phaser y los 320 px sin scroll horizontal.
 
 **Checkpoint**: el hub funciona solo. Con un récord cargado a mano en localStorage, se ve el puntaje.
 

@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description"
-    content="Minijuegos interactivos inspirados en Interstellar: simulador de acople de la Endurance (No Time for Caution), escape de Miller y Gargantúa. Sección en construcción.">
+    content="Minijuegos inspirados en Interstellar: capítulos de una misma misión. Jugá No Time for Caution, el simulador de acople con la Endurance.">
   <title>Minijuegos | Interstellar</title>
   <link rel="preload" href="assets/fonts/exo2-latin-var.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/orbitron-latin-var.woff2" as="font" type="font/woff2" crossorigin>
@@ -19,134 +19,100 @@
   <link rel="stylesheet" href="css/variables.css">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/layout.css">
-  <link rel="stylesheet" href="css/en-desarrollo.css">
   <link rel="stylesheet" href="css/cielo.css">
+  <link rel="stylesheet" href="css/minijuegos.css">
 </head>
 
 <body class="con-cielo">
   <main>
-    <section class="terminal-intro">
-      <div class="telemetria-alerta">
-        <span class="led-pulso" aria-hidden="true"></span>
-        <span>Hangar Endurance · Sección en construcción</span>
-      </div>
+    <section class="minijuegos-intro">
       <h1>Minijuegos</h1>
+      <p>Capítulos de una misma misión. Cada bahía es un simulador: entrá, fallá, aprendé y volvé a intentar.</p>
     </section>
 
-    <section class="meme-seccion" aria-labelledby="meme-terminal-minijuegos">
-      <div class="meme-consola" data-meme-viewer tabindex="0" role="region"
-        aria-label="Terminal de memes recreativos de la nave">
-        <div class="meme-consola-header">
-          <div class="meme-consola-marca" id="meme-terminal-minijuegos">
-            <span class="led" aria-hidden="true"></span>
-            <span>TARS Terminal // Humor al 95%</span>
-          </div>
-          <span class="meme-contador" aria-live="polite">[ 1 / 8 ]</span>
-        </div>
+    <section class="minijuegos-bahias" aria-labelledby="bahias-titulo">
+      <h2 id="bahias-titulo">Bahías de simulación</h2>
 
-        <div class="meme-pantalla">
-          <div class="meme-frame-container">
-            <iframe class="meme-iframe" src="https://giphy.com/embed/NTur7XlVDUdqM"
-              title="Todo bajo control en la Endurance" allowfullscreen loading="lazy"></iframe>
-          </div>
-          <div class="meme-info" aria-live="polite">
-            <p class="meme-tagline">El TP prendido fuego la noche anterior a la entrega.</p>
-          </div>
-        </div>
+      <ol class="minijuegos-bahias-grid">
+        <li>
+          <article class="bahia-card" data-mision="acople" data-estado="disponible">
+            <div>
+              <div class="bahia-badge-top">
+                <span>BAHÍA 01</span>
+                <span>ROTATION SYNC</span>
+              </div>
+              <h3>No Time for Caution</h3>
+              <span class="bahia-tipo">Simulador de acople de emergencia</span>
+              <p>Sincronizá el giro del Ranger con la <strong>Endurance en rotación descontrolada</strong>, acercate despacio y acoplá antes de quedarte sin combustible.</p>
+              <p class="bahia-record" data-record-acople>Sin registro</p>
+              <a class="bahia-accion" href="minijuego-acople.html">Iniciar simulación</a>
+            </div>
+            <div class="bahia-footer">
+              <span class="bahia-estado"><span class="led" aria-hidden="true"></span> DISPONIBLE</span>
+              <span>CAPÍTULO 1</span>
+            </div>
+          </article>
+        </li>
 
-        <div class="meme-consola-footer">
-          <div class="meme-controles">
-            <button type="button" class="meme-tecla" data-meme-nav="prev" aria-label="Meme anterior">
-              <span aria-hidden="true">«</span> Anterior
-            </button>
-            <button type="button" class="meme-tecla meme-tecla--destacada" data-meme-nav="random"
-              aria-label="Mostrar meme aleatorio">
-              <span aria-hidden="true">🎲</span> Aleatorio
-            </button>
-            <button type="button" class="meme-tecla" data-meme-nav="next" aria-label="Meme siguiente">
-              Siguiente <span aria-hidden="true">»</span>
-            </button>
-          </div>
-        </div>
-      </div>
+        <li>
+          <article class="bahia-card" data-mision="miller" data-estado="bloqueada" aria-disabled="true">
+            <div>
+              <div class="bahia-badge-top">
+                <span>BAHÍA 02</span>
+                <span>TIME CRITICAL</span>
+              </div>
+              <h3>Miller's Wave Escape</h3>
+              <span class="bahia-tipo">Contrarreloj de exploración acuática</span>
+              <p>Aterrizá en las aguas poco profundas del planeta de Miller, recuperá los datos de la baliza y despegá antes de que la ola gigante aplaste la nave.</p>
+            </div>
+            <div class="bahia-footer">
+              <span class="bahia-estado"><span class="led" aria-hidden="true"></span> PRÓXIMAMENTE</span>
+              <span>CAPÍTULO 2</span>
+            </div>
+          </article>
+        </li>
+
+        <li>
+          <article class="bahia-card" data-mision="gargantua" data-estado="bloqueada" aria-disabled="true">
+            <div>
+              <div class="bahia-badge-top">
+                <span>BAHÍA 03</span>
+                <span>GRAVITY ASSIST</span>
+              </div>
+              <h3>Gargantua Slingshot</h3>
+              <span class="bahia-tipo">Maniobra orbital alrededor del agujero negro</span>
+              <p>Calculá el vector de aproximación para aprovechar el tirón gravitacional de Gargantúa sin cruzar el horizonte de sucesos.</p>
+            </div>
+            <div class="bahia-footer">
+              <span class="bahia-estado"><span class="led" aria-hidden="true"></span> PRÓXIMAMENTE</span>
+              <span>CAPÍTULO 3</span>
+            </div>
+          </article>
+        </li>
+
+        <li>
+          <article class="bahia-card" data-mision="tesseract" data-estado="bloqueada" aria-disabled="true">
+            <div>
+              <div class="bahia-badge-top">
+                <span>BAHÍA 04</span>
+                <span>QUANTUM DATA</span>
+              </div>
+              <h3>Tesseract Data Sync</h3>
+              <span class="bahia-tipo">Puzzle de transmisión por gravedad</span>
+              <p>Recorré las líneas de tiempo de la biblioteca y usá la gravedad para mover la aguja del reloj y transmitir los datos en código morse.</p>
+            </div>
+            <div class="bahia-footer">
+              <span class="bahia-estado"><span class="led" aria-hidden="true"></span> PRÓXIMAMENTE</span>
+              <span>CAPÍTULO 4</span>
+            </div>
+          </article>
+        </li>
+      </ol>
     </section>
-
-    <!-- Bahías de simulación: ocultas hasta tener contenido
-    <section id="bahias-simulacion">
-      <h2>Bahías de Simulación en Preparación</h2>
-      <p>Capítulos de la misión espacial proyectados para el simulador interactivo:</p>
-
-      <div class="minijuegos-bahias-grid">
-        <article class="bahia-card">
-          <div>
-            <div class="bahia-badge-top">
-              <span>BAHÍA 01 // MVP</span>
-              <span>ROTATION SYNC</span>
-            </div>
-            <h2>No Time for Caution</h2>
-            <span class="bahia-tipo">Simulador de acople de emergencia</span>
-            <p>Sincronizá el giro angular del módulo Ranger con la estación Endurance en rotación continua a 67 RPM. Control de empuje RCS, aproximación y bloqueo magnético.</p>
-          </div>
-          <div class="bahia-footer">
-            <span class="bahia-estado"><span class="led" aria-hidden="true"></span> EN DESARROLLO ACTIVO</span>
-            <span>CAPÍTULO 1</span>
-          </div>
-        </article>
-
-        <article class="bahia-card">
-          <div>
-            <div class="bahia-badge-top">
-              <span>BAHÍA 02 // PRÓXIMAMENTE</span>
-              <span>TIME CRITICAL</span>
-            </div>
-            <h2>Miller's Wave Escape</h2>
-            <span class="bahia-tipo">Contrarreloj de exploración acuática</span>
-            <p>Aterrizá en las aguas poco profundas del planeta de Miller, recuperá los datos de la baliza y despegá antes de que la pared de agua gigante aplaste la nave.</p>
-          </div>
-          <div class="bahia-footer">
-            <span class="bahia-estado"><span class="led" aria-hidden="true"></span> BLOQUEADO</span>
-            <span>CAPÍTULO 2</span>
-          </div>
-        </article>
-
-        <article class="bahia-card">
-          <div>
-            <div class="bahia-badge-top">
-              <span>BAHÍA 03 // PRÓXIMAMENTE</span>
-              <span>GRAVITY ASSIST</span>
-            </div>
-            <h2>Gargantua Slingshot</h2>
-            <span class="bahia-tipo">Maniobra orbital relativista</span>
-            <p>Calculá el vector de aproximación al horizonte de sucesos para aprovechar el tirón gravitacional del agujero negro sin caer en la singularidad.</p>
-          </div>
-          <div class="bahia-footer">
-            <span class="bahia-estado"><span class="led" aria-hidden="true"></span> BLOQUEADO</span>
-            <span>CAPÍTULO 3</span>
-          </div>
-        </article>
-
-        <article class="bahia-card">
-          <div>
-            <div class="bahia-badge-top">
-              <span>BAHÍA 04 // PRÓXIMAMENTE</span>
-              <span>QUANTUM DATA</span>
-            </div>
-            <h2>Tesseract Data Sync</h2>
-            <span class="bahia-tipo">Puzzle gravitacional en 5 dimensiones</span>
-            <p>Navegá las líneas de tiempo en la biblioteca y alterá la gravedad para mover la manecilla del reloj y transmitir los datos cuánticos en código morse.</p>
-          </div>
-          <div class="bahia-footer">
-            <span class="bahia-estado"><span class="led" aria-hidden="true"></span> BLOQUEADO</span>
-            <span>CAPÍTULO 4</span>
-          </div>
-        </article>
-      </div>
-    </section>
-    -->
   </main>
 
   <script type="module" src="js/layout.js"></script>
-  <script type="module" src="js/meme-viewer.js"></script>
+  <script type="module" src="js/minijuegos/hub.js"></script>
 </body>
 
 </html>
