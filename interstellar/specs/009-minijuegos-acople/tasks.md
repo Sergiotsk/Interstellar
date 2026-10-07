@@ -95,14 +95,14 @@ description: "Task list — 009 Hub de Minijuegos + acople"
 
 ### Tests for User Story 1 ⚠️ (escribir primero y verlos fallar)
 
-- [ ] T013 [P] [US1] Test (rojo) `tests/acople-scoring.test.js`:
+- [X] T013 [P] [US1] Test (rojo) `tests/acople-scoring.test.js`:
   - `factores` devuelve los 5 valores en [0,1] según las fórmulas de `data-model.md` §Puntaje;
   - debajo de `tMin` el factor tiempo es 1 y arriba de `tMax` es 0;
   - `suavidad` vale 1 si `tiempoEnRango = 0`;
   - `calcularPuntaje` da un entero ≥ 0 y ≤ `CONFIG.puntaje.max`;
   - es determinístico (misma entrada, misma salida);
   - un desempeño perfecto da `max`.
-- [ ] T014 [P] [US1] Test (rojo) `tests/acople-mision.test.js`, camino feliz:
+- [X] T014 [P] [US1] Test (rojo) `tests/acople-mision.test.js`, camino feliz:
   - `crearPartida(CONFIG,{conIntro:true})` arranca en fase `'intro'` y `iniciar` la pasa a `'en-curso'`;
   - `crearPartida(..., {conIntro:false})` arranca en `'en-curso'`;
   - `conAcciones` se ignora fuera de `'en-curso'`;
@@ -111,19 +111,19 @@ description: "Task list — 009 Hub de Minijuegos + acople"
   - una partida preparada en tolerancia que llega a distancia 0 pasa a `'acoplada'`, con `desenlace.exito === true` y `puntaje` entero;
   - un contacto con velocidad alta pasa a `'fallida'` con causa `'impacto'`;
   - `estadoHud` devuelve cada uno de los 6 estados con la prioridad de `data-model.md` (un caso por estado).
-- [ ] T015 [P] [US1] Test (rojo) `tests/acople-balance.test.js`: un "piloto de referencia" escrito en el test (política: primero llevar `deltaOmega` a ~0 con rotar; después corregir `deltaTheta`; después impulsar hasta una velocidad objetivo menor que `tol.velocidad` y frenar al entrar en `zonaCercana`) simula con `avanzar` a paso de 1/60 s. Exige `desenlace.exito === true` y `30 ≤ tiempoTotal ≤ 90`.
+- [X] T015 [P] [US1] Test (rojo) `tests/acople-balance.test.js`: un "piloto de referencia" escrito en el test (política: primero llevar `deltaOmega` a ~0 con rotar; después corregir `deltaTheta`; después impulsar hasta una velocidad objetivo menor que `tol.velocidad` y frenar al entrar en `zonaCercana`) simula con `avanzar` a paso de 1/60 s. Exige `desenlace.exito === true` y `30 ≤ tiempoTotal ≤ 90`.
 
 ### Implementation for User Story 1
 
-- [ ] T016 [US1] Implementar `js/minijuegos/acople/logica/scoring.js` (`factores`, `calcularPuntaje`) para que T013 pase.
-- [ ] T017 [US1] Implementar `js/minijuegos/acople/logica/mision.js` (`crearPartida`, `iniciar`, `conAcciones`, `avanzar`, `estadoHud`), con el acumulador de paso fijo sobre `pasoFisica`. Al llegar `distancia` a 0 usa `evaluarContacto` y fija `desenlace` (con `puntaje` vía scoring si hubo éxito y `null` si falló). Lleva `tiempoEnRango` y `tiempoEnRangoSeguro`. Las causas `control` y `combustible` quedan para US2. T014 tiene que pasar.
-- [ ] T018 [US1] Crear `minijuego-acople.html` según `contracts/integracion-sitio.md` §2:
+- [X] T016 [US1] Implementar `js/minijuegos/acople/logica/scoring.js` (`factores`, `calcularPuntaje`) para que T013 pase.
+- [X] T017 [US1] Implementar `js/minijuegos/acople/logica/mision.js` (`crearPartida`, `iniciar`, `conAcciones`, `avanzar`, `estadoHud`), con el acumulador de paso fijo sobre `pasoFisica`. Al llegar `distancia` a 0 usa `evaluarContacto` y fija `desenlace` (con `puntaje` vía scoring si hubo éxito y `null` si falló). Lleva `tiempoEnRango` y `tiempoEnRangoSeguro`. Las causas `control` y `combustible` quedan para US2. T014 tiene que pasar.
+- [X] T018 [US1] Crear `minijuego-acople.html` según `contracts/integracion-sitio.md` §2:
   - `<head>` igual a `minijuegos.html` (meta, preload de fuentes, favicons) con hojas reset → variables → base → layout → minijuegos;
   - `<body class="pagina-acople">`, `<main>` con `section[data-acople]`, `h1.visualmente-oculto`, `[data-acople-lienzo]` con `tabindex="-1"` y las 5 `[data-pantalla]` (intro, hud, pausa, resultado, aviso), todas `hidden`;
   - textos de la intro en español con frases cortas ("AÑO 2067" / "La Tierra se muere." / "La Endurance gira." / "Sincronizá. Acercate despacio. Acoplá.") y botón Saltear;
   - etiquetas del HUD en inglés;
   - scripts `js/layout.js` y `js/minijuegos/acople/main.js` como `type="module"`.
-- [ ] T019 [US1] Estilos del simulador en `css/minijuegos.css`:
+- [X] T019 [US1] Estilos del simulador en `css/minijuegos.css`:
   - `.acople` ocupa el viewport disponible bajo el header y el lienzo va a pantalla completa de la sección;
   - overlays posicionados sobre el lienzo;
   - HUD estilo computadora de navegación: `--font-instrumento`, líneas finas, `--instrumento-teal` como acento, `--led-ambar` y `--led-alerta` para los estados, `--color-texto` para el texto;
@@ -131,12 +131,12 @@ description: "Task list — 009 Hub de Minijuegos + acople"
   - intro con fades por CSS;
   - resultado con `<dl>` y botones con el estilo de tecla del sitio (`--recorte-tecla`);
   - solo tokens de `variables.css`, sin hex sueltos.
-- [ ] T020 [US1] Ajustar los valores de `js/minijuegos/acople/config.js` hasta que T015 (balance) pase sin tocar la política del piloto. Correr `pnpm test` completo.
-- [ ] T021 [US1] Implementar `js/minijuegos/acople/overlays.js` (solo DOM, recibe el contenedor `[data-acople]`):
+- [X] T020 [US1] Ajustar los valores de `js/minijuegos/acople/config.js` hasta que T015 (balance) pase sin tocar la política del piloto. Correr `pnpm test` completo.
+- [X] T021 [US1] Implementar `js/minijuegos/acople/overlays.js` (solo DOM, recibe el contenedor `[data-acople]`):
   - `mostrarPantalla(nombre)` deja visible solo esa `[data-pantalla]`, y además el HUD si el nombre es `'hud'` o `'pausa'`;
   - `pintarHud(partida, estado, config)` actualiza Rotation Sync, Relative Velocity, Distance y Fuel. El texto de estado y `data-nivel` cambian **solo cuando cambia el estado**, para no saturar el `aria-live`;
   - `pintarResultado(desenlace)` muestra el título "Acople completo" y la `<dl>` con tiempo, combustible, velocidad final, precisión y puntaje, y pone el foco en el `h2`.
-- [ ] T022 [US1] Implementar `js/minijuegos/acople/escena-acople.js`: una clase que extiende `Phaser.Scene`. Phaser se recibe por parámetro de una fábrica `crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, paleta, reducirMovimiento })`, así que el módulo no importa Phaser y lo lee de lo que le pasan.
+- [X] T022 [US1] Implementar `js/minijuegos/acople/escena-acople.js`: una clase que extiende `Phaser.Scene`. Phaser se recibe por parámetro de una fábrica `crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, paleta, reducirMovimiento })`, así que el módulo no importa Phaser y lo lee de lo que le pasan.
   - `update(time, delta)` llama a `alAvanzar(delta/1000)` y después dibuja el estado.
   - Campo estelar procedural rotado por `−nave.angulo` (sin rotar si `reducirMovimiento`).
   - Estación: un anillo con puerto y ranura dibujados con `Graphics`, rotada por `estacion.angulo + anguloPuerto − nave.angulo` y escalada según `distancia` (más cerca, más grande).
@@ -146,7 +146,7 @@ description: "Task list — 009 Hub de Minijuegos + acople"
   - Vibración leve de la cámara en UNSAFE y sacudida en el impacto, con intensidad 0 si `reducirMovimiento`.
   - Escalado con `Scale.RESIZE`.
   - Consultar la API de Phaser 4 con context7 antes de escribir.
-- [ ] T023 [US1] Implementar `js/minijuegos/acople/main.js`, versión mínima jugable:
+- [X] T023 [US1] Implementar `js/minijuegos/acople/main.js`, versión mínima jugable:
   - `export async function mount()` y `export function unmount()`, con autoinicialización si `!window.__SWUP_ROUTER_ACTIVE__` (patrón de `js/galeria.js`).
   - `mount`:
     1. busca `[data-acople]` y sale si no existe;
@@ -158,7 +158,7 @@ description: "Task list — 009 Hub de Minijuegos + acople"
   - Saltear la intro con una tecla, un clic o el botón llama a `iniciar` y muestra el `'hud'`.
   - Por tick: `avanzar`, `pintarHud(estadoHud)`. Al pasar a `'acoplada'` o `'fallida'`, `pintarResultado` y mostrar el `'resultado'`.
   - `unmount` es idempotente: `game.destroy(true)`, remueve los listeners y anula las referencias.
-- [ ] T024 [US1] En `js/swup-router.js`: agregar `'minijuego-acople.html': () => import('./minijuegos/acople/main.js')` a `PAGE_MODULES` y `'css/minijuegos.css'` a `HOJAS_ESTILO_SITIO`.
+- [X] T024 [US1] En `js/swup-router.js`: agregar `'minijuego-acople.html': () => import('./minijuegos/acople/main.js')` a `PAGE_MODULES` y `'css/minijuegos.css'` a `HOJAS_ESTILO_SITIO`.
 - [ ] T025 [US1] Validar `quickstart.md` §2, pasos 1 a 4, en el navegador (`python -m http.server 8080`). Corregir hasta que se cumplan: la estación queda quieta al sincronizar, hay 2 canales visuales de peligro además del texto (FR-022), consola limpia, y las flechas y Space no hacen scroll durante la partida.
 
 **Checkpoint**: el MVP jugable está completo. Se puede acoplar y ver el puntaje.
