@@ -3,6 +3,7 @@
 import { CONFIG } from './config.js';
 import { accionDeTecla, presionar, soltar, soltarTodo } from './logica/acciones.js';
 import { crearPartida, iniciar, conAcciones, avanzar, estadoHud, nivelDeEstado, reintentar } from './logica/mision.js';
+import { guardarSiMejor } from './logica/record.js';
 import { crearOverlays, lecturasHud } from './overlays.js';
 import { crearEscenaAcople } from './escena-acople.js';
 
@@ -48,9 +49,18 @@ function volverAJugar(s) {
   s.lienzo.focus({ preventScroll: true });
 }
 
+function almacenamiento() {
+  try {
+    return globalThis.localStorage;
+  } catch {
+    return undefined; // con el almacenamiento bloqueado, el solo acceso puede lanzar
+  }
+}
+
 function terminarPartida(s) {
   s.acciones = soltarTodo();
-  s.ui.pintarResultado(s.partida.desenlace);
+  const infoRecord = guardarSiMejor(s.partida.desenlace, almacenamiento(), CONFIG);
+  s.ui.pintarResultado(s.partida.desenlace, infoRecord);
   s.ui.mostrar('resultado');
 }
 

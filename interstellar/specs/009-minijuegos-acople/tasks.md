@@ -244,8 +244,8 @@ description: "Task list — 009 Hub de Minijuegos + acople"
 
 ### Implementation for User Story 4
 
-- [ ] T039 [US4] En `js/minijuegos/acople/main.js`: al pasar a `'acoplada'`, llamar a `guardarSiMejor(desenlace, globalThis.localStorage, CONFIG)` y pasarle el resultado `{guardado, record}` a `pintarResultado`.
-- [ ] T040 [US4] En `js/minijuegos/acople/overlays.js`: `pintarResultado(desenlace, infoRecord)` muestra "Nuevo récord" si `guardado` es true y, si no, el récord vigente junto al puntaje. Si el storage no está disponible (`record === null` y `guardado === false`), no muestra nada de récord y no da error.
+- [X] T039 [US4] En `js/minijuegos/acople/main.js`: al pasar a `'acoplada'`, llamar a `guardarSiMejor(desenlace, globalThis.localStorage, CONFIG)` y pasarle el resultado `{guardado, record}` a `pintarResultado`.
+- [X] T040 [US4] En `js/minijuegos/acople/overlays.js`: `pintarResultado(desenlace, infoRecord)` muestra "Nuevo récord" si `guardado` es true y, si no, el récord vigente junto al puntaje. Si el storage no está disponible (`record === null` y `guardado === false`), no muestra nada de récord y no da error.
 - [ ] T041 [US4] Validar `quickstart.md` §2, pasos 4 a 6 (nuevo récord, recarga del hub y una partida peor que no lo pisa). Además, en una ventana privada con el storage bloqueado, el juego sigue sin errores.
 
 **Checkpoint**: el incentivo de rejugabilidad está completo.
