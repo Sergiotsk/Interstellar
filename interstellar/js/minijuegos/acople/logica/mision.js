@@ -22,6 +22,14 @@ export function iniciar(partida) {
   return partida.fase === 'intro' ? { ...partida, fase: 'en-curso' } : partida;
 }
 
+export function pausar(partida) {
+  return partida.fase === 'en-curso' ? { ...partida, fase: 'pausada', acciones: new Set() } : partida;
+}
+
+export function reanudar(partida) {
+  return partida.fase === 'pausada' ? { ...partida, fase: 'en-curso' } : partida;
+}
+
 export function conAcciones(partida, acciones) {
   return partida.fase === 'en-curso' ? { ...partida, acciones: new Set(acciones) } : partida;
 }

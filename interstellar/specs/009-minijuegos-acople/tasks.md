@@ -260,9 +260,9 @@ description: "Task list — 009 Hub de Minijuegos + acople"
 
 ### Tests for User Story 5 ⚠️
 
-- [ ] T042 [P] [US5] Test (rojo) en `tests/musica-mobile.test.js`: `rutaSinMusica` exportada por `js/layout.js` es `true` para `'trailer.html'` y `'minijuego-acople.html'`, y `false` para `'index.html'`, `'minijuegos.html'` y `'mundos-tierra.html'`.
-- [ ] T043 [P] [US5] Test (rojo) `tests/acople-dispositivo.test.js`: la tabla de verdad completa de `debeMostrarAvisoDesktop`, donde solo `{punteroGrueso:true, algunPunteroFino:false}` da `true`.
-- [ ] T044 [P] [US5] Ampliar `tests/acople-mision.test.js` (rojo):
+- [X] T042 [P] [US5] Test (rojo) en `tests/musica-mobile.test.js`: `rutaSinMusica` exportada por `js/layout.js` es `true` para `'trailer.html'` y `'minijuego-acople.html'`, y `false` para `'index.html'`, `'minijuegos.html'` y `'mundos-tierra.html'`.
+- [X] T043 [P] [US5] Test (rojo) `tests/acople-dispositivo.test.js`: la tabla de verdad completa de `debeMostrarAvisoDesktop`, donde solo `{punteroGrueso:true, algunPunteroFino:false}` da `true`.
+- [X] T044 [P] [US5] Ampliar `tests/acople-mision.test.js` (rojo):
   - `pausar` desde `'en-curso'` pasa a `'pausada'` y vacía las acciones;
   - `avanzar` en `'pausada'` no cambia la física;
   - `reanudar` vuelve a `'en-curso'`;
@@ -270,16 +270,16 @@ description: "Task list — 009 Hub de Minijuegos + acople"
 
 ### Implementation for User Story 5
 
-- [ ] T045 [US5] En `js/layout.js` (R5):
+- [X] T045 [US5] En `js/layout.js` (R5):
   - exportar `rutaSinMusica(archivo)`;
   - en `sincronizarAudioRuta` y en `initMusicaFondo`, reemplazar las comparaciones `archivo === 'trailer.html'` y la variable `esTrailer` por `rutaSinMusica(archivo)`;
   - renombrar `muteadoPorTrailer` a `muteadoPorRuta`;
   - actualizar el comentario de una línea.
 
   T042 y los tests existentes de música tienen que seguir en verde.
-- [ ] T046 [US5] Implementar `js/minijuegos/acople/logica/dispositivo.js` (`debeMostrarAvisoDesktop`), con T043 en verde. Agregar `pausar` y `reanudar` a `js/minijuegos/acople/logica/mision.js`, con T044 en verde.
-- [ ] T047 [US5] En `js/minijuegos/acople/main.js`: antes del `import()` de Phaser, evaluar `debeMostrarAvisoDesktop` con `matchMedia('(pointer: coarse)')` y `matchMedia('(any-pointer: fine)')`. Si da `true`, mostrar la pantalla `'aviso'` y **no** importar Phaser.
-- [ ] T048 [US5] Implementar `js/minijuegos/acople/audio-acople.js` (R6):
+- [X] T046 [US5] Implementar `js/minijuegos/acople/logica/dispositivo.js` (`debeMostrarAvisoDesktop`), con T043 en verde. Agregar `pausar` y `reanudar` a `js/minijuegos/acople/logica/mision.js`, con T044 en verde.
+- [X] T047 [US5] En `js/minijuegos/acople/main.js`: antes del `import()` de Phaser, evaluar `debeMostrarAvisoDesktop` con `matchMedia('(pointer: coarse)')` y `matchMedia('(any-pointer: fine)')`. Si da `true`, mostrar la pantalla `'aviso'` y **no** importar Phaser.
+- [X] T048 [US5] Implementar `js/minijuegos/acople/audio-acople.js` (R6):
   - `crearAudioAcople()` devuelve `{ reanudar(), actualizar(estado, acciones), evento(nombre), setMute(bool), cerrar() }`;
   - `AudioContext` creado de forma perezosa en el primer `reanudar()` (gesto);
   - un `GainNode` maestro;
@@ -289,19 +289,19 @@ description: "Task list — 009 Hub de Minijuegos + acople"
   - eventos `'impacto'` (golpe de ruido corto) y `'acople'` (acorde breve);
   - mute guardado en `sessionStorage` `interstellar:minijuegos:mute` con try/catch;
   - `cerrar()` hace `ctx.close()`.
-- [ ] T049 [US5] Conectar el audio en `js/minijuegos/acople/main.js` y en `minijuego-acople.html`:
+- [X] T049 [US5] Conectar el audio en `js/minijuegos/acople/main.js` y en `minijuego-acople.html`:
   - `reanudar()` en el primer keydown o clic;
   - `actualizar` en cada tick;
   - `evento` al acoplar o al fallar por impacto;
   - el botón `[data-accion="mute"]` alterna `setMute` y `aria-pressed` sin tocar el interruptor de música del header (FR-032);
   - `cerrar()` en `unmount`.
-- [ ] T050 [US5] Pausa por foco en `js/minijuegos/acople/main.js`: con `visibilitychange` (oculto) y `blur` de `window` durante `'en-curso'`, llamar a `pausar` y mostrar el overlay `'pausa'`. Con keydown o clic en pausa, `reanudar`. Esos listeners se remueven en `unmount`.
-- [ ] T051 [US5] Endurecer `unmount` en `js/minijuegos/acople/main.js` (R12):
+- [X] T050 [US5] Pausa por foco en `js/minijuegos/acople/main.js`: con `visibilitychange` (oculto) y `blur` de `window` durante `'en-curso'`, llamar a `pausar` y mostrar el overlay `'pausa'`. Con keydown o clic en pausa, `reanudar`. Esos listeners se remueven en `unmount`.
+- [X] T051 [US5] Endurecer `unmount` en `js/minijuegos/acople/main.js` (R12):
   - un flag `montajeId` / cancelado que se revisa **después** del `await import()`, para descartar un montaje obsoleto;
   - `mount()` llama primero a `unmount()`;
   - destruye en este orden: `game.destroy(true)`, los listeners (teclado, visibilidad, blur, botones), `audio.cerrar()` y anula las referencias;
   - es idempotente si se llama dos veces.
-- [ ] T052 [US5] Movimiento reducido en `css/minijuegos.css`: `@media (prefers-reduced-motion: reduce)` desactiva los fades y las animaciones de la intro y del resultado. Verificar que `escena-acople.js` respeta `reducirMovimiento` (campo estelar sin rotación y sacudida en 0).
+- [X] T052 [US5] Movimiento reducido en `css/minijuegos.css`: `@media (prefers-reduced-motion: reduce)` desactiva los fades y las animaciones de la intro y del resultado. Verificar que `escena-acople.js` respeta `reducirMovimiento` (campo estelar sin rotación y sacudida en 0).
 - [ ] T053 [US5] Validar `quickstart.md` §4 y §5:
   - la música se pausa y se restaura en los dos sentidos;
   - 10 ciclos sin recargar con exactamente 1 canvas y consola limpia;

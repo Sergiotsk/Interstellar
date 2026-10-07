@@ -9,6 +9,8 @@ import {
   estadoHud,
   nivelDeEstado,
   reintentar,
+  pausar,
+  reanudar,
 } from '../js/minijuegos/acople/logica/mision.js';
 
 const W = CONFIG.estacion.velAngular;
@@ -181,5 +183,31 @@ describe('acople/logica/mision.js — causas de fallo y reintento (US2)', () => 
     assert.equal(p.desenlace, null);
     assert.equal(p.nave.distancia, CONFIG.distanciaInicial);
     assert.equal(p.nave.combustible, CONFIG.combustible.inicial);
+  });
+});
+
+describe('acople/logica/mision.js — pausa por foco (US5, FR-036)', () => {
+  test('pausar desde en-curso pasa a pausada y suelta las acciones', () => {
+    const p = pausar(conAcciones(crearPartida(CONFIG, { conIntro: false }), new Set(['impulso'])));
+    assert.equal(p.fase, 'pausada');
+    assert.equal(p.acciones.size, 0);
+  });
+
+  test('en pausada la fisica no avanza', () => {
+    const p = pausar(sincronizada({ velAproximacion: 5 }));
+    const q = avanzar(p, 0.1, CONFIG);
+    assert.equal(q.nave.distancia, p.nave.distancia);
+    assert.equal(q.tiempo, p.tiempo);
+  });
+
+  test('reanudar vuelve a en-curso', () => {
+    assert.equal(reanudar(pausar(crearPartida(CONFIG, { conIntro: false }))).fase, 'en-curso');
+  });
+
+  test('pausar fuera de en-curso no tiene efecto', () => {
+    const intro = crearPartida(CONFIG);
+    assert.equal(pausar(intro), intro);
+    const ok = avanzar(sincronizada({ distancia: 0.01, velAproximacion: 2 }), 0.05, CONFIG);
+    assert.equal(pausar(ok), ok);
   });
 });

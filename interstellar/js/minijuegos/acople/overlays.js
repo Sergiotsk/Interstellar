@@ -86,5 +86,11 @@ export function crearOverlays(raiz) {
     recordEl.textContent = info.guardado ? '★ Nuevo récord' : `Récord vigente: ${formatoPuntaje(info.record.puntaje)}`;
   }
 
-  return { mostrar, pintarHud, pintarResultado };
+  // Si el motor no carga, el aviso pasa a explicar la falla en vez de pedir desktop.
+  function mostrarFalla() {
+    raiz.querySelector('#aviso-titulo').textContent = 'Simulador fuera de línea';
+    raiz.querySelector('[data-aviso-texto]').textContent = 'No se pudo cargar el simulador. Probá recargar la página.';
+  }
+
+  return { mostrar, pintarHud, pintarResultado, mostrarFalla };
 }
