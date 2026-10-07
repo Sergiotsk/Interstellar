@@ -318,20 +318,20 @@ description: "Task list — 009 Hub de Minijuegos + acople"
 
 ## Phase 8: Polish & Cross-Cutting Concerns
 
-- [ ] T054 Vendorizar Phaser:
+- [X] T054 Vendorizar Phaser:
   - descargar `https://cdn.jsdelivr.net/npm/phaser@4.2.1/dist/phaser.esm.min.js` a `js/vendor/phaser@4.2.1/phaser.esm.min.js`;
   - cambiar el import en `js/minijuegos/acople/main.js` a `'../../vendor/phaser@4.2.1/phaser.esm.min.js'` (es relativo al módulo: ojo con `../` vs `./`);
   - verificar en Network que no queden requests a CDN.
-- [ ] T055 [P] Documentar Phaser en `js/vendor/README.md` → "Contenido actual", con el mismo formato que GSAP: el archivo, el peso (1.377.611 B, ~345 KB gzip), el problema que resuelve, por qué no se usa nativo, que carga solo en `minijuego-acople.html` vía `import()`, la degradación (si el import falla, mensaje en el overlay de aviso) y el origen reproducible (jsDelivr npm `dist/phaser.esm.min.js`).
-- [ ] T056 [P] Escribir `docs/20-notas-de-codigo/minijuegos-acople.md` con el porqué largo:
+- [X] T055 [P] Documentar Phaser en `js/vendor/README.md` → "Contenido actual", con el mismo formato que GSAP: el archivo, el peso (1.377.611 B, ~345 KB gzip), el problema que resuelve, por qué no se usa nativo, que carga solo en `minijuego-acople.html` vía `import()`, la degradación (si el import falla, mensaje en el overlay de aviso) y el origen reproducible (jsDelivr npm `dist/phaser.esm.min.js`).
+- [X] T056 [P] Escribir `docs/20-notas-de-codigo/minijuegos-acople.md` con el porqué largo:
   - el modelo de 2 ejes y la vista desde la cabina (R2);
   - una escena más overlays DOM (R3);
   - el paso fijo (R4);
   - el silencio por ruta (R5);
   - el ciclo de vida y la cancelación del import (R12);
   - cómo sumar una misión nueva (FR-041).
-- [ ] T057 [P] Actualizar `docs/00-backlog/BACKLOG.md`: tachar "Vendorizar Phaser" (hecho), destrabar el ítem del README "Stack real" en lo que toca a Phaser, y anotar una entrada en la Bitácora con fecha.
-- [ ] T058 [P] Actualizar `DESIGN.md` con los componentes nuevos: tarjeta de bahía (disponible/bloqueada), HUD de navegación y overlays del simulador, con los tokens que usan.
+- [X] T057 [P] Actualizar `docs/00-backlog/BACKLOG.md`: tachar "Vendorizar Phaser" (hecho), destrabar el ítem del README "Stack real" en lo que toca a Phaser, y anotar una entrada en la Bitácora con fecha.
+- [X] T058 [P] Actualizar `DESIGN.md` con los componentes nuevos: tarjeta de bahía (disponible/bloqueada), HUD de navegación y overlays del simulador, con los tokens que usan.
 - [ ] T059 Prueba con 3 o más personas (`quickstart.md` §6). Si no se llega a la meta de SC-001, ajustar `js/minijuegos/acople/config.js` y volver a correr `pnpm test` (el balance tiene que seguir en verde).
 - [ ] T060 Cierre:
   - `pnpm test` completo en verde;

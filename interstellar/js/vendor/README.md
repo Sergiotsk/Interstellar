@@ -85,3 +85,23 @@ para este uso).
 curl -sL https://esm.sh/swup@4.10.0/es2022/swup.bundle.mjs -o swup.mjs
 ```
 
+
+### `phaser@4.2.1/`
+
+| Archivo | Qué es | Peso |
+|---|---|---|
+| `phaser.esm.min.js` | motor de juego 2D completo (loop, escenas, `Graphics`, partículas, cámara, escalado) | 1.377.611 B (~1,31 MB, **~345 KB gzip**) |
+
+- **Problema que resuelve**: el loop de juego, una escena, las partículas de los propulsores, los efectos de cámara (sacudida, flash) y el escalado del lienzo (`Scale.RESIZE`) del simulador de acople. Hacer todo eso a mano sobre Canvas 2D son cientos de líneas de infraestructura que no son el foco de la feature (spec 009, Principio I).
+- **Qué NO hace**: las reglas del juego. La física, el acople, el puntaje y la máquina de estados viven en `js/minijuegos/acople/logica/`, sin Phaser y testeadas con `node --test`. Phaser solo dibuja.
+- **Dónde carga**: únicamente en `minijuego-acople.html`, con `import()` dinámico desde `js/minijuegos/acople/main.js` (`'../../vendor/phaser@4.2.1/phaser.esm.min.js'`), después del primer paint. Nunca en el hub ni de forma global. En dispositivos táctiles sin teclado ni siquiera se descarga.
+- **Degradación**: si el `import()` falla, el overlay de aviso muestra "Simulador fuera de línea" con un enlace al hub.
+- **Versión**: 4.2.1 (`latest` al 2026-10-07). Se eligió frente a la 3.90 (~308 KB gzip), que es la última de la 3.x, porque es la línea viva. La medición está en `specs/009-minijuegos-acople/research.md` R1.
+
+**Origen (reproducible):** build ESM oficial del paquete npm, servido por jsDelivr y sin retoques (no trae `sourceMappingURL`):
+
+```
+curl -sL https://cdn.jsdelivr.net/npm/phaser@4.2.1/dist/phaser.esm.min.js -o phaser.esm.min.js
+```
+
+Es autocontenido (cero imports internos) y exporta `default` más los namespaces (`Game`, `Scene`, `AUTO`, `Scale`…). Phaser se distribuye bajo licencia MIT.

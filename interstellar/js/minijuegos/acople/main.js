@@ -19,7 +19,7 @@ import { crearOverlays, lecturasHud } from './overlays.js';
 import { crearEscenaAcople } from './escena-acople.js';
 import { crearAudioAcople } from './audio-acople.js';
 
-const URL_PHASER = 'https://cdn.jsdelivr.net/npm/phaser@4.2.1/dist/phaser.esm.min.js';
+const URL_PHASER = '../../vendor/phaser@4.2.1/phaser.esm.min.js';
 const DURACION_INTRO_MS = 8000;
 const INTERVALO_HUD_MS = 100;
 

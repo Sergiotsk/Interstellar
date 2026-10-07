@@ -445,6 +445,28 @@ three.js propia) y `creditos` (mínima). Antes vivía en `mundos.css` acotado a
 - **`prefers-reduced-motion`:** el reset global congela la deriva; las fugaces se
   **retiran** (`display: none`) para no quedar clavadas a mitad de vuelo.
 
+### 6.13 Bahía de minijuego (`.bahia-card`)
+
+`css/minijuegos.css` §3 (feature 009; antes vivía comentada en `en-desarrollo.css`). Hub `minijuegos.html`: `<ol class="minijuegos-bahias-grid">` de `<li><article class="bahia-card" data-estado>`. Es capa **cockpit**: teal como acento, nunca el naranja de Gargantúa.
+
+- Grilla `repeat(auto-fit, minmax(min(100%, 20rem), 1fr))`: 1 columna a 320px.
+- Tarjeta: `--color-superficie`, borde `--cockpit-bezel` y esquinas recortadas 12px (`clip-path`).
+- Jerarquía: `h1` de la página → `h2` "Bahías de simulación" → `h3` por bahía (`--font-hero-titulo`).
+- `data-estado="disponible"`: LED teal con halo, hover/focus-within con borde teal y `.bahia-accion` (tecla con `--recorte-tecla`).
+- `data-estado="bloqueada"`: `opacity: 0.62`, LED apagado (crema atenuado), "Próximamente", sin enlace ni `tabindex` y `aria-disabled="true"`. No es destino de foco.
+- `.bahia-record`: mono teal; lo pinta `js/minijuegos/hub.js` desde `localStorage`.
+
+### 6.14 Simulador de acople (`.acople`, overlays + HUD)
+
+`css/minijuegos.css` §2. El lienzo de Phaser va a pantalla completa de la sección (`height: calc(100svh - 5.5rem)`) y los overlays HTML van encima (`[data-pantalla]`, `position: absolute`). Todo es capa cockpit.
+
+- **HUD** (`.acople-hud`): panel arriba a la izquierda, `--instrumento-pantalla` translúcido, `<dl>` en `--font-instrumento` con valores teal y `tabular-nums`. Las etiquetas van en **inglés** (decisión de la spec 009).
+- **Estado** (`.acople-estado[data-nivel]`): `neutro` crema atenuado, `atencion` ámbar, `seguro` teal con halo, `peligro` rojo con LED parpadeante. La escena de Phaser usa los **mismos tokens**, leídos con `getComputedStyle`, para el anillo y la retícula.
+- **Paneles** (pausa, resultado, aviso): centrados, `width: min(92%, 30rem)`, esquinas recortadas 14px. Título en `--font-hero-titulo` teal, o rojo con `.acople-resultado--fallida`.
+- **Intro**: líneas en `--font-hero-titulo` que aparecen escalonadas (`acople-aparecer`) y la orden final en teal.
+- **`prefers-reduced-motion`**: intro sin animación, LED sin parpadeo, y en la escena ni sacudida de cámara ni rotación del campo estelar.
+- `.visualmente-oculto`: utilidad (clip 1px) para el `h1` del simulador.
+
 ---
 
 ## 7. Movimiento
