@@ -512,3 +512,30 @@
     transition: none;
   }
 }
+
+/* 5. Pantalla completa del simulador (FR-042) */
+.acople:fullscreen {
+  height: 100%;
+  min-height: 0;
+}
+
+.acople::backdrop {
+  background: var(--color-fondo);
+}
+
+.acople-pantalla {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 3;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.75rem;
+}
+
+.acople-pantalla[hidden] {
+  display: none;
+}
+
+.acople-pausa .acople-resultado-acciones {
+  justify-content: center;
+}

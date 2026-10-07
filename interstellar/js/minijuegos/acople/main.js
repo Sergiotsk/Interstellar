@@ -18,6 +18,7 @@ import { debeMostrarAvisoDesktop } from './logica/dispositivo.js';
 import { crearOverlays, lecturasHud } from './overlays.js';
 import { crearEscenaAcople } from './escena-acople.js';
 import { crearAudioAcople } from './audio-acople.js';
+import * as pantalla from './pantalla-completa.js';
 
 const URL_PHASER = '../../vendor/phaser@4.2.1/phaser.esm.min.js';
 const DURACION_INTRO_MS = 8000;
@@ -57,12 +58,14 @@ function enfocarLienzo(s) {
   s.lienzo.focus({ preventScroll: true });
 }
 
-function comenzarPartida(s) {
+// conGesto: solo dentro de un clic o una tecla el navegador concede la pantalla completa.
+function comenzarPartida(s, conGesto) {
   if (s.partida.fase !== 'intro') return;
   clearTimeout(s.temporizadorIntro);
   s.partida = iniciar(s.partida);
   s.ui.mostrar('hud');
   enfocarLienzo(s);
+  if (conGesto) pantalla.entrar(s.raiz);
 }
 
 // Reintentar reusa el Game ya creado: solo se reemplaza la partida (sin intro, FR-009).
@@ -71,6 +74,7 @@ function volverAJugar(s) {
   s.acciones = soltarTodo();
   s.ui.mostrar('hud');
   enfocarLienzo(s);
+  pantalla.entrar(s.raiz);
 }
 
 function pausarPartida(s) {
@@ -85,6 +89,14 @@ function reanudarPartida(s) {
   s.partida = reanudar(s.partida);
   s.ui.mostrar('hud');
   enfocarLienzo(s);
+  pantalla.entrar(s.raiz);
+}
+
+// Salir de pantalla completa en plena partida la pausa (FR-042).
+function alCambiarPantalla(s) {
+  const activa = pantalla.estaActiva(s.raiz);
+  s.ui.pintarPantalla(activa);
+  if (!activa) pausarPartida(s);
 }
 
 function terminarPartida(s) {
@@ -114,13 +126,15 @@ function alPresionar(s, e) {
   s.audio.reanudar();
   const fase = s.partida.fase;
   if (fase === 'pausada') {
+    // Esc acaba de sacar al jugador de pantalla completa: no reanuda. Tab recorre las opciones.
+    if (e.code === 'Escape' || e.code === 'Tab' || e.target.closest?.('a, button')) return;
     e.preventDefault();
     reanudarPartida(s);
     return;
   }
-  if (fase === 'intro' && ['Space', 'Enter', 'Escape'].includes(e.code)) {
+  if (fase === 'intro' && ['Space', 'Enter'].includes(e.code)) {
     e.preventDefault();
-    comenzarPartida(s);
+    comenzarPartida(s, true);
     return;
   }
   const terminada = fase === 'acoplada' || fase === 'fallida';
@@ -143,15 +157,16 @@ function alSoltar(s, e) {
 
 function alClic(s, e) {
   s.audio.reanudar();
-  if (s.partida.fase === 'pausada') {
-    reanudarPartida(s);
-    return;
-  }
   const boton = e.target.closest('[data-accion]');
   if (!boton) return;
   const accion = boton.dataset.accion;
-  if (accion === 'saltar-intro') comenzarPartida(s);
+  if (accion === 'saltar-intro') comenzarPartida(s, true);
   if (accion === 'reintentar') volverAJugar(s);
+  if (accion === 'seguir' && s.partida.fase === 'pausada') reanudarPartida(s);
+  if (accion === 'pantalla') {
+    if (pantalla.estaActiva(s.raiz)) pantalla.salir();
+    else pantalla.entrar(s.raiz);
+  }
   if (accion === 'mute') {
     s.audio.setMute(!s.audio.estaMuteado());
     boton.setAttribute('aria-pressed', String(s.audio.estaMuteado()));
@@ -190,7 +205,7 @@ export async function mount() {
   unmount();
   const raiz = document.querySelector('[data-acople]');
   if (!raiz) return;
-  const ui = crearOverlays(raiz);
+  const ui = crearOverlays(raiz, { pantallaCompleta: pantalla.soportada() });
 
   const aviso = debeMostrarAvisoDesktop({
     punteroGrueso: window.matchMedia('(pointer: coarse)').matches,
@@ -218,11 +233,13 @@ export async function mount() {
 
   raiz.querySelector('[data-accion="mute"]')?.setAttribute('aria-pressed', String(s.audio.estaMuteado()));
   ui.mostrar('intro');
-  s.temporizadorIntro = setTimeout(() => comenzarPartida(s), DURACION_INTRO_MS);
+  ui.pintarPantalla(false);
+  s.temporizadorIntro = setTimeout(() => comenzarPartida(s, false), DURACION_INTRO_MS);
   escuchar(s, window, 'keydown', (e) => alPresionar(s, e));
   escuchar(s, window, 'keyup', (e) => alSoltar(s, e));
   escuchar(s, raiz, 'click', (e) => alClic(s, e));
   escuchar(s, window, 'blur', () => pausarPartida(s));
+  escuchar(s, document, 'fullscreenchange', () => alCambiarPantalla(s));
   escuchar(s, document, 'visibilitychange', () => {
     if (document.hidden) pausarPartida(s);
   });
@@ -243,6 +260,7 @@ export function unmount() {
   if (!s) return;
   sesion = null; // primero: un import() en vuelo vera que la sesion ya no es la suya
   clearTimeout(s.temporizadorIntro);
+  if (pantalla.estaActiva(s.raiz)) pantalla.salir();
   if (s.game) {
     s.game.destroy(true);
     s.game = null;

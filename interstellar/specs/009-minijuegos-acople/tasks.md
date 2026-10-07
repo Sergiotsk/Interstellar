@@ -342,6 +342,31 @@ description: "Task list — 009 Hub de Minijuegos + acople"
 
 ---
 
+## Phase 9: Pantalla completa (FR-042, agregado post-implementación)
+
+**Goal**: jugar en pantalla completa desde el primer gesto, con control de salida. Salir en plena partida pausa el juego.
+
+**Independent Test**: `quickstart.md` §4b.
+
+- [X] T061 Agregar FR-042 y su edge case a `spec.md`, y la §4b a `quickstart.md`.
+- [X] T062 [P] Implementar `js/minijuegos/acople/pantalla-completa.js` (glue presentacional, sin estado propio):
+  - `entrar(el)` devuelve una promesa que nunca rechaza (`requestFullscreen` envuelto en catch);
+  - `salir()` solo si `document.fullscreenElement` existe;
+  - `estaActiva(el)`;
+  - `soportada()`.
+- [X] T063 [P] En `minijuego-acople.html` y `css/minijuegos.css`:
+  - botón fijo `.acople-pantalla[data-accion="pantalla"]` (arriba a la derecha, solo durante el HUD y la pausa), con el texto "Salir" o "Pantalla completa" según el estado y `aria-pressed`;
+  - el overlay de pausa suma `<button data-accion="seguir">Seguir</button>` y `<a href="minijuegos.html">Volver al hub</a>`;
+  - regla `.acople:fullscreen` (alto 100 % y fondo) y `::backdrop`.
+- [X] T064 En `js/minijuegos/acople/main.js` y `overlays.js`:
+  - entrar a pantalla completa en `comenzarPartida` (solo si vino de un gesto), `volverAJugar` y `reanudarPartida`;
+  - escuchar `fullscreenchange`: si se sale durante `'en-curso'`, llamar a `pausarPartida`, y actualizar siempre el botón;
+  - el clic en un enlace del overlay de pausa no reanuda;
+  - Esc no reanuda la pausa;
+  - `unmount` sale de pantalla completa si el elemento activo es el simulador.
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies

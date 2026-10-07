@@ -25,7 +25,7 @@ export function lecturasHud(partida, config) {
   };
 }
 
-export function crearOverlays(raiz) {
+export function crearOverlays(raiz, { pantallaCompleta = false } = {}) {
   const pantallas = [...raiz.querySelectorAll('[data-pantalla]')];
   const hud = Object.fromEntries([...raiz.querySelectorAll('[data-hud]')].map((el) => [el.dataset.hud, el]));
   const estadoEl = raiz.querySelector('[data-hud-estado]');
@@ -36,6 +36,7 @@ export function crearOverlays(raiz) {
   const recordEl = raiz.querySelector('[data-resultado-record]');
   const datos = Object.fromEntries([...raiz.querySelectorAll('[data-resultado]')].map((el) => [el.dataset.resultado, el]));
   const soloExito = [...raiz.querySelectorAll('[data-resultado-solo-exito]')];
+  const botonPantalla = raiz.querySelector('[data-accion="pantalla"]');
   let ultimoEstado = null;
 
   function mostrar(nombre) {
@@ -43,6 +44,8 @@ export function crearOverlays(raiz) {
       const p = el.dataset.pantalla;
       el.hidden = !(p === nombre || (p === 'hud' && nombre === 'pausa'));
     });
+    // El control de pantalla completa solo acompana a la partida y al resultado.
+    if (botonPantalla) botonPantalla.hidden = !pantallaCompleta || !['hud', 'resultado'].includes(nombre);
     // El foco va al titulo recien cuando la seccion es visible (un elemento hidden no acepta foco).
     if (nombre === 'resultado') titulo.focus();
   }
@@ -92,5 +95,11 @@ export function crearOverlays(raiz) {
     raiz.querySelector('[data-aviso-texto]').textContent = 'No se pudo cargar el simulador. Probá recargar la página.';
   }
 
-  return { mostrar, pintarHud, pintarResultado, mostrarFalla };
+  function pintarPantalla(activa) {
+    if (!botonPantalla) return;
+    botonPantalla.textContent = activa ? 'Salir ✕' : 'Pantalla completa';
+    botonPantalla.setAttribute('aria-label', activa ? 'Salir de pantalla completa' : 'Jugar en pantalla completa');
+  }
+
+  return { mostrar, pintarHud, pintarResultado, mostrarFalla, pintarPantalla };
 }

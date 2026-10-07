@@ -82,6 +82,19 @@ Provocar cada causa y confirmar el texto de la pantalla de resultado:
 8. Redimensionar la ventana en medio de una partida.
    - **Esperado**: el lienzo se adapta sin reiniciar la partida.
 
+## 4b. Pantalla completa (FR-042)
+
+1. Abrir el simulador y apretar "Saltear" o Espacio en la intro.
+   - **Esperado**: la sección del simulador ocupa toda la pantalla, sin header.
+2. Clic en "Salir" (arriba a la derecha) o Esc durante la partida.
+   - **Esperado**: sale de pantalla completa y la partida queda en pausa, con "Seguir" y "Volver al hub".
+3. "Seguir".
+   - **Esperado**: vuelve a pantalla completa y la partida continúa.
+4. Dejar que la intro termine sola (8 s, sin gesto).
+   - **Esperado**: se juega dentro de la página, sin errores, y el botón "Pantalla completa" permite entrar.
+5. "Volver al hub" desde la pausa.
+   - **Esperado**: navega al hub, no queda en pantalla completa y la consola está limpia.
+
 ## 5. Mobile y movimiento reducido (FR-034, FR-035)
 
 1. DevTools → Device toolbar (un teléfono, táctil) y abrir `minijuego-acople.html`.

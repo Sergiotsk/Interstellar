@@ -29,6 +29,8 @@
     <section class="acople" aria-labelledby="acople-titulo" data-acople>
       <div class="acople-lienzo" data-acople-lienzo tabindex="-1"></div>
 
+      <button type="button" class="acople-tecla acople-pantalla" data-accion="pantalla" hidden>Pantalla completa</button>
+
       <section class="acople-intro" data-pantalla="intro" aria-label="Introducción" hidden>
         <p class="acople-intro-linea acople-intro-linea--fecha">AÑO 2067</p>
         <p class="acople-intro-linea">La Tierra se muere.</p>
@@ -58,7 +60,11 @@
 
       <section class="acople-pausa" data-pantalla="pausa" aria-label="Pausa" hidden>
         <p class="acople-pausa-titulo">Pausa</p>
-        <p>Presioná una tecla o hacé clic para seguir.</p>
+        <p>Presioná una tecla o elegí cómo seguir.</p>
+        <div class="acople-resultado-acciones">
+          <button type="button" class="acople-tecla acople-tecla--principal" data-accion="seguir">Seguir</button>
+          <a class="acople-tecla" href="minijuegos.html">Volver al hub</a>
+        </div>
       </section>
 
       <section class="acople-resultado" data-pantalla="resultado" aria-labelledby="resultado-titulo" hidden>

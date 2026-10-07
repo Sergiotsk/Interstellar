@@ -115,6 +115,7 @@ El simulador es una página más del sitio: tiene el header y el footer, se lleg
 - **Autoplay de audio bloqueado**: si el navegador no permite sonido hasta un gesto del usuario, el juego arranca igual y el audio se habilita con la primera tecla o el primer clic.
 - **Récord corrupto o ajeno**: si el valor guardado no es un puntaje válido, se ignora y se trata como "sin registro".
 - **Equipo híbrido**: en una laptop con pantalla táctil y teclado se juega normalmente. El aviso aparece solo si no hay forma razonable de usar teclado.
+- **Pantalla completa negada o no soportada**: si el navegador rechaza la pantalla completa (sin gesto, sin soporte o bloqueada), se juega dentro de la página sin errores, y queda un control visible para intentar entrar de nuevo.
 - **Saltear la intro**: la intro se puede saltear con una tecla o un clic. En los reintentos no se vuelve a mostrar completa.
 
 ## Requirements *(mandatory)*
@@ -197,6 +198,11 @@ El simulador es una página más del sitio: tiene el header y el footer, se lleg
 - **FR-034**: En dispositivos táctiles sin teclado, el simulador MUST mostrar un aviso de nave con enlace al hub en lugar de iniciar la partida.
 - **FR-035**: El simulador MUST respetar la preferencia de movimiento reducido: sin sacudidas fuertes y con el movimiento del fondo atenuado.
 - **FR-036**: La partida MUST pausarse automáticamente al perder el foco u ocultarse la pestaña, y soltar todos los controles activos.
+- **FR-042**: El simulador MUST pasar a pantalla completa con el gesto que inicia la partida (Saltear o la tecla que cierra la intro, Reintentar, Seguir). El navegador solo la permite dentro de un gesto del usuario, así que no se puede forzar al cargar la página.
+  - MUST existir un control visible de salida durante la partida, además de Esc.
+  - Salir de pantalla completa durante la partida MUST pausarla y ofrecer "Seguir" (vuelve a pantalla completa) y "Volver al hub".
+  - Al dejar la página, la pantalla completa MUST cerrarse.
+  - *(Agregado el 2026-10-07, después de la implementación inicial.)*
 
 **Contenido y derechos**
 
