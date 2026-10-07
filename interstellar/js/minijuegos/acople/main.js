@@ -124,6 +124,9 @@ function tick(s, dt) {
   if (fase === 'en-curso' && (s.partida.fase === 'acoplada' || s.partida.fase === 'fallida')) terminarPartida(s);
 }
 
+// e.key y no e.code: el Enter del teclado numerico tiene code 'NumpadEnter' pero key 'Enter'.
+const esEnter = (e) => e.key === 'Enter';
+
 function alPresionar(s, e) {
   s.audio.reanudar();
   const fase = s.partida.fase;
@@ -134,19 +137,19 @@ function alPresionar(s, e) {
     reanudarPartida(s);
     return;
   }
-  if (fase === 'intro' && ['Space', 'Enter'].includes(e.code)) {
+  if (fase === 'intro' && (e.code === 'Space' || esEnter(e))) {
     e.preventDefault();
     comenzarPartida(s, true);
     return;
   }
   const terminada = fase === 'acoplada' || fase === 'fallida';
-  if (terminada && !e.repeat && (e.code === 'KeyR' || (e.code === 'Enter' && !e.target.closest?.('a, button')))) {
+  if (terminada && !e.repeat && (e.code === 'KeyR' || (esEnter(e) && !e.target.closest?.('a, button')))) {
     e.preventDefault();
     volverAJugar(s);
     return;
   }
   if (fase !== 'en-curso') return;
-  if (e.code === CONFIG.acople.tecla) {
+  if (e.key === CONFIG.acople.tecla) {
     e.preventDefault();
     if (!e.repeat) pedirAcople(s);
     return;
@@ -179,6 +182,10 @@ function alClic(s, e) {
   if (accion === 'saltar-intro') comenzarPartida(s, true);
   if (accion === 'reintentar') volverAJugar(s);
   if (accion === 'seguir' && s.partida.fase === 'pausada') reanudarPartida(s);
+  if (accion === 'acoplar' && s.partida.fase === 'en-curso') {
+    pedirAcople(s);
+    enfocarLienzo(s); // el foco vuelve al lienzo para seguir pilotando con el teclado
+  }
   if (accion === 'pantalla') {
     if (pantalla.estaActiva(s.raiz)) pantalla.salir();
     else pantalla.entrar(s.raiz);
