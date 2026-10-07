@@ -17,6 +17,7 @@ import {
 } from './logica/mision.js';
 import { guardarSiMejor } from './logica/record.js';
 import { debeMostrarAvisoDesktop } from './logica/dispositivo.js';
+import { instrumentos } from './logica/instrumentos.js';
 import { crearOverlays, lecturasHud } from './overlays.js';
 import { crearEscenaAcople } from './escena-acople.js';
 import { crearAudioAcople } from './audio-acople.js';
@@ -41,6 +42,14 @@ function leerPaleta() {
     texto: color('--color-texto'),
     fondo: color('--color-fondo'),
   };
+}
+
+// Medidas de la consola desde sus variables CSS (unica fuente): la consola puede estar oculta en la intro.
+function medidasConsola(raiz) {
+  const css = getComputedStyle(raiz);
+  const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+  const aPx = (valor) => (valor.trim().endsWith('rem') ? parseFloat(valor) * rem : parseFloat(valor));
+  return { alto: aPx(css.getPropertyValue('--alto-consola')) || 0, anchoMax: aPx(css.getPropertyValue('--ancho-consola')) || 0 };
 }
 
 function almacenamiento() {
@@ -119,7 +128,13 @@ function tick(s, dt) {
   const ahora = performance.now();
   if (ahora - s.ultimoHud > INTERVALO_HUD_MS || s.partida.fase !== fase) {
     s.ultimoHud = ahora;
-    s.ui.pintarHud(lecturasHud(s.partida, CONFIG), s.estado, nivelDeEstado(s.estado), indicacionHud(s.partida, s.estado));
+    s.ui.pintarHud(
+      lecturasHud(s.partida, CONFIG),
+      s.estado,
+      nivelDeEstado(s.estado),
+      indicacionHud(s.partida, s.estado),
+      instrumentos(s.partida, CONFIG),
+    );
   }
   if (fase === 'en-curso' && (s.partida.fase === 'acoplada' || s.partida.fase === 'fallida')) terminarPartida(s);
 }
@@ -206,6 +221,7 @@ async function crearJuego(s) {
     alAvanzar: (dt) => tick(s, dt),
     paleta: leerPaleta(),
     reducirMovimiento: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+    obtenerConsola: () => medidasConsola(s.raiz),
   });
   s.game = new Phaser.Game({
     type: Phaser.AUTO,

@@ -181,6 +181,7 @@ El simulador es una página más del sitio: tiene el header y el footer, se lleg
   - MISSION FAILED.
   Las etiquetas pueden ajustarse en el plan siempre que se mantengan consistentes.
 - **FR-021**: El HUD MUST mostrar Rotation Sync, Relative Velocity, Distance, Fuel y Docking Status, con estética de computadora de navegación: oscura, monoespaciada, de líneas finas, con la paleta de cockpit del sitio y sin estilo arcade genérico.
+  - *(Revisado el 2026-10-07)*: la telemetría vive en la **consola de la nave**, un tablero trapezoidal abajo al centro con **instrumentos analógicos**: diales de cero central para Rotation Sync y Alignment, barra para Relative Velocity, regla para Distance y barra segmentada para Fuel. Cada instrumento tiene su lectura digital y su propio LED de tolerancia (teal en tolerancia, ámbar fuera). El estado y la indicación van en la pantalla central.
 - **FR-022**: El estado seguro y el estado peligroso MUST distinguirse por **al menos dos canales además del texto**, elegidos entre color del HUD, cambio de LED o indicador, sonido de advertencia, vibración de la nave o de la cámara, y partículas.
 - **FR-023**: Las etiquetas técnicas del HUD MUST ir en inglés. La narrativa, los botones, las causas de fallo y los textos de resultado MUST ir en español.
 

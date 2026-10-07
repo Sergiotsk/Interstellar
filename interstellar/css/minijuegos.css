@@ -144,44 +144,290 @@
   to { opacity: 1; transform: none; }
 }
 
-/* HUD: computadora de navegacion */
-.acople-hud {
-  top: 1rem;
-  left: 1rem;
+/* Consola de la nave: tablero trapezoidal con instrumentos (telemetria simulando instrumental) */
+.acople {
+  --alto-consola: 9.5rem;
+  --ancho-consola: 64rem;
+}
+
+.acople-consola {
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: min(var(--ancho-consola), 94%);
+  height: var(--alto-consola);
+  display: grid;
+  grid-template-columns: 1fr minmax(12rem, 15rem) 1fr;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 3.5rem 0.7rem;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 22px, rgba(255, 255, 255, 0.025) 22px 23px),
+    linear-gradient(180deg, var(--cockpit-metal-alto), var(--cockpit-metal));
+  border-top: 1px solid color-mix(in srgb, var(--instrumento-teal) 32%, var(--cockpit-bezel));
+  box-shadow: inset 0 1px 0 var(--cockpit-bezel-brillo), inset 0 12px 24px rgba(0, 0, 0, 0.45);
+  clip-path: polygon(6% 0, 94% 0, 100% 100%, 0 100%);
+  font-size: 0.72rem;
+}
+
+.consola-grupo {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.instrumento {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 0.6rem;
-  max-width: 17rem;
-  padding: 0.75rem 0.9rem;
-  background: color-mix(in srgb, var(--instrumento-pantalla) 70%, transparent);
-  border: 1px solid color-mix(in srgb, var(--instrumento-teal) 35%, var(--cockpit-bezel));
-  font-size: 0.8rem;
+  align-items: center;
+  gap: 0.3rem;
 }
 
-.acople-hud-lecturas {
-  display: grid;
-  gap: 0.25rem;
-  margin: 0;
-  width: 100%;
-}
-
-.acople-hud-lecturas div {
+.instrumento dt {
   display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.acople-hud-lecturas dt {
+  align-items: center;
+  gap: 0.35rem;
   color: var(--color-texto-atenuado);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
 }
 
-.acople-hud-lecturas dd {
+.instrumento dd {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
   margin: 0;
+}
+
+.instrumento-valor {
+  min-width: 5.5em;
+  padding: 0.1rem 0.35rem;
+  text-align: center;
   color: var(--instrumento-teal);
+  background: var(--instrumento-pantalla);
+  border: 1px solid var(--cockpit-bezel);
   font-variant-numeric: tabular-nums;
+}
+
+/* LED por instrumento: teal en tolerancia, ambar fuera */
+.instrumento-led {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--led-ambar);
+}
+
+.instrumento[data-ok='true'] .instrumento-led {
+  background: var(--instrumento-teal);
+  box-shadow: 0 0 6px var(--instrumento-teal);
+}
+
+/* Dial de cero central: la aguja gira +-90deg con --valor en [-1,1]; el arco seguro mide --zona */
+.dial {
+  position: relative;
+  display: block;
+  width: 5.5rem;
+  aspect-ratio: 2 / 1;
+  overflow: hidden;
+  border: 1px solid var(--cockpit-bezel);
+  border-bottom: 0;
+  border-radius: 5.5rem 5.5rem 0 0;
+  background:
+    radial-gradient(circle at 50% 100%, var(--instrumento-pantalla) 58%, transparent 59%),
+    repeating-conic-gradient(from 270deg at 50% 100%, color-mix(in srgb, var(--color-texto) 45%, transparent) 0deg 1deg, transparent 1deg 18deg),
+    conic-gradient(from 270deg at 50% 100%,
+      transparent 0deg calc(90deg - var(--zona, 0.2) * 90deg),
+      color-mix(in srgb, var(--instrumento-teal) 55%, transparent) calc(90deg - var(--zona, 0.2) * 90deg) calc(90deg + var(--zona, 0.2) * 90deg),
+      transparent calc(90deg + var(--zona, 0.2) * 90deg) 180deg,
+      transparent 180deg),
+    var(--instrumento-pantalla);
+}
+
+.dial-aguja {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 2px;
+  height: 92%;
+  margin-left: -1px;
+  background: var(--color-texto);
+  transform-origin: 50% 100%;
+  transform: rotate(calc(var(--valor, 0) * 90deg));
+  transition: transform 0.12s linear;
+}
+
+.dial-aguja::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -0.3rem;
+  width: 0.6rem;
+  height: 0.6rem;
+  margin-left: -0.3rem;
+  border-radius: 50%;
+  background: var(--cockpit-bezel-brillo);
+}
+
+.instrumento[data-ok='false'] .dial-aguja {
+  background: var(--led-ambar);
+}
+
+/* Barra vertical: relleno --valor en [0,1], marcas de tolerancia y peligro */
+.barra {
+  position: relative;
+  display: block;
+  width: 1.1rem;
+  height: 3.6rem;
+  background: var(--instrumento-pantalla);
+  border: 1px solid var(--cockpit-bezel);
+}
+
+.barra-relleno {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(var(--valor, 0) * 100%);
+  background: var(--instrumento-teal);
+  transition: height 0.12s linear;
+}
+
+.instrumento[data-ok='false'] .barra-relleno {
+  background: var(--led-ambar);
+}
+
+.barra-marca {
+  position: absolute;
+  left: -0.25rem;
+  right: -0.25rem;
+  height: 1px;
+}
+
+.barra-marca--tol {
+  bottom: calc(var(--tol, 0) * 100%);
+  background: var(--instrumento-teal);
+}
+
+.barra-marca--peligro {
+  bottom: calc(var(--peligro, 0) * 100%);
+  background: var(--led-alerta);
+}
+
+.instrumento--segmentos .barra-relleno {
+  background: repeating-linear-gradient(0deg, var(--instrumento-teal) 0 5px, transparent 5px 7px);
+}
+
+.instrumento--segmentos[data-ok='false'] .barra-relleno {
+  background: repeating-linear-gradient(0deg, var(--led-alerta) 0 5px, transparent 5px 7px);
+}
+
+/* Regla horizontal: distancia restante; la franja izquierda es el rango de acople */
+.regla {
+  position: relative;
+  display: block;
+  width: 7rem;
+  height: 0.7rem;
+  background:
+    repeating-linear-gradient(90deg, color-mix(in srgb, var(--color-texto) 30%, transparent) 0 1px, transparent 1px 10%),
+    var(--instrumento-pantalla);
+  border: 1px solid var(--cockpit-bezel);
+}
+
+.regla-rango {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: calc(var(--rango, 0) * 100%);
+  background: color-mix(in srgb, var(--instrumento-teal) 40%, transparent);
+}
+
+.regla-relleno {
+  position: absolute;
+  top: 25%;
+  bottom: 25%;
+  left: 0;
+  width: calc(var(--valor, 1) * 100%);
+  background: var(--color-texto);
+  transition: width 0.12s linear;
+}
+
+.instrumento[data-ok='true'] .regla-relleno {
+  background: var(--instrumento-teal);
+}
+
+/* Pantalla central de estado */
+.consola-pantalla {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+  align-self: stretch;
+  padding: 0.5rem 0.7rem;
+  background: var(--instrumento-pantalla);
+  border: 1px solid var(--cockpit-bezel);
+  box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.6);
+}
+
+.consola-pantalla .acople-estado {
+  flex: 1;
+  border-top: 0;
+  padding-top: 0;
+  align-content: center;
+}
+
+.acople-estado-texto {
+  font-size: 0.95rem;
+}
+
+/* Interruptor de audio */
+.acople-interruptor {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-end;
+  gap: 0.4rem;
+  padding: 0;
+  font-family: var(--font-instrumento);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-texto-atenuado);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.acople-interruptor-palanca {
+  position: relative;
+  width: 1.6rem;
+  height: 0.8rem;
+  border: 1px solid var(--cockpit-bezel);
+  background: var(--cockpit-metal);
+}
+
+.acople-interruptor-palanca::after {
+  content: "";
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  width: 0.55rem;
+  height: calc(100% - 2px);
+  background: var(--instrumento-teal);
+}
+
+.acople-interruptor[aria-pressed='true'] .acople-interruptor-palanca::after {
+  left: 1px;
+  right: auto;
+  background: var(--color-texto-atenuado);
+}
+
+.acople-interruptor:focus-visible {
+  outline: 2px solid var(--instrumento-teal);
+  outline-offset: 2px;
 }
 
 .acople-estado {
@@ -236,7 +482,7 @@
 .acople-orden {
   position: absolute;
   left: 50%;
-  bottom: 22%;
+  bottom: calc(var(--alto-consola) + 1.25rem);
   z-index: 2;
   transform: translateX(-50%);
   margin: 0;
@@ -269,11 +515,6 @@
 
 @keyframes acople-latido {
   50% { box-shadow: 0 0 14px var(--instrumento-teal); }
-}
-
-.acople-tecla--mute {
-  padding: 0.3rem 0.6rem;
-  font-size: 0.7rem;
 }
 
 /* Pausa, resultado y aviso: paneles centrados */
@@ -554,6 +795,12 @@
   .acople-estado[data-nivel='peligro'] .acople-estado-led,
   .acople-orden {
     animation: none;
+  }
+
+  .dial-aguja,
+  .barra-relleno,
+  .regla-relleno {
+    transition: none;
   }
 
   .bahia-card {

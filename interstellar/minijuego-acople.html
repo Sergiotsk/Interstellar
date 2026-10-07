@@ -44,21 +44,66 @@
         <button type="button" class="acople-tecla" data-accion="saltar-intro">Saltear</button>
       </section>
 
-      <section class="acople-hud" data-pantalla="hud" aria-label="Instrumentos de navegación" hidden>
-        <dl class="acople-hud-lecturas">
-          <div><dt>Rotation Sync</dt><dd data-hud="sync">—</dd></div>
-          <div><dt>Alignment</dt><dd data-hud="alineacion">—</dd></div>
-          <div><dt>Relative Velocity</dt><dd data-hud="velocidad">—</dd></div>
-          <div><dt>Distance</dt><dd data-hud="distancia">—</dd></div>
-          <div><dt>Fuel</dt><dd data-hud="combustible">—</dd></div>
+      <section class="acople-consola" data-pantalla="hud" aria-label="Consola de navegación" hidden>
+        <dl class="consola-grupo">
+          <div class="instrumento instrumento--dial" data-instrumento="giro" data-ok="false">
+            <dt><span class="instrumento-led" aria-hidden="true"></span>Rotation Sync</dt>
+            <dd>
+              <span class="dial" aria-hidden="true"><span class="dial-aguja"></span></span>
+              <span class="instrumento-valor" data-hud="sync">—</span>
+            </dd>
+          </div>
+          <div class="instrumento instrumento--dial" data-instrumento="alineacion" data-ok="false">
+            <dt><span class="instrumento-led" aria-hidden="true"></span>Alignment</dt>
+            <dd>
+              <span class="dial" aria-hidden="true"><span class="dial-aguja"></span></span>
+              <span class="instrumento-valor" data-hud="alineacion">—</span>
+            </dd>
+          </div>
         </dl>
-        <p class="acople-estado" data-hud-estado data-nivel="neutro" aria-live="polite">
-          <span class="acople-estado-led" aria-hidden="true"></span>
-          <span class="acople-estado-etiqueta">Docking Status</span>
-          <span data-hud-estado-texto>APPROACHING</span>
-          <span class="acople-estado-indicacion" data-hud-indicacion></span>
-        </p>
-        <button type="button" class="acople-tecla acople-tecla--mute" data-accion="mute" aria-pressed="false">Sonido del simulador</button>
+
+        <div class="consola-pantalla">
+          <p class="acople-estado" data-hud-estado data-nivel="neutro" aria-live="polite">
+            <span class="acople-estado-led" aria-hidden="true"></span>
+            <span class="acople-estado-etiqueta">Docking Status</span>
+            <span class="acople-estado-texto" data-hud-estado-texto>APPROACHING</span>
+            <span class="acople-estado-indicacion" data-hud-indicacion></span>
+          </p>
+          <button type="button" class="acople-interruptor" data-accion="mute" aria-pressed="false">
+            <span class="acople-interruptor-palanca" aria-hidden="true"></span> Audio
+          </button>
+        </div>
+
+        <dl class="consola-grupo">
+          <div class="instrumento instrumento--barra" data-instrumento="velocidad" data-ok="true">
+            <dt><span class="instrumento-led" aria-hidden="true"></span>Rel. Velocity</dt>
+            <dd>
+              <span class="barra" aria-hidden="true">
+                <span class="barra-relleno"></span>
+                <span class="barra-marca barra-marca--tol"></span>
+                <span class="barra-marca barra-marca--peligro"></span>
+              </span>
+              <span class="instrumento-valor" data-hud="velocidad">—</span>
+            </dd>
+          </div>
+          <div class="instrumento instrumento--regla" data-instrumento="distancia" data-ok="false">
+            <dt><span class="instrumento-led" aria-hidden="true"></span>Distance</dt>
+            <dd>
+              <span class="regla" aria-hidden="true">
+                <span class="regla-rango"></span>
+                <span class="regla-relleno"></span>
+              </span>
+              <span class="instrumento-valor" data-hud="distancia">—</span>
+            </dd>
+          </div>
+          <div class="instrumento instrumento--barra instrumento--segmentos" data-instrumento="combustible" data-ok="true">
+            <dt><span class="instrumento-led" aria-hidden="true"></span>Fuel</dt>
+            <dd>
+              <span class="barra" aria-hidden="true"><span class="barra-relleno"></span></span>
+              <span class="instrumento-valor" data-hud="combustible">—</span>
+            </dd>
+          </div>
+        </dl>
       </section>
 
       <section class="acople-pausa" data-pantalla="pausa" aria-label="Pausa" hidden>

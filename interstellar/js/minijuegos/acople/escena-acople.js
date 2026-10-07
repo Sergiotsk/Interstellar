@@ -7,7 +7,8 @@ const RADIO_HUB = 22;
 const ESCALA_PANTALLA = 0.42; // radio del anillo en contacto, como fraccion del lado menor
 const SUAVIZADO_DISTANCIA = 80; // u: cuanto tarda la estacion en "crecer" al acercarse
 
-export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNivel, paleta, reducirMovimiento }) {
+// obtenerConsola() -> { alto, anchoMax } en px: la consola es DOM; la escena solo necesita su silueta.
+export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNivel, paleta, reducirMovimiento, obtenerConsola }) {
   return class EscenaAcople extends Phaser.Scene {
     constructor() {
       super('acople');
@@ -23,7 +24,6 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       this.estrellas = this.add.graphics();
       this.estacion = this.add.graphics();
       this.reticula = this.add.graphics();
-      this.nave = this.add.graphics();
       this.crearPropulsores();
       this.dibujarEstrellas();
       this.reubicar(this.scale.width, this.scale.height);
@@ -50,20 +50,28 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       };
       this.rcsIzquierdo = this.add.particles(0, 0, 'acople-chispa', { ...base, speed: { min: 90, max: 160 }, angle: { min: 190, max: 220 } });
       this.rcsDerecho = this.add.particles(0, 0, 'acople-chispa', { ...base, speed: { min: 90, max: 160 }, angle: { min: -40, max: -10 } });
-      this.motor = this.add.particles(0, 0, 'acople-chispa', { ...base, tint: paleta.teal, speed: { min: 140, max: 240 }, angle: { min: 80, max: 100 } });
+      // Motor principal: dos toberas a los costados de la consola, escape hacia afuera y abajo.
+      this.motorIzquierdo = this.add.particles(0, 0, 'acople-chispa', { ...base, tint: paleta.teal, speed: { min: 140, max: 240 }, angle: { min: 125, max: 150 } });
+      this.motorDerecho = this.add.particles(0, 0, 'acople-chispa', { ...base, tint: paleta.teal, speed: { min: 140, max: 240 }, angle: { min: 30, max: 55 } });
       this.retro = this.add.particles(0, 0, 'acople-chispa', { ...base, speed: { min: 120, max: 200 }, angle: { min: 255, max: 285 } });
     }
 
     reubicar(ancho, alto) {
-      this.centro = { x: ancho / 2, y: alto / 2 };
-      this.ladoMenor = Math.min(ancho, alto);
-      this.estrellas.setPosition(this.centro.x, this.centro.y);
+      // El espacio "util" es lo que queda por encima de la consola: ahi se centra la estacion.
+      const consola = obtenerConsola();
+      const techo = alto - consola.alto;
+      const anchoConsola = Math.min(consola.anchoMax, ancho * 0.94);
+      const cx = ancho / 2;
+      this.centro = { x: cx, y: techo / 2 };
+      this.ladoMenor = Math.min(ancho, techo);
+      this.estrellas.setPosition(cx, alto / 2);
       this.estacion.setPosition(this.centro.x, this.centro.y);
-      this.dibujarNave(ancho, alto);
-      this.rcsIzquierdo.setPosition(this.centro.x - this.ladoMenor * 0.22, alto - 34);
-      this.rcsDerecho.setPosition(this.centro.x + this.ladoMenor * 0.22, alto - 34);
-      this.motor.setPosition(this.centro.x, alto - 8);
-      this.retro.setPosition(this.centro.x, alto - this.ladoMenor * 0.12);
+      // Esquinas superiores del trapecio (clip-path 6%-94%) y mitad de sus lados.
+      this.rcsIzquierdo.setPosition(cx - anchoConsola * 0.44, techo);
+      this.rcsDerecho.setPosition(cx + anchoConsola * 0.44, techo);
+      this.motorIzquierdo.setPosition(cx - anchoConsola * 0.47, techo + consola.alto * 0.5);
+      this.motorDerecho.setPosition(cx + anchoConsola * 0.47, techo + consola.alto * 0.5);
+      this.retro.setPosition(cx, techo);
       if (this.radioEstrellas < Math.hypot(ancho, alto) / 2) this.dibujarEstrellas();
     }
 
@@ -111,23 +119,6 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       g.fillRect(-4, -RADIO_HUB - 12, 8, 14);
     }
 
-    dibujarNave(ancho, alto) {
-      const g = this.nave;
-      const cx = ancho / 2;
-      const ala = this.ladoMenor * 0.3;
-      g.clear();
-      g.fillStyle(paleta.fondo, 0.92);
-      g.lineStyle(2, paleta.texto, 0.55);
-      g.beginPath();
-      g.moveTo(cx - ala, alto);
-      g.lineTo(cx - ala * 0.35, alto - this.ladoMenor * 0.1);
-      g.lineTo(cx + ala * 0.35, alto - this.ladoMenor * 0.1);
-      g.lineTo(cx + ala, alto);
-      g.closePath();
-      g.fillPath();
-      g.strokePath();
-    }
-
     dibujarReticula(radioHub, nivel) {
       const g = this.reticula;
       const { x, y } = this.centro;
@@ -148,7 +139,8 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       };
       encender(this.rcsIzquierdo, activo && acciones.has('rotarDerecha'));
       encender(this.rcsDerecho, activo && acciones.has('rotarIzquierda'));
-      encender(this.motor, activo && acciones.has('impulso'));
+      encender(this.motorIzquierdo, activo && acciones.has('impulso'));
+      encender(this.motorDerecho, activo && acciones.has('impulso'));
       encender(this.retro, activo && acciones.has('freno'));
     }
 

@@ -460,7 +460,11 @@ three.js propia) y `creditos` (mínima). Antes vivía en `mundos.css` acotado a
 
 `css/minijuegos.css` §2. El lienzo de Phaser va a pantalla completa de la sección (`height: calc(100svh - 5.5rem)`) y los overlays HTML van encima (`[data-pantalla]`, `position: absolute`). Todo es capa cockpit.
 
-- **HUD** (`.acople-hud`): panel arriba a la izquierda, `--instrumento-pantalla` translúcido, `<dl>` en `--font-instrumento` con valores teal y `tabular-nums`. Las etiquetas van en **inglés** (decisión de la spec 009).
+- **Consola de la nave** (`.acople-consola`): tablero trapezoidal abajo al centro (`clip-path` 6%–94%, metal del cockpit). Medidas en `--alto-consola` / `--ancho-consola` (las lee también la escena de Phaser). Las etiquetas van en **inglés** (decisión de la spec 009). Tiene tres zonas:
+  - izquierda: **diales de cero central** (`.dial`: semicírculo con `conic-gradient`, arco seguro de ancho `--zona` y `.dial-aguja` rotada `--valor × 90deg`) para Rotation Sync y Alignment;
+  - centro: **pantalla** de estado e indicación, con el interruptor de audio (`.acople-interruptor`);
+  - derecha: **barra** vertical de velocidad con marcas `--tol` (teal) y `--peligro` (rojo), **regla** de distancia con franja del rango de acople y **barra segmentada** de combustible.
+  - Cada instrumento lleva lectura digital (`.instrumento-valor`) y **LED propio** según `data-ok`. Fuera de tolerancia, la aguja y el relleno pasan a ámbar.
 - **Estado** (`.acople-estado[data-nivel]`): `neutro` crema atenuado, `atencion` ámbar, `seguro` teal con halo, `peligro` rojo con LED parpadeante. La escena de Phaser usa los **mismos tokens**, leídos con `getComputedStyle`, para el anillo y la retícula.
 - **Paneles** (pausa, resultado, aviso): centrados, `width: min(92%, 30rem)`, esquinas recortadas 14px. Título en `--font-hero-titulo` teal, o rojo con `.acople-resultado--fallida`.
 - **Intro**: líneas en `--font-hero-titulo` que aparecen escalonadas (`acople-aparecer`) y la orden final en teal.

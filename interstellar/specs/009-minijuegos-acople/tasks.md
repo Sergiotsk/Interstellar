@@ -391,6 +391,18 @@ description: "Task list — 009 Hub de Minijuegos + acople"
 
 ---
 
+## Phase 11: Telemetría en la consola de la nave (FR-021 revisado)
+
+**Goal**: los datos dejan de flotar en un panel y pasan a la consola de la nave, simulando instrumental.
+
+- [X] T070 Test (rojo) `tests/acople-instrumentos.test.js` e implementar `js/minijuegos/acople/logica/instrumentos.js`: lecturas normalizadas (agujas en [-1,1] con signo, barras en [0,1], zonas seguras, LEDs por tolerancia).
+- [X] T071 Reemplazar `.acople-hud` por `.acople-consola` en `minijuego-acople.html`: dos `<dl>` de instrumentos (los diales dentro del `<dd>`, porque el HTML válido no admite otra cosa en un `div` de `dl`), una pantalla central con el estado y el interruptor de audio.
+- [X] T072 CSS de la consola en `css/minijuegos.css`: trapecio con `clip-path`, diales con `conic-gradient` + aguja por `--valor`, barras y regla, LEDs, `--alto-consola` / `--ancho-consola` como única fuente de medidas.
+- [X] T073 La escena ya no dibuja la silueta de la nave: se centra en el espacio sobre la consola (`obtenerConsola`), con el RCS en las esquinas del trapecio, el motor a los costados y la retro arriba. `overlays.pintarInstrumentos` pinta las variables CSS.
+- [ ] T074 Playtest de la legibilidad de los instrumentos en movimiento.
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies

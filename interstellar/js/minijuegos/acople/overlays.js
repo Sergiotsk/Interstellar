@@ -38,6 +38,7 @@ export function crearOverlays(raiz, { pantallaCompleta = false } = {}) {
   const soloExito = [...raiz.querySelectorAll('[data-resultado-solo-exito]')];
   const botonPantalla = raiz.querySelector('[data-accion="pantalla"]');
   const indicacionEl = raiz.querySelector('[data-hud-indicacion]');
+  const tablero = Object.fromEntries([...raiz.querySelectorAll('[data-instrumento]')].map((el) => [el.dataset.instrumento, el]));
   const ordenEl = raiz.querySelector('[data-orden-acople]');
   let ultimaIndicacion = null;
   let ultimoEstado = null;
@@ -54,7 +55,24 @@ export function crearOverlays(raiz, { pantallaCompleta = false } = {}) {
     if (nombre === 'resultado') titulo.focus();
   }
 
-  function pintarHud(lecturas, estado, nivel, indicacion = '') {
+  function fijar(nombre, variables, ok) {
+    const el = tablero[nombre];
+    if (!el) return;
+    Object.entries(variables).forEach(([k, v]) => el.style.setProperty(`--${k}`, v.toFixed(4)));
+    el.dataset.ok = String(ok);
+  }
+
+  // Instrumentos de la consola: agujas y barras por variables CSS, LED por tolerancia.
+  function pintarInstrumentos(i) {
+    fijar('giro', { valor: i.giro, zona: i.giroZona }, i.giroOk);
+    fijar('alineacion', { valor: i.alineacion, zona: i.alineacionZona }, i.alineacionOk);
+    fijar('velocidad', { valor: i.velocidad, tol: i.velocidadTol, peligro: i.velocidadPeligro }, i.velocidadOk);
+    fijar('distancia', { valor: i.distancia, rango: i.distanciaRango }, i.enRango);
+    fijar('combustible', { valor: i.combustible }, i.combustible > 0.2);
+  }
+
+  function pintarHud(lecturas, estado, nivel, indicacion = '', inst = null) {
+    if (inst) pintarInstrumentos(inst);
     Object.entries(lecturas).forEach(([k, v]) => {
       if (hud[k] && hud[k].textContent !== v) hud[k].textContent = v;
     });
