@@ -71,6 +71,11 @@ function soltarControles(s) {
   s.mandos?.soltar();
 }
 
+// Teclas mas dedos: lo que mueve la nave es lo mismo que hace sonar los propulsores.
+function accionesEfectivas(s) {
+  return new Set([...s.acciones, ...accionesTactiles(s.toques)]);
+}
+
 // Pulso haptico en tactil; en iOS vibrate no existe y queda en no-op.
 function vibrar(s, patron) {
   if (s.modo === 'tactil' && !s.audio.estaMuteado()) navigator.vibrate?.(patron);
@@ -109,7 +114,7 @@ function pausarPartida(s) {
   if (s.partida.fase !== 'en-curso') return;
   s.partida = pausar(s.partida);
   soltarControles(s);
-  s.audio.actualizar(s.estado, s.acciones, false, s.partida.nave.distancia);
+  s.audio.actualizar(s.estado, accionesEfectivas(s), false, s.partida.nave.distancia);
   s.ui.mostrar('pausa');
 }
 
@@ -194,13 +199,13 @@ function alPresionarEnEditor(s, e) {
 function tick(s, dt) {
   const fase = s.partida.fase;
   const estadoAnterior = s.estado;
-  const acciones = new Set([...s.acciones, ...accionesTactiles(s.toques)]);
+  const acciones = accionesEfectivas(s);
   s.partida = avanzar(conAcciones(s.partida, acciones), dt, CONFIG);
   s.estado = estadoHud(s.partida, CONFIG);
   if (s.estado === 'DOCKING RANGE' && estadoAnterior !== 'DOCKING RANGE' && s.partida.fase === 'en-curso') {
     s.audio.evento('lock-in');
   }
-  s.audio.actualizar(s.estado, s.acciones, s.partida.fase === 'en-curso', s.partida.nave.distancia);
+  s.audio.actualizar(s.estado, acciones, s.partida.fase === 'en-curso', s.partida.nave.distancia);
   const ahora = performance.now();
   if (ahora - s.ultimoHud > INTERVALO_HUD_MS || s.partida.fase !== fase) {
     s.ultimoHud = ahora;
@@ -392,7 +397,7 @@ export async function mount() {
     editor: null,
     girando: false,
     duracionIntro: DURACION_INTRO_MS,
-    audio: crearAudioAcople(),
+    audio: crearAudioAcople(CONFIG.audio[modo]),
     ultimoHud: 0,
     game: null,
     temporizadorIntro: null,

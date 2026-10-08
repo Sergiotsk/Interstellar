@@ -1,8 +1,9 @@
 // Sonido del simulador sintetizado con Web Audio, sin archivos (research R6). Placeholders hasta el sonido final.
 // El AudioContext nace en el primer gesto del jugador: asi no choca con el bloqueo de autoplay.
 
+import { CONFIG } from './config.js';
+
 const CLAVE_MUTE = 'interstellar:minijuegos:mute';
-const VOLUMEN = 0.6;
 const SUAVE = 0.05; // constante de tiempo de los cambios de ganancia (s)
 
 function leerMute() {
@@ -28,7 +29,8 @@ function bufferRuido(ctx, segundos) {
   return buffer;
 }
 
-export function crearAudioAcople() {
+// perfil: mezcla de CONFIG.audio segun el modo de entrada (en tactil, apta para parlantes de celular).
+export function crearAudioAcople(perfil = CONFIG.audio.teclado) {
   let ctx = null;
   let maestro = null;
   let propulsor = null;
@@ -41,8 +43,19 @@ export function crearAudioAcople() {
     if (!Ctx) return;
     ctx = new Ctx();
     maestro = ctx.createGain();
-    maestro.gain.value = muteado ? 0 : VOLUMEN;
-    maestro.connect(ctx.destination);
+    maestro.gain.value = muteado ? 0 : perfil.volumen;
+    if (perfil.compresor) {
+      // Con el volumen alto, el compresor evita que el acople y el golpe saturen el parlante.
+      const compresor = ctx.createDynamicsCompressor();
+      compresor.threshold.value = -20;
+      compresor.knee.value = 12;
+      compresor.ratio.value = 4;
+      compresor.attack.value = 0.005;
+      compresor.release.value = 0.2;
+      maestro.connect(compresor).connect(ctx.destination);
+    } else {
+      maestro.connect(ctx.destination);
+    }
 
     const ambiente = ctx.createGain();
     ambiente.gain.value = 0.05;
@@ -60,7 +73,7 @@ export function crearAudioAcople() {
     fuente.loop = true;
     const filtro = ctx.createBiquadFilter();
     filtro.type = 'lowpass';
-    filtro.frequency.value = 900;
+    filtro.frequency.value = perfil.propulsorFiltro;
     propulsor = ctx.createGain();
     propulsor.gain.value = 0;
     fuente.connect(filtro).connect(propulsor).connect(maestro);
@@ -79,7 +92,7 @@ export function crearAudioAcople() {
     canalMusica.gain.value = 0;
     filtroMusica = ctx.createBiquadFilter();
     filtroMusica.type = 'lowpass';
-    filtroMusica.frequency.value = 450;
+    filtroMusica.frequency.value = perfil.musicaFiltro[0];
     filtroMusica.Q.value = 2.2;
     canalMusica.connect(filtroMusica).connect(maestro);
   }
@@ -190,8 +203,10 @@ export function crearAudioAcople() {
       if (enCurso) {
         // Apertura gradual de filtro y ganancia según distancia
         const cercania = Math.max(0, Math.min(1, (180 - distancia) / 150));
-        const freqFiltro = 450 + cercania * 2200; // 450 Hz -> 2650 Hz
-        const volMusica = 0.14 + cercania * 0.14;
+        const [filtroLejos, filtroCerca] = perfil.musicaFiltro;
+        const [volLejos, volCerca] = perfil.musicaVolumen;
+        const freqFiltro = filtroLejos + cercania * (filtroCerca - filtroLejos);
+        const volMusica = volLejos + cercania * (volCerca - volLejos);
         filtroMusica.frequency.setTargetAtTime(freqFiltro, t, 0.2);
         canalMusica.gain.setTargetAtTime(volMusica, t, 0.2);
 
@@ -350,7 +365,7 @@ export function crearAudioAcople() {
   function setMute(on) {
     muteado = on;
     guardarMute(on);
-    if (maestro) maestro.gain.setTargetAtTime(on ? 0 : VOLUMEN, ctx.currentTime, SUAVE);
+    if (maestro) maestro.gain.setTargetAtTime(on ? 0 : perfil.volumen, ctx.currentTime, SUAVE);
   }
 
   function cerrar() {
