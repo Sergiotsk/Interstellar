@@ -29,8 +29,8 @@ description: "Task list — 010 Simulador de acople jugable en mobile"
 
 **Purpose**: base de marcado y estilos que comparten todas las historias.
 
-- [ ] T001 En `minijuego-acople.html`, cambiar el meta viewport a `width=device-width, initial-scale=1, viewport-fit=cover` (R8, FR-018).
-- [ ] T002 [P] En `css/minijuegos.css`, agregar las reglas de visibilidad por modo (contrato §6):
+- [X] T001 En `minijuego-acople.html`, cambiar el meta viewport a `width=device-width, initial-scale=1, viewport-fit=cover` (R8, FR-018).
+- [X] T002 [P] En `css/minijuegos.css`, agregar las reglas de visibilidad por modo (contrato §6):
   - `.acople:not([data-entrada="tactil"]) [data-solo="tactil"] { display: none }` y la inversa para `teclado`;
   - `touch-action: manipulation` en `.acople` (R8).
 
@@ -42,7 +42,7 @@ description: "Task list — 010 Simulador de acople jugable en mobile"
 
 **⚠️ CRITICAL**: ninguna historia empieza antes de esta fase.
 
-- [ ] T003 Reescribir `tests/acople-dispositivo.test.js` para `modoEntrada` (en ROJO). Casos:
+- [X] T003 Reescribir `tests/acople-dispositivo.test.js` para `modoEntrada` (en ROJO). Casos:
   - solo puntero grueso → `'tactil'`;
   - puntero grueso + fino (híbrido) → `'teclado'`;
   - solo fino → `'teclado'`;
@@ -50,8 +50,8 @@ description: "Task list — 010 Simulador de acople jugable en mobile"
   - `forzado: 'tactil'` en desktop → `'tactil'`;
   - `forzado: 'teclado'` en táctil → `'teclado'`;
   - `forzado` con un valor inválido (`'x'`, `null`) → se ignora.
-- [ ] T004 Implementar `modoEntrada` en `js/minijuegos/acople/logica/dispositivo.js` y **eliminar** `debeMostrarAvisoDesktop` (T003 en VERDE).
-- [ ] T005 En `js/minijuegos/acople/main.js` → `mount()`:
+- [X] T004 Implementar `modoEntrada` en `js/minijuegos/acople/logica/dispositivo.js` y **eliminar** `debeMostrarAvisoDesktop` (T003 en VERDE).
+- [X] T005 En `js/minijuegos/acople/main.js` → `mount()`:
   - leer `new URLSearchParams(location.search).get('entrada')`;
   - calcular `s.modo = modoEntrada({...})` con los mismos `matchMedia` de hoy;
   - poner `raiz.dataset.entrada = s.modo`;
@@ -72,7 +72,7 @@ description: "Task list — 010 Simulador de acople jugable en mobile"
 
 ### Tests for User Story 1 (TDD: escribir primero, ver FALLAR) ⚠️
 
-- [ ] T006 [P] [US1] Crear `tests/acople-controles-tactiles.test.js` (en ROJO). Casos:
+- [X] T006 [P] [US1] Crear `tests/acople-controles-tactiles.test.js` (en ROJO). Casos:
   - `tocar` agrega un par y no muta el mapa original;
   - con dos dedos en acciones distintas, `accionesTactiles` devuelve ambas (multitouch, FR-006);
   - con dos dedos en la misma acción, levantar uno la mantiene y levantar el otro la quita;
@@ -80,32 +80,32 @@ description: "Task list — 010 Simulador de acople jugable en mobile"
   - una acción inválida se ignora;
   - `levantarTodo` devuelve un mapa vacío;
   - las acciones válidas son exactamente los valores de `CONFIG.teclas` (FR-007).
-- [ ] T007 [P] [US1] En `tests/acople-mision.test.js`, agregar el caso (en ROJO): `indicacionHud(p, 'DOCKING RANGE', 'tactil')` → `'TAP TO DOCK'`. Sin modo sigue dando `'PRESS ENTER TO DOCK'`, y el rechazo no cambia con el modo.
+- [X] T007 [P] [US1] En `tests/acople-mision.test.js`, agregar el caso (en ROJO): `indicacionHud(p, 'DOCKING RANGE', 'tactil')` → `'TAP TO DOCK'`. Sin modo sigue dando `'PRESS ENTER TO DOCK'`, y el rechazo no cambia con el modo.
 
 ### Implementation for User Story 1
 
-- [ ] T008 [US1] Crear `js/minijuegos/acople/logica/controles-tactiles.js` con `tocar`, `levantar`, `levantarTodo` y `accionesTactiles` (data-model "Toques"). Las acciones válidas salen de `Object.values(CONFIG.teclas)`. T006 en VERDE.
-- [ ] T009 [US1] En `js/minijuegos/acople/logica/mision.js`, agregar el parámetro `modo = 'teclado'` a `indicacionHud` (T007 en VERDE).
-- [ ] T010 [US1] Crear `js/minijuegos/acople/controles-tactiles.js` con `conectarControles(raiz, { alCambiar, alTocar })` (contrato §3):
+- [X] T008 [US1] Crear `js/minijuegos/acople/logica/controles-tactiles.js` con `tocar`, `levantar`, `levantarTodo` y `accionesTactiles` (data-model "Toques"). Las acciones válidas salen de `Object.values(CONFIG.teclas)`. T006 en VERDE.
+- [X] T009 [US1] En `js/minijuegos/acople/logica/mision.js`, agregar el parámetro `modo = 'teclado'` a `indicacionHud` (T007 en VERDE).
+- [X] T010 [US1] Crear `js/minijuegos/acople/controles-tactiles.js` con `conectarControles(raiz, { alCambiar, alTocar })` (contrato §3):
   - `pointerdown` llama a `releasePointerCapture`, a `tocar` y a `alTocar`, y marca `data-activo`;
   - `pointerup`, `pointercancel` y `pointerleave` llaman a `levantar`;
   - `contextmenu` hace `preventDefault`;
   - el estado vive en un `Map` local que se pasa a `alCambiar`;
   - devuelve una función de limpieza y expone `soltar()`, que vacía el mapa y limpia `data-activo`.
-- [ ] T011 [US1] En `minijuego-acople.html`, dentro del bloque del HUD:
+- [X] T011 [US1] En `minijuego-acople.html`, dentro del bloque del HUD:
   - agregar `<div class="acople-mandos acople-mandos--izq" data-solo="tactil">` con los botones `rotarIzquierda` (◀) y `rotarDerecha` (▶);
   - agregar `<div class="acople-mandos acople-mandos--der" data-solo="tactil">` con `impulso` (▲) y `freno` (▼);
   - agregar el botón de pausa `<button data-accion="pausar" data-solo="tactil" aria-label="Pausar">II</button>`.
 
   Los botones van con `type="button"`, `data-control`, `aria-label` y `tabindex="-1"` (contrato §2). La visibilidad tiene que acompañar a la del HUD: decidir si van dentro de la sección `data-pantalla="hud"` o se muestran desde `overlays.mostrar`.
-- [ ] T012 [US1] En `css/minijuegos.css`, estilar los mandos:
+- [X] T012 [US1] En `css/minijuegos.css`, estilar los mandos:
   - `.acople-mandos` absolutos en las esquinas inferiores, a los costados de la consola, con `env(safe-area-inset-left/right/bottom)`;
   - botones de al menos `3rem`, con la silueta de `.acople-tecla`;
   - `touch-action: none`, `user-select: none` y `-webkit-touch-callout: none`;
   - estado `[data-activo="true"]` con brillo teal (FR-010, FR-011);
   - el botón de pausa arriba a la izquierda;
   - en reduced motion, sin transiciones.
-- [ ] T013 [US1] En `js/minijuegos/acople/main.js`:
+- [X] T013 [US1] En `js/minijuegos/acople/main.js`:
   - si `s.modo === 'tactil'`, conectar los controles al montar y registrar la limpieza en `s.limpiezas`;
   - guardar `s.toques`;
   - en `tick`, pasar a `conAcciones` la unión de `s.acciones` y `accionesTactiles(s.toques)`;
@@ -113,7 +113,7 @@ description: "Task list — 010 Simulador de acople jugable en mobile"
   - en `alClic`, agregar `pausar` → `pausarPartida`;
   - en `tick`, pasar `s.modo` a `indicacionHud`;
   - con `navigator.vibrate?.()`, vibrar al acoplar y en el rechazo, solo en táctil y sin mute (R11).
-- [ ] T014 [US1] En la intro de `minijuego-acople.html`, marcar el `<p class="acople-intro-controles">` actual con `data-solo="teclado"` y agregar uno con `data-solo="tactil"` ("◀ ▶ rotar · ▲ impulso · ▼ freno · tocá la orden para acoplar") (FR-019).
+- [X] T014 [US1] En la intro de `minijuego-acople.html`, marcar el `<p class="acople-intro-controles">` actual con `data-solo="teclado"` y agregar uno con `data-solo="tactil"` ("◀ ▶ rotar · ▲ impulso · ▼ freno · tocá la orden para acoplar") (FR-019).
 
 **Checkpoint**: US1 completa. Con `?entrada=tactil` se pilotea con el mouse y se acopla tocando la orden. En DevTools táctil, dos dedos funcionan.
 
@@ -127,7 +127,7 @@ description: "Task list — 010 Simulador de acople jugable en mobile"
 
 ### Tests for User Story 2 (TDD) ⚠️
 
-- [ ] T015 [P] [US2] En `tests/acople-dispositivo.test.js`, agregar los casos de `requiereGiro` (en ROJO):
+- [X] T015 [P] [US2] En `tests/acople-dispositivo.test.js`, agregar los casos de `requiereGiro` (en ROJO):
   - táctil vertical → `true`;
   - táctil horizontal → `false`;
   - táctil cuadrado (`alto === ancho`) → `false`;
@@ -135,29 +135,29 @@ description: "Task list — 010 Simulador de acople jugable en mobile"
 
 ### Implementation for User Story 2
 
-- [ ] T016 [US2] Implementar `requiereGiro` en `js/minijuegos/acople/logica/dispositivo.js` (T015 en VERDE).
-- [ ] T017 [P] [US2] En `js/minijuegos/acople/pantalla-completa.js`, agregar `bloquearHorizontal()`: `screen.orientation?.lock?.('landscape')` con try/catch, que devuelve `Promise<boolean>` y nunca rechaza (R5).
-- [ ] T018 [US2] En `css/minijuegos.css`, agregar `.acople[data-cabina]`: `position: fixed; inset: 0; height: 100dvh; min-height: 0; z-index` por encima de `header` y `footer` del sitio. Revisar el z-index que usa `layout.css` para el header (R4, FR-013).
-- [ ] T019 [US2] En `js/minijuegos/acople/main.js`:
+- [X] T016 [US2] Implementar `requiereGiro` en `js/minijuegos/acople/logica/dispositivo.js` (T015 en VERDE).
+- [X] T017 [P] [US2] En `js/minijuegos/acople/pantalla-completa.js`, agregar `bloquearHorizontal()`: `screen.orientation?.lock?.('landscape')` con try/catch, que devuelve `Promise<boolean>` y nunca rechaza (R5).
+- [X] T018 [US2] En `css/minijuegos.css`, agregar `.acople[data-cabina]`: `position: fixed; inset: 0; height: 100dvh; min-height: 0; z-index` por encima de `header` y `footer` del sitio. Revisar el z-index que usa `layout.css` para el header (R4, FR-013).
+- [X] T019 [US2] En `js/minijuegos/acople/main.js`:
   - en táctil, `comenzarPartida`, `volverAJugar` y `reanudarPartida` ponen `raiz.dataset.cabina = ''` y encadenan `pantalla.entrar(raiz).then(ok => ok && pantalla.bloquearHorizontal())`;
   - `unmount` quita `data-cabina`;
   - verificar que `medidasConsola`/Phaser se reacomodan con el resize.
-- [ ] T020 [US2] En `minijuego-acople.html`, agregar la capa `<div class="acople-girar" data-aviso-giro role="alertdialog" aria-labelledby="girar-titulo" hidden>` **fuera** de las secciones `[data-pantalla]`, con un ícono de rotación (SVG inline) y el texto "Girá el dispositivo".
+- [X] T020 [US2] En `minijuego-acople.html`, agregar la capa `<div class="acople-girar" data-aviso-giro role="alertdialog" aria-labelledby="girar-titulo" hidden>` **fuera** de las secciones `[data-pantalla]`, con un ícono de rotación (SVG inline) y el texto "Girá el dispositivo".
 
   En `css/minijuegos.css`, la capa ocupa toda la pantalla, con el estilo de `.acople-aviso` y por encima de todo dentro de `.acople`.
-- [ ] T021 [US2] En `js/minijuegos/acople/main.js`, agregar `evaluarGiro(s)`:
+- [X] T021 [US2] En `js/minijuegos/acople/main.js`, agregar `evaluarGiro(s)`:
   - si `requiereGiro` es `true`, muestra la capa, llama a `pausarPartida(s)` si la fase es `en-curso` y suspende el temporizador de la intro (`clearTimeout`);
   - si es `false`, oculta la capa y, si la fase es `intro`, rearma el temporizador.
 
   Se escucha con `matchMedia('(orientation: portrait)')` (`change`) y con `resize`, ambos en `s.limpiezas`, y se evalúa también al montar. Además, `alPresionar` y `alClic` ignoran la entrada mientras la capa está visible (FR-015, FR-016).
-- [ ] T022 [US2] En `css/minijuegos.css`, agregar `@media (max-height: 30rem)` con la consola compacta:
+- [X] T022 [US2] En `css/minijuegos.css`, agregar `@media (max-height: 30rem)` con la consola compacta:
   - `--alto-consola` de ≈5.5rem;
   - diales, barras y regla más chicos;
   - tipografía de ≈0.6rem;
   - padding de la consola reducido;
   - los 5 instrumentos visibles;
   - `.acople-orden` reposicionado sobre la consola (FR-017, R7).
-- [ ] T023 [US2] En `css/minijuegos.css`, ajustar los overlays para pantallas bajas: intro, pausa y resultado con `max-height` y scroll interno; el resultado en una columna si no entra. Verificar que el editor y la tabla entran en 844×390 (FR-013).
+- [X] T023 [US2] En `css/minijuegos.css`, ajustar los overlays para pantallas bajas: intro, pausa y resultado con `max-height` y scroll interno; el resultado en una columna si no entra. Verificar que el editor y la tabla entran en 844×390 (FR-013).
 
 **Checkpoint**: US1 y US2 completas, el MVP mobile jugable. Medir los iframes del quickstart §3.
 

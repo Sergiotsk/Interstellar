@@ -17,12 +17,14 @@ import {
 } from './logica/mision.js';
 import { leerRanking, posicionEnRanking, insertarEntrada, guardarEnRanking } from './logica/ranking.js';
 import { crearEditor, textoEditor, teclaEditor } from './logica/nombre-arcade.js';
-import { debeMostrarAvisoDesktop } from './logica/dispositivo.js';
+import { modoEntrada, requiereGiro } from './logica/dispositivo.js';
+import { levantarTodo, accionesTactiles } from './logica/controles-tactiles.js';
 import { instrumentos } from './logica/instrumentos.js';
 import { crearOverlays, lecturasHud, filasRanking } from './overlays.js';
 import { crearEscenaAcople } from './escena-acople.js';
 import { crearAudioAcople } from './audio-acople.js';
 import * as pantalla from './pantalla-completa.js';
+import { conectarControles } from './controles-tactiles.js';
 
 const URL_PHASER = '../../vendor/phaser@4.2.1/phaser.esm.min.js';
 const DURACION_INTRO_MS = 8000;
@@ -62,6 +64,18 @@ function almacenamiento() {
   }
 }
 
+// Suelta teclado y dedos: pausa, reintento y fin no dejan la nave acelerando (FR-036, 010 FR-012).
+function soltarControles(s) {
+  s.acciones = soltarTodo();
+  s.toques = levantarTodo();
+  s.mandos?.soltar();
+}
+
+// Pulso haptico en tactil; en iOS vibrate no existe y queda en no-op.
+function vibrar(s, patron) {
+  if (s.modo === 'tactil' && !s.audio.estaMuteado()) navigator.vibrate?.(patron);
+}
+
 function escuchar(s, objetivo, evento, fn, opciones) {
   objetivo.addEventListener(evento, fn, opciones);
   s.limpiezas.push(() => objetivo.removeEventListener(evento, fn, opciones));
@@ -78,32 +92,38 @@ function comenzarPartida(s, conGesto) {
   s.partida = iniciar(s.partida);
   s.ui.mostrar('hud');
   enfocarLienzo(s);
-  if (conGesto) pantalla.entrar(s.raiz);
+  if (conGesto) entrarPantalla(s);
 }
 
 // Reintentar reusa el Game ya creado: solo se reemplaza la partida (sin intro, FR-009).
 function volverAJugar(s) {
   s.editor = null;
   s.partida = reintentar(s.partida, CONFIG);
-  s.acciones = soltarTodo();
+  soltarControles(s);
   s.ui.mostrar('hud');
   enfocarLienzo(s);
-  pantalla.entrar(s.raiz);
+  entrarPantalla(s);
 }
 
 function pausarPartida(s) {
   if (s.partida.fase !== 'en-curso') return;
   s.partida = pausar(s.partida);
-  s.acciones = soltarTodo();
+  soltarControles(s);
   s.audio.actualizar(s.estado, s.acciones, false, s.partida.nave.distancia);
   s.ui.mostrar('pausa');
+}
+
+// En tactil, ademas de la pantalla completa, se intenta fijar la horizontal (010 R5).
+function entrarPantalla(s) {
+  const pedido = pantalla.entrar(s.raiz);
+  if (s.modo === 'tactil') pedido.then((ok) => ok && pantalla.bloquearHorizontal());
 }
 
 function reanudarPartida(s) {
   s.partida = reanudar(s.partida);
   s.ui.mostrar('hud');
   enfocarLienzo(s);
-  pantalla.entrar(s.raiz);
+  entrarPantalla(s);
 }
 
 // Salir de pantalla completa en plena partida la pausa (FR-042).
@@ -114,9 +134,12 @@ function alCambiarPantalla(s) {
 }
 
 function terminarPartida(s) {
-  s.acciones = soltarTodo();
+  soltarControles(s);
   const { desenlace } = s.partida;
-  if (desenlace.exito) s.audio.evento('acople');
+  if (desenlace.exito) {
+    s.audio.evento('acople');
+    vibrar(s, 40);
+  }
   if (desenlace.causa === 'impacto') s.audio.evento('impacto');
   const { entradas, ultimoNombre } = leerRanking(almacenamiento(), CONFIG);
   const posicion = desenlace.exito ? posicionEnRanking(entradas, desenlace.puntaje, CONFIG) : -1;
@@ -171,7 +194,8 @@ function alPresionarEnEditor(s, e) {
 function tick(s, dt) {
   const fase = s.partida.fase;
   const estadoAnterior = s.estado;
-  s.partida = avanzar(conAcciones(s.partida, s.acciones), dt, CONFIG);
+  const acciones = new Set([...s.acciones, ...accionesTactiles(s.toques)]);
+  s.partida = avanzar(conAcciones(s.partida, acciones), dt, CONFIG);
   s.estado = estadoHud(s.partida, CONFIG);
   if (s.estado === 'DOCKING RANGE' && estadoAnterior !== 'DOCKING RANGE' && s.partida.fase === 'en-curso') {
     s.audio.evento('lock-in');
@@ -184,7 +208,7 @@ function tick(s, dt) {
       lecturasHud(s.partida, CONFIG),
       s.estado,
       nivelDeEstado(s.estado),
-      indicacionHud(s.partida, s.estado),
+      indicacionHud(s.partida, s.estado, s.modo),
       instrumentos(s.partida, CONFIG),
     );
   }
@@ -194,7 +218,22 @@ function tick(s, dt) {
 // e.key y no e.code: el Enter del teclado numerico tiene code 'NumpadEnter' pero key 'Enter'.
 const esEnter = (e) => e.key === 'Enter';
 
+// Vertical en tactil: capa de giro encima, partida en pausa e intro detenida; lo de abajo queda intacto (010 R6).
+function evaluarGiro(s) {
+  const girar = requiereGiro({ modo: s.modo, ancho: window.innerWidth, alto: window.innerHeight });
+  if (girar === s.girando) return;
+  s.girando = girar;
+  s.raiz.querySelector('[data-aviso-giro]').hidden = !girar;
+  if (girar) {
+    pausarPartida(s);
+    clearTimeout(s.temporizadorIntro);
+  } else if (s.partida.fase === 'intro') {
+    s.temporizadorIntro = setTimeout(() => comenzarPartida(s, false), s.duracionIntro);
+  }
+}
+
 function alPresionar(s, e) {
+  if (s.girando) return;
   s.audio.reanudar();
   const fase = s.partida.fase;
   if (fase === 'pausada') {
@@ -236,7 +275,10 @@ function pedirAcople(s) {
   const rechazosAntes = s.partida.rechazos;
   const fase = s.partida.fase;
   s.partida = solicitarAcople(s.partida, CONFIG);
-  if (s.partida.rechazos > rechazosAntes) s.audio.evento('rechazo');
+  if (s.partida.rechazos > rechazosAntes) {
+    s.audio.evento('rechazo');
+    vibrar(s, [30, 40, 30]);
+  }
   if (fase === 'en-curso' && s.partida.fase === 'acoplada') terminarPartida(s);
 }
 
@@ -246,6 +288,7 @@ function alSoltar(s, e) {
 }
 
 function alClic(s, e) {
+  if (s.girando) return;
   s.audio.reanudar();
   const boton = e.target.closest('[data-accion]');
   if (!boton) return;
@@ -260,8 +303,9 @@ function alClic(s, e) {
   }
   if (accion === 'pantalla') {
     if (pantalla.estaActiva(s.raiz)) pantalla.salir();
-    else pantalla.entrar(s.raiz);
+    else entrarPantalla(s);
   }
+  if (accion === 'pausar') pausarPartida(s);
   if (accion === 'mute') {
     s.audio.setMute(!s.audio.estaMuteado());
     boton.setAttribute('aria-pressed', String(s.audio.estaMuteado()));
@@ -303,24 +347,29 @@ export async function mount() {
   if (!raiz) return;
   const ui = crearOverlays(raiz, { pantallaCompleta: pantalla.soportada() });
 
-  const aviso = debeMostrarAvisoDesktop({
+  const modo = modoEntrada({
     punteroGrueso: window.matchMedia('(pointer: coarse)').matches,
     algunPunteroFino: window.matchMedia('(any-pointer: fine)').matches,
+    forzado: new URLSearchParams(location.search).get('entrada'),
   });
-  if (aviso) {
-    mostrarAviso(raiz, ui);
-    return; // sin teclado no se juega: ni siquiera se descarga el motor
-  }
+  raiz.dataset.entrada = modo;
+  // Cabina a toda la pantalla visible en tactil: el iPhone no tiene Fullscreen API para elementos (010 R4).
+  if (modo === 'tactil') raiz.dataset.cabina = '';
 
   const s = {
     raiz,
     ui,
+    modo,
     lienzo: raiz.querySelector('[data-acople-lienzo]'),
     partida: crearPartida(CONFIG, { conIntro: true }),
     estado: 'APPROACHING',
     acciones: soltarTodo(),
+    toques: levantarTodo(),
+    mandos: null,
     ranking: [],
     editor: null,
+    girando: false,
+    duracionIntro: DURACION_INTRO_MS,
     audio: crearAudioAcople(),
     ultimoHud: 0,
     game: null,
@@ -329,13 +378,28 @@ export async function mount() {
   };
   sesion = s;
 
+  if (modo === 'tactil') {
+    s.mandos = conectarControles(raiz, {
+      alCambiar: (toques) => {
+        s.toques = toques;
+      },
+      alTocar: () => s.audio.reanudar(),
+    });
+    s.limpiezas.push(s.mandos.limpiar);
+  }
+
   raiz.querySelector('[data-accion="mute"]')?.setAttribute('aria-pressed', String(s.audio.estaMuteado()));
   const { entradas } = leerRanking(almacenamiento(), CONFIG);
   ui.mostrar('intro');
   ui.pintarRanking('intro', filasRanking(entradas, -1, CONFIG, { completar: false }));
   ui.pintarPantalla(false);
-  const duracionIntro = entradas.length ? DURACION_INTRO_CON_RANKING_MS : DURACION_INTRO_MS;
-  s.temporizadorIntro = setTimeout(() => comenzarPartida(s, false), duracionIntro);
+  s.duracionIntro = entradas.length ? DURACION_INTRO_CON_RANKING_MS : DURACION_INTRO_MS;
+  s.temporizadorIntro = setTimeout(() => comenzarPartida(s, false), s.duracionIntro);
+  if (modo === 'tactil') {
+    evaluarGiro(s);
+    escuchar(s, window.matchMedia('(orientation: portrait)'), 'change', () => evaluarGiro(s));
+    escuchar(s, window, 'resize', () => evaluarGiro(s));
+  }
   escuchar(s, window, 'keydown', (e) => alPresionar(s, e));
   escuchar(s, window, 'keyup', (e) => alSoltar(s, e));
   escuchar(s, raiz, 'click', (e) => alClic(s, e));
@@ -350,7 +414,6 @@ export async function mount() {
   } catch (err) {
     console.error('[acople] no se pudo cargar el motor del simulador:', err);
     if (sesion === s) {
-      ui.mostrarFalla();
       mostrarAviso(raiz, ui);
     }
   }
@@ -362,6 +425,7 @@ export function unmount() {
   sesion = null; // primero: un import() en vuelo vera que la sesion ya no es la suya
   clearTimeout(s.temporizadorIntro);
   if (pantalla.estaActiva(s.raiz)) pantalla.salir();
+  delete s.raiz.dataset.cabina;
   if (s.game) {
     s.game.destroy(true);
     s.game = null;

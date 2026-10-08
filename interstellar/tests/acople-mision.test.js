@@ -297,3 +297,18 @@ describe('acople/logica/mision.js — no se acopla alejandose del puerto', () =>
     assert.equal(solicitarAcople(enRango({ velAproximacion: 0 }), CONFIG).fase, 'acoplada');
   });
 });
+
+describe('acople/logica/mision.js — indicacion del HUD en modo tactil (010 FR-008)', () => {
+  const enRango = (extra = {}) => sincronizada({ distancia: CONFIG.rangoAcople - 1, velAproximacion: 2, ...extra });
+
+  test('en tactil invita a tocar; sin modo sigue pidiendo Enter', () => {
+    assert.equal(indicacionHud(enRango(), 'DOCKING RANGE', 'tactil'), 'TAP TO DOCK');
+    assert.equal(indicacionHud(enRango(), 'DOCKING RANGE'), 'PRESS ENTER TO DOCK');
+    assert.equal(indicacionHud(enRango(), 'DOCKING RANGE', 'teclado'), 'PRESS ENTER TO DOCK');
+  });
+
+  test('el rechazo no cambia con el modo', () => {
+    const r = solicitarAcople(sincronizada({ distancia: CONFIG.rangoAcople + 50 }), CONFIG);
+    assert.equal(indicacionHud(r, 'DOCKING REJECTED', 'tactil'), 'REJECTED · TOO FAR');
+  });
+});
