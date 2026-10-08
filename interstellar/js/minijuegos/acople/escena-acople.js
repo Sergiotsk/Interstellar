@@ -27,8 +27,10 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       this.graficoEscombros = this.add.graphics();
       this.graficoVenting = this.add.graphics();
       this.estacion = this.add.graphics();
+      this.graficoSellado = this.add.graphics();
       this.lucesEstacion = this.add.graphics();
       this.reticula = this.add.graphics();
+      this.animSellado = null;
       this.crearPropulsores();
       this.crearPolvoEspacial();
       this.crearEscombros();
@@ -122,6 +124,7 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       this.graficoEscombros.setPosition(this.centro.x, this.centro.y);
       this.graficoVenting.setPosition(this.centro.x, this.centro.y);
       this.estacion.setPosition(this.centro.x, this.centro.y);
+      this.graficoSellado.setPosition(this.centro.x, this.centro.y);
       this.lucesEstacion.setPosition(this.centro.x, this.centro.y);
       // Esquinas superiores del trapecio (clip-path 6%-94%) y mitad de sus lados.
       this.rcsIzquierdo.setPosition(cx - anchoConsola * 0.44, techo);
@@ -299,8 +302,25 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
         if (partida.desenlace.causa === 'control') this.giroResidual = partida.nave.velAngular;
       } else if (partida.fase === 'acoplada') {
         const c = Phaser.Display.Color.IntegerToRGB(paleta.teal);
-        camara.flash(400, c.r, c.g, c.b);
+        camara.flash(320, c.r, c.g, c.b);
+        if (!reducirMovimiento) camara.shake(220, 0.01);
+        this.dispararEfectoSellado();
       }
+    }
+
+    dispararEfectoSellado() {
+      this.animSellado = { activo: true, tiempo: 0, duracion: 1.4 };
+      const nParticulas = 48;
+      this.vaporSellado = Array.from({ length: nParticulas }, (_, i) => {
+        const angulo = (i / nParticulas) * Math.PI * 2 + (Math.random() - 0.5) * 0.12;
+        return {
+          angulo,
+          distancia: RADIO_HUB,
+          velocidad: 70 + Math.random() * 90,
+          radio: 1.5 + Math.random() * 2.5,
+          alfa: 0.85 + Math.random() * 0.15,
+        };
+      });
     }
 
     actualizarPolvo(nave, dt, anguloNave) {
@@ -443,6 +463,70 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       dibujarLuz(r, 0, paleta.teal);
     }
 
+    actualizarSellado(dtS) {
+      if (!this.animSellado || !this.animSellado.activo) return;
+      const g = this.graficoSellado;
+      g.clear();
+      g.setPosition(this.estacion.x, this.estacion.y);
+      g.setScale(this.estacion.scaleX);
+      g.setRotation(this.estacion.rotation);
+
+      this.animSellado.tiempo += dtS;
+      const tNorm = Math.min(1, this.animSellado.tiempo / this.animSellado.duracion);
+
+      // 1. Onda de choque / anillo de sellado expansivo
+      const radioOnda = RADIO_HUB + (RADIO_ANILLO - RADIO_HUB) * Math.pow(tNorm, 0.6);
+      const alfaOnda = (1 - tNorm) * 0.95;
+      g.lineStyle(3.2 * (1 - tNorm * 0.5), paleta.teal, alfaOnda);
+      g.strokeCircle(0, 0, radioOnda);
+      g.lineStyle(1.4, 0xffffff, alfaOnda * 0.85);
+      g.strokeCircle(0, 0, radioOnda * 0.94);
+
+      if (tNorm > 0.08) {
+        const t2 = (tNorm - 0.08) / 0.92;
+        const r2 = RADIO_HUB + (RADIO_ANILLO - RADIO_HUB) * Math.pow(t2, 0.6);
+        const a2 = (1 - t2) * 0.6;
+        g.lineStyle(1.2, paleta.teal, a2);
+        g.strokeCircle(0, 0, r2);
+      }
+
+      // 2. Chorro radial de despresurización de la esclusa (vapor en 360°)
+      if (this.vaporSellado && !reducirMovimiento) {
+        for (let i = 0; i < this.vaporSellado.length; i += 1) {
+          const p = this.vaporSellado[i];
+          p.distancia += p.velocidad * dtS;
+          p.velocidad *= Math.max(0, 1 - dtS * 2.4); // desaceleración en el vacío
+          const alfaP = (1 - tNorm) * p.alfa;
+          const radioP = p.radio * (1 + tNorm * 2.2);
+
+          const px = Math.cos(p.angulo) * p.distancia;
+          const py = Math.sin(p.angulo) * p.distancia;
+
+          g.fillStyle(0xffffff, alfaP * 0.8);
+          g.fillCircle(px, py, radioP * 0.6);
+          g.fillStyle(paleta.teal, alfaP * 0.45);
+          g.fillCircle(px, py, radioP);
+        }
+      }
+
+      // 3. Pestillos de traba mecánica en el hub (clamps de titanio)
+      if (tNorm < 0.65) {
+        const alfaClamp = Math.min(1, (1 - tNorm / 0.65) * 1.5);
+        g.fillStyle(paleta.teal, alfaClamp);
+        for (let k = 0; k < 4; k += 1) {
+          const aClamp = (k / 4) * Math.PI * 2;
+          const cx = Math.cos(aClamp) * (RADIO_HUB + 4);
+          const cy = Math.sin(aClamp) * (RADIO_HUB + 4);
+          g.fillCircle(cx, cy, 3.5);
+        }
+      }
+
+      if (tNorm >= 1) {
+        this.animSellado.activo = false;
+        g.clear();
+      }
+    }
+
     update(tiempo, delta) {
       alAvanzar(delta / 1000);
       const partida = obtenerPartida();
@@ -453,6 +537,8 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
         if (partida.fase === 'en-curso' || partida.fase === 'intro') {
           this.giroResidual = 0;
           this.giroAcumulado = 0;
+          if (this.graficoSellado) this.graficoSellado.clear();
+          if (this.animSellado) this.animSellado.activo = false;
         }
         if (this.faseAnterior === 'en-curso') this.reaccionarAFin(partida);
         this.faseAnterior = partida.fase;
@@ -484,6 +570,7 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       this.actualizarEscombros(dtS);
       this.actualizarVenting(tiempo, dtS);
       this.actualizarBalizas(tiempo);
+      this.actualizarSellado(dtS);
 
       const enCurso = partida.fase === 'en-curso';
       this.actualizarPropulsores(partida.acciones, enCurso && nave.combustible > 0);

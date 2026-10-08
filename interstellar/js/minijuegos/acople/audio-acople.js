@@ -229,18 +229,81 @@ export function crearAudioAcople() {
     fuente.stop(t + 0.7);
   }
 
-  function acorde() {
+  // Sonido de acople: cerrojo mecánico pesado (clamps de titanio) + siseo violento de despresurización + acorde de éxito
+  function sonidoAcopleMecanico() {
     const t = ctx.currentTime;
-    [523.25, 659.25, 783.99].forEach((hz, i) => {
+
+    // 1. Clang / Cerrojo mecánico de titanio (metal contra metal + impacto sordo)
+    const oscGrave = ctx.createOscillator();
+    const gGrave = ctx.createGain();
+    oscGrave.type = 'sine';
+    oscGrave.frequency.setValueAtTime(115, t);
+    oscGrave.frequency.exponentialRampToValueAtTime(32, t + 0.18);
+    gGrave.gain.setValueAtTime(0.65, t);
+    gGrave.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+    oscGrave.connect(gGrave).connect(maestro);
+    oscGrave.start(t);
+    oscGrave.stop(t + 0.25);
+
+    // Click / traba metálica cortante (primer pestillo de guía)
+    const oscClick1 = ctx.createOscillator();
+    const gClick1 = ctx.createGain();
+    oscClick1.type = 'triangle';
+    oscClick1.frequency.setValueAtTime(1300, t);
+    oscClick1.frequency.exponentialRampToValueAtTime(320, t + 0.04);
+    gClick1.gain.setValueAtTime(0.38, t);
+    gClick1.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+    oscClick1.connect(gClick1).connect(maestro);
+    oscClick1.start(t);
+    oscClick1.stop(t + 0.06);
+
+    // Segundo cerrojo hidráulico de seguridad ("Ka-CHUNK!") a t + 0.11 s
+    const t2 = t + 0.11;
+    const oscClick2 = ctx.createOscillator();
+    const gClick2 = ctx.createGain();
+    oscClick2.type = 'sawtooth';
+    oscClick2.frequency.setValueAtTime(750, t2);
+    oscClick2.frequency.exponentialRampToValueAtTime(160, t2 + 0.07);
+    gClick2.gain.setValueAtTime(0.32, t2);
+    gClick2.gain.exponentialRampToValueAtTime(0.001, t2 + 0.08);
+    oscClick2.connect(gClick2).connect(maestro);
+    oscClick2.start(t2);
+    oscClick2.stop(t2 + 0.1);
+
+    // 2. Siseo violento de despresurización / ecualización neumática de esclusa
+    const tVenteo = t + 0.15;
+    const fuenteVenteo = ctx.createBufferSource();
+    fuenteVenteo.buffer = ruido;
+    fuenteVenteo.loop = true;
+
+    const filtroVenteo = ctx.createBiquadFilter();
+    filtroVenteo.type = 'bandpass';
+    filtroVenteo.frequency.setValueAtTime(2400, tVenteo);
+    filtroVenteo.frequency.exponentialRampToValueAtTime(600, tVenteo + 1.0);
+    filtroVenteo.Q.value = 1.6;
+
+    const gVenteo = ctx.createGain();
+    gVenteo.gain.setValueAtTime(0.001, tVenteo);
+    gVenteo.gain.linearRampToValueAtTime(0.48, tVenteo + 0.05); // apertura brusca de válvulas
+    gVenteo.gain.exponentialRampToValueAtTime(0.001, tVenteo + 1.2); // descompresión prolongada
+
+    fuenteVenteo.connect(filtroVenteo).connect(gVenteo).connect(maestro);
+    fuenteVenteo.start(tVenteo);
+    fuenteVenteo.stop(tVenteo + 1.25);
+
+    // 3. Acorde armónico de confirmación / presurización segura ("AIRLOCK SEALED")
+    const tAcorde = t + 0.55;
+    [523.25, 659.25, 783.99, 1046.5].forEach((hz, i) => {
       const osc = ctx.createOscillator();
+      osc.type = 'sine';
       osc.frequency.value = hz;
       const g = ctx.createGain();
-      g.gain.setValueAtTime(0, t);
-      g.gain.linearRampToValueAtTime(0.12, t + 0.05 + i * 0.08);
-      g.gain.exponentialRampToValueAtTime(0.001, t + 1.4);
+      g.gain.setValueAtTime(0, tAcorde);
+      g.gain.linearRampToValueAtTime(0.11, tAcorde + 0.07 + i * 0.03);
+      g.gain.exponentialRampToValueAtTime(0.001, tAcorde + 1.8);
       osc.connect(g).connect(maestro);
-      osc.start(t);
-      osc.stop(t + 1.5);
+      osc.start(tAcorde);
+      osc.stop(tAcorde + 1.9);
     });
   }
 
@@ -279,7 +342,7 @@ export function crearAudioAcople() {
   function evento(nombre) {
     if (!ctx) return;
     if (nombre === 'impacto') golpe();
-    if (nombre === 'acople') acorde();
+    if (nombre === 'acople') sonidoAcopleMecanico();
     if (nombre === 'rechazo') zumbido();
     if (nombre === 'lock-in') tonoLockIn();
   }
