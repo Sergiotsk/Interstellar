@@ -1386,7 +1386,7 @@ body.home .pie-secciones-marco {
 /* 8. Introduccion — disuelta en el subtitulo del Hero (sin reglas) */
 
 /* 10. Paginas internas: presentacion coherente de los placeholders */
-body:not(.home) main > section:first-child:not(.portada-tripulacion):not(.mundos-intro):not(.ciencia-portada):not(.galeria-portada):not(.trailer-hero):not(.mundo-portada) {
+body:not(.home) main > section:first-child:not(.portada-tripulacion):not(.mundos-intro):not(.ciencia-portada):not(.galeria-portada):not(.trailer-hero):not(.mundo-portada):not(.minijuegos-intro) {
   max-width: 60rem;
   margin: 0 auto;
   padding: 4rem 1.25rem 2rem;

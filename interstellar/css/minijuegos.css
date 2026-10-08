@@ -863,6 +863,42 @@
 }
 
 /* 3. Hub de misiones (minijuegos.html); bloque mudado desde en-desarrollo.css */
+/* Hub sin scroll, mismo criterio que trailer/home: cadena flex de alto completo, el footer queda al pie.
+   :has() cubre la navegacion con swup, que no cambia las clases del body */
+body:has(.minijuegos-bahias),
+body.pagina-minijuegos {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+body:has(.minijuegos-bahias) main,
+body.pagina-minijuegos main {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Como en la home: pagina sin scroll, no se duplica la navbar en el pie */
+body:has(.minijuegos-bahias) .pie-secciones-marco,
+body.pagina-minijuegos .pie-secciones-marco {
+  display: none !important;
+}
+
+/* En un main flex, margin auto encogeria las secciones a su contenido: se fija el ancho */
+.minijuegos-intro,
+.minijuegos-bahias {
+  width: 100%;
+}
+
+.minijuegos-intro {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 4rem 1.25rem 2rem;
+  text-align: left;
+}
+
 .minijuegos-bahias {
   max-width: 60rem;
   margin: 0 auto;
@@ -1021,6 +1057,89 @@
 
 .bahia-card[data-estado='bloqueada'] .bahia-estado .led {
   background: var(--color-texto-atenuado);
+}
+
+/* Desktop ancho: las 4 bahias en una fila, para que el hub entre sin scroll */
+@media (min-width: 72rem) {
+  .minijuegos-intro {
+    max-width: 84rem;
+    padding: 2rem 1.25rem 1.25rem;
+  }
+
+  .minijuegos-bahias {
+    max-width: 84rem;
+    padding-bottom: 1.75rem;
+  }
+
+  .minijuegos-bahias-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.25rem;
+    margin-top: 1rem;
+  }
+
+  .bahia-card {
+    padding: 1.2rem 1.3rem;
+  }
+
+  .bahia-card p {
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+
+  .bahia-accion {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Desktop bajo (laptops de 768-900 px de alto): se compacta la intro y las tarjetas para no scrollear */
+@media (min-width: 72rem) and (max-height: 56rem) {
+  .minijuegos-intro {
+    padding: 1rem 1.25rem 0.75rem;
+  }
+
+  body:not(.home) main > section.minijuegos-intro h1 {
+    font-size: 2rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .minijuegos-bahias {
+    padding-bottom: 1rem;
+  }
+
+  .minijuegos-bahias-grid {
+    margin-top: 0.75rem;
+  }
+
+  .bahia-card {
+    padding: 1rem 1.15rem;
+  }
+
+  .bahia-badge-top,
+  .bahia-tipo {
+    margin-bottom: 0.5rem;
+  }
+
+  .bahia-card p {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
+    margin-bottom: 0.75rem;
+  }
+
+  .bahia-card p.bahia-record {
+    display: block;
+    margin-bottom: 0.6rem;
+  }
+
+  .bahia-accion {
+    margin-bottom: 0.75rem;
+  }
+
+  .bahia-footer {
+    padding-top: 0.6rem;
+  }
 }
 
 /* 4. Movimiento reducido */
