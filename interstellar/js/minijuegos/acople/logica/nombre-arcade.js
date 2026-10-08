@@ -21,6 +21,12 @@ export function moverCursor(ed, paso, config) {
   return { ...ed, cursor: Math.min(config.ranking.largoNombre - 1, Math.max(0, ed.cursor + paso)) };
 }
 
+// Tocar una casilla la vuelve la activa (010 FR-021).
+export function fijarCursor(ed, i, config) {
+  if (!Number.isInteger(i)) return ed;
+  return { ...ed, cursor: Math.min(config.ranking.largoNombre - 1, Math.max(0, i)) };
+}
+
 export function escribir(ed, caracter, config) {
   const letra = caracter.toUpperCase();
   if (letra.length !== 1 || !config.ranking.alfabeto.includes(letra)) return ed;

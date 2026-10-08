@@ -21,3 +21,13 @@ export function salir() {
   if (typeof document === 'undefined' || !document.fullscreenElement) return Promise.resolve();
   return document.exitFullscreen().catch(() => {});
 }
+
+// Fija la horizontal; solo funciona en pantalla completa y en algunos navegadores (Android). Nunca rechaza.
+export function bloquearHorizontal() {
+  try {
+    const promesa = screen.orientation?.lock?.('landscape');
+    return promesa ? promesa.then(() => true).catch(() => false) : Promise.resolve(false);
+  } catch {
+    return Promise.resolve(false);
+  }
+}

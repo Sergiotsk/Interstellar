@@ -154,9 +154,9 @@ const NIVELES = {
 
 const MOTIVOS = { distancia: 'TOO FAR', alejandose: 'DRIFTING AWAY', velocidad: 'TOO FAST', giro: 'SPIN MISMATCH', angulo: 'MISALIGNED' };
 
-// Linea de ayuda del HUD: invita a acoplar o explica el rechazo.
-export function indicacionHud(partida, estado) {
-  if (estado === 'DOCKING RANGE') return 'PRESS ENTER TO DOCK';
+// Linea de ayuda del HUD: invita a acoplar (tecla o toque segun el modo) o explica el rechazo.
+export function indicacionHud(partida, estado, modo = 'teclado') {
+  if (estado === 'DOCKING RANGE') return modo === 'tactil' ? 'TAP TO DOCK' : 'PRESS ENTER TO DOCK';
   if (estado === 'DOCKING REJECTED') return `REJECTED · ${MOTIVOS[partida.motivoRechazo] ?? ''}`;
   return '';
 }

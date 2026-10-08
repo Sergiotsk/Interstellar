@@ -60,6 +60,7 @@ export function crearOverlays(raiz, { pantallaCompleta = false } = {}) {
   const indicacionEl = raiz.querySelector('[data-hud-indicacion]');
   const tablero = Object.fromEntries([...raiz.querySelectorAll('[data-instrumento]')].map((el) => [el.dataset.instrumento, el]));
   const ordenEl = raiz.querySelector('[data-orden-acople]');
+  const mandos = [...raiz.querySelectorAll('[data-mandos]')];
   const editorEl = raiz.querySelector('[data-editor-nombre]');
   const casillasEl = raiz.querySelector('[data-nombre-casillas]');
   const lecturaNombreEl = raiz.querySelector('[data-nombre-lectura]');
@@ -74,6 +75,10 @@ export function crearOverlays(raiz, { pantallaCompleta = false } = {}) {
       el.hidden = !(p === nombre || (p === 'hud' && nombre === 'pausa'));
     });
     if (nombre !== 'hud') ordenEl.hidden = true;
+    // Los mandos tactiles acompanan solo a la partida en curso.
+    mandos.forEach((el) => {
+      el.hidden = nombre !== 'hud';
+    });
     // El control de pantalla completa solo acompana a la partida y al resultado.
     if (botonPantalla) botonPantalla.hidden = !pantallaCompleta || !['hud', 'resultado'].includes(nombre);
     // El foco va al titulo recien cuando la seccion es visible (un elemento hidden no acepta foco).
@@ -167,11 +172,15 @@ export function crearOverlays(raiz, { pantallaCompleta = false } = {}) {
   function pintarEditor(editor) {
     casillasEl.replaceChildren(
       ...editor.letras.map((letra, i) => {
-        const span = document.createElement('span');
-        span.className = 'acople-nombre-casilla';
-        if (i === editor.cursor) span.classList.add('acople-nombre-casilla--activa');
-        span.textContent = letra === ' ' ? '_' : letra;
-        return span;
+        // Boton para poder tocar la casilla y moverle el cursor (010 FR-021).
+        const casilla = document.createElement('button');
+        casilla.type = 'button';
+        casilla.tabIndex = -1;
+        casilla.dataset.casilla = String(i);
+        casilla.className = 'acople-nombre-casilla';
+        if (i === editor.cursor) casilla.classList.add('acople-nombre-casilla--activa');
+        casilla.textContent = letra === ' ' ? '_' : letra;
+        return casilla;
       }),
     );
     lecturaNombreEl.textContent = `Nombre: ${editor.letras.join('').trim() || 'vacío'}`;
@@ -179,12 +188,6 @@ export function crearOverlays(raiz, { pantallaCompleta = false } = {}) {
 
   function enfocarResultado() {
     titulo.focus();
-  }
-
-  // Si el motor no carga, el aviso pasa a explicar la falla en vez de pedir desktop.
-  function mostrarFalla() {
-    raiz.querySelector('#aviso-titulo').textContent = 'Simulador fuera de línea';
-    raiz.querySelector('[data-aviso-texto]').textContent = 'No se pudo cargar el simulador. Probá recargar la página.';
   }
 
   function pintarPantalla(activa) {
@@ -208,7 +211,6 @@ export function crearOverlays(raiz, { pantallaCompleta = false } = {}) {
     mostrarEditor,
     pintarEditor,
     enfocarResultado,
-    mostrarFalla,
     pintarPantalla,
   };
 }

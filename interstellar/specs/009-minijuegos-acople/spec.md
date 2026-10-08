@@ -200,7 +200,7 @@ El simulador es una página más del sitio: tiene el header y el footer, se lleg
 - **FR-031**: Mientras se juega, la música de fondo del sitio MUST pausarse o atenuarse. Al salir del simulador MUST volver al estado que tenía antes de entrar, encendida o apagada según la preferencia del usuario.
 - **FR-032**: El simulador MUST tener su propio control de silencio, que afecta solo a los sonidos del juego.
 - **FR-033**: El sistema de sonido del juego MUST contemplar ambiente, propulsores, advertencias, impactos, acople y música. Para el MVP se aceptan sonidos placeholder originales o libres.
-- **FR-034**: En dispositivos táctiles sin teclado, el simulador MUST mostrar un aviso de nave con enlace al hub en lugar de iniciar la partida.
+- **FR-034**: En dispositivos táctiles sin teclado, el simulador MUST mostrar un aviso de nave con enlace al hub en lugar de iniciar la partida. *(Reemplazado por la spec 010, FR-003, el 2026-10-08: ahora se juega con controles táctiles.)*
 - **FR-035**: El simulador MUST respetar la preferencia de movimiento reducido: sin sacudidas fuertes y con el movimiento del fondo atenuado.
 - **FR-036**: La partida MUST pausarse automáticamente al perder el foco u ocultarse la pestaña, y soltar todos los controles activos.
 - **FR-042**: El simulador MUST pasar a pantalla completa con el gesto que inicia la partida (Saltear o la tecla que cierra la intro, Reintentar, Seguir). El navegador solo la permite dentro de un gesto del usuario, así que no se puede forzar al cargar la página.
@@ -251,13 +251,13 @@ La constitución exige que toda feature que introduzca una librería la justifiq
 - **SC-005**: Tras 10 ciclos consecutivos de entrar y salir del simulador por navegación interna, sin recargar, hay 0 errores en consola, nunca más de una partida o lienzo activo, y la música del sitio queda en el estado elegido por el usuario el 100 % de las veces.
 - **SC-006**: El mejor puntaje sigue disponible después de cerrar y reabrir el navegador, y se ve en el hub en el 100 % de las pruebas en las que el almacenamiento está disponible.
 - **SC-007**: El hub carga sin descargar el motor del juego. La página del simulador muestra su contenido inicial (aviso o intro) en menos de 3 s en una conexión de banda ancha típica.
-- **SC-008**: En celular, el hub se ve y se navega sin desplazamiento horizontal ni elementos cortados, y el simulador muestra el aviso en el 100 % de los dispositivos táctiles sin teclado probados.
+- **SC-008**: En celular, el hub se ve y se navega sin desplazamiento horizontal ni elementos cortados, y el simulador muestra el aviso en el 100 % de los dispositivos táctiles sin teclado probados. *(La parte del simulador fue reemplazada por la spec 010, SC-001, el 2026-10-08. La parte del hub sigue vigente.)*
 - **SC-009**: El 100 % de las reglas de juego listadas en FR-040 tienen pruebas automatizadas y todas pasan.
 - **SC-010**: Ninguna cifra de la película queda visible al visitante sin su etiqueta de nivel de rigor.
 
 ## Assumptions
 
-- **Plataforma objetivo**: desktop con teclado, en navegadores evergreen (últimas 2 versiones). Los controles táctiles quedan fuera del MVP; el modelo de acciones (FR-011) los habilita a futuro.
+- **Plataforma objetivo**: desktop con teclado, en navegadores evergreen (últimas 2 versiones). Los controles táctiles quedan fuera del MVP; el modelo de acciones (FR-011) los habilita a futuro. *(Ampliada por la spec 010 a celulares y tablets táctiles.)*
 - **Una sola dificultad**: no hay selector de niveles, y el balance fino se ajusta por configuración.
 - **Solo el éxito puntúa**: una misión fallida no genera puntaje (decisión tomada ante la ambigüedad del brief, que pedía "recibir un score" al completar o fallar).
 - **Contacto con el casco**: llegar al puerto sin acoplar cuenta como fallo por "impacto" si supera el límite de velocidad, y como "ángulo" si llega desalineado. Lento y alineado, rebota (revisado el 2026-10-07).
