@@ -22,9 +22,21 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       this.techoConsola = 0;
     }
 
+    preload() {
+      this.load.image('ranger-morro', 'assets/img/minijuegos/ranger-morro.webp');
+      this.load.image('gargantua', 'assets/img/minijuegos/gargantua.webp');
+    }
+
     create() {
       this.crearTexturaChispa();
+      this.cielo = this.add.container(0, 0);
       this.estrellas = this.add.graphics();
+      this.cielo.add(this.estrellas);
+      if (this.textures.exists('gargantua')) {
+        this.spriteGargantua = this.add.image(0, 0, 'gargantua');
+        this.spriteGargantua.setBlendMode(Phaser.BlendModes.SCREEN);
+        this.cielo.add(this.spriteGargantua);
+      }
       this.graficoPolvo = this.add.graphics();
       this.graficoEscombros = this.add.graphics();
       this.graficoVenting = this.add.graphics();
@@ -32,6 +44,11 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       this.graficoSellado = this.add.graphics();
       this.lucesEstacion = this.add.graphics();
       this.graficoRanger = this.add.graphics();
+      if (this.textures.exists('ranger-morro')) {
+        this.spriteRanger = this.add.image(0, 0, 'ranger-morro');
+        this.spriteRanger.setOrigin(0.5, 1);
+        this.spriteRanger.setDepth(5);
+      }
       this.reticula = this.add.graphics();
       this.animSellado = null;
       this.crearPropulsores();
@@ -123,7 +140,13 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       this.techoConsola = techo;
       this.centro = { x: cx, y: techo / 2 };
       this.ladoMenor = Math.min(ancho, techo);
-      this.estrellas.setPosition(cx, alto / 2);
+      this.cielo.setPosition(cx, alto / 2);
+      this.estrellas.setPosition(0, 0);
+      if (this.spriteGargantua) {
+        const radio = Math.hypot(ancho, alto) / 2 + 40;
+        this.spriteGargantua.setPosition(-radio * 0.72, -radio * 0.65);
+        this.spriteGargantua.setDisplaySize(110, 61);
+      }
       this.graficoPolvo.setPosition(cx, alto / 2);
       this.graficoEscombros.setPosition(this.centro.x, this.centro.y);
       this.graficoVenting.setPosition(this.centro.x, this.centro.y);
@@ -137,6 +160,10 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       const wChine = wMorro * 0.46;
       this.graficoRanger.setPosition(cx, techo);
       this.dibujarRanger(wMorro, hMorro, wChine);
+      if (this.spriteRanger) {
+        this.spriteRanger.setPosition(cx, techo + 4);
+        this.spriteRanger.setDisplaySize(wMorro, hMorro * 1.55);
+      }
 
       // Propulsores RCS y retro ubicados exactamente en sus toberas mecánicas del Ranger
       this.rcsIzquierdo.setPosition(cx - wChine, techo - hMorro * 0.38);
@@ -256,34 +283,36 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       const g = this.estrellas;
       g.clear();
 
-      // 1. Gargantúa en el fondo cósmico lejano (lejana silueta astronómica)
-      const gx = -radio * 0.75;
-      const gy = -radio * 0.68;
-      const rHorizonte = 11;
+      // 1. Gargantúa en el fondo cósmico: fallback vectorial solo si no hay sprite cargado
+      if (!this.spriteGargantua) {
+        const gx = -radio * 0.75;
+        const gy = -radio * 0.68;
+        const rHorizonte = 11;
 
-      // Resplandor coronal muy tenue y compacto en la lejanía
-      g.fillStyle(0xd47a24, 0.04);
-      g.fillCircle(gx, gy, 55);
-      g.fillStyle(0xc87018, 0.06);
-      g.fillCircle(gx, gy, 32);
+        // Resplandor coronal muy tenue y compacto en la lejanía
+        g.fillStyle(0xd47a24, 0.04);
+        g.fillCircle(gx, gy, 55);
+        g.fillStyle(0xc87018, 0.06);
+        g.fillCircle(gx, gy, 32);
 
-      // Anillo de lente gravitacional superior (arco curvo distorsionado)
-      g.lineStyle(1.2, 0xdf8a28, 0.35);
-      g.beginPath();
-      g.arc(gx, gy, 24, -2.8, -0.34, false);
-      g.strokePath();
+        // Anillo de lente gravitacional superior (arco curvo distorsionado)
+        g.lineStyle(1.2, 0xdf8a28, 0.35);
+        g.beginPath();
+        g.arc(gx, gy, 24, -2.8, -0.34, false);
+        g.strokePath();
 
-      // Disco de acreción ecuatorial inclinado atravesando el agujero negro
-      g.lineStyle(1.6, 0xffc468, 0.75);
-      g.lineBetween(gx - 30, gy + 4, gx + 30, gy - 4);
-      g.lineStyle(1.0, 0xdf8a28, 0.45);
-      g.lineBetween(gx - 36, gy + 5, gx + 36, gy - 5);
+        // Disco de acreción ecuatorial inclinado atravesando el agujero negro
+        g.lineStyle(1.6, 0xffc468, 0.75);
+        g.lineBetween(gx - 30, gy + 4, gx + 30, gy - 4);
+        g.lineStyle(1.0, 0xdf8a28, 0.45);
+        g.lineBetween(gx - 36, gy + 5, gx + 36, gy - 5);
 
-      // Sombra central del horizonte de eventos (núcleo negro absoluto con borde dorado)
-      g.fillStyle(0x000000, 0.96);
-      g.fillCircle(gx, gy, rHorizonte);
-      g.lineStyle(1.2, 0xffe8b0, 0.65);
-      g.strokeCircle(gx, gy, rHorizonte);
+        // Sombra central del horizonte de eventos (núcleo negro absoluto con borde dorado)
+        g.fillStyle(0x000000, 0.96);
+        g.fillCircle(gx, gy, rHorizonte);
+        g.lineStyle(1.2, 0xffe8b0, 0.65);
+        g.strokeCircle(gx, gy, rHorizonte);
+      }
 
       // 2. Campo estelar con magnitudes y clasificación espectral
       for (let i = 0; i < ESTRELLAS; i += 1) {
@@ -857,7 +886,7 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       const escala = (this.ladoMenor * ESCALA_PANTALLA * SUAVIZADO_DISTANCIA) / (nave.distancia + SUAVIZADO_DISTANCIA) / RADIO_ANILLO;
       this.estacion.setScale(escala);
       this.estacion.setRotation(estacion.angulo + estacion.anguloPuerto - anguloNave);
-      this.estrellas.setRotation(reducirMovimiento ? 0 : -anguloNave);
+      this.cielo.setRotation(reducirMovimiento ? 0 : -anguloNave);
       this.dibujarReticula(RADIO_HUB * escala, nivel);
 
       this.actualizarPolvo(nave, dtS, anguloNave);
@@ -899,6 +928,10 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
 
       this.graficoRanger.setRotation(this.inerciaRanger.roll);
       this.graficoRanger.setY(this.techoConsola + this.inerciaRanger.pitch);
+      if (this.spriteRanger) {
+        this.spriteRanger.setRotation(this.inerciaRanger.roll);
+        this.spriteRanger.setY(this.techoConsola + 4 + this.inerciaRanger.pitch);
+      }
     }
   };
 }
