@@ -141,25 +141,34 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       const g = this.estrellas;
       g.clear();
 
-      // 1. Resplandor cósmico lejano (disco de acreción de Gargantúa / horizonte de Mann)
-      const gx = -radio * 0.45;
-      const gy = -radio * 0.4;
-      const capasGargantua = [
-        { r: radio * 0.75, alfa: 0.03, color: 0xdf8a28 },
-        { r: radio * 0.5, alfa: 0.05, color: 0xc87018 },
-        { r: radio * 0.3, alfa: 0.07, color: 0x8a4010 },
-        { r: radio * 0.15, alfa: 0.11, color: 0x5a2508 },
-      ];
-      capasGargantua.forEach(({ r, alfa, color }) => {
-        g.fillStyle(color, alfa);
-        g.fillCircle(gx, gy, r);
-      });
+      // 1. Gargantúa en el fondo cósmico lejano (lejana silueta astronómica)
+      const gx = -radio * 0.75;
+      const gy = -radio * 0.68;
+      const rHorizonte = 11;
 
-      // Arco sutil de distorsión gravitacional / curvatura cósmica
-      g.lineStyle(1.8, 0xdf8a28, 0.14);
+      // Resplandor coronal muy tenue y compacto en la lejanía
+      g.fillStyle(0xd47a24, 0.04);
+      g.fillCircle(gx, gy, 55);
+      g.fillStyle(0xc87018, 0.06);
+      g.fillCircle(gx, gy, 32);
+
+      // Anillo de lente gravitacional superior (arco curvo distorsionado)
+      g.lineStyle(1.2, 0xdf8a28, 0.35);
       g.beginPath();
-      g.arc(gx, gy, radio * 0.38, -0.4, 1.2, false);
+      g.arc(gx, gy, 24, -2.8, -0.34, false);
       g.strokePath();
+
+      // Disco de acreción ecuatorial inclinado atravesando el agujero negro
+      g.lineStyle(1.6, 0xffc468, 0.75);
+      g.lineBetween(gx - 30, gy + 4, gx + 30, gy - 4);
+      g.lineStyle(1.0, 0xdf8a28, 0.45);
+      g.lineBetween(gx - 36, gy + 5, gx + 36, gy - 5);
+
+      // Sombra central del horizonte de eventos (núcleo negro absoluto con borde dorado)
+      g.fillStyle(0x000000, 0.96);
+      g.fillCircle(gx, gy, rHorizonte);
+      g.lineStyle(1.2, 0xffe8b0, 0.65);
+      g.strokeCircle(gx, gy, rHorizonte);
 
       // 2. Campo estelar con magnitudes y clasificación espectral
       for (let i = 0; i < ESTRELLAS; i += 1) {
