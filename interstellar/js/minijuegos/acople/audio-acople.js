@@ -80,7 +80,23 @@ export function crearAudioAcople() {
     if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
   }
 
-  function actualizar(estado, acciones, enCurso) {
+  let proximoTic = 0;
+
+  // Pulso percusivo analógico tipo reloj de cabina (tensión en aproximación).
+  function sonarTic(t, agudo = false) {
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(agudo ? 480 : 320, t);
+    osc.frequency.exponentialRampToValueAtTime(70, t + 0.035);
+    g.gain.setValueAtTime(0.055, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.035);
+    osc.connect(g).connect(maestro);
+    osc.start(t);
+    osc.stop(t + 0.04);
+  }
+
+  function actualizar(estado, acciones, enCurso, distancia = 999) {
     if (!ctx) return;
     const t = ctx.currentTime;
     const motor = enCurso && (acciones.has('impulso') || acciones.has('freno')) ? 0.22 : 0;
@@ -89,6 +105,17 @@ export function crearAudioAcople() {
     // Pitido intermitente (0.2 s on / 0.2 s off) mientras el acercamiento es peligroso.
     const sonar = enCurso && estado === 'UNSAFE APPROACH' && t % 0.4 < 0.2;
     alarma.gain.setTargetAtTime(sonar ? 0.04 : 0, t, 0.01);
+
+    // Pulso rítmico tipo reloj de cabina al entrar en zona cercana (< 150 u)
+    if (enCurso && distancia < 155) {
+      if (t >= proximoTic) {
+        const rapido = distancia < 65;
+        sonarTic(t, rapido);
+        proximoTic = t + (rapido ? 0.5 : 1.0);
+      }
+    } else {
+      proximoTic = t + 0.2;
+    }
   }
 
   function golpe() {

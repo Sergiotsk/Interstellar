@@ -80,6 +80,8 @@ export function crearOverlays(raiz, { pantallaCompleta = false } = {}) {
       ultimoEstado = estado;
       estadoTexto.textContent = estado;
       estadoEl.dataset.nivel = nivel;
+      const consolaEl = raiz.querySelector('.acople-consola');
+      if (consolaEl) consolaEl.dataset.nivel = nivel;
     }
     if (indicacion !== ultimaIndicacion) {
       ultimaIndicacion = indicacion;

@@ -276,6 +276,15 @@
   background: var(--led-ambar);
 }
 
+.instrumento[data-ok='true'] .dial-aguja {
+  background: var(--instrumento-teal);
+  box-shadow: 0 0 6px var(--instrumento-teal);
+}
+
+.instrumento[data-ok='true'] .barra-relleno {
+  box-shadow: 0 0 8px color-mix(in srgb, var(--instrumento-teal) 70%, transparent);
+}
+
 /* Barra vertical: relleno --valor en [0,1], marcas de tolerancia y peligro */
 .barra {
   position: relative;
@@ -371,6 +380,12 @@
   background: var(--instrumento-pantalla);
   border: 1px solid var(--cockpit-bezel);
   box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.6);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.acople-consola[data-nivel='seguro'] .consola-pantalla {
+  border-color: var(--instrumento-teal);
+  box-shadow: inset 0 0 18px color-mix(in srgb, var(--instrumento-teal) 22%, transparent), 0 0 12px color-mix(in srgb, var(--instrumento-teal) 25%, transparent);
 }
 
 .consola-pantalla .acople-estado {

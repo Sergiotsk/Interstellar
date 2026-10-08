@@ -22,12 +22,25 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
     create() {
       this.crearTexturaChispa();
       this.estrellas = this.add.graphics();
+      this.graficoPolvo = this.add.graphics();
       this.estacion = this.add.graphics();
+      this.lucesEstacion = this.add.graphics();
       this.reticula = this.add.graphics();
       this.crearPropulsores();
+      this.crearPolvoEspacial();
       this.dibujarEstrellas();
       this.reubicar(this.scale.width, this.scale.height);
       this.scale.on('resize', (tam) => this.reubicar(tam.width, tam.height));
+    }
+
+    crearPolvoEspacial() {
+      this.polvo = Array.from({ length: 70 }, () => ({
+        angulo: Math.random() * Math.PI * 2,
+        distanciaNorm: Math.random(),
+        velocidadFactor: 0.6 + Math.random() * 0.8,
+        radio: 0.8 + Math.random() * 1.3,
+        alfa: 0.2 + Math.random() * 0.45,
+      }));
     }
 
     crearTexturaChispa() {
@@ -65,6 +78,7 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       this.centro = { x: cx, y: techo / 2 };
       this.ladoMenor = Math.min(ancho, techo);
       this.estrellas.setPosition(cx, alto / 2);
+      this.graficoPolvo.setPosition(cx, alto / 2);
       this.estacion.setPosition(this.centro.x, this.centro.y);
       // Esquinas superiores del trapecio (clip-path 6%-94%) y mitad de sus lados.
       this.rcsIzquierdo.setPosition(cx - anchoConsola * 0.44, techo);
@@ -217,10 +231,65 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       }
     }
 
-    update(_tiempo, delta) {
+    actualizarPolvo(nave, dt, anguloNave) {
+      const g = this.graficoPolvo;
+      g.clear();
+      if (reducirMovimiento) return;
+      g.setRotation(-anguloNave);
+      const radioMax = this.radioEstrellas || 400;
+      const v = nave.velAproximacion;
+      const deltaZ = (0.02 + v * 0.05) * dt;
+
+      for (let i = 0; i < this.polvo.length; i += 1) {
+        const p = this.polvo[i];
+        p.distanciaNorm += deltaZ * p.velocidadFactor;
+        if (p.distanciaNorm > 1) {
+          p.distanciaNorm = 0.04 + Math.random() * 0.08;
+          p.angulo = Math.random() * Math.PI * 2;
+        } else if (p.distanciaNorm < 0) {
+          p.distanciaNorm = 0.95;
+        }
+        const r = p.distanciaNorm * radioMax;
+        const alfa = p.alfa * Math.min(1, p.distanciaNorm * 2.5);
+        g.fillStyle(paleta.texto, alfa);
+        g.fillCircle(Math.cos(p.angulo) * r, Math.sin(p.angulo) * r, p.radio * (0.6 + p.distanciaNorm * 0.8));
+      }
+    }
+
+    actualizarBalizas(tiempo) {
+      const g = this.lucesEstacion;
+      g.clear();
+      if (reducirMovimiento) return;
+      g.setPosition(this.estacion.x, this.estacion.y);
+      g.setScale(this.estacion.scaleX);
+      g.setRotation(this.estacion.rotation);
+
+      // Doble flash estroboscopico aeroespacial cada 1.25s
+      const ciclo = (tiempo % 1250) / 1250;
+      const flash = ciclo < 0.07 || (ciclo > 0.14 && ciclo < 0.21);
+      if (!flash) return;
+
+      const r = RADIO_ANILLO;
+      const dibujarLuz = (x, y, color) => {
+        g.fillStyle(color, 1);
+        g.fillCircle(x, y, 3.5);
+        g.fillStyle(color, 0.3);
+        g.fillCircle(x, y, 7.5);
+      };
+
+      // Balizas blancas en modulos superior e inferior (indices 0 y 6)
+      dibujarLuz(0, -r, 0xffffff);
+      dibujarLuz(0, r, 0xffffff);
+      // Baliza roja a babor (oeste / modulo 9) y verde/teal a estribor (este / modulo 3)
+      dibujarLuz(-r, 0, paleta.alerta);
+      dibujarLuz(r, 0, paleta.teal);
+    }
+
+    update(tiempo, delta) {
       alAvanzar(delta / 1000);
       const partida = obtenerPartida();
       const nivel = obtenerNivel();
+      const dtS = delta / 1000;
 
       if (partida.fase !== this.faseAnterior) {
         if (partida.fase === 'en-curso' || partida.fase === 'intro') {
@@ -243,7 +312,7 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       }
 
       // Tras perder el control, la nave sigue girando sola: solo visual.
-      this.giroAcumulado += this.giroResidual * (delta / 1000);
+      this.giroAcumulado += this.giroResidual * dtS;
       const anguloNave = partida.nave.angulo + this.giroAcumulado;
 
       const { nave, estacion } = partida;
@@ -252,6 +321,9 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       this.estacion.setRotation(estacion.angulo + estacion.anguloPuerto - anguloNave);
       this.estrellas.setRotation(reducirMovimiento ? 0 : -anguloNave);
       this.dibujarReticula(RADIO_HUB * escala, nivel);
+
+      this.actualizarPolvo(nave, dtS, anguloNave);
+      this.actualizarBalizas(tiempo);
 
       const enCurso = partida.fase === 'en-curso';
       this.actualizarPropulsores(partida.acciones, enCurso && nave.combustible > 0);

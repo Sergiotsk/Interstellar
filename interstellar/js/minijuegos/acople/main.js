@@ -92,7 +92,7 @@ function pausarPartida(s) {
   if (s.partida.fase !== 'en-curso') return;
   s.partida = pausar(s.partida);
   s.acciones = soltarTodo();
-  s.audio.actualizar(s.estado, s.acciones, false);
+  s.audio.actualizar(s.estado, s.acciones, false, s.partida.nave.distancia);
   s.ui.mostrar('pausa');
 }
 
@@ -128,7 +128,7 @@ function tick(s, dt) {
   if (s.estado === 'DOCKING RANGE' && estadoAnterior !== 'DOCKING RANGE' && s.partida.fase === 'en-curso') {
     s.audio.evento('lock-in');
   }
-  s.audio.actualizar(s.estado, s.acciones, s.partida.fase === 'en-curso');
+  s.audio.actualizar(s.estado, s.acciones, s.partida.fase === 'en-curso', s.partida.nave.distancia);
   const ahora = performance.now();
   if (ahora - s.ultimoHud > INTERVALO_HUD_MS || s.partida.fase !== fase) {
     s.ultimoHud = ahora;
