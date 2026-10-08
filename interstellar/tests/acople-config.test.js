@@ -61,3 +61,29 @@ describe('acople/config.js — parametros centralizados (FR-018)', () => {
     assert.equal(typeof CONFIG.nombres.nave, 'string');
   });
 });
+
+describe('acople/config.js — perfil de audio por modo (010, parlantes de celular)', () => {
+  const { teclado, tactil } = CONFIG.audio;
+
+  test('desktop conserva la mezcla original', () => {
+    assert.equal(teclado.volumen, 0.6);
+    assert.equal(teclado.musicaFiltro[0], 450);
+    assert.equal(teclado.propulsorFiltro, 900);
+    assert.equal(teclado.compresor, false);
+  });
+
+  test('tactil suena mas fuerte y mas brillante, con compresor para no saturar', () => {
+    assert.ok(tactil.volumen > teclado.volumen && tactil.volumen <= 1);
+    assert.ok(tactil.musicaFiltro[0] > teclado.musicaFiltro[0]);
+    assert.ok(tactil.musicaVolumen[0] > teclado.musicaVolumen[0]);
+    assert.ok(tactil.propulsorFiltro > teclado.propulsorFiltro);
+    assert.equal(tactil.compresor, true);
+  });
+
+  test('cada rango va de menor a mayor', () => {
+    for (const p of [teclado, tactil]) {
+      assert.ok(p.musicaFiltro[0] < p.musicaFiltro[1]);
+      assert.ok(p.musicaVolumen[0] < p.musicaVolumen[1]);
+    }
+  });
+});

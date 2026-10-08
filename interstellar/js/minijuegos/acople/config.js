@@ -50,6 +50,12 @@ export const CONFIG = congelar({
     pesos: { precision: 0.3, combustible: 0.2, tiempo: 0.15, suavidad: 0.2, velocidad: 0.15 },
   },
 
+  // Mezcla por modo: el parlante del celular no da graves, asi que en tactil se sube y se abre el filtro.
+  audio: {
+    teclado: { volumen: 0.6, musicaFiltro: [450, 2650], musicaVolumen: [0.14, 0.28], propulsorFiltro: 900, compresor: false },
+    tactil: { volumen: 1, musicaFiltro: [1400, 3600], musicaVolumen: [0.32, 0.5], propulsorFiltro: 2600, compresor: true },
+  },
+
   // Tabla de puntajes local estilo fichin: top N con nombre de hasta largoNombre letras.
   ranking: {
     clave: 'interstellar:minijuegos:acople:ranking',
