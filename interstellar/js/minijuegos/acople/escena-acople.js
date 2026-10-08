@@ -18,6 +18,8 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       this.giroResidual = 0;
       this.giroAcumulado = 0;
       this.rechazosVistos = 0;
+      this.inerciaRanger = { roll: 0, pitch: 0 };
+      this.techoConsola = 0;
     }
 
     create() {
@@ -29,6 +31,7 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       this.estacion = this.add.graphics();
       this.graficoSellado = this.add.graphics();
       this.lucesEstacion = this.add.graphics();
+      this.graficoRanger = this.add.graphics();
       this.reticula = this.add.graphics();
       this.animSellado = null;
       this.crearPropulsores();
@@ -117,6 +120,7 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       const techo = alto - consola.alto;
       const anchoConsola = Math.min(consola.anchoMax, ancho * 0.94);
       const cx = ancho / 2;
+      this.techoConsola = techo;
       this.centro = { x: cx, y: techo / 2 };
       this.ladoMenor = Math.min(ancho, techo);
       this.estrellas.setPosition(cx, alto / 2);
@@ -126,13 +130,124 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       this.estacion.setPosition(this.centro.x, this.centro.y);
       this.graficoSellado.setPosition(this.centro.x, this.centro.y);
       this.lucesEstacion.setPosition(this.centro.x, this.centro.y);
-      // Esquinas superiores del trapecio (clip-path 6%-94%) y mitad de sus lados.
-      this.rcsIzquierdo.setPosition(cx - anchoConsola * 0.44, techo);
-      this.rcsDerecho.setPosition(cx + anchoConsola * 0.44, techo);
+
+      // Fuselaje exterior del Ranger proyectado hacia adelante sobre el parabrisas
+      const wMorro = Math.min(anchoConsola * 0.44, 380);
+      const hMorro = Math.min(62, techo * 0.17);
+      const wChine = wMorro * 0.46;
+      this.graficoRanger.setPosition(cx, techo);
+      this.dibujarRanger(wMorro, hMorro, wChine);
+
+      // Propulsores RCS y retro ubicados exactamente en sus toberas mecánicas del Ranger
+      this.rcsIzquierdo.setPosition(cx - wChine, techo - hMorro * 0.38);
+      this.rcsDerecho.setPosition(cx + wChine, techo - hMorro * 0.38);
       this.motorIzquierdo.setPosition(cx - anchoConsola * 0.47, techo + consola.alto * 0.5);
       this.motorDerecho.setPosition(cx + anchoConsola * 0.47, techo + consola.alto * 0.5);
-      this.retro.setPosition(cx, techo);
+      this.retro.setPosition(cx, techo - hMorro);
       if (this.radioEstrellas < Math.hypot(ancho, alto) / 2) this.dibujarEstrellas();
+    }
+
+    dibujarRanger(w, h, wChine) {
+      const g = this.graficoRanger;
+      g.clear();
+
+      // Fuselaje lifting-body del Ranger visto hacia adelante desde la cabina
+      // Coordenadas locales: (0, 0) es el centro superior de la consola
+      const yPunta = -h;
+      const yChine = -h * 0.38;
+      const xChineL = -wChine;
+      const xChineR = wChine;
+      const xBaseL = -w * 0.5;
+      const xBaseR = w * 0.5;
+
+      // 1. Faceta dorsal babor / izquierda (expuesta a la luz ambiental de Gargantúa)
+      g.fillStyle(0x1e2736, 0.96);
+      g.fillPoints([
+        { x: 0, y: yPunta },
+        { x: xChineL, y: yChine },
+        { x: xBaseL, y: 0 },
+        { x: 0, y: 0 },
+      ], true);
+
+      // 2. Faceta dorsal estribor / derecha (en penumbra/sombra propia)
+      g.fillStyle(0x131a24, 0.96);
+      g.fillPoints([
+        { x: 0, y: yPunta },
+        { x: 0, y: 0 },
+        { x: xBaseR, y: 0 },
+        { x: xChineR, y: yChine },
+      ], true);
+
+      // 3. Losetas térmicas cerámicas negras (TPS) - líneas de panelado longitudinal y transversal
+      g.lineStyle(1, 0x090d14, 0.75);
+      // Costuras transversales
+      for (const k of [0.28, 0.56, 0.82]) {
+        const yK = yPunta * (1 - k);
+        const yKL = yPunta * (1 - k) + (yChine - yPunta) * k;
+        const xKL = xChineL * k;
+        const xKR = xChineR * k;
+        g.lineBetween(0, yK, xKL, yKL);
+        g.lineBetween(0, yK, xKR, yKL);
+      }
+      // Costuras longitudinales intermedias
+      g.lineBetween(xChineL * 0.5, yChine * 0.5, xBaseL * 0.65, 0);
+      g.lineBetween(xChineR * 0.5, yChine * 0.5, xBaseR * 0.65, 0);
+
+      // 4. Cresta dorsal central (quilla superior del Ranger con reflejo especular)
+      g.lineStyle(1.8, 0x90b8dc, 0.75);
+      g.lineBetween(0, 0, 0, yPunta);
+
+      // 5. Aristas laterales de los chines (bordes aerodinámicos afilados)
+      // Chine izquierdo iluminado
+      g.lineStyle(2, 0xd8e8f8, 0.85);
+      g.lineBetween(xBaseL, 0, xChineL, yChine);
+      g.lineBetween(xChineL, yChine, 0, yPunta);
+
+      // Chine derecho en sombra
+      g.lineStyle(1.4, 0x3d4f64, 0.6);
+      g.lineBetween(xBaseR, 0, xChineR, yChine);
+      g.lineBetween(xChineR, yChine, 0, yPunta);
+
+      // 6. Pods estructurales de propulsores RCS en los chines
+      // Pod izquierdo
+      g.fillStyle(0x101620, 1);
+      g.fillRect(xChineL - 5, yChine - 4, 10, 8);
+      g.lineStyle(1, 0x475b73, 0.8);
+      g.strokeRect(xChineL - 5, yChine - 4, 10, 8);
+      // Toberas oscuras del RCS izquierdo
+      g.fillStyle(0x000000, 1);
+      g.fillCircle(xChineL - 2, yChine - 1, 1.4);
+      g.fillCircle(xChineL + 2, yChine - 1, 1.4);
+      // Marca stencil amarilla de advertencia
+      g.lineStyle(1, 0xd4a017, 0.7);
+      g.lineBetween(xChineL - 4, yChine + 3, xChineL + 4, yChine + 3);
+
+      // Pod derecho
+      g.fillStyle(0x101620, 1);
+      g.fillRect(xChineR - 5, yChine - 4, 10, 8);
+      g.lineStyle(1, 0x3a4b60, 0.7);
+      g.strokeRect(xChineR - 5, yChine - 4, 10, 8);
+      // Toberas oscuras del RCS derecho
+      g.fillStyle(0x000000, 1);
+      g.fillCircle(xChineR - 2, yChine - 1, 1.4);
+      g.fillCircle(xChineR + 2, yChine - 1, 1.4);
+      g.lineStyle(1, 0xd4a017, 0.7);
+      g.lineBetween(xChineR - 4, yChine + 3, xChineR + 4, yChine + 3);
+
+      // 7. Sensor frontal / cono de la sonda de acople en la punta del morro
+      g.fillStyle(0x222e3e, 1);
+      g.fillTriangle(-6, yPunta, 6, yPunta, 0, yPunta - 7);
+      g.lineStyle(1.2, 0x8cb4d8, 0.9);
+      g.strokeTriangle(-6, yPunta, 6, yPunta, 0, yPunta - 7);
+      // Puerto de sensor retro
+      g.fillStyle(0x000000, 1);
+      g.fillCircle(0, yPunta - 2, 1.8);
+
+      // 8. Junta de estanqueidad inferior del parabrisas (gasket de titanio y goma)
+      g.lineStyle(3, 0x0a0e14, 0.98);
+      g.lineBetween(xBaseL, 0, xBaseR, 0);
+      g.lineStyle(1.2, 0x2e3d50, 0.7);
+      g.lineBetween(xBaseL, -1, xBaseR, -1);
     }
 
     dibujarEstrellas() {
@@ -215,22 +330,37 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       // Vector de iluminación dominante de Gargantúa (~135°, arriba-izquierda)
       const anguloLuz = Math.PI * 0.75;
 
-      // Armazon circular concéntrico (truss del anillo) con relieve
-      g.lineStyle(1.4, paleta.texto, 0.35);
-      g.strokeCircle(0, 0, RADIO_ANILLO - 7);
-      g.strokeCircle(0, 0, RADIO_ANILLO + 7);
-      g.lineStyle(2.2, paleta.texto, 0.65);
+      // 1. Armazón concéntrico y anillo tubular presurizado continuo de tránsito
+      // Armazón exterior e interior de celosía
+      g.lineStyle(1.2, paleta.texto, 0.28);
+      g.strokeCircle(0, 0, RADIO_ANILLO - 8);
+      g.strokeCircle(0, 0, RADIO_ANILLO + 8);
+
+      // Tubo presurizado continuo de tránsito de tripulación
+      g.lineStyle(6.5, paleta.fondo, 0.95);
       g.strokeCircle(0, 0, RADIO_ANILLO);
+      g.lineStyle(1.4, paleta.texto, 0.55);
+      g.strokeCircle(0, 0, RADIO_ANILLO - 3.2);
+      g.strokeCircle(0, 0, RADIO_ANILLO + 3.2);
+
+      // Costillas radiales de refuerzo estructural y juntas de expansión cada 10°
+      for (let k = 0; k < 36; k += 1) {
+        const aRib = (k / 36) * Math.PI * 2;
+        const cosR = Math.cos(aRib);
+        const sinR = Math.sin(aRib);
+        g.lineStyle(1, paleta.texto, 0.22);
+        g.lineBetween(cosR * (RADIO_ANILLO - 3.2), sinR * (RADIO_ANILLO - 3.2), cosR * (RADIO_ANILLO + 3.2), sinR * (RADIO_ANILLO + 3.2));
+      }
 
       // Arco de luz especular en el anillo exterior expuesto a Gargantúa
-      g.lineStyle(1.8, 0xffffff, 0.35);
+      g.lineStyle(2.0, 0xffffff, 0.38);
       g.beginPath();
-      g.arc(0, 0, RADIO_ANILLO + 7, anguloLuz - Math.PI / 2.5, anguloLuz + Math.PI / 2.5, false);
+      g.arc(0, 0, RADIO_ANILLO + 3.2, anguloLuz - Math.PI / 2.5, anguloLuz + Math.PI / 2.5, false);
       g.strokePath();
 
-      // 12 módulos habitables prismáticos con sombreado volumétrico
-      const hl = 8.5; // semilargo tangencial
-      const hw = 5.5; // semiancho radial
+      // 2. 12 módulos habitables y naves de descenso (Landers)
+      const hl = 8.5; // semilargo tangencial estándar
+      const hw = 5.5; // semiancho radial estándar
       for (let i = 0; i < 12; i += 1) {
         const a = (i / 12) * Math.PI * 2;
         const cosA = Math.cos(a);
@@ -270,18 +400,58 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
           continue;
         }
 
-        // Vértices del módulo rectangular rotado
+        // Naves pesadas Lander en módulos 3 y 9 (silueta asimétrica y robusta del film)
+        if (i === 3 || i === 9) {
+          const lhl = 12.5; // cuerpo más ancho y angular
+          const lhw = 8.5; // sobresale más radialmente
+          const pLander = [
+            { x: cx - tx * (lhl * 0.7) - cosA * (lhw * 0.9), y: cy - ty * (lhl * 0.7) - sinA * (lhw * 0.9) },
+            { x: cx - tx * lhl + cosA * (lhw * 0.2), y: cy - ty * lhl + sinA * (lhw * 0.2) },
+            { x: cx - tx * (lhl * 0.8) + cosA * lhw, y: cy - ty * (lhl * 0.8) + sinA * lhw },
+            { x: cx + tx * (lhl * 0.8) + cosA * lhw, y: cy + ty * (lhl * 0.8) + sinA * lhw },
+            { x: cx + tx * lhl + cosA * (lhw * 0.2), y: cy + ty * lhl + sinA * (lhw * 0.2) },
+            { x: cx + tx * (lhl * 0.7) - cosA * (lhw * 0.9), y: cy + ty * (lhl * 0.7) - sinA * (lhw * 0.9) },
+          ];
+
+          g.fillStyle(paleta.fondo, 0.97);
+          g.fillPoints(pLander, true);
+
+          const alfaBordeL = 0.55 + factorLuz * 0.45;
+          g.lineStyle(1.8 + factorLuz * 0.4, paleta.texto, alfaBordeL);
+          g.strokePoints(pLander, true);
+
+          // Ventral TPS: losetas cerámicas y paneles térmicos oscuros
+          g.lineStyle(1, 0x090d14, 0.7);
+          g.lineBetween(cx - tx * (lhl * 0.6) + cosA * (lhw * 0.4), cy - ty * (lhl * 0.6) + sinA * (lhw * 0.4), cx + tx * (lhl * 0.6) + cosA * (lhw * 0.4), cy + ty * (lhl * 0.6) + sinA * (lhw * 0.4));
+          g.lineBetween(cx - tx * (lhl * 0.5) + cosA * (lhw * 0.7), cy - ty * (lhl * 0.5) + sinA * (lhw * 0.7), cx + tx * (lhl * 0.5) + cosA * (lhw * 0.7), cy + ty * (lhl * 0.5) + sinA * (lhw * 0.7));
+
+          // Toberas gemelas del motor vertical del Lander
+          g.fillStyle(0x06090e, 1);
+          g.fillCircle(cx - tx * 4.5 + cosA * (lhw - 1.2), cy - ty * 4.5 + sinA * (lhw - 1.2), 1.6);
+          g.fillCircle(cx + tx * 4.5 + cosA * (lhw - 1.2), cy + ty * 4.5 + sinA * (lhw - 1.2), 1.6);
+
+          // Abrazaderas de anclaje de titanio al anillo de la estación
+          g.lineStyle(2, paleta.texto, 0.75);
+          g.lineBetween(cx - tx * 5.5 - cosA * (lhw * 0.9), cy - ty * 5.5 - sinA * (lhw * 0.9), cx - tx * 5.5 - cosA * (lhw * 1.2), cy - ty * 5.5 - sinA * (lhw * 1.2));
+          g.lineBetween(cx + tx * 5.5 - cosA * (lhw * 0.9), cy + ty * 5.5 - sinA * (lhw * 0.9), cx + tx * 5.5 - cosA * (lhw * 1.2), cy + ty * 5.5 - sinA * (lhw * 1.2));
+
+          if (dotLuz > 0.1) {
+            g.lineStyle(2.0, 0xffffff, dotLuz * 0.8);
+            g.lineBetween(pLander[2].x, pLander[2].y, pLander[3].x, pLander[3].y);
+          }
+          continue;
+        }
+
+        // Módulos habitables cilíndricos estándar
         const p1 = { x: cx - tx * hl - cosA * hw, y: cy - ty * hl - sinA * hw };
         const p2 = { x: cx + tx * hl - cosA * hw, y: cy + ty * hl - sinA * hw };
         const p3 = { x: cx + tx * hl + cosA * hw, y: cy + ty * hl + sinA * hw };
         const p4 = { x: cx - tx * hl + cosA * hw, y: cy - ty * hl + sinA * hw };
 
-        // Fuselaje con sombreado volumétrico según incidencia de luz
         const alfaFondo = 0.88 + factorLuz * 0.1;
         g.fillStyle(paleta.fondo, alfaFondo);
         g.fillPoints([p1, p2, p3, p4], true);
 
-        // Borde estructural: cara soleada más luminosa, cara sombría más tenue
         const alfaBorde = 0.5 + factorLuz * 0.48;
         g.lineStyle(1.5 + factorLuz * 0.5, paleta.texto, alfaBorde);
         g.strokePoints([p1, p2, p3, p4], true);
@@ -292,18 +462,23 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
           g.lineBetween(p2.x, p2.y, p3.x, p3.y);
         }
 
-        // Ventana central del módulo con reflejo
-        g.lineStyle(1, paleta.texto, 0.35 + factorLuz * 0.3);
-        g.lineBetween(cx - tx * 3, cy - ty * 3, cx + tx * 3, cy + ty * 3);
+        // Escotilla circular central de acceso con marco
+        g.fillStyle(paleta.fondo, 1);
+        g.fillCircle(cx, cy, 2.2);
+        g.lineStyle(1, paleta.texto, 0.4 + factorLuz * 0.35);
+        g.strokeCircle(cx, cy, 2.2);
 
-        // Paneles radiadores disipadores en módulos pares
+        // Paneles radiadores térmicos disipadores en módulos pares
         if (i % 2 === 0) {
-          g.lineStyle(1.2, paleta.texto, 0.3 + factorLuz * 0.35);
-          g.lineBetween(cx + cosA * hw, cy + sinA * hw, cx + cosA * (hw + 5), cy + sinA * (hw + 5));
+          g.lineStyle(1.2, paleta.texto, 0.35 + factorLuz * 0.35);
+          g.lineBetween(cx + cosA * hw - tx * 3, cy + sinA * hw - ty * 3, cx + cosA * (hw + 5.5) - tx * 3, cy + sinA * (hw + 5.5) - ty * 3);
+          g.lineBetween(cx + cosA * hw + tx * 3, cy + sinA * hw + ty * 3, cx + cosA * (hw + 5.5) + tx * 3, cy + sinA * (hw + 5.5) + ty * 3);
+          // Aleta transversal
+          g.lineBetween(cx + cosA * (hw + 3) - tx * 3, cy + sinA * (hw + 3) - ty * 3, cx + cosA * (hw + 3) + tx * 3, cy + sinA * (hw + 3) + ty * 3);
         }
       }
 
-      // 4 brazos estructurales dobles con celosía hacia el hub
+      // 3. 4 brazos estructurales dobles con celosía hacia el hub
       for (let i = 0; i < 4; i += 1) {
         const a = (i / 4) * Math.PI * 2 + Math.PI / 4;
         const deltaA = 0.04;
@@ -313,38 +488,67 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
         const alfaBrazo = 0.45 + (dotBrazo + 1) * 0.22;
 
         g.lineStyle(1.5, paleta.texto, alfaBrazo);
-        g.lineBetween(Math.cos(a1) * RADIO_HUB, Math.sin(a1) * RADIO_HUB, Math.cos(a - 0.015) * (RADIO_ANILLO - 7), Math.sin(a - 0.015) * (RADIO_ANILLO - 7));
-        g.lineBetween(Math.cos(a2) * RADIO_HUB, Math.sin(a2) * RADIO_HUB, Math.cos(a + 0.015) * (RADIO_ANILLO - 7), Math.sin(a + 0.015) * (RADIO_ANILLO - 7));
+        g.lineBetween(Math.cos(a1) * RADIO_HUB, Math.sin(a1) * RADIO_HUB, Math.cos(a - 0.015) * (RADIO_ANILLO - 8), Math.sin(a - 0.015) * (RADIO_ANILLO - 8));
+        g.lineBetween(Math.cos(a2) * RADIO_HUB, Math.sin(a2) * RADIO_HUB, Math.cos(a + 0.015) * (RADIO_ANILLO - 8), Math.sin(a + 0.015) * (RADIO_ANILLO - 8));
 
         // Travesaños diagonales de celosía
         for (let k = 0.35; k <= 0.85; k += 0.25) {
-          const rK = RADIO_HUB + (RADIO_ANILLO - 7 - RADIO_HUB) * k;
+          const rK = RADIO_HUB + (RADIO_ANILLO - 8 - RADIO_HUB) * k;
           g.lineStyle(1, paleta.texto, alfaBrazo * 0.6);
           g.lineBetween(Math.cos(a1) * rK, Math.sin(a1) * rK, Math.cos(a2) * (rK + 6), Math.sin(a2) * (rK + 6));
         }
       }
 
-      // Hub de atraque central cilíndrico con relieve de lente
-      g.fillStyle(paleta.fondo, 0.95);
+      // 4. Hub de atraque central cilíndrico con relieve
+      g.fillStyle(paleta.fondo, 0.96);
       g.fillCircle(0, 0, RADIO_HUB);
       g.lineStyle(1.8, paleta.texto, 0.5);
-      g.strokeCircle(0, 0, RADIO_HUB * 0.6);
+      g.strokeCircle(0, 0, RADIO_HUB * 0.62);
       g.lineStyle(2.8, color, 1);
       g.strokeCircle(0, 0, RADIO_HUB);
 
-      // Semicírculo iluminado en el hub central expuesto a la luz
-      g.lineStyle(2.2, 0xffffff, 0.65);
+      // Semicírculo iluminado en el hub central expuesto a Gargantúa
+      g.lineStyle(2.2, 0xffffff, 0.7);
       g.beginPath();
       g.arc(0, 0, RADIO_HUB, anguloLuz - Math.PI / 2.2, anguloLuz + Math.PI / 2.2, false);
       g.strokePath();
 
-      // Ranura guía del puerto de acople (apunta a -Y cuando ángulo relativo es 0)
-      g.fillStyle(color, 1);
-      g.fillRect(-5, -RADIO_HUB - 13, 10, 15);
+      // 5. Collarín de acople andrógino APAS con 3 pétalos guía a 120°
+      // Pétalo 0 a -90° (-Y): es el pétalo maestro que coincide con la flecha de la retícula HUD
+      for (let p = 0; p < 3; p += 1) {
+        const angPetalo = -Math.PI / 2 + (p * Math.PI * 2) / 3;
+        const npx = Math.cos(angPetalo);
+        const npy = Math.sin(angPetalo);
+        const tpx = -npy;
+        const tpy = npx;
 
-      // Muescas guía trapezoidales
-      g.fillTriangle(-5, -RADIO_HUB - 13, -11, -RADIO_HUB - 7, -5, -RADIO_HUB - 7);
-      g.fillTriangle(5, -RADIO_HUB - 13, 11, -RADIO_HUB - 7, 5, -RADIO_HUB - 7);
+        const rBase = RADIO_HUB;
+        const rTip = RADIO_HUB + 13;
+        const wBase = 7.5;
+        const wTip = 4.0;
+
+        const pt1 = { x: npx * rBase - tpx * (wBase * 0.5), y: npy * rBase - tpy * (wBase * 0.5) };
+        const pt2 = { x: npx * rTip - tpx * (wTip * 0.5), y: npy * rTip - tpy * (wTip * 0.5) };
+        const pt3 = { x: npx * rTip + tpx * (wTip * 0.5), y: npy * rTip + tpy * (wTip * 0.5) };
+        const pt4 = { x: npx * rBase + tpx * (wBase * 0.5), y: npy * rBase + tpy * (wBase * 0.5) };
+
+        // Hoja guía del pétalo
+        g.fillStyle(color, 0.95);
+        g.fillPoints([pt1, pt2, pt3, pt4], true);
+
+        // Bisel de deslizamiento metálico
+        g.lineStyle(1.4, 0xffffff, 0.75);
+        g.strokePoints([pt1, pt2, pt3, pt4], true);
+
+        // Pétalo maestro (p === 0): ranura índice central de alineación
+        if (p === 0) {
+          g.lineStyle(1.8, paleta.fondo, 0.95);
+          g.lineBetween(npx * (rBase - 2), npy * (rBase - 2), npx * (rTip + 1), npy * (rTip + 1));
+          // Pasador de captura hidráulico en la punta
+          g.fillStyle(0xffffff, 0.9);
+          g.fillCircle(npx * rTip, npy * rTip, 1.8);
+        }
+      }
     }
 
     dibujarReticula(radioHub, nivel) {
@@ -352,9 +556,20 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       const { x, y } = this.centro;
       const color = this.colorDeNivel(nivel);
       g.clear();
+
+      // Círculo HUD de captura exterior
       g.lineStyle(1, color, 0.6);
       g.strokeCircle(x, y, radioHub + 18);
-      // Marca de enganche fija: la ranura del puerto tiene que quedar debajo de esta flecha.
+
+      // Marcas de cuadrante de precisión aeroespacial
+      const rInt = radioHub + 14;
+      const rExt = radioHub + 22;
+      g.lineStyle(1.2, color, 0.75);
+      g.lineBetween(x - rExt, y, x - rInt, y);
+      g.lineBetween(x + rInt, y, x + rExt, y);
+      g.lineBetween(x, y + rInt, x, y + rExt);
+
+      // Marca de enganche fija superior (flecha guía del puerto)
       g.fillStyle(color, 0.95);
       const tope = y - radioHub - 26;
       g.fillTriangle(x - 8, tope - 10, x + 8, tope - 10, x, tope);
@@ -656,6 +871,34 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       if (enCurso && nivel === 'peligro' && !reducirMovimiento && !this.cameras.main.shakeEffect.isRunning) {
         this.cameras.main.shake(160, 0.003);
       }
+
+      // Inercia física reactiva del fuselaje del Ranger (cabeceo en impulso/freno y balanceo en alabeo)
+      const acciones = partida.acciones;
+      let targetRoll = 0;
+      let targetPitch = 0;
+
+      if (enCurso && nave.combustible > 0) {
+        if (acciones.has('rotarIzquierda')) targetRoll += 0.035;
+        if (acciones.has('rotarDerecha')) targetRoll -= 0.035;
+        if (acciones.has('impulso')) targetPitch -= 5.0; // Inercia frontal: morro se hunde por aceleración
+        if (acciones.has('freno')) targetPitch += 4.0; // Inercia retrógrada: morro cabecea hacia arriba
+      }
+
+      if (partida.fase === 'fallida' && this.giroResidual && !reducirMovimiento) {
+        targetRoll += Math.sin(tiempo * 0.008) * 0.05;
+      }
+
+      if (reducirMovimiento) {
+        this.inerciaRanger.roll = 0;
+        this.inerciaRanger.pitch = 0;
+      } else {
+        const factorDamping = Math.min(1, dtS * 8.5);
+        this.inerciaRanger.roll += (targetRoll - this.inerciaRanger.roll) * factorDamping;
+        this.inerciaRanger.pitch += (targetPitch - this.inerciaRanger.pitch) * factorDamping;
+      }
+
+      this.graficoRanger.setRotation(this.inerciaRanger.roll);
+      this.graficoRanger.setY(this.techoConsola + this.inerciaRanger.pitch);
     }
   };
 }
