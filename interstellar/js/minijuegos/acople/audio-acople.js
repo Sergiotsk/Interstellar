@@ -73,6 +73,74 @@ export function crearAudioAcople() {
     alarma.gain.value = 0;
     pitido.connect(alarma).connect(maestro);
     pitido.start();
+
+    // Canal de música: órgano de tubos procedural tipo Zimmer (FR-037 / research R6)
+    canalMusica = ctx.createGain();
+    canalMusica.gain.value = 0;
+    filtroMusica = ctx.createBiquadFilter();
+    filtroMusica.type = 'lowpass';
+    filtroMusica.frequency.value = 450;
+    filtroMusica.Q.value = 2.2;
+    canalMusica.connect(filtroMusica).connect(maestro);
+  }
+
+  let canalMusica = null;
+  let filtroMusica = null;
+  let proximoPasoMusica = 0;
+  let pasoMusica = 0;
+  const DUR_CORCHEA = 0.226; // ~133 BPM (tempo de No Time for Caution)
+
+  // Ostinato en Re menor (Dm -> Bb -> C -> A)
+  const SECUENCIA_ORGANO = [
+    // Compás 1: Dm
+    293.66, 349.23, 440.00, 587.33, 440.00, 349.23, 293.66, 349.23,
+    // Compás 2: Bb
+    293.66, 349.23, 466.16, 587.33, 466.16, 349.23, 293.66, 349.23,
+    // Compás 3: C
+    329.63, 392.00, 523.25, 659.25, 523.25, 392.00, 329.63, 392.00,
+    // Compás 4: A
+    329.63, 440.00, 554.37, 659.25, 554.37, 440.00, 329.63, 440.00,
+  ];
+
+  const PEDALES_ORGANO = {
+    0: 73.42,  // D2
+    8: 58.27,  // Bb1
+    16: 65.41, // C2
+    24: 55.00, // A1
+  };
+
+  // Síntesis aditiva de órgano de tubos (registros 16', 8', 4' y 2')
+  function tocarNotaOrgano(f0, t, dur, ganancia = 0.045, pedal = false) {
+    if (!ctx || !canalMusica) return;
+    const env = ctx.createGain();
+    env.gain.setValueAtTime(0.0001, t);
+    env.gain.linearRampToValueAtTime(ganancia, t + 0.02);
+    env.gain.setValueAtTime(ganancia, t + dur * 0.75);
+    env.gain.exponentialRampToValueAtTime(0.0001, t + dur + 0.06);
+    env.connect(canalMusica);
+
+    const parciales = pedal
+      ? [
+          { mult: 0.5, tipo: 'triangle', g: 0.8 },
+          { mult: 1, tipo: 'sine', g: 0.5 },
+        ]
+      : [
+          { mult: 1, tipo: 'sine', g: 0.6 },
+          { mult: 2, tipo: 'sine', g: 0.35 },
+          { mult: 3, tipo: 'sine', g: 0.15 },
+          { mult: 4, tipo: 'triangle', g: 0.08 },
+        ];
+
+    parciales.forEach(({ mult, tipo, g }) => {
+      const osc = ctx.createOscillator();
+      osc.type = tipo;
+      osc.frequency.setValueAtTime(f0 * mult, t);
+      const subG = ctx.createGain();
+      subG.gain.value = g;
+      osc.connect(subG).connect(env);
+      osc.start(t);
+      osc.stop(t + dur + 0.08);
+    });
   }
 
   function reanudar() {
@@ -115,6 +183,37 @@ export function crearAudioAcople() {
       }
     } else {
       proximoTic = t + 0.2;
+    }
+
+    // Musicalización procedural: órgano de tubos de tensión
+    if (canalMusica && filtroMusica) {
+      if (enCurso) {
+        // Apertura gradual de filtro y ganancia según distancia
+        const cercania = Math.max(0, Math.min(1, (180 - distancia) / 150));
+        const freqFiltro = 450 + cercania * 2200; // 450 Hz -> 2650 Hz
+        const volMusica = 0.14 + cercania * 0.14;
+        filtroMusica.frequency.setTargetAtTime(freqFiltro, t, 0.2);
+        canalMusica.gain.setTargetAtTime(volMusica, t, 0.2);
+
+        if (t >= proximoPasoMusica) {
+          if (proximoPasoMusica === 0) proximoPasoMusica = t;
+          const indice = pasoMusica % SECUENCIA_ORGANO.length;
+          const notaHz = SECUENCIA_ORGANO[indice];
+          tocarNotaOrgano(notaHz, proximoPasoMusica, DUR_CORCHEA * 0.92, 0.048, false);
+
+          const pedalHz = PEDALES_ORGANO[indice];
+          if (pedalHz) {
+            tocarNotaOrgano(pedalHz, proximoPasoMusica, DUR_CORCHEA * 7.2, 0.065, true);
+          }
+
+          pasoMusica += 1;
+          proximoPasoMusica += DUR_CORCHEA;
+        }
+      } else {
+        canalMusica.gain.setTargetAtTime(0, t, 0.25);
+        proximoPasoMusica = 0;
+        pasoMusica = 0;
+      }
     }
   }
 

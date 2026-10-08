@@ -6,6 +6,7 @@ const RADIO_ANILLO = 100; // unidades locales del dibujo de la estacion
 const RADIO_HUB = 22;
 const ESCALA_PANTALLA = 0.42; // radio del anillo en contacto, como fraccion del lado menor
 const SUAVIZADO_DISTANCIA = 80; // u: cuanto tarda la estacion en "crecer" al acercarse
+const MODULO_DANADO = 2; // módulo reventado por la esclusa de Mann (60 deg)
 
 // obtenerConsola() -> { alto, anchoMax } en px: la consola es DOM; la escena solo necesita su silueta.
 export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNivel, paleta, reducirMovimiento, obtenerConsola }) {
@@ -23,11 +24,15 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       this.crearTexturaChispa();
       this.estrellas = this.add.graphics();
       this.graficoPolvo = this.add.graphics();
+      this.graficoEscombros = this.add.graphics();
+      this.graficoVenting = this.add.graphics();
       this.estacion = this.add.graphics();
       this.lucesEstacion = this.add.graphics();
       this.reticula = this.add.graphics();
       this.crearPropulsores();
       this.crearPolvoEspacial();
+      this.crearEscombros();
+      this.crearVenting();
       this.dibujarEstrellas();
       this.reubicar(this.scale.width, this.scale.height);
       this.scale.on('resize', (tam) => this.reubicar(tam.width, tam.height));
@@ -40,6 +45,41 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
         velocidadFactor: 0.6 + Math.random() * 0.8,
         radio: 0.8 + Math.random() * 1.3,
         alfa: 0.2 + Math.random() * 0.45,
+      }));
+    }
+
+    crearEscombros() {
+      const aDanado = (MODULO_DANADO / 12) * Math.PI * 2;
+      this.escombros = Array.from({ length: 22 }, () => {
+        // Polígonos irregulares que simulan chapas metálicas dobladas
+        const nPuntos = Math.random() < 0.6 ? 3 : 4;
+        const forma = [];
+        for (let j = 0; j < nPuntos; j += 1) {
+          const ang = (j / nPuntos) * Math.PI * 2 + (Math.random() - 0.5) * 0.5;
+          const rad = 0.5 + Math.random() * 0.9;
+          forma.push({ x: Math.cos(ang) * rad, y: Math.sin(ang) * rad });
+        }
+        return {
+          angulo: aDanado + (Math.random() - 0.3) * 1.3,
+          distancia: RADIO_ANILLO + (Math.random() - 0.2) * 45,
+          velDistancia: 1.2 + Math.random() * 3.5,
+          velOrbital: (Math.random() - 0.5) * 0.14,
+          rotacion: Math.random() * Math.PI * 2,
+          velRotacion: (Math.random() - 0.5) * 3.2,
+          tamano: 2.2 + Math.random() * 3.6,
+          alfa: 0.45 + Math.random() * 0.45,
+          forma,
+        };
+      });
+    }
+
+    crearVenting() {
+      this.venting = Array.from({ length: 30 }, () => ({
+        progreso: Math.random(),
+        desvio: (Math.random() - 0.5) * 0.4,
+        velFactor: 0.75 + Math.random() * 0.6,
+        radio: 1.0 + Math.random() * 2.2,
+        alfa: 0.35 + Math.random() * 0.45,
       }));
     }
 
@@ -79,7 +119,10 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       this.ladoMenor = Math.min(ancho, techo);
       this.estrellas.setPosition(cx, alto / 2);
       this.graficoPolvo.setPosition(cx, alto / 2);
+      this.graficoEscombros.setPosition(this.centro.x, this.centro.y);
+      this.graficoVenting.setPosition(this.centro.x, this.centro.y);
       this.estacion.setPosition(this.centro.x, this.centro.y);
+      this.lucesEstacion.setPosition(this.centro.x, this.centro.y);
       // Esquinas superiores del trapecio (clip-path 6%-94%) y mitad de sus lados.
       this.rcsIzquierdo.setPosition(cx - anchoConsola * 0.44, techo);
       this.rcsDerecho.setPosition(cx + anchoConsola * 0.44, techo);
@@ -133,6 +176,35 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
         const cy = sinA * RADIO_ANILLO;
         const tx = -sinA;
         const ty = cosA;
+
+        if (i === MODULO_DANADO) {
+          // Módulo dañado (explosión de esclusa de Mann)
+          // Estructura fracturada y hueco de despresurización
+          g.fillStyle(paleta.fondo, 0.95);
+          g.fillPoints([
+            { x: cx - tx * hl * 0.95 - cosA * hw * 0.8, y: cy - ty * hl * 0.95 - sinA * hw * 0.8 },
+            { x: cx - tx * hl * 0.2 + cosA * hw * 0.35, y: cy - ty * hl * 0.2 + sinA * hw * 0.35 },
+            { x: cx + tx * hl * 0.3 - cosA * hw * 0.2, y: cy + ty * hl * 0.3 - sinA * hw * 0.2 },
+            { x: cx + tx * hl * 0.85 + cosA * hw * 0.65, y: cy + ty * hl * 0.85 + sinA * hw * 0.65 },
+            { x: cx + tx * hl * 0.65 - cosA * hw * 0.95, y: cy + ty * hl * 0.65 - sinA * hw * 0.95 },
+          ], true);
+
+          // Chapas de fuselaje desgarradas con contorno de alerta térmica
+          g.lineStyle(1.8, paleta.alerta, 0.9);
+          g.strokePoints([
+            { x: cx - tx * hl, y: cy - ty * hl },
+            { x: cx - tx * hl * 0.3 + cosA * hw * 0.7, y: cy - ty * hl * 0.3 + sinA * hw * 0.7 },
+            { x: cx + tx * hl * 0.1 - cosA * hw * 0.3, y: cy + ty * hl * 0.1 - sinA * hw * 0.3 },
+            { x: cx + tx * hl * 0.8 + cosA * hw * 0.85, y: cy + ty * hl * 0.8 + sinA * hw * 0.85 },
+          ], false);
+
+          // Vigas de celosía calcinadas expuestas al vacío
+          g.lineStyle(1.3, paleta.ambar, 0.8);
+          g.lineBetween(cx - tx * 4, cy - ty * 4, cx + cosA * 5, cy + sinA * 5);
+          g.lineBetween(cx + tx * 3, cy + ty * 3, cx - cosA * 4, cy - sinA * 4);
+          g.lineBetween(cx - cosA * 3, cy - sinA * 3, cx + tx * 5, cy + ty * 5);
+          continue;
+        }
 
         // Vértices del módulo rectangular rotado
         const p1 = { x: cx - tx * hl - cosA * hw, y: cy - ty * hl - sinA * hw };
@@ -256,6 +328,92 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       }
     }
 
+    actualizarEscombros(dtS) {
+      const g = this.graficoEscombros;
+      g.clear();
+      g.setPosition(this.estacion.x, this.estacion.y);
+      g.setScale(this.estacion.scaleX);
+      g.setRotation(this.estacion.rotation);
+
+      const aDanado = (MODULO_DANADO / 12) * Math.PI * 2;
+
+      for (let i = 0; i < this.escombros.length; i += 1) {
+        const d = this.escombros[i];
+        if (!reducirMovimiento) {
+          d.distancia += d.velDistancia * dtS;
+          d.angulo += d.velOrbital * dtS;
+          d.rotacion += d.velRotacion * dtS;
+          if (d.distancia > RADIO_ANILLO * 2.2) {
+            d.distancia = RADIO_ANILLO + Math.random() * 8;
+            d.angulo = aDanado + (Math.random() - 0.3) * 0.5;
+          }
+        }
+
+        const x = Math.cos(d.angulo) * d.distancia;
+        const y = Math.sin(d.angulo) * d.distancia;
+
+        const cosR = Math.cos(d.rotacion);
+        const sinR = Math.sin(d.rotacion);
+        const puntos = d.forma.map((pt) => ({
+          x: x + (pt.x * cosR - pt.y * sinR) * d.tamano,
+          y: y + (pt.x * sinR + pt.y * cosR) * d.tamano,
+        }));
+
+        g.fillStyle(paleta.fondo, d.alfa);
+        g.fillPoints(puntos, true);
+        g.lineStyle(1.2, paleta.texto, d.alfa);
+        g.strokePoints(puntos, true);
+      }
+    }
+
+    actualizarVenting(tiempo, dtS) {
+      const g = this.graficoVenting;
+      g.clear();
+      if (reducirMovimiento) return;
+
+      g.setPosition(this.estacion.x, this.estacion.y);
+      g.setScale(this.estacion.scaleX);
+      g.setRotation(this.estacion.rotation);
+
+      const aDanado = (MODULO_DANADO / 12) * Math.PI * 2;
+      const mx = Math.cos(aDanado) * RADIO_ANILLO;
+      const my = Math.sin(aDanado) * RADIO_ANILLO;
+
+      // El chorro de despresurización escapa tangencial/radialmente
+      const anguloBase = aDanado + 0.35;
+      const largoJet = 75;
+
+      for (let i = 0; i < this.venting.length; i += 1) {
+        const p = this.venting[i];
+        p.progreso += dtS * 1.6 * p.velFactor;
+        if (p.progreso > 1) {
+          p.progreso = Math.random() * 0.08;
+          p.desvio = (Math.random() - 0.5) * 0.4;
+        }
+
+        const d = p.progreso * largoJet;
+        const ang = anguloBase + p.desvio + p.progreso * 0.25;
+        const px = mx + Math.cos(ang) * d;
+        const py = my + Math.sin(ang) * d;
+
+        const alfa = (1 - p.progreso) * p.alfa;
+        const radio = p.radio * (0.8 + p.progreso * 2.4);
+
+        g.fillStyle(0xffffff, alfa * 0.75);
+        g.fillCircle(px, py, radio * 0.6);
+        g.fillStyle(paleta.teal, alfa * 0.35);
+        g.fillCircle(px, py, radio);
+      }
+
+      // Destello / arco eléctrico ocasional de cortocircuito
+      if (Math.sin(tiempo * 0.02) > 0.88 && Math.random() < 0.45) {
+        g.lineStyle(1.5, paleta.alerta, 0.95);
+        const ox = (Math.random() - 0.5) * 8;
+        const oy = (Math.random() - 0.5) * 8;
+        g.lineBetween(mx + ox, my + oy, mx + ox + (Math.random() - 0.5) * 7, my + oy + (Math.random() - 0.5) * 7);
+      }
+    }
+
     actualizarBalizas(tiempo) {
       const g = this.lucesEstacion;
       g.clear();
@@ -323,6 +481,8 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       this.dibujarReticula(RADIO_HUB * escala, nivel);
 
       this.actualizarPolvo(nave, dtS, anguloNave);
+      this.actualizarEscombros(dtS);
+      this.actualizarVenting(tiempo, dtS);
       this.actualizarBalizas(tiempo);
 
       const enCurso = partida.fase === 'en-curso';
