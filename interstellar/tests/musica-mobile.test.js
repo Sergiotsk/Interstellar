@@ -1,7 +1,7 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { aplicarVolumenNativo, accionPorVisibilidad } from '../js/layout.js';
+import { aplicarVolumenNativo, accionPorVisibilidad, rutaSinMusica } from '../js/layout.js';
 
 describe('musica de fondo en mobile — volumen nativo (iOS)', () => {
   test('aplicarVolumenNativo devuelve true si el navegador respeta audio.volume', () => {
@@ -68,5 +68,18 @@ describe('musica de fondo en mobile — CSS', () => {
     assert.ok(bloque, 'falta el bloque mobile de .musica-toggle');
     assert.match(bloque[0], /display:\s*inline-flex/);
     assert.match(bloque[0], /min-height:\s*44px/);
+  });
+});
+
+describe('musica de fondo — rutas que la silencian (009, research R5)', () => {
+  test('el trailer y el simulador de acople silencian la musica', () => {
+    assert.equal(rutaSinMusica('trailer.html'), true);
+    assert.equal(rutaSinMusica('minijuego-acople.html'), true);
+  });
+
+  test('el resto de las paginas no', () => {
+    for (const archivo of ['index.html', 'minijuegos.html', 'mundos-tierra.html', '']) {
+      assert.equal(rutaSinMusica(archivo), false, archivo);
+    }
   });
 });

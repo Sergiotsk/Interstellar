@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+    content="No Time for Caution: simulador arcade de acople inspirado en Interstellar. Sincronizá el giro con la estación, acercate despacio y acoplá.">
+  <title>No Time for Caution | Minijuegos | Interstellar</title>
+  <link rel="preload" href="assets/fonts/exo2-latin-var.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/orbitron-latin-var.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/sharetechmono-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+  <link rel="icon" href="favicon.ico" sizes="48x48">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16.png">
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/minijuegos.css">
+</head>
+
+<body class="pagina-acople">
+  <main>
+    <h1 id="acople-titulo" class="visualmente-oculto">No Time for Caution — simulador de acople</h1>
+
+    <section class="acople" aria-labelledby="acople-titulo" data-acople>
+      <div class="acople-lienzo" data-acople-lienzo tabindex="-1"></div>
+      <div class="acople-cabina-marco" aria-hidden="true"></div>
+
+      <button type="button" class="acople-tecla acople-pantalla" data-accion="pantalla" hidden>Pantalla completa</button>
+
+      <button type="button" class="acople-orden" data-accion="acoplar" data-orden-acople hidden></button>
+
+      <section class="acople-intro" data-pantalla="intro" aria-label="Introducción" hidden>
+        <p class="acople-intro-linea acople-intro-linea--fecha">AÑO 2067</p>
+        <p class="acople-intro-linea">La Tierra se muere.</p>
+        <p class="acople-intro-linea">La <span data-nombre="estacion">Endurance</span> gira.</p>
+        <p class="acople-intro-linea acople-intro-linea--orden">Sincronizá. Acercate despacio. Acoplá.</p>
+        <p class="acople-intro-controles">
+          <kbd>←</kbd> <kbd>→</kbd> o <kbd>A</kbd> <kbd>D</kbd> rotar · <kbd>↑</kbd> o <kbd>W</kbd> impulso · <kbd>Espacio</kbd> o <kbd>S</kbd> freno · <kbd>Enter</kbd> acoplar
+        </p>
+        <div class="acople-ranking acople-ranking--intro" data-ranking-bloque hidden>
+          <p class="acople-ranking-titulo" id="ranking-intro-titulo">Mejores pilotos</p>
+          <ol class="acople-ranking-lista" data-ranking="intro" aria-labelledby="ranking-intro-titulo"></ol>
+        </div>
+        <button type="button" class="acople-tecla" data-accion="saltar-intro">Saltear</button>
+      </section>
+
+      <section class="acople-consola" data-pantalla="hud" aria-label="Consola de navegación" hidden>
+        <dl class="consola-grupo">
+          <div class="instrumento instrumento--dial" data-instrumento="giro" data-ok="false">
+            <dt><span class="instrumento-led" aria-hidden="true"></span>Rotation Sync</dt>
+            <dd>
+              <span class="dial" aria-hidden="true"><span class="dial-aguja"></span></span>
+              <span class="instrumento-valor" data-hud="sync">—</span>
+            </dd>
+          </div>
+          <div class="instrumento instrumento--dial" data-instrumento="alineacion" data-ok="false">
+            <dt><span class="instrumento-led" aria-hidden="true"></span>Alignment</dt>
+            <dd>
+              <span class="dial" aria-hidden="true"><span class="dial-aguja"></span></span>
+              <span class="instrumento-valor" data-hud="alineacion">—</span>
+            </dd>
+          </div>
+        </dl>
+
+        <div class="consola-pantalla">
+          <p class="acople-estado" data-hud-estado data-nivel="neutro" aria-live="polite">
+            <span class="acople-estado-led" aria-hidden="true"></span>
+            <span class="acople-estado-etiqueta">Docking Status</span>
+            <span class="acople-estado-texto" data-hud-estado-texto>APPROACHING</span>
+            <span class="acople-estado-indicacion" data-hud-indicacion></span>
+          </p>
+          <button type="button" class="acople-interruptor" data-accion="mute" aria-pressed="false">
+            <span class="acople-interruptor-palanca" aria-hidden="true"></span> Audio
+          </button>
+        </div>
+
+        <dl class="consola-grupo">
+          <div class="instrumento instrumento--barra" data-instrumento="velocidad" data-ok="true">
+            <dt><span class="instrumento-led" aria-hidden="true"></span>Rel. Velocity</dt>
+            <dd>
+              <span class="barra" aria-hidden="true">
+                <span class="barra-relleno"></span>
+                <span class="barra-marca barra-marca--tol"></span>
+                <span class="barra-marca barra-marca--peligro"></span>
+              </span>
+              <span class="instrumento-valor" data-hud="velocidad">—</span>
+            </dd>
+          </div>
+          <div class="instrumento instrumento--regla" data-instrumento="distancia" data-ok="false">
+            <dt><span class="instrumento-led" aria-hidden="true"></span>Distance</dt>
+            <dd>
+              <span class="regla" aria-hidden="true">
+                <span class="regla-rango"></span>
+                <span class="regla-relleno"></span>
+              </span>
+              <span class="instrumento-valor" data-hud="distancia">—</span>
+            </dd>
+          </div>
+          <div class="instrumento instrumento--barra instrumento--segmentos" data-instrumento="combustible" data-ok="true">
+            <dt><span class="instrumento-led" aria-hidden="true"></span>Fuel</dt>
+            <dd>
+              <span class="barra" aria-hidden="true"><span class="barra-relleno"></span></span>
+              <span class="instrumento-valor" data-hud="combustible">—</span>
+            </dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="acople-pausa" data-pantalla="pausa" aria-label="Pausa" hidden>
+        <p class="acople-pausa-titulo">Pausa</p>
+        <p>Presioná una tecla o elegí cómo seguir.</p>
+        <div class="acople-resultado-acciones">
+          <button type="button" class="acople-tecla acople-tecla--principal" data-accion="seguir">Seguir</button>
+          <a class="acople-tecla" href="minijuegos.html">Volver al hub</a>
+        </div>
+      </section>
+
+      <section class="acople-resultado" data-pantalla="resultado" aria-labelledby="resultado-titulo" hidden>
+        <div class="acople-resultado-mision">
+          <h2 id="resultado-titulo" tabindex="-1" data-resultado-titulo>Acople completo</h2>
+          <p class="acople-resultado-causa" data-resultado-causa hidden></p>
+          <dl class="acople-resultado-datos">
+            <div><dt>Tiempo</dt><dd data-resultado="tiempo">—</dd></div>
+            <div><dt>Combustible restante</dt><dd data-resultado="combustible">—</dd></div>
+            <div><dt>Velocidad final</dt><dd data-resultado="velocidad">—</dd></div>
+            <div data-resultado-solo-exito><dt>Precisión de sincronía</dt><dd data-resultado="precision">—</dd></div>
+            <div data-resultado-solo-exito><dt>Puntaje</dt><dd data-resultado="puntaje">—</dd></div>
+          </dl>
+          <p class="acople-resultado-record" data-resultado-record hidden></p>
+
+          <div class="acople-nombre" data-editor-nombre hidden>
+            <p class="acople-nombre-titulo">Ingresá tu nombre</p>
+            <p class="acople-nombre-casillas" data-nombre-casillas aria-hidden="true"></p>
+            <p class="visualmente-oculto" data-nombre-lectura aria-live="polite"></p>
+            <p class="acople-nombre-ayuda">
+              <kbd>↑</kbd> <kbd>↓</kbd> letra · <kbd>←</kbd> <kbd>→</kbd> casilla · o tipeá · <kbd>Enter</kbd> confirmar
+            </p>
+            <button type="button" class="acople-tecla acople-tecla--principal" data-accion="confirmar-nombre">Confirmar</button>
+          </div>
+
+          <div class="acople-resultado-acciones" data-resultado-acciones>
+            <button type="button" class="acople-tecla acople-tecla--principal" data-accion="reintentar">Reintentar</button>
+            <a class="acople-tecla" href="minijuegos.html">Volver al hub</a>
+          </div>
+        </div>
+
+        <div class="acople-ranking" data-ranking-bloque hidden>
+          <p class="acople-ranking-titulo" id="ranking-resultado-titulo">Top 10 · Pilotos del Ranger</p>
+          <ol class="acople-ranking-lista" data-ranking="resultado" aria-labelledby="ranking-resultado-titulo"></ol>
+        </div>
+      </section>
+
+      <section class="acople-aviso" data-pantalla="aviso" aria-labelledby="aviso-titulo" hidden>
+        <p class="acople-aviso-led"><span class="acople-estado-led" aria-hidden="true"></span> Simulador fuera de línea</p>
+        <h2 id="aviso-titulo">Simulador disponible en desktop</h2>
+        <p data-aviso-texto>El acople se pilotea con teclado. Abrí esta página en una computadora para jugar.</p>
+        <a class="acople-tecla" href="minijuegos.html">Volver al hub</a>
+      </section>
+    </section>
+  </main>
+
+  <script type="module" src="js/layout.js"></script>
+  <script type="module" src="js/minijuegos/acople/main.js"></script>
+</body>
+
+</html>

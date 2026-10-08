@@ -553,7 +553,7 @@ export function initPieSeccionesCondicional() {
 }
 
 // Musica de fondo con interruptor en el header (desktop y mobile). Preferencia y segundo actual en
-// sessionStorage; nunca suena en trailer.html. En mobile se pausa al ocultarse la pagina y en iOS se
+// sessionStorage; nunca suena en las rutas de rutaSinMusica (trailer, simulador). En mobile se pausa al ocultarse la pagina y en iOS se
 // atenua con un GainNode (ver docs/20-notas-de-codigo/layout-y-router.md#musica-de-fondo).
 // Intenta fijar el volumen nativo. Devuelve false si el navegador lo ignora
 // (iOS Safari: `volume` es de solo lectura) y hay que atenuar por Web Audio.
@@ -577,14 +577,21 @@ export function accionPorVisibilidad({
   return pausadoPorOculto && preferida && !silenciadoPorTrailer ? 'reanudar' : null;
 }
 
+// Paginas donde la musica de fondo no suena: su propio audio manda (research R5 de la 009).
+const RUTAS_SIN_MUSICA = new Set(['trailer.html', 'minijuego-acople.html']);
+
+export function rutaSinMusica(archivo) {
+  return RUTAS_SIN_MUSICA.has(archivo);
+}
+
 let audioGlobal = null;
 let ctxAudio = null; // AudioContext, solo en iOS (atenuacion por GainNode)
 let pausadoPorOculto = false;
 let botonMusicaGlobal = null;
-let muteadoPorTrailer = false;
+let muteadoPorRuta = false;
+let reanudarMusica = null; // lo define initMusicaFondo: crea el audio si hace falta y lo reproduce
 
 export function sincronizarAudioRuta(archivo) {
-  const esTrailer = archivo === 'trailer.html';
   const CLAVE = 'interstellar:musica';
   const lee = (k) => {
     try {
@@ -595,17 +602,18 @@ export function sincronizarAudioRuta(archivo) {
   };
   const preferida = lee(CLAVE) === 'on';
 
-  if (esTrailer) {
+  if (rutaSinMusica(archivo)) {
     if (audioGlobal && !audioGlobal.paused) {
       audioGlobal.pause();
-      muteadoPorTrailer = true;
+    }
+    if (preferida) {
+      muteadoPorRuta = true;
     }
   } else {
-    if (muteadoPorTrailer && preferida) {
-      muteadoPorTrailer = false;
-      if (audioGlobal) {
-        audioGlobal.play().catch(() => {});
-      }
+    const debeReanudar = muteadoPorRuta && preferida;
+    muteadoPorRuta = false;
+    if (debeReanudar && reanudarMusica) {
+      reanudarMusica();
     }
   }
 }
@@ -624,8 +632,8 @@ function initMusicaFondo() {
   const CLAVE_T = 'interstellar:musica-t'; // segundo actual
   const SRC = 'assets/audio/stay-ambient.m4a';
   const VOL = 0.32;
-  const archivo = (window.location.pathname.split('/').pop() || 'index.html').toLowerCase();
-  const esTrailer = archivo === 'trailer.html';
+  // Se evalua en cada uso: con swup la ruta cambia sin recargar este modulo.
+  const enRutaSinMusica = () => rutaSinMusica((window.location.pathname.split('/').pop() || 'index.html').toLowerCase());
 
   const lee = (k) => {
     try {
@@ -666,7 +674,7 @@ function initMusicaFondo() {
   };
 
   const debeSonar = () =>
-    boton.getAttribute('aria-pressed') === 'true' && !esTrailer && !muteadoPorTrailer;
+    boton.getAttribute('aria-pressed') === 'true' && !enRutaSinMusica() && !muteadoPorRuta;
 
   // Reintenta en el primer gesto (autoplay bloqueado o Web Audio suspendido); debeSonar evita revivir musica apagada.
   const esperarGesto = (a) => {
@@ -722,8 +730,9 @@ function initMusicaFondo() {
   const encender = () => {
     guarda(CLAVE, 'on');
     reflejar(true);
-    if (esTrailer) {
-      return; // en el trailer no suena: su video manda
+    if (enRutaSinMusica()) {
+      muteadoPorRuta = true; // aca su propio audio manda; reanuda al salir de la ruta
+      return;
     }
     const a = crearAudio();
     pausadoPorOculto = false;
@@ -734,6 +743,12 @@ function initMusicaFondo() {
         }
       })
       .catch(() => esperarGesto(a));
+  };
+
+  reanudarMusica = () => {
+    const a = crearAudio();
+    pausadoPorOculto = false;
+    reproducir(a).catch(() => esperarGesto(a));
   };
 
   const apagar = () => {
@@ -773,7 +788,7 @@ function initMusicaFondo() {
         sonando: !!audioGlobal && !audioGlobal.paused,
         pausadoPorOculto,
         preferida: lee(CLAVE) === 'on',
-        silenciadoPorTrailer: muteadoPorTrailer || esTrailer,
+        silenciadoPorTrailer: muteadoPorRuta || enRutaSinMusica(),
       });
       if (accion === 'pausar') {
         guarda(CLAVE_T, String(Math.floor(audioGlobal.currentTime)));
@@ -790,8 +805,9 @@ function initMusicaFondo() {
 
   // Estado inicial segun la preferencia guardada.
   if (lee(CLAVE) === 'on') {
-    if (esTrailer) {
-      reflejar(true); // preferencia ON, pero muteada aca; reanuda al salir del trailer
+    if (enRutaSinMusica()) {
+      reflejar(true); // preferencia ON, pero muteada en esta ruta; reanuda al salir
+      muteadoPorRuta = true;
     } else {
       encender();
     }

@@ -1,0 +1,1199 @@
+/* css/minijuegos.css - hub de minijuegos y simulador de acople; carga despues de reset -> variables -> base -> layout */
+
+/* 1. Utilidad: oculto a la vista, legible por lectores de pantalla */
+.visualmente-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* 2. Simulador de acople (minijuego-acople.html) */
+.acople {
+  position: relative;
+  height: calc(100svh - 5.5rem);
+  min-height: 26rem;
+  overflow: hidden;
+  background: var(--color-fondo);
+  font-family: var(--font-instrumento);
+  color: var(--color-texto);
+}
+
+.acople-lienzo {
+  position: absolute;
+  inset: 0;
+}
+
+.acople-lienzo:focus {
+  outline: none;
+}
+
+.acople-lienzo canvas {
+  display: block;
+}
+
+/* Marco del parabrisas blindado del Ranger (cockpit canopy frame) con cristal ópticamente limpio */
+.acople-cabina-marco {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  box-shadow:
+    inset 0 0 70px rgba(0, 0, 0, 0.85),
+    inset 0 0 22px rgba(0, 0, 0, 0.95);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.02) 0%, transparent 40%, rgba(100, 255, 218, 0.012) 100%);
+}
+
+/* Montante superior de cabina con remaches y bisel */
+.acople-cabina-marco::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2.2rem;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 45px, rgba(255, 255, 255, 0.04) 45px 46px),
+    linear-gradient(180deg, var(--cockpit-metal), var(--cockpit-metal-alto));
+  border-bottom: 2px solid var(--cockpit-bezel);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.7), inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+  clip-path: polygon(0 0, 100% 0, 96% 100%, 4% 100%);
+}
+
+/* Montantes laterales angulados del canopy */
+.acople-cabina-marco::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, var(--cockpit-metal) 0, transparent 3.5rem),
+    linear-gradient(270deg, var(--cockpit-metal) 0, transparent 3.5rem);
+  opacity: 0.65;
+  clip-path: polygon(
+    0 0, 3.5% 0, 6.5% 100%, 0 100%,
+    100% 0, 96.5% 0, 93.5% 100%, 100% 100%
+  );
+}
+
+.acople [data-pantalla] {
+  position: absolute;
+  z-index: 2;
+}
+
+.acople [data-pantalla][hidden] {
+  display: none;
+}
+
+/* Tecla del simulador: misma silueta que el resto del cockpit */
+.acople-tecla {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.1rem;
+  font-family: var(--font-instrumento);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--color-texto);
+  background: color-mix(in srgb, var(--instrumento-pantalla) 85%, transparent);
+  border: 1px solid var(--cockpit-bezel);
+  clip-path: var(--recorte-tecla);
+  cursor: pointer;
+}
+
+.acople-tecla:hover {
+  border-color: var(--instrumento-teal);
+  color: var(--instrumento-teal);
+}
+
+.acople-tecla:focus-visible {
+  outline: 2px solid var(--instrumento-teal);
+  outline-offset: 2px;
+}
+
+.acople-tecla--principal {
+  border-color: var(--instrumento-teal);
+  color: var(--instrumento-teal);
+}
+
+.acople-tecla[aria-pressed='true'] {
+  color: var(--color-texto-atenuado);
+  text-decoration: line-through;
+}
+
+/* Intro cinematica */
+.acople-intro {
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  padding: 1.5rem;
+  text-align: center;
+  background: color-mix(in srgb, var(--color-fondo) 72%, transparent);
+}
+
+.acople-intro-linea {
+  margin: 0;
+  font-family: var(--font-hero-titulo);
+  font-size: clamp(1.1rem, 3vw, 1.8rem);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0;
+  animation: acople-aparecer 1.2s ease forwards;
+}
+
+.acople-intro-linea:nth-child(2) { animation-delay: 1.4s; }
+.acople-intro-linea:nth-child(3) { animation-delay: 3s; }
+.acople-intro-linea:nth-child(4) { animation-delay: 4.6s; }
+
+.acople-intro-linea--fecha {
+  font-family: var(--font-instrumento);
+  font-size: 0.9rem;
+  color: var(--instrumento-teal);
+}
+
+.acople-intro-linea--orden {
+  color: var(--instrumento-teal);
+}
+
+.acople-intro-controles {
+  margin: 0.5rem 0 0;
+  font-size: 0.85rem;
+  color: var(--color-texto-atenuado);
+  opacity: 0;
+  animation: acople-aparecer 1s ease 6s forwards;
+}
+
+.acople kbd {
+  display: inline-block;
+  min-width: 1.6em;
+  padding: 0.05em 0.4em;
+  font-family: var(--font-instrumento);
+  border: 1px solid var(--cockpit-bezel);
+  color: var(--color-texto);
+}
+
+@keyframes acople-aparecer {
+  from { opacity: 0; transform: translateY(0.4rem); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Consola de la nave: tablero trapezoidal con instrumentos (telemetria simulando instrumental) */
+.acople {
+  --alto-consola: 9.5rem;
+  --ancho-consola: 64rem;
+}
+
+.acople-consola {
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: min(var(--ancho-consola), 94%);
+  height: var(--alto-consola);
+  display: grid;
+  grid-template-columns: 1fr minmax(12rem, 15rem) 1fr;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 3.5rem 0.7rem;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 22px, rgba(255, 255, 255, 0.025) 22px 23px),
+    linear-gradient(180deg, var(--cockpit-metal-alto), var(--cockpit-metal));
+  border-top: 1px solid color-mix(in srgb, var(--instrumento-teal) 32%, var(--cockpit-bezel));
+  box-shadow: inset 0 1px 0 var(--cockpit-bezel-brillo), inset 0 12px 24px rgba(0, 0, 0, 0.45);
+  clip-path: polygon(6% 0, 94% 0, 100% 100%, 0 100%);
+  font-size: 0.72rem;
+}
+
+.consola-grupo {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.instrumento {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.instrumento dt {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--color-texto-atenuado);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.instrumento dd {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  margin: 0;
+}
+
+.instrumento-valor {
+  min-width: 5.5em;
+  padding: 0.1rem 0.35rem;
+  text-align: center;
+  color: var(--instrumento-teal);
+  background: var(--instrumento-pantalla);
+  border: 1px solid var(--cockpit-bezel);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 6px currentColor;
+}
+
+/* LED por instrumento: teal en tolerancia, ambar fuera */
+.instrumento-led {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--led-ambar);
+  box-shadow: 0 0 4px var(--led-ambar);
+}
+
+.instrumento[data-ok='true'] .instrumento-led {
+  background: var(--instrumento-teal);
+  box-shadow: 0 0 7px var(--instrumento-teal), 0 0 14px var(--instrumento-teal);
+}
+
+/* Dial de cero central: la aguja gira +-90deg con --valor en [-1,1]; el arco seguro mide --zona */
+.dial {
+  position: relative;
+  display: block;
+  width: 5.5rem;
+  aspect-ratio: 2 / 1;
+  overflow: hidden;
+  border: 1px solid var(--cockpit-bezel);
+  border-bottom: 0;
+  border-radius: 5.5rem 5.5rem 0 0;
+  background:
+    radial-gradient(circle at 50% 100%, var(--instrumento-pantalla) 58%, transparent 59%),
+    repeating-conic-gradient(from 270deg at 50% 100%, color-mix(in srgb, var(--color-texto) 45%, transparent) 0deg 1deg, transparent 1deg 18deg),
+    conic-gradient(from 270deg at 50% 100%,
+      transparent 0deg calc(90deg - var(--zona, 0.2) * 90deg),
+      color-mix(in srgb, var(--instrumento-teal) 55%, transparent) calc(90deg - var(--zona, 0.2) * 90deg) calc(90deg + var(--zona, 0.2) * 90deg),
+      transparent calc(90deg + var(--zona, 0.2) * 90deg) 180deg,
+      transparent 180deg),
+    var(--instrumento-pantalla);
+}
+
+.dial-aguja {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 2px;
+  height: 92%;
+  margin-left: -1px;
+  background: var(--color-texto);
+  transform-origin: 50% 100%;
+  transform: rotate(calc(var(--valor, 0) * 90deg));
+  transition: transform 0.12s linear;
+}
+
+.dial-aguja::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -0.3rem;
+  width: 0.6rem;
+  height: 0.6rem;
+  margin-left: -0.3rem;
+  border-radius: 50%;
+  background: var(--cockpit-bezel-brillo);
+}
+
+.instrumento[data-ok='false'] .dial-aguja {
+  background: var(--led-ambar);
+}
+
+.instrumento[data-ok='true'] .dial-aguja {
+  background: var(--instrumento-teal);
+  box-shadow: 0 0 6px var(--instrumento-teal);
+}
+
+.instrumento[data-ok='true'] .barra-relleno {
+  box-shadow: 0 0 8px color-mix(in srgb, var(--instrumento-teal) 70%, transparent);
+}
+
+/* Barra vertical: relleno --valor en [0,1], marcas de tolerancia y peligro */
+.barra {
+  position: relative;
+  display: block;
+  width: 1.1rem;
+  height: 3.6rem;
+  background: var(--instrumento-pantalla);
+  border: 1px solid var(--cockpit-bezel);
+}
+
+.barra-relleno {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(var(--valor, 0) * 100%);
+  background: var(--instrumento-teal);
+  transition: height 0.12s linear;
+}
+
+.instrumento[data-ok='false'] .barra-relleno {
+  background: var(--led-ambar);
+}
+
+.barra-marca {
+  position: absolute;
+  left: -0.25rem;
+  right: -0.25rem;
+  height: 1px;
+}
+
+.barra-marca--tol {
+  bottom: calc(var(--tol, 0) * 100%);
+  background: var(--instrumento-teal);
+}
+
+.barra-marca--peligro {
+  bottom: calc(var(--peligro, 0) * 100%);
+  background: var(--led-alerta);
+}
+
+.instrumento--segmentos .barra-relleno {
+  background: repeating-linear-gradient(0deg, var(--instrumento-teal) 0 5px, transparent 5px 7px);
+}
+
+.instrumento--segmentos[data-ok='false'] .barra-relleno {
+  background: repeating-linear-gradient(0deg, var(--led-alerta) 0 5px, transparent 5px 7px);
+}
+
+/* Regla horizontal: distancia restante; la franja izquierda es el rango de acople */
+.regla {
+  position: relative;
+  display: block;
+  width: 7rem;
+  height: 0.7rem;
+  background:
+    repeating-linear-gradient(90deg, color-mix(in srgb, var(--color-texto) 30%, transparent) 0 1px, transparent 1px 10%),
+    var(--instrumento-pantalla);
+  border: 1px solid var(--cockpit-bezel);
+}
+
+.regla-rango {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: calc(var(--rango, 0) * 100%);
+  background: color-mix(in srgb, var(--instrumento-teal) 40%, transparent);
+}
+
+.regla-relleno {
+  position: absolute;
+  top: 25%;
+  bottom: 25%;
+  left: 0;
+  width: calc(var(--valor, 1) * 100%);
+  background: var(--color-texto);
+  transition: width 0.12s linear;
+}
+
+.instrumento[data-ok='true'] .regla-relleno {
+  background: var(--instrumento-teal);
+}
+
+/* Pantalla central de estado con estética CRT de fósforo */
+.consola-pantalla {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+  align-self: stretch;
+  padding: 0.5rem 0.7rem;
+  background: var(--instrumento-pantalla);
+  border: 1px solid var(--cockpit-bezel);
+  box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.6);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Scanlines sutiles de fósforo */
+.consola-pantalla::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.32) 0px,
+    rgba(0, 0, 0, 0.32) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0.75;
+}
+
+/* Curvatura / viñeta CRT */
+.consola-pantalla::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 65%, rgba(0, 0, 0, 0.5) 100%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.acople-consola[data-nivel='seguro'] .consola-pantalla {
+  border-color: var(--instrumento-teal);
+  box-shadow: inset 0 0 18px color-mix(in srgb, var(--instrumento-teal) 22%, transparent), 0 0 12px color-mix(in srgb, var(--instrumento-teal) 25%, transparent);
+}
+
+.consola-pantalla .acople-estado {
+  flex: 1;
+  border-top: 0;
+  padding-top: 0;
+  align-content: center;
+}
+
+.acople-estado-texto {
+  font-size: 0.95rem;
+  text-shadow: 0 0 6px currentColor, 0 0 14px color-mix(in srgb, currentColor 55%, transparent);
+}
+
+/* Interruptor de audio */
+.acople-interruptor {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-end;
+  gap: 0.4rem;
+  padding: 0;
+  font-family: var(--font-instrumento);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-texto-atenuado);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.acople-interruptor-palanca {
+  position: relative;
+  width: 1.6rem;
+  height: 0.8rem;
+  border: 1px solid var(--cockpit-bezel);
+  background: var(--cockpit-metal);
+}
+
+.acople-interruptor-palanca::after {
+  content: "";
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  width: 0.55rem;
+  height: calc(100% - 2px);
+  background: var(--instrumento-teal);
+}
+
+.acople-interruptor[aria-pressed='true'] .acople-interruptor-palanca::after {
+  left: 1px;
+  right: auto;
+  background: var(--color-texto-atenuado);
+}
+
+.acople-interruptor:focus-visible {
+  outline: 2px solid var(--instrumento-teal);
+  outline-offset: 2px;
+}
+
+.acople-estado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  padding-top: 0.5rem;
+  width: 100%;
+  border-top: 1px dashed color-mix(in srgb, var(--color-texto) 18%, transparent);
+  letter-spacing: 0.08em;
+}
+
+.acople-estado-etiqueta {
+  color: var(--color-texto-atenuado);
+  text-transform: uppercase;
+}
+
+.acople-estado-led {
+  display: inline-block;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--color-texto-atenuado);
+}
+
+.acople-estado[data-nivel='atencion'] { color: var(--led-ambar); }
+.acople-estado[data-nivel='atencion'] .acople-estado-led { background: var(--led-ambar); }
+.acople-estado[data-nivel='seguro'] { color: var(--instrumento-teal); }
+.acople-estado[data-nivel='seguro'] .acople-estado-led { background: var(--instrumento-teal); box-shadow: 0 0 8px var(--instrumento-teal); }
+.acople-estado[data-nivel='peligro'] { color: var(--led-alerta); }
+.acople-estado[data-nivel='peligro'] .acople-estado-led {
+  background: var(--led-alerta);
+  box-shadow: 0 0 10px var(--led-alerta);
+  animation: acople-parpadeo 0.5s steps(2) infinite;
+}
+
+@keyframes acople-parpadeo {
+  50% { opacity: 0.25; }
+}
+
+.acople-estado-indicacion {
+  flex-basis: 100%;
+}
+
+.acople-estado-indicacion:empty {
+  display: none;
+}
+
+/* Orden de acople centrada bajo la reticula: donde mira el jugador */
+.acople-orden {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--alto-consola) + 1.25rem);
+  z-index: 2;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 0.45rem 1rem;
+  font-family: var(--font-instrumento);
+  font-size: clamp(0.9rem, 2vw, 1.15rem);
+  letter-spacing: 0.18em;
+  white-space: nowrap;
+  color: var(--instrumento-teal);
+  border: 1px solid var(--instrumento-teal);
+  background: color-mix(in srgb, var(--instrumento-pantalla) 75%, transparent);
+  cursor: pointer;
+  animation: acople-latido 1s ease-in-out infinite;
+}
+
+.acople-orden:focus-visible {
+  outline: 2px solid var(--instrumento-teal);
+  outline-offset: 3px;
+}
+
+.acople-orden[hidden] {
+  display: none;
+}
+
+.acople-orden[data-nivel='atencion'] {
+  color: var(--led-ambar);
+  border-color: var(--led-ambar);
+  animation: none;
+}
+
+@keyframes acople-latido {
+  50% { box-shadow: 0 0 14px var(--instrumento-teal); }
+}
+
+/* Pausa, resultado y aviso: paneles centrados */
+.acople-pausa,
+.acople-resultado,
+.acople-aviso {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(92%, 30rem);
+  padding: 1.5rem;
+  background: color-mix(in srgb, var(--instrumento-pantalla) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--instrumento-teal) 40%, var(--cockpit-bezel));
+  clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
+  text-align: left;
+}
+
+.acople-pausa {
+  text-align: center;
+}
+
+.acople-pausa p,
+.acople-aviso p {
+  margin: 0 0 0.75rem;
+  color: var(--color-texto-atenuado);
+}
+
+.acople-pausa-titulo {
+  font-family: var(--font-hero-titulo);
+  font-size: 1.3rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--led-ambar);
+}
+
+.acople-resultado h2,
+.acople-aviso h2 {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-hero-titulo);
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--instrumento-teal);
+}
+
+.acople-resultado h2:focus {
+  outline: none;
+}
+
+.acople-resultado--fallida h2 {
+  color: var(--led-alerta);
+}
+
+.acople-resultado-causa {
+  margin: 0 0 1rem;
+  color: var(--led-ambar);
+}
+
+.acople-resultado-datos {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0 0 1rem;
+}
+
+.acople-resultado-datos div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px dashed color-mix(in srgb, var(--color-texto) 12%, transparent);
+  padding-bottom: 0.3rem;
+}
+
+.acople-resultado-datos dt {
+  color: var(--color-texto-atenuado);
+}
+
+.acople-resultado-datos dd {
+  margin: 0;
+  color: var(--color-texto);
+  font-variant-numeric: tabular-nums;
+}
+
+.acople-resultado-record {
+  margin: 0 0 1rem;
+  color: var(--color-tierra-oro);
+  letter-spacing: 0.06em;
+}
+
+.acople-resultado-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.acople-aviso-led {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--led-ambar);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.75rem;
+}
+
+.acople-aviso-led .acople-estado-led {
+  background: var(--led-ambar);
+}
+
+/* Resultado con tabla de puntajes: mision a la izquierda, ranking a la derecha */
+.acople-resultado {
+  width: min(92%, 52rem);
+  max-height: calc(100% - 2rem);
+  overflow-y: auto;
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 46rem) {
+  .acople-resultado {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.acople-resultado [hidden],
+.acople-ranking[hidden] {
+  display: none;
+}
+
+/* Editor de nombre estilo fichin */
+.acople-nombre {
+  margin: 0 0 1rem;
+}
+
+.acople-nombre-titulo {
+  margin: 0 0 0.6rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-tierra-oro);
+}
+
+.acople-nombre-casillas {
+  display: flex;
+  gap: 0.3rem;
+  margin: 1rem 0 0.75rem;
+}
+
+.acople-nombre-casilla {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 1.9rem;
+  height: 2.4rem;
+  font-size: 1.3rem;
+  color: var(--color-texto);
+  border-bottom: 2px solid var(--cockpit-bezel);
+}
+
+.acople-nombre-casilla--activa {
+  color: var(--instrumento-teal);
+  border-bottom-color: var(--instrumento-teal);
+  animation: acople-parpadeo 1s steps(1) infinite;
+}
+
+/* Flechas arriba/abajo sobre la casilla activa: avisan que la letra se gira */
+.acople-nombre-casilla--activa::before,
+.acople-nombre-casilla--activa::after {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.55rem;
+  color: var(--instrumento-teal);
+}
+
+.acople-nombre-casilla--activa::before {
+  content: '▲';
+  top: -0.85rem;
+}
+
+.acople-nombre-casilla--activa::after {
+  content: '▼';
+  bottom: -1rem;
+}
+
+.acople-nombre-ayuda {
+  margin: 1rem 0 0.9rem;
+  font-size: 0.75rem;
+  color: var(--color-texto-atenuado);
+}
+
+@keyframes acople-parpadeo {
+  50% { color: transparent; }
+}
+
+/* Tabla de puntajes */
+.acople-ranking-titulo {
+  margin: 0 0 0.6rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--instrumento-teal);
+}
+
+.acople-ranking-lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.15rem;
+}
+
+.acople-ranking-fila {
+  display: grid;
+  grid-template-columns: 2.2em 1fr auto;
+  gap: 0.75rem;
+  padding: 0.2rem 0.4rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.1em;
+}
+
+.acople-ranking-puesto {
+  color: var(--color-texto-atenuado);
+}
+
+.acople-ranking-nombre {
+  white-space: pre;
+}
+
+.acople-ranking-fila--vacia {
+  color: color-mix(in srgb, var(--color-texto) 30%, transparent);
+}
+
+.acople-ranking-fila--resaltada {
+  color: var(--color-tierra-oro);
+  background: color-mix(in srgb, var(--color-tierra-oro) 12%, transparent);
+}
+
+.acople-ranking-fila--resaltada .acople-ranking-puesto {
+  color: inherit;
+}
+
+/* En la intro: compacta y aparece con los controles */
+.acople-ranking--intro {
+  width: min(100%, 22rem);
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  text-align: left;
+  opacity: 0;
+  animation: acople-aparecer 1s ease 6s forwards;
+}
+
+.acople-ranking--intro .acople-ranking-titulo {
+  text-align: center;
+}
+
+/* 3. Hub de misiones (minijuegos.html); bloque mudado desde en-desarrollo.css */
+/* Hub sin scroll, mismo criterio que trailer/home: cadena flex de alto completo, el footer queda al pie.
+   :has() cubre la navegacion con swup, que no cambia las clases del body */
+body:has(.minijuegos-bahias),
+body.pagina-minijuegos {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+body:has(.minijuegos-bahias) main,
+body.pagina-minijuegos main {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Como en la home: pagina sin scroll, no se duplica la navbar en el pie */
+body:has(.minijuegos-bahias) .pie-secciones-marco,
+body.pagina-minijuegos .pie-secciones-marco {
+  display: none !important;
+}
+
+/* En un main flex, margin auto encogeria las secciones a su contenido: se fija el ancho */
+.minijuegos-intro,
+.minijuegos-bahias {
+  width: 100%;
+}
+
+.minijuegos-intro {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 4rem 1.25rem 2rem;
+  text-align: left;
+}
+
+.minijuegos-bahias {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 0 1.25rem 4rem;
+}
+
+.minijuegos-bahias > h2 {
+  font-family: var(--font-instrumento);
+  font-size: 0.85rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--instrumento-teal);
+  margin: 0;
+}
+
+.minijuegos-bahias-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: 1.5rem;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.minijuegos-bahias-grid > li {
+  display: flex;
+}
+
+.bahia-card {
+  flex: 1;
+  background: var(--color-superficie);
+  border: 1px solid var(--cockpit-bezel);
+  clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+  padding: 1.6rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.bahia-card[data-estado='disponible']:hover,
+.bahia-card[data-estado='disponible']:focus-within {
+  border-color: var(--instrumento-teal);
+  background: color-mix(in srgb, var(--instrumento-teal) 4%, var(--color-superficie));
+}
+
+.bahia-card[data-estado='bloqueada'] {
+  opacity: 0.62;
+}
+
+.bahia-badge-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-instrumento);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: var(--instrumento-teal);
+  margin-bottom: 0.75rem;
+}
+
+.bahia-card h3 {
+  font-family: var(--font-hero-titulo);
+  font-size: 1.35rem;
+  color: var(--color-texto);
+  margin: 0 0 0.5rem;
+}
+
+.bahia-tipo {
+  font-family: var(--font-instrumento);
+  font-size: 0.8rem;
+  color: var(--color-tierra-oro);
+  margin: 0 0 0.85rem;
+  display: block;
+}
+
+.bahia-card p {
+  font-family: var(--font-texto);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--color-texto-atenuado);
+  margin: 0 0 1.25rem;
+}
+
+.bahia-card p.bahia-record {
+  font-family: var(--font-instrumento);
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  color: var(--instrumento-teal);
+  margin: 0 0 1rem;
+}
+
+.bahia-accion {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.1rem;
+  margin: 0 0 1.25rem;
+  font-family: var(--font-instrumento);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--instrumento-teal);
+  background: color-mix(in srgb, var(--instrumento-pantalla) 85%, transparent);
+  border: 1px solid var(--instrumento-teal);
+  clip-path: var(--recorte-tecla);
+}
+
+.bahia-accion:hover {
+  color: var(--color-texto);
+}
+
+.bahia-accion:focus-visible {
+  outline: 2px solid var(--instrumento-teal);
+  outline-offset: 2px;
+}
+
+.bahia-footer {
+  border-top: 1px dashed color-mix(in srgb, var(--color-texto) 14%, transparent);
+  padding-top: 0.85rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-instrumento);
+  font-size: 0.8rem;
+  color: var(--color-texto-atenuado);
+}
+
+.bahia-estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--led-ambar);
+}
+
+.bahia-estado .led {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--led-ambar);
+}
+
+.bahia-card[data-estado='disponible'] .bahia-estado {
+  color: var(--instrumento-teal);
+}
+
+.bahia-card[data-estado='disponible'] .bahia-estado .led {
+  background: var(--instrumento-teal);
+  box-shadow: 0 0 6px var(--instrumento-teal);
+}
+
+.bahia-card[data-estado='bloqueada'] .bahia-estado .led {
+  background: var(--color-texto-atenuado);
+}
+
+/* Desktop ancho: las 4 bahias en una fila, para que el hub entre sin scroll */
+@media (min-width: 72rem) {
+  .minijuegos-intro {
+    max-width: 84rem;
+    padding: 2rem 1.25rem 1.25rem;
+  }
+
+  .minijuegos-bahias {
+    max-width: 84rem;
+    padding-bottom: 1.75rem;
+  }
+
+  .minijuegos-bahias-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.25rem;
+    margin-top: 1rem;
+  }
+
+  .bahia-card {
+    padding: 1.2rem 1.3rem;
+  }
+
+  .bahia-card p {
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+
+  .bahia-accion {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Desktop bajo (laptops de 768-900 px de alto): se compacta la intro y las tarjetas para no scrollear */
+@media (min-width: 72rem) and (max-height: 56rem) {
+  .minijuegos-intro {
+    padding: 1rem 1.25rem 0.75rem;
+  }
+
+  body:not(.home) main > section.minijuegos-intro h1 {
+    font-size: 2rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .minijuegos-bahias {
+    padding-bottom: 1rem;
+  }
+
+  .minijuegos-bahias-grid {
+    margin-top: 0.75rem;
+  }
+
+  .bahia-card {
+    padding: 1rem 1.15rem;
+  }
+
+  .bahia-badge-top,
+  .bahia-tipo {
+    margin-bottom: 0.5rem;
+  }
+
+  .bahia-card p {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
+    margin-bottom: 0.75rem;
+  }
+
+  .bahia-card p.bahia-record {
+    display: block;
+    margin-bottom: 0.6rem;
+  }
+
+  .bahia-accion {
+    margin-bottom: 0.75rem;
+  }
+
+  .bahia-footer {
+    padding-top: 0.6rem;
+  }
+}
+
+/* 4. Movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+  .acople-intro-linea,
+  .acople-intro-controles,
+  .acople-ranking--intro {
+    opacity: 1;
+    animation: none;
+  }
+
+  .acople-nombre-casilla--activa {
+    animation: none;
+  }
+
+  .acople-estado[data-nivel='peligro'] .acople-estado-led,
+  .acople-orden {
+    animation: none;
+  }
+
+  .dial-aguja,
+  .barra-relleno,
+  .regla-relleno {
+    transition: none;
+  }
+
+  .bahia-card {
+    transition: none;
+  }
+}
+
+/* 5. Pantalla completa del simulador (FR-042) */
+.acople:fullscreen {
+  height: 100%;
+  min-height: 0;
+}
+
+.acople::backdrop {
+  background: var(--color-fondo);
+}
+
+.acople-pantalla {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 3;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.75rem;
+}
+
+.acople-pantalla[hidden] {
+  display: none;
+}
+
+.acople-pausa .acople-resultado-acciones {
+  justify-content: center;
+}
