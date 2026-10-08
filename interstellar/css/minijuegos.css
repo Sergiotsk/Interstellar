@@ -614,6 +614,25 @@
   animation: none;
 }
 
+/* Cuenta regresiva en tactil: deja pasar el cartel del navegador al entrar a pantalla completa */
+.acople-cuenta {
+  position: absolute;
+  top: 38%;
+  left: 50%;
+  z-index: 3;
+  margin: 0;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-hero-titulo);
+  font-size: clamp(2.5rem, 12vh, 5rem);
+  color: var(--instrumento-teal);
+  text-shadow: 0 0 18px var(--instrumento-teal);
+  pointer-events: none;
+}
+
+.acople-cuenta[hidden] {
+  display: none;
+}
+
 @keyframes acople-latido {
   50% { box-shadow: 0 0 14px var(--instrumento-teal); }
 }

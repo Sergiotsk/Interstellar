@@ -30,6 +30,8 @@ const URL_PHASER = '../../vendor/phaser@4.2.1/phaser.esm.min.js';
 const DURACION_INTRO_MS = 8000;
 const DURACION_INTRO_CON_RANKING_MS = 13000; // el ranking aparece a los 6 s: que se llegue a leer
 const INTERVALO_HUD_MS = 100;
+const PASOS_CUENTA = 3;
+const PASO_CUENTA_MS = 1000;
 
 let sesion = null;
 
@@ -92,25 +94,66 @@ function enfocarLienzo(s) {
 
 // conGesto: solo dentro de un clic o una tecla el navegador concede la pantalla completa.
 function comenzarPartida(s, conGesto) {
-  if (s.partida.fase !== 'intro') return;
+  if (s.partida.fase !== 'intro' || s.cuenta) return;
   clearTimeout(s.temporizadorIntro);
-  s.partida = iniciar(s.partida);
-  s.ui.mostrar('hud');
-  enfocarLienzo(s);
-  if (conGesto) entrarPantalla(s);
+  const arrancar = () => {
+    s.partida = iniciar(s.partida);
+    s.ui.mostrar('hud');
+    enfocarLienzo(s);
+  };
+  if (conGesto) conPantalla(s, 'intro', arrancar);
+  else arrancar();
 }
 
 // Reintentar reusa el Game ya creado: solo se reemplaza la partida (sin intro, FR-009).
 function volverAJugar(s) {
-  s.editor = null;
-  s.partida = reintentar(s.partida, CONFIG);
-  soltarControles(s);
-  s.ui.mostrar('hud');
-  enfocarLienzo(s);
+  if (s.cuenta) return;
+  conPantalla(s, 'resultado', () => {
+    s.editor = null;
+    s.partida = reintentar(s.partida, CONFIG);
+    soltarControles(s);
+    s.ui.mostrar('hud');
+    enfocarLienzo(s);
+  });
+}
+
+// En tactil, el navegador tapa la cabina con su cartel de "como salir" al entrar a pantalla completa:
+// una cuenta regresiva lo deja pasar antes de soltar la partida.
+function conPantalla(s, previa, arrancar) {
+  const cuenta = s.modo === 'tactil' && pantalla.soportada() && !pantalla.estaActiva(s.raiz);
   entrarPantalla(s);
+  if (!cuenta) {
+    arrancar();
+    return;
+  }
+  s.cuenta = { previa, restante: PASOS_CUENTA, temporizador: null };
+  s.ui.mostrar('hud');
+  const paso = () => {
+    if (s.cuenta.restante === 0) {
+      s.cuenta = null;
+      s.ui.pintarCuenta(null);
+      arrancar();
+      return;
+    }
+    s.ui.pintarCuenta(s.cuenta.restante);
+    s.cuenta.restante -= 1;
+    s.cuenta.temporizador = setTimeout(paso, PASO_CUENTA_MS);
+  };
+  paso();
+}
+
+// Pausa, giro o salir de pantalla completa durante la cuenta: se vuelve a la pantalla de antes.
+function cancelarCuenta(s) {
+  if (!s.cuenta) return false;
+  clearTimeout(s.cuenta.temporizador);
+  s.ui.pintarCuenta(null);
+  s.ui.mostrar(s.cuenta.previa);
+  s.cuenta = null;
+  return true;
 }
 
 function pausarPartida(s) {
+  if (cancelarCuenta(s)) return;
   if (s.partida.fase !== 'en-curso') return;
   s.partida = pausar(s.partida);
   soltarControles(s);
@@ -125,10 +168,12 @@ function entrarPantalla(s) {
 }
 
 function reanudarPartida(s) {
-  s.partida = reanudar(s.partida);
-  s.ui.mostrar('hud');
-  enfocarLienzo(s);
-  entrarPantalla(s);
+  if (s.cuenta) return;
+  conPantalla(s, 'pausa', () => {
+    s.partida = reanudar(s.partida);
+    s.ui.mostrar('hud');
+    enfocarLienzo(s);
+  });
 }
 
 // Salir de pantalla completa en plena partida la pausa (FR-042).
@@ -372,13 +417,12 @@ export async function mount() {
   unmount();
   const raiz = document.querySelector('[data-acople]');
   if (!raiz) return;
-  const ui = crearOverlays(raiz, { pantallaCompleta: pantalla.soportada() });
-
   const modo = modoEntrada({
     punteroGrueso: window.matchMedia('(pointer: coarse)').matches,
     algunPunteroFino: window.matchMedia('(any-pointer: fine)').matches,
     forzado: new URLSearchParams(location.search).get('entrada'),
   });
+  const ui = crearOverlays(raiz, { pantallaCompleta: pantalla.soportada(), tactil: modo === 'tactil' });
   raiz.dataset.entrada = modo;
   // Cabina a toda la pantalla visible en tactil: el iPhone no tiene Fullscreen API para elementos (010 R4).
   if (modo === 'tactil') raiz.dataset.cabina = '';
@@ -401,6 +445,7 @@ export async function mount() {
     ultimoHud: 0,
     game: null,
     temporizadorIntro: null,
+    cuenta: null,
     limpiezas: [],
   };
   sesion = s;
@@ -451,6 +496,7 @@ export function unmount() {
   if (!s) return;
   sesion = null; // primero: un import() en vuelo vera que la sesion ya no es la suya
   clearTimeout(s.temporizadorIntro);
+  clearTimeout(s.cuenta?.temporizador);
   if (pantalla.estaActiva(s.raiz)) pantalla.salir();
   delete s.raiz.dataset.cabina;
   if (s.game) {

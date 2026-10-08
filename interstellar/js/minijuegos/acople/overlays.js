@@ -45,7 +45,7 @@ export function textoPuesto(posicion) {
   return posicion > 0 ? `★ Entraste al ranking · puesto ${posicion + 1}` : '';
 }
 
-export function crearOverlays(raiz, { pantallaCompleta = false } = {}) {
+export function crearOverlays(raiz, { pantallaCompleta = false, tactil = false } = {}) {
   const pantallas = [...raiz.querySelectorAll('[data-pantalla]')];
   const hud = Object.fromEntries([...raiz.querySelectorAll('[data-hud]')].map((el) => [el.dataset.hud, el]));
   const estadoEl = raiz.querySelector('[data-hud-estado]');
@@ -66,6 +66,7 @@ export function crearOverlays(raiz, { pantallaCompleta = false } = {}) {
   const lecturaNombreEl = raiz.querySelector('[data-nombre-lectura]');
   const accionesResultado = raiz.querySelector('[data-resultado-acciones]');
   const rankings = Object.fromEntries([...raiz.querySelectorAll('[data-ranking]')].map((el) => [el.dataset.ranking, el]));
+  const cuentaEl = raiz.querySelector('[data-cuenta]');
   let ultimaIndicacion = null;
   let ultimoEstado = null;
 
@@ -192,15 +193,25 @@ export function crearOverlays(raiz, { pantallaCompleta = false } = {}) {
 
   function pintarPantalla(activa) {
     if (!botonPantalla) return;
-    // Se muestra la tecla real: Esc la reserva el navegador para salir de pantalla completa.
-    if (activa) {
+    // Se muestra la tecla real: Esc la reserva el navegador para salir de pantalla completa. En tactil no hay Esc.
+    if (activa && tactil) {
+      botonPantalla.textContent = 'Salir';
+    } else if (activa) {
       const tecla = document.createElement('kbd');
       tecla.textContent = 'Esc';
       botonPantalla.replaceChildren(tecla, ' Salir');
     } else {
       botonPantalla.textContent = 'Pantalla completa';
     }
-    botonPantalla.setAttribute('aria-label', activa ? 'Salir de pantalla completa (Esc)' : 'Jugar en pantalla completa');
+    const salir = tactil ? 'Salir de pantalla completa' : 'Salir de pantalla completa (Esc)';
+    botonPantalla.setAttribute('aria-label', activa ? salir : 'Jugar en pantalla completa');
+  }
+
+  // Cuenta regresiva previa al arranque; null la oculta.
+  function pintarCuenta(n) {
+    if (!cuentaEl) return;
+    cuentaEl.hidden = n === null;
+    cuentaEl.textContent = n === null ? '' : String(n);
   }
 
   return {
@@ -212,5 +223,6 @@ export function crearOverlays(raiz, { pantallaCompleta = false } = {}) {
     pintarEditor,
     enfocarResultado,
     pintarPantalla,
+    pintarCuenta,
   };
 }
