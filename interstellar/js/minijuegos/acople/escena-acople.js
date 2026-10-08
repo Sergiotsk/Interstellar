@@ -140,12 +140,54 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       this.radioEstrellas = radio;
       const g = this.estrellas;
       g.clear();
+
+      // 1. Resplandor cósmico lejano (disco de acreción de Gargantúa / horizonte de Mann)
+      const gx = -radio * 0.45;
+      const gy = -radio * 0.4;
+      const capasGargantua = [
+        { r: radio * 0.75, alfa: 0.03, color: 0xdf8a28 },
+        { r: radio * 0.5, alfa: 0.05, color: 0xc87018 },
+        { r: radio * 0.3, alfa: 0.07, color: 0x8a4010 },
+        { r: radio * 0.15, alfa: 0.11, color: 0x5a2508 },
+      ];
+      capasGargantua.forEach(({ r, alfa, color }) => {
+        g.fillStyle(color, alfa);
+        g.fillCircle(gx, gy, r);
+      });
+
+      // Arco sutil de distorsión gravitacional / curvatura cósmica
+      g.lineStyle(1.8, 0xdf8a28, 0.14);
+      g.beginPath();
+      g.arc(gx, gy, radio * 0.38, -0.4, 1.2, false);
+      g.strokePath();
+
+      // 2. Campo estelar con magnitudes y clasificación espectral
       for (let i = 0; i < ESTRELLAS; i += 1) {
-        // Distribucion uniforme en el disco: sqrt del azar en el radio.
         const r = Math.sqrt(Math.random()) * radio;
         const a = Math.random() * Math.PI * 2;
-        g.fillStyle(paleta.texto, 0.25 + Math.random() * 0.6);
-        g.fillCircle(Math.cos(a) * r, Math.sin(a) * r, Math.random() < 0.08 ? 1.6 : 0.9);
+        const x = Math.cos(a) * r;
+        const y = Math.sin(a) * r;
+        const rnd = Math.random();
+
+        if (rnd < 0.12) {
+          // Estrellas blanco-azuladas cálidas (Clase O/B) con halo difuso
+          g.fillStyle(0x70c0ff, 0.18);
+          g.fillCircle(x, y, 3.2);
+          g.fillStyle(0xd0eaff, 0.9);
+          g.fillCircle(x, y, 1.4);
+        } else if (rnd < 0.24) {
+          // Enanas doradas / ambarinas (Clase K/M)
+          g.fillStyle(paleta.ambar, 0.22);
+          g.fillCircle(x, y, 2.6);
+          g.fillStyle(0xffe0a0, 0.85);
+          g.fillCircle(x, y, 1.2);
+        } else {
+          // Estrellas de fondo estándar con varianza de brillo
+          const alfa = 0.2 + Math.random() * 0.65;
+          const tam = Math.random() < 0.15 ? 1.3 : 0.8;
+          g.fillStyle(paleta.texto, alfa);
+          g.fillCircle(x, y, tam);
+        }
       }
     }
 
@@ -161,14 +203,23 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
       const color = this.colorDeNivel(nivel);
       g.clear();
 
-      // Armazon circular concéntrico (truss del anillo)
-      g.lineStyle(1.5, paleta.texto, 0.4);
+      // Vector de iluminación dominante de Gargantúa (~135°, arriba-izquierda)
+      const anguloLuz = Math.PI * 0.75;
+
+      // Armazon circular concéntrico (truss del anillo) con relieve
+      g.lineStyle(1.4, paleta.texto, 0.35);
       g.strokeCircle(0, 0, RADIO_ANILLO - 7);
       g.strokeCircle(0, 0, RADIO_ANILLO + 7);
-      g.lineStyle(2.5, paleta.texto, 0.7);
+      g.lineStyle(2.2, paleta.texto, 0.65);
       g.strokeCircle(0, 0, RADIO_ANILLO);
 
-      // 12 módulos habitables prismáticos orientados tangencialmente
+      // Arco de luz especular en el anillo exterior expuesto a Gargantúa
+      g.lineStyle(1.8, 0xffffff, 0.35);
+      g.beginPath();
+      g.arc(0, 0, RADIO_ANILLO + 7, anguloLuz - Math.PI / 2.5, anguloLuz + Math.PI / 2.5, false);
+      g.strokePath();
+
+      // 12 módulos habitables prismáticos con sombreado volumétrico
       const hl = 8.5; // semilargo tangencial
       const hw = 5.5; // semiancho radial
       for (let i = 0; i < 12; i += 1) {
@@ -180,9 +231,12 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
         const tx = -sinA;
         const ty = cosA;
 
+        // Incidencia normal de la luz: [-1 = sombra total, +1 = luz frontal]
+        const dotLuz = Math.cos(a - anguloLuz);
+        const factorLuz = (dotLuz + 1) / 2; // [0, 1]
+
         if (i === MODULO_DANADO) {
           // Módulo dañado (explosión de esclusa de Mann)
-          // Estructura fracturada y hueco de despresurización
           g.fillStyle(paleta.fondo, 0.95);
           g.fillPoints([
             { x: cx - tx * hl * 0.95 - cosA * hw * 0.8, y: cy - ty * hl * 0.95 - sinA * hw * 0.8 },
@@ -192,7 +246,6 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
             { x: cx + tx * hl * 0.65 - cosA * hw * 0.95, y: cy + ty * hl * 0.65 - sinA * hw * 0.95 },
           ], true);
 
-          // Chapas de fuselaje desgarradas con contorno de alerta térmica
           g.lineStyle(1.8, paleta.alerta, 0.9);
           g.strokePoints([
             { x: cx - tx * hl, y: cy - ty * hl },
@@ -201,7 +254,6 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
             { x: cx + tx * hl * 0.8 + cosA * hw * 0.85, y: cy + ty * hl * 0.8 + sinA * hw * 0.85 },
           ], false);
 
-          // Vigas de celosía calcinadas expuestas al vacío
           g.lineStyle(1.3, paleta.ambar, 0.8);
           g.lineBetween(cx - tx * 4, cy - ty * 4, cx + cosA * 5, cy + sinA * 5);
           g.lineBetween(cx + tx * 3, cy + ty * 3, cx - cosA * 4, cy - sinA * 4);
@@ -215,19 +267,29 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
         const p3 = { x: cx + tx * hl + cosA * hw, y: cy + ty * hl + sinA * hw };
         const p4 = { x: cx - tx * hl + cosA * hw, y: cy - ty * hl + sinA * hw };
 
-        // Fuselaje con relleno metálico oscuro y borde claro
-        g.fillStyle(paleta.fondo, 0.95);
+        // Fuselaje con sombreado volumétrico según incidencia de luz
+        const alfaFondo = 0.88 + factorLuz * 0.1;
+        g.fillStyle(paleta.fondo, alfaFondo);
         g.fillPoints([p1, p2, p3, p4], true);
-        g.lineStyle(1.8, paleta.texto, 0.95);
+
+        // Borde estructural: cara soleada más luminosa, cara sombría más tenue
+        const alfaBorde = 0.5 + factorLuz * 0.48;
+        g.lineStyle(1.5 + factorLuz * 0.5, paleta.texto, alfaBorde);
         g.strokePoints([p1, p2, p3, p4], true);
 
-        // Ventana / textura central del módulo
-        g.lineStyle(1, paleta.texto, 0.5);
+        // Highlight metálico brillante en la arista exterior si mira a Gargantúa
+        if (dotLuz > 0.1) {
+          g.lineStyle(1.6, 0xffffff, dotLuz * 0.75);
+          g.lineBetween(p2.x, p2.y, p3.x, p3.y);
+        }
+
+        // Ventana central del módulo con reflejo
+        g.lineStyle(1, paleta.texto, 0.35 + factorLuz * 0.3);
         g.lineBetween(cx - tx * 3, cy - ty * 3, cx + tx * 3, cy + ty * 3);
 
         // Paneles radiadores disipadores en módulos pares
         if (i % 2 === 0) {
-          g.lineStyle(1.2, paleta.texto, 0.45);
+          g.lineStyle(1.2, paleta.texto, 0.3 + factorLuz * 0.35);
           g.lineBetween(cx + cosA * hw, cy + sinA * hw, cx + cosA * (hw + 5), cy + sinA * (hw + 5));
         }
       }
@@ -238,26 +300,34 @@ export function crearEscenaAcople(Phaser, { obtenerPartida, alAvanzar, obtenerNi
         const deltaA = 0.04;
         const a1 = a - deltaA;
         const a2 = a + deltaA;
+        const dotBrazo = Math.cos(a - anguloLuz);
+        const alfaBrazo = 0.45 + (dotBrazo + 1) * 0.22;
 
-        g.lineStyle(1.5, paleta.texto, 0.65);
+        g.lineStyle(1.5, paleta.texto, alfaBrazo);
         g.lineBetween(Math.cos(a1) * RADIO_HUB, Math.sin(a1) * RADIO_HUB, Math.cos(a - 0.015) * (RADIO_ANILLO - 7), Math.sin(a - 0.015) * (RADIO_ANILLO - 7));
         g.lineBetween(Math.cos(a2) * RADIO_HUB, Math.sin(a2) * RADIO_HUB, Math.cos(a + 0.015) * (RADIO_ANILLO - 7), Math.sin(a + 0.015) * (RADIO_ANILLO - 7));
 
         // Travesaños diagonales de celosía
         for (let k = 0.35; k <= 0.85; k += 0.25) {
           const rK = RADIO_HUB + (RADIO_ANILLO - 7 - RADIO_HUB) * k;
-          g.lineStyle(1, paleta.texto, 0.4);
+          g.lineStyle(1, paleta.texto, alfaBrazo * 0.6);
           g.lineBetween(Math.cos(a1) * rK, Math.sin(a1) * rK, Math.cos(a2) * (rK + 6), Math.sin(a2) * (rK + 6));
         }
       }
 
-      // Hub de atraque central cilíndrico
+      // Hub de atraque central cilíndrico con relieve de lente
       g.fillStyle(paleta.fondo, 0.95);
       g.fillCircle(0, 0, RADIO_HUB);
-      g.lineStyle(2, paleta.texto, 0.5);
+      g.lineStyle(1.8, paleta.texto, 0.5);
       g.strokeCircle(0, 0, RADIO_HUB * 0.6);
-      g.lineStyle(3, color, 1);
+      g.lineStyle(2.8, color, 1);
       g.strokeCircle(0, 0, RADIO_HUB);
+
+      // Semicírculo iluminado en el hub central expuesto a la luz
+      g.lineStyle(2.2, 0xffffff, 0.65);
+      g.beginPath();
+      g.arc(0, 0, RADIO_HUB, anguloLuz - Math.PI / 2.2, anguloLuz + Math.PI / 2.2, false);
+      g.strokePath();
 
       // Ranura guía del puerto de acople (apunta a -Y cuando ángulo relativo es 0)
       g.fillStyle(color, 1);

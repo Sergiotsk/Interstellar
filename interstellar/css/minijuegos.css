@@ -37,6 +37,50 @@
   display: block;
 }
 
+/* Marco del parabrisas blindado del Ranger (cockpit canopy frame) */
+.acople-cabina-marco {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  box-shadow:
+    inset 0 0 70px rgba(0, 0, 0, 0.85),
+    inset 0 0 22px rgba(0, 0, 0, 0.95);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.02) 0%, transparent 40%, rgba(100, 255, 218, 0.012) 100%);
+}
+
+/* Montante superior de cabina con remaches y bisel */
+.acople-cabina-marco::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2.2rem;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 45px, rgba(255, 255, 255, 0.04) 45px 46px),
+    linear-gradient(180deg, var(--cockpit-metal), var(--cockpit-metal-alto));
+  border-bottom: 2px solid var(--cockpit-bezel);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.7), inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+  clip-path: polygon(0 0, 100% 0, 96% 100%, 4% 100%);
+}
+
+/* Montantes laterales angulados del canopy */
+.acople-cabina-marco::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, var(--cockpit-metal) 0, transparent 3.5rem),
+    linear-gradient(270deg, var(--cockpit-metal) 0, transparent 3.5rem);
+  opacity: 0.65;
+  clip-path: polygon(
+    0 0, 3.5% 0, 6.5% 100%, 0 100%,
+    100% 0, 96.5% 0, 93.5% 100%, 100% 100%
+  );
+}
+
 .acople [data-pantalla] {
   position: absolute;
   z-index: 2;
@@ -211,6 +255,7 @@
   background: var(--instrumento-pantalla);
   border: 1px solid var(--cockpit-bezel);
   font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 6px currentColor;
 }
 
 /* LED por instrumento: teal en tolerancia, ambar fuera */
@@ -219,11 +264,12 @@
   height: 0.45rem;
   border-radius: 50%;
   background: var(--led-ambar);
+  box-shadow: 0 0 4px var(--led-ambar);
 }
 
 .instrumento[data-ok='true'] .instrumento-led {
   background: var(--instrumento-teal);
-  box-shadow: 0 0 6px var(--instrumento-teal);
+  box-shadow: 0 0 7px var(--instrumento-teal), 0 0 14px var(--instrumento-teal);
 }
 
 /* Dial de cero central: la aguja gira +-90deg con --valor en [-1,1]; el arco seguro mide --zona */
@@ -369,8 +415,10 @@
   background: var(--instrumento-teal);
 }
 
-/* Pantalla central de estado */
+/* Pantalla central de estado con estética CRT de fósforo */
 .consola-pantalla {
+  position: relative;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -381,6 +429,33 @@
   border: 1px solid var(--cockpit-bezel);
   box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.6);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Scanlines sutiles de fósforo */
+.consola-pantalla::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.32) 0px,
+    rgba(0, 0, 0, 0.32) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0.75;
+}
+
+/* Curvatura / viñeta CRT */
+.consola-pantalla::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 65%, rgba(0, 0, 0, 0.5) 100%);
+  pointer-events: none;
+  z-index: 2;
 }
 
 .acople-consola[data-nivel='seguro'] .consola-pantalla {
@@ -397,6 +472,7 @@
 
 .acople-estado-texto {
   font-size: 0.95rem;
+  text-shadow: 0 0 6px currentColor, 0 0 14px color-mix(in srgb, currentColor 55%, transparent);
 }
 
 /* Interruptor de audio */
