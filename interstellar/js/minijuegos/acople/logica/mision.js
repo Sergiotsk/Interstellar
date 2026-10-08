@@ -152,7 +152,7 @@ const NIVELES = {
   'DOCKING REJECTED': 'atencion',
 };
 
-const MOTIVOS = { distancia: 'TOO FAR', velocidad: 'TOO FAST', giro: 'SPIN MISMATCH', angulo: 'MISALIGNED' };
+const MOTIVOS = { distancia: 'TOO FAR', alejandose: 'DRIFTING AWAY', velocidad: 'TOO FAST', giro: 'SPIN MISMATCH', angulo: 'MISALIGNED' };
 
 // Linea de ayuda del HUD: invita a acoplar o explica el rechazo.
 export function indicacionHud(partida, estado) {

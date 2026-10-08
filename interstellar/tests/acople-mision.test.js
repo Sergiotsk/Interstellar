@@ -278,3 +278,22 @@ describe('acople/logica/mision.js — pausa por foco (US5, FR-036)', () => {
     assert.equal(pausar(ok), ok);
   });
 });
+
+describe('acople/logica/mision.js — no se acopla alejandose del puerto', () => {
+  const enRango = (extra = {}) => sincronizada({ distancia: CONFIG.rangoAcople - 1, velAproximacion: 2, ...extra });
+
+  test('con velocidad negativa el acople se rechaza por DRIFTING AWAY', () => {
+    const p = solicitarAcople(enRango({ velAproximacion: -1 }), CONFIG);
+    assert.equal(p.fase, 'en-curso');
+    assert.equal(p.motivoRechazo, 'alejandose');
+    assert.equal(indicacionHud(p, 'DOCKING REJECTED'), 'REJECTED · DRIFTING AWAY');
+  });
+
+  test('alejandose en rango no es DOCKING RANGE', () => {
+    assert.notEqual(estadoHud(enRango({ velAproximacion: -1 }), CONFIG), 'DOCKING RANGE');
+  });
+
+  test('quieto (v = 0) en rango si acopla', () => {
+    assert.equal(solicitarAcople(enRango({ velAproximacion: 0 }), CONFIG).fase, 'acoplada');
+  });
+});

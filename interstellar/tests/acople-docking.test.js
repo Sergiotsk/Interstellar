@@ -88,3 +88,9 @@ describe('acople/logica/docking.js — sincronia y contacto', () => {
     assert.deepEqual(evaluarContacto(nav(), est(), CONFIG), { rebote: true });
   });
 });
+
+describe('acople/logica/docking.js — alejarse del puerto', () => {
+  test('con velocidad negativa no es seguro', () => {
+    assert.equal(evaluarSincronia(nav({ velAproximacion: -1 }), est(), CONFIG).seguro, false);
+  });
+});

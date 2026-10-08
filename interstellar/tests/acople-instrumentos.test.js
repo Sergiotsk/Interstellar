@@ -73,3 +73,9 @@ describe('acople/logica/instrumentos.js — lecturas normalizadas de la consola'
     assert.equal(i.alineacionOk, false);
   });
 });
+
+describe('acople/logica/instrumentos.js — LED de velocidad al alejarse', () => {
+  test('con velocidad negativa el LED no esta en tolerancia', () => {
+    assert.equal(instrumentos(partida({ velAproximacion: -1 }), CONFIG).velocidadOk, false);
+  });
+});

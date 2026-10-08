@@ -24,7 +24,7 @@ export function evaluarSincronia(nave, estacion, config) {
     deltaOmega: dw,
     deltaTheta: dt,
     enRango: nave.distancia <= config.rangoAcople,
-    seguro: dw <= tol.omega && dt <= tol.angulo && v <= tol.velocidad,
+    seguro: dw <= tol.omega && dt <= tol.angulo && v >= 0 && v <= tol.velocidad,
     peligro: dw > peligro.omega || dt > peligro.angulo || v > peligro.velocidad,
   };
 }
@@ -43,6 +43,7 @@ export function evaluarContacto(nave, estacion, config) {
 export function motivoRechazo(sincronia, nave, config) {
   const { tol } = config;
   if (!sincronia.enRango) return 'distancia';
+  if (nave.velAproximacion < 0) return 'alejandose';
   if (nave.velAproximacion > tol.velocidad) return 'velocidad';
   if (sincronia.deltaOmega > tol.omega) return 'giro';
   if (sincronia.deltaTheta > tol.angulo) return 'angulo';

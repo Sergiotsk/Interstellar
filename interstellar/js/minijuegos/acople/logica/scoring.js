@@ -13,7 +13,7 @@ export function factores(datos, config) {
       (datos.tiempoEnRango > 0 ? datos.tiempoEnRangoSeguro / datos.tiempoEnRango : 1) -
         config.puntaje.penalizacionRechazo * (datos.rechazos ?? 0),
     ),
-    velocidad: acotar(1 - datos.velocidadFinal / tol.velocidad),
+    velocidad: acotar(1 - Math.abs(datos.velocidadFinal) / tol.velocidad),
   };
 }
 

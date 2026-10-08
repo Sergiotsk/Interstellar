@@ -23,7 +23,7 @@ export function instrumentos(partida, config) {
     velocidad: acotar(nave.velAproximacion / topeVelocidad),
     velocidadTol: tol.velocidad / topeVelocidad,
     velocidadPeligro: peligro.velocidad / topeVelocidad,
-    velocidadOk: nave.velAproximacion <= tol.velocidad,
+    velocidadOk: nave.velAproximacion >= 0 && nave.velAproximacion <= tol.velocidad,
 
     distancia: acotar(nave.distancia / config.distanciaInicial),
     distanciaRango: config.rangoAcople / config.distanciaInicial,

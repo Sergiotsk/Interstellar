@@ -71,3 +71,9 @@ describe('acople/logica/scoring.js — puntaje deterministico (FR-025)', () => {
     assert.equal(calcularPuntaje(ceros, CONFIG), 0);
   });
 });
+
+describe('acople/logica/scoring.js — velocidad negativa', () => {
+  test('el factor velocidad usa el modulo: alejarse no da el maximo', () => {
+    assert.ok(Math.abs(factores({ ...perfecto, velocidadFinal: -3 }, CONFIG).velocidad - 0.5) < 1e-9);
+  });
+});
