@@ -9,6 +9,7 @@ import {
   borrar,
   textoEditor,
   teclaEditor,
+  fijarCursor,
 } from '../js/minijuegos/acople/logica/nombre-arcade.js';
 
 const { largoNombre: LARGO, alfabeto: ALFABETO } = CONFIG.ranking;
@@ -80,5 +81,24 @@ describe('acople/logica/nombre-arcade.js — editor de nombre estilo fichin', ()
     assert.equal(teclaEditor(ed, 'Tab', CONFIG).manejada, false);
     assert.equal(teclaEditor(ed, 'F5', CONFIG).manejada, false);
     assert.equal(teclaEditor(ed, 'ArrowUp', CONFIG).manejada, true);
+  });
+});
+
+describe('acople/logica/nombre-arcade.js — tocar una casilla (010 FR-021)', () => {
+  test('mueve el cursor a la casilla tocada sin mutar el editor', () => {
+    const ed = crearEditor('', CONFIG);
+    const movido = fijarCursor(ed, 3, CONFIG);
+    assert.equal(movido.cursor, 3);
+    assert.equal(ed.cursor, 0);
+  });
+
+  test('indices fuera de rango se acotan a las casillas', () => {
+    assert.equal(fijarCursor(crearEditor('', CONFIG), -2, CONFIG).cursor, 0);
+    assert.equal(fijarCursor(crearEditor('', CONFIG), LARGO + 5, CONFIG).cursor, LARGO - 1);
+  });
+
+  test('un indice no entero devuelve el mismo editor', () => {
+    const ed = crearEditor('', CONFIG);
+    for (const i of [1.5, NaN, '2', null]) assert.equal(fijarCursor(ed, i, CONFIG), ed, String(i));
   });
 });

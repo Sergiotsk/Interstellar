@@ -150,7 +150,14 @@
             <p class="acople-nombre-titulo">Ingresá tu nombre</p>
             <p class="acople-nombre-casillas" data-nombre-casillas aria-hidden="true"></p>
             <p class="visualmente-oculto" data-nombre-lectura aria-live="polite"></p>
-            <p class="acople-nombre-ayuda">
+            <div class="acople-nombre-teclas" data-solo="tactil">
+              <button type="button" class="acople-tecla" data-tecla-editor="ArrowUp" aria-label="Letra siguiente">▲</button>
+              <button type="button" class="acople-tecla" data-tecla-editor="ArrowDown" aria-label="Letra anterior">▼</button>
+              <button type="button" class="acople-tecla" data-tecla-editor="ArrowLeft" aria-label="Casilla anterior">◀</button>
+              <button type="button" class="acople-tecla" data-tecla-editor="ArrowRight" aria-label="Casilla siguiente">▶</button>
+              <button type="button" class="acople-tecla" data-tecla-editor="Backspace" aria-label="Borrar">⌫</button>
+            </div>
+            <p class="acople-nombre-ayuda" data-solo="teclado">
               <kbd>↑</kbd> <kbd>↓</kbd> letra · <kbd>←</kbd> <kbd>→</kbd> casilla · o tipeá · <kbd>Enter</kbd> confirmar
             </p>
             <button type="button" class="acople-tecla acople-tecla--principal" data-accion="confirmar-nombre">Confirmar</button>

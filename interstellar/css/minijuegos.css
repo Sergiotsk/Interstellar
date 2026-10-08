@@ -890,6 +890,41 @@
   border-bottom: 2px solid var(--cockpit-bezel);
 }
 
+button.acople-nombre-casilla {
+  padding: 0;
+  font: inherit;
+  font-size: 1.3rem;
+  background: none;
+  border-top: 0;
+  border-right: 0;
+  border-left: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.acople[data-entrada='tactil'] .acople-nombre-casilla {
+  height: 3rem;
+}
+
+/* Teclas tactiles del editor de nombre: misma fila, 48 px minimo (010 FR-020/022) */
+.acople-nombre-teclas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 1rem 0 0.9rem;
+}
+
+.acople-nombre-teclas .acople-tecla {
+  min-width: 3rem;
+  min-height: 3rem;
+  padding: 0;
+  font-size: 1.1rem;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
 .acople-nombre-casilla--activa {
   color: var(--instrumento-teal);
   border-bottom-color: var(--instrumento-teal);

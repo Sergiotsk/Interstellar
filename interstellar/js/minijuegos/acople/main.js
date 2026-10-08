@@ -16,7 +16,7 @@ import {
   indicacionHud,
 } from './logica/mision.js';
 import { leerRanking, posicionEnRanking, insertarEntrada, guardarEnRanking } from './logica/ranking.js';
-import { crearEditor, textoEditor, teclaEditor } from './logica/nombre-arcade.js';
+import { crearEditor, textoEditor, teclaEditor, fijarCursor } from './logica/nombre-arcade.js';
 import { modoEntrada, requiereGiro } from './logica/dispositivo.js';
 import { levantarTodo, accionesTactiles } from './logica/controles-tactiles.js';
 import { instrumentos } from './logica/instrumentos.js';
@@ -287,9 +287,31 @@ function alSoltar(s, e) {
   if (accion) s.acciones = soltar(s.acciones, accion);
 }
 
+// Botones tactiles del editor y casillas tocables: mismo camino que el teclado (010 R10).
+function clicEnEditor(s, e) {
+  const tecla = e.target.closest('[data-tecla-editor]');
+  if (tecla) {
+    const r = teclaEditor(s.editor, tecla.dataset.teclaEditor, CONFIG);
+    if (r.confirmar) confirmarNombre(s);
+    else {
+      s.editor = r.editor;
+      pintarEditor(s);
+    }
+    return true;
+  }
+  const casilla = e.target.closest('[data-casilla]');
+  if (casilla) {
+    s.editor = fijarCursor(s.editor, Number(casilla.dataset.casilla), CONFIG);
+    pintarEditor(s);
+    return true;
+  }
+  return false;
+}
+
 function alClic(s, e) {
   if (s.girando) return;
   s.audio.reanudar();
+  if (s.editor && clicEnEditor(s, e)) return;
   const boton = e.target.closest('[data-accion]');
   if (!boton) return;
   const accion = boton.dataset.accion;

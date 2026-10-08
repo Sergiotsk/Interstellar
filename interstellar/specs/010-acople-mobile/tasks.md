@@ -171,7 +171,7 @@ description: "Task list — 010 Simulador de acople jugable en mobile"
 
 ### Tests for User Story 3 (TDD) ⚠️
 
-- [ ] T024 [P] [US3] En `tests/acople-nombre-arcade.test.js`, agregar los casos de `fijarCursor` (en ROJO):
+- [X] T024 [P] [US3] En `tests/acople-nombre-arcade.test.js`, agregar los casos de `fijarCursor` (en ROJO):
   - un índice válido mueve el cursor;
   - un índice negativo queda en 0;
   - un índice mayor al largo queda en el último;
@@ -180,10 +180,10 @@ description: "Task list — 010 Simulador de acople jugable en mobile"
 
 ### Implementation for User Story 3
 
-- [ ] T025 [US3] Implementar `fijarCursor(ed, i, config)` en `js/minijuegos/acople/logica/nombre-arcade.js` (T024 en VERDE).
-- [ ] T026 [US3] En `js/minijuegos/acople/overlays.js` → `pintarEditor`, crear cada casilla como `<button type="button" class="acople-nombre-casilla" data-casilla="i" tabindex="-1">` en lugar de `<span>`. En `css/minijuegos.css`, resetear el estilo de botón de la casilla (sin fondo ni borde extra; mantener la línea inferior) y llevar su área táctil a 48 px de alto.
-- [ ] T027 [US3] En `minijuego-acople.html`, dentro de `[data-editor-nombre]`, agregar `<div class="acople-nombre-teclas" data-solo="tactil">` con 5 botones `data-tecla-editor` (`ArrowUp` ▲, `ArrowDown` ▼, `ArrowLeft` ◀, `ArrowRight` ▶, `Backspace` ⌫) y su `aria-label`, y ocultar la ayuda de teclas con `data-solo="teclado"`. En `css/minijuegos.css`, ponerlos en fila, de 48 px como mínimo.
-- [ ] T028 [US3] En `js/minijuegos/acople/main.js` → `alClic`:
+- [X] T025 [US3] Implementar `fijarCursor(ed, i, config)` en `js/minijuegos/acople/logica/nombre-arcade.js` (T024 en VERDE).
+- [X] T026 [US3] En `js/minijuegos/acople/overlays.js` → `pintarEditor`, crear cada casilla como `<button type="button" class="acople-nombre-casilla" data-casilla="i" tabindex="-1">` en lugar de `<span>`. En `css/minijuegos.css`, resetear el estilo de botón de la casilla (sin fondo ni borde extra; mantener la línea inferior) y llevar su área táctil a 48 px de alto.
+- [X] T027 [US3] En `minijuego-acople.html`, dentro de `[data-editor-nombre]`, agregar `<div class="acople-nombre-teclas" data-solo="tactil">` con 5 botones `data-tecla-editor` (`ArrowUp` ▲, `ArrowDown` ▼, `ArrowLeft` ◀, `ArrowRight` ▶, `Backspace` ⌫) y su `aria-label`, y ocultar la ayuda de teclas con `data-solo="teclado"`. En `css/minijuegos.css`, ponerlos en fila, de 48 px como mínimo.
+- [X] T028 [US3] En `js/minijuegos/acople/main.js` → `alClic`:
   - `[data-tecla-editor]` con `s.editor` → `teclaEditor(s.editor, tecla, CONFIG)`; si confirma, `confirmarNombre`, y si no, `pintarEditor(s)`;
   - `[data-casilla]` con `s.editor` → `fijarCursor` y `pintarEditor(s)`.
 
@@ -197,17 +197,17 @@ description: "Task list — 010 Simulador de acople jugable en mobile"
 
 **Independent Test**: el quickstart de la 009 en desktop sin parámetro, más `?entrada=teclado`.
 
-- [ ] T029 [US4] Revisar en `css/minijuegos.css` que ninguna regla nueva afecte el modo teclado: sin `data-cabina`, sin mandos y la consola normal por encima de 30rem de alto. Si alguna regla se filtra, corregirla.
-- [ ] T030 [US4] Validar en Chrome desktop, sin parámetro: teclas, Enter para acoplar, el editor con teclado, que tocar una casilla con el mouse mueve el cursor, pantalla completa con `Esc Salir`, la pausa al perder el foco y 10 ciclos de entrar y salir con swup sin errores en consola (009 SC-005).
+- [X] T029 [US4] Revisar en `css/minijuegos.css` que ninguna regla nueva afecte el modo teclado: sin `data-cabina`, sin mandos y la consola normal por encima de 30rem de alto. Si alguna regla se filtra, corregirla.
+- [X] T030 [US4] Validar en Chrome desktop, sin parámetro: teclas, Enter para acoplar, el editor con teclado, que tocar una casilla con el mouse mueve el cursor, pantalla completa con `Esc Salir`, la pausa al perder el foco y 10 ciclos de entrar y salir con swup sin errores en consola (009 SC-005).
 
 ---
 
 ## Phase 7: Polish & Cross-Cutting Concerns
 
-- [ ] T031 [P] En `specs/009-minijuegos-acople/spec.md`, anotar en FR-034 y SC-008: "*(Reemplazado por la spec 010, 2026-10-08.)*". En Assumptions, actualizar la plataforma objetivo para apuntar a la 010.
-- [ ] T032 [P] En `docs/20-notas-de-codigo/minijuegos-acople.md`, agregar la sección "Entrada táctil": por qué se libera la captura del puntero, el mapa por dedo, la cabina fija contra la Fullscreen API en el iPhone y el aviso de giro como capa.
-- [ ] T033 Correr `node --test` completo, todo en verde.
-- [ ] T034 Correr el quickstart §2 y §3 (`?entrada=tactil` e iframes) y documentar las mediciones.
+- [X] T031 [P] En `specs/009-minijuegos-acople/spec.md`, anotar en FR-034 y SC-008: "*(Reemplazado por la spec 010, 2026-10-08.)*". En Assumptions, actualizar la plataforma objetivo para apuntar a la 010.
+- [X] T032 [P] En `docs/20-notas-de-codigo/minijuegos-acople.md`, agregar la sección "Entrada táctil": por qué se libera la captura del puntero, el mapa por dedo, la cabina fija contra la Fullscreen API en el iPhone y el aviso de giro como capa.
+- [X] T033 Correr `node --test` completo, todo en verde.
+- [X] T034 Correr el quickstart §2 y §3 (`?entrada=tactil` e iframes) y documentar las mediciones.
 - [ ] T035 Quickstart §4 en dispositivos reales (iPhone y Android, a cargo del usuario en la LAN). Registrar los resultados de SC-001, SC-004, SC-005, SC-006 y SC-008.
 
 ---

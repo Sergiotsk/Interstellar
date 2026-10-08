@@ -172,11 +172,15 @@ export function crearOverlays(raiz, { pantallaCompleta = false } = {}) {
   function pintarEditor(editor) {
     casillasEl.replaceChildren(
       ...editor.letras.map((letra, i) => {
-        const span = document.createElement('span');
-        span.className = 'acople-nombre-casilla';
-        if (i === editor.cursor) span.classList.add('acople-nombre-casilla--activa');
-        span.textContent = letra === ' ' ? '_' : letra;
-        return span;
+        // Boton para poder tocar la casilla y moverle el cursor (010 FR-021).
+        const casilla = document.createElement('button');
+        casilla.type = 'button';
+        casilla.tabIndex = -1;
+        casilla.dataset.casilla = String(i);
+        casilla.className = 'acople-nombre-casilla';
+        if (i === editor.cursor) casilla.classList.add('acople-nombre-casilla--activa');
+        casilla.textContent = letra === ' ' ? '_' : letra;
+        return casilla;
       }),
     );
     lecturaNombreEl.textContent = `Nombre: ${editor.letras.join('').trim() || 'vacío'}`;
