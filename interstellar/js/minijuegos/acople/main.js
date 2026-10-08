@@ -15,16 +15,18 @@ import {
   nivelDeEstado,
   indicacionHud,
 } from './logica/mision.js';
-import { guardarSiMejor } from './logica/record.js';
+import { leerRanking, posicionEnRanking, insertarEntrada, guardarEnRanking } from './logica/ranking.js';
+import { crearEditor, textoEditor, teclaEditor } from './logica/nombre-arcade.js';
 import { debeMostrarAvisoDesktop } from './logica/dispositivo.js';
 import { instrumentos } from './logica/instrumentos.js';
-import { crearOverlays, lecturasHud } from './overlays.js';
+import { crearOverlays, lecturasHud, filasRanking } from './overlays.js';
 import { crearEscenaAcople } from './escena-acople.js';
 import { crearAudioAcople } from './audio-acople.js';
 import * as pantalla from './pantalla-completa.js';
 
 const URL_PHASER = '../../vendor/phaser@4.2.1/phaser.esm.min.js';
 const DURACION_INTRO_MS = 8000;
+const DURACION_INTRO_CON_RANKING_MS = 13000; // el ranking aparece a los 6 s: que se llegue a leer
 const INTERVALO_HUD_MS = 100;
 
 let sesion = null;
@@ -81,6 +83,7 @@ function comenzarPartida(s, conGesto) {
 
 // Reintentar reusa el Game ya creado: solo se reemplaza la partida (sin intro, FR-009).
 function volverAJugar(s) {
+  s.editor = null;
   s.partida = reintentar(s.partida, CONFIG);
   s.acciones = soltarTodo();
   s.ui.mostrar('hud');
@@ -115,9 +118,54 @@ function terminarPartida(s) {
   const { desenlace } = s.partida;
   if (desenlace.exito) s.audio.evento('acople');
   if (desenlace.causa === 'impacto') s.audio.evento('impacto');
-  const infoRecord = guardarSiMejor(desenlace, almacenamiento(), CONFIG);
-  s.ui.pintarResultado(desenlace, infoRecord);
+  const { entradas, ultimoNombre } = leerRanking(almacenamiento(), CONFIG);
+  const posicion = desenlace.exito ? posicionEnRanking(entradas, desenlace.puntaje, CONFIG) : -1;
+  s.ranking = entradas;
+  s.ui.pintarResultado(desenlace, posicion);
+  s.ui.mostrarEditor(posicion >= 0);
+  if (posicion >= 0) {
+    s.editor = crearEditor(ultimoNombre, CONFIG);
+    pintarEditor(s);
+  } else {
+    s.ui.pintarRanking('resultado', filasRanking(entradas, -1, CONFIG));
+  }
   s.ui.mostrar('resultado');
+}
+
+// Mientras se carga el nombre, la tabla muestra la fila provisoria con lo que se va tipeando.
+function pintarEditor(s) {
+  const provisoria = insertarEntrada(
+    s.ranking,
+    { nombre: textoEditor(s.editor), puntaje: s.partida.desenlace.puntaje },
+    CONFIG,
+  );
+  s.ui.pintarEditor(s.editor);
+  s.ui.pintarRanking('resultado', filasRanking(provisoria.entradas, provisoria.posicion, CONFIG));
+}
+
+function confirmarNombre(s) {
+  const r = guardarEnRanking(s.partida.desenlace, textoEditor(s.editor), almacenamiento(), CONFIG);
+  s.editor = null;
+  if (r.guardado) s.ranking = r.entradas;
+  s.ui.mostrarEditor(false);
+  s.ui.pintarRanking('resultado', filasRanking(s.ranking, r.posicion, CONFIG));
+  s.ui.enfocarResultado();
+}
+
+// Editor de nombre: se traga las teclas que usa (R incluida) para no reiniciar mientras se escribe.
+function alPresionarEnEditor(s, e) {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if ((esEnter(e) || e.key === ' ') && e.target.closest?.('a, button')) return;
+  const r = teclaEditor(s.editor, e.key, CONFIG);
+  if (!r.manejada) return;
+  e.preventDefault();
+  // Enter sostenido desde el acople no debe confirmar el nombre de un saque.
+  if (r.confirmar) {
+    if (!e.repeat) confirmarNombre(s);
+    return;
+  }
+  s.editor = r.editor;
+  pintarEditor(s);
 }
 
 function tick(s, dt) {
@@ -161,6 +209,10 @@ function alPresionar(s, e) {
     comenzarPartida(s, true);
     return;
   }
+  if (s.editor) {
+    alPresionarEnEditor(s, e);
+    return;
+  }
   const terminada = fase === 'acoplada' || fase === 'fallida';
   if (terminada && !e.repeat && (e.code === 'KeyR' || (esEnter(e) && !e.target.closest?.('a, button')))) {
     e.preventDefault();
@@ -200,6 +252,7 @@ function alClic(s, e) {
   const accion = boton.dataset.accion;
   if (accion === 'saltar-intro') comenzarPartida(s, true);
   if (accion === 'reintentar') volverAJugar(s);
+  if (accion === 'confirmar-nombre' && s.editor) confirmarNombre(s);
   if (accion === 'seguir' && s.partida.fase === 'pausada') reanudarPartida(s);
   if (accion === 'acoplar' && s.partida.fase === 'en-curso') {
     pedirAcople(s);
@@ -266,6 +319,8 @@ export async function mount() {
     partida: crearPartida(CONFIG, { conIntro: true }),
     estado: 'APPROACHING',
     acciones: soltarTodo(),
+    ranking: [],
+    editor: null,
     audio: crearAudioAcople(),
     ultimoHud: 0,
     game: null,
@@ -275,9 +330,12 @@ export async function mount() {
   sesion = s;
 
   raiz.querySelector('[data-accion="mute"]')?.setAttribute('aria-pressed', String(s.audio.estaMuteado()));
+  const { entradas } = leerRanking(almacenamiento(), CONFIG);
   ui.mostrar('intro');
+  ui.pintarRanking('intro', filasRanking(entradas, -1, CONFIG, { completar: false }));
   ui.pintarPantalla(false);
-  s.temporizadorIntro = setTimeout(() => comenzarPartida(s, false), DURACION_INTRO_MS);
+  const duracionIntro = entradas.length ? DURACION_INTRO_CON_RANKING_MS : DURACION_INTRO_MS;
+  s.temporizadorIntro = setTimeout(() => comenzarPartida(s, false), duracionIntro);
   escuchar(s, window, 'keydown', (e) => alPresionar(s, e));
   escuchar(s, window, 'keyup', (e) => alSoltar(s, e));
   escuchar(s, raiz, 'click', (e) => alClic(s, e));

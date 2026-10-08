@@ -1,6 +1,6 @@
-// Modulo de pagina del hub de minijuegos: pinta el record local en la bahia 1 (FR-004).
+// Modulo de pagina del hub de minijuegos: pinta el #1 del ranking local en la bahia 1 (FR-004).
 import { CONFIG } from './acople/config.js';
-import { leerRecord } from './acople/logica/record.js';
+import { leerRanking } from './acople/logica/ranking.js';
 
 export function textoRecord(record) {
   return record ? `Récord: ${record.puntaje.toLocaleString('es-AR')} pts` : 'Sin registro';
@@ -15,7 +15,7 @@ export function mount() {
   } catch {
     storage = undefined; // acceder a localStorage puede lanzar con el almacenamiento bloqueado
   }
-  destino.textContent = textoRecord(leerRecord(storage, CONFIG));
+  destino.textContent = textoRecord(leerRanking(storage, CONFIG).entradas[0] ?? null);
 }
 
 export function unmount() {

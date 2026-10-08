@@ -714,6 +714,154 @@
   background: var(--led-ambar);
 }
 
+/* Resultado con tabla de puntajes: mision a la izquierda, ranking a la derecha */
+.acople-resultado {
+  width: min(92%, 52rem);
+  max-height: calc(100% - 2rem);
+  overflow-y: auto;
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 46rem) {
+  .acople-resultado {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.acople-resultado [hidden],
+.acople-ranking[hidden] {
+  display: none;
+}
+
+/* Editor de nombre estilo fichin */
+.acople-nombre {
+  margin: 0 0 1rem;
+}
+
+.acople-nombre-titulo {
+  margin: 0 0 0.6rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-tierra-oro);
+}
+
+.acople-nombre-casillas {
+  display: flex;
+  gap: 0.3rem;
+  margin: 1rem 0 0.75rem;
+}
+
+.acople-nombre-casilla {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 1.9rem;
+  height: 2.4rem;
+  font-size: 1.3rem;
+  color: var(--color-texto);
+  border-bottom: 2px solid var(--cockpit-bezel);
+}
+
+.acople-nombre-casilla--activa {
+  color: var(--instrumento-teal);
+  border-bottom-color: var(--instrumento-teal);
+  animation: acople-parpadeo 1s steps(1) infinite;
+}
+
+/* Flechas arriba/abajo sobre la casilla activa: avisan que la letra se gira */
+.acople-nombre-casilla--activa::before,
+.acople-nombre-casilla--activa::after {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.55rem;
+  color: var(--instrumento-teal);
+}
+
+.acople-nombre-casilla--activa::before {
+  content: '▲';
+  top: -0.85rem;
+}
+
+.acople-nombre-casilla--activa::after {
+  content: '▼';
+  bottom: -1rem;
+}
+
+.acople-nombre-ayuda {
+  margin: 1rem 0 0.9rem;
+  font-size: 0.75rem;
+  color: var(--color-texto-atenuado);
+}
+
+@keyframes acople-parpadeo {
+  50% { color: transparent; }
+}
+
+/* Tabla de puntajes */
+.acople-ranking-titulo {
+  margin: 0 0 0.6rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--instrumento-teal);
+}
+
+.acople-ranking-lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.15rem;
+}
+
+.acople-ranking-fila {
+  display: grid;
+  grid-template-columns: 2.2em 1fr auto;
+  gap: 0.75rem;
+  padding: 0.2rem 0.4rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.1em;
+}
+
+.acople-ranking-puesto {
+  color: var(--color-texto-atenuado);
+}
+
+.acople-ranking-nombre {
+  white-space: pre;
+}
+
+.acople-ranking-fila--vacia {
+  color: color-mix(in srgb, var(--color-texto) 30%, transparent);
+}
+
+.acople-ranking-fila--resaltada {
+  color: var(--color-tierra-oro);
+  background: color-mix(in srgb, var(--color-tierra-oro) 12%, transparent);
+}
+
+.acople-ranking-fila--resaltada .acople-ranking-puesto {
+  color: inherit;
+}
+
+/* En la intro: compacta y aparece con los controles */
+.acople-ranking--intro {
+  width: min(100%, 22rem);
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  text-align: left;
+  opacity: 0;
+  animation: acople-aparecer 1s ease 6s forwards;
+}
+
+.acople-ranking--intro .acople-ranking-titulo {
+  text-align: center;
+}
+
 /* 3. Hub de misiones (minijuegos.html); bloque mudado desde en-desarrollo.css */
 .minijuegos-bahias {
   max-width: 60rem;
@@ -878,8 +1026,13 @@
 /* 4. Movimiento reducido */
 @media (prefers-reduced-motion: reduce) {
   .acople-intro-linea,
-  .acople-intro-controles {
+  .acople-intro-controles,
+  .acople-ranking--intro {
     opacity: 1;
+    animation: none;
+  }
+
+  .acople-nombre-casilla--activa {
     animation: none;
   }
 

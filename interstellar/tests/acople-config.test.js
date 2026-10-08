@@ -46,9 +46,14 @@ describe('acople/config.js — parametros centralizados (FR-018)', () => {
     assert.ok(CONFIG.puntaje.penalizacionRechazo > 0);
   });
 
-  test('clave del record namespaced', () => {
-    assert.equal(CONFIG.record.clave, 'interstellar:minijuegos:acople:best');
-    assert.equal(CONFIG.record.version, 1);
+  test('ranking: clave namespaced, top 10 y nombre por defecto valido', () => {
+    const r = CONFIG.ranking;
+    assert.equal(r.clave, 'interstellar:minijuegos:acople:ranking');
+    assert.equal(r.version, 1);
+    assert.equal(r.tope, 10);
+    assert.ok(r.nombrePorDefecto.length <= r.largoNombre);
+    assert.ok([...r.nombrePorDefecto].every((c) => r.alfabeto.includes(c)));
+    assert.equal(r.alfabeto.at(-1), ' ', 'el espacio cierra el alfabeto: casilla en blanco');
   });
 
   test('nombres de la pelicula en un unico lugar (FR-039)', () => {

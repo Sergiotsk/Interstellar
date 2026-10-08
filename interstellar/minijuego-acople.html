@@ -42,6 +42,10 @@
         <p class="acople-intro-controles">
           <kbd>←</kbd> <kbd>→</kbd> o <kbd>A</kbd> <kbd>D</kbd> rotar · <kbd>↑</kbd> o <kbd>W</kbd> impulso · <kbd>Espacio</kbd> o <kbd>S</kbd> freno · <kbd>Enter</kbd> acoplar
         </p>
+        <div class="acople-ranking acople-ranking--intro" data-ranking-bloque hidden>
+          <p class="acople-ranking-titulo" id="ranking-intro-titulo">Mejores pilotos</p>
+          <ol class="acople-ranking-lista" data-ranking="intro" aria-labelledby="ranking-intro-titulo"></ol>
+        </div>
         <button type="button" class="acople-tecla" data-accion="saltar-intro">Saltear</button>
       </section>
 
@@ -117,19 +121,37 @@
       </section>
 
       <section class="acople-resultado" data-pantalla="resultado" aria-labelledby="resultado-titulo" hidden>
-        <h2 id="resultado-titulo" tabindex="-1" data-resultado-titulo>Acople completo</h2>
-        <p class="acople-resultado-causa" data-resultado-causa hidden></p>
-        <dl class="acople-resultado-datos">
-          <div><dt>Tiempo</dt><dd data-resultado="tiempo">—</dd></div>
-          <div><dt>Combustible restante</dt><dd data-resultado="combustible">—</dd></div>
-          <div><dt>Velocidad final</dt><dd data-resultado="velocidad">—</dd></div>
-          <div data-resultado-solo-exito><dt>Precisión de sincronía</dt><dd data-resultado="precision">—</dd></div>
-          <div data-resultado-solo-exito><dt>Puntaje</dt><dd data-resultado="puntaje">—</dd></div>
-        </dl>
-        <p class="acople-resultado-record" data-resultado-record hidden></p>
-        <div class="acople-resultado-acciones">
-          <button type="button" class="acople-tecla acople-tecla--principal" data-accion="reintentar">Reintentar</button>
-          <a class="acople-tecla" href="minijuegos.html">Volver al hub</a>
+        <div class="acople-resultado-mision">
+          <h2 id="resultado-titulo" tabindex="-1" data-resultado-titulo>Acople completo</h2>
+          <p class="acople-resultado-causa" data-resultado-causa hidden></p>
+          <dl class="acople-resultado-datos">
+            <div><dt>Tiempo</dt><dd data-resultado="tiempo">—</dd></div>
+            <div><dt>Combustible restante</dt><dd data-resultado="combustible">—</dd></div>
+            <div><dt>Velocidad final</dt><dd data-resultado="velocidad">—</dd></div>
+            <div data-resultado-solo-exito><dt>Precisión de sincronía</dt><dd data-resultado="precision">—</dd></div>
+            <div data-resultado-solo-exito><dt>Puntaje</dt><dd data-resultado="puntaje">—</dd></div>
+          </dl>
+          <p class="acople-resultado-record" data-resultado-record hidden></p>
+
+          <div class="acople-nombre" data-editor-nombre hidden>
+            <p class="acople-nombre-titulo">Ingresá tu nombre</p>
+            <p class="acople-nombre-casillas" data-nombre-casillas aria-hidden="true"></p>
+            <p class="visualmente-oculto" data-nombre-lectura aria-live="polite"></p>
+            <p class="acople-nombre-ayuda">
+              <kbd>↑</kbd> <kbd>↓</kbd> letra · <kbd>←</kbd> <kbd>→</kbd> casilla · o tipeá · <kbd>Enter</kbd> confirmar
+            </p>
+            <button type="button" class="acople-tecla acople-tecla--principal" data-accion="confirmar-nombre">Confirmar</button>
+          </div>
+
+          <div class="acople-resultado-acciones" data-resultado-acciones>
+            <button type="button" class="acople-tecla acople-tecla--principal" data-accion="reintentar">Reintentar</button>
+            <a class="acople-tecla" href="minijuegos.html">Volver al hub</a>
+          </div>
+        </div>
+
+        <div class="acople-ranking" data-ranking-bloque hidden>
+          <p class="acople-ranking-titulo" id="ranking-resultado-titulo">Top 10 · Pilotos del Ranger</p>
+          <ol class="acople-ranking-lista" data-ranking="resultado" aria-labelledby="ranking-resultado-titulo"></ol>
         </div>
       </section>
 

@@ -25,6 +25,26 @@ export function lecturasHud(partida, config) {
   };
 }
 
+// Filas de la tabla de puntajes; completar rellena hasta el tope con puestos vacios, como un fichin.
+export function filasRanking(entradas, resaltar, config, { completar = true } = {}) {
+  const total = completar ? config.ranking.tope : entradas.length;
+  return Array.from({ length: total }, (_, i) => {
+    const e = entradas[i];
+    return {
+      puesto: String(i + 1).padStart(2, '0'),
+      nombre: e ? e.nombre : '',
+      puntaje: e ? e.puntaje.toLocaleString('es-AR') : '',
+      resaltada: i === resaltar,
+      vacia: !e,
+    };
+  });
+}
+
+export function textoPuesto(posicion) {
+  if (posicion === 0) return '★ Nuevo récord';
+  return posicion > 0 ? `★ Entraste al ranking · puesto ${posicion + 1}` : '';
+}
+
 export function crearOverlays(raiz, { pantallaCompleta = false } = {}) {
   const pantallas = [...raiz.querySelectorAll('[data-pantalla]')];
   const hud = Object.fromEntries([...raiz.querySelectorAll('[data-hud]')].map((el) => [el.dataset.hud, el]));
@@ -40,6 +60,11 @@ export function crearOverlays(raiz, { pantallaCompleta = false } = {}) {
   const indicacionEl = raiz.querySelector('[data-hud-indicacion]');
   const tablero = Object.fromEntries([...raiz.querySelectorAll('[data-instrumento]')].map((el) => [el.dataset.instrumento, el]));
   const ordenEl = raiz.querySelector('[data-orden-acople]');
+  const editorEl = raiz.querySelector('[data-editor-nombre]');
+  const casillasEl = raiz.querySelector('[data-nombre-casillas]');
+  const lecturaNombreEl = raiz.querySelector('[data-nombre-lectura]');
+  const accionesResultado = raiz.querySelector('[data-resultado-acciones]');
+  const rankings = Object.fromEntries([...raiz.querySelectorAll('[data-ranking]')].map((el) => [el.dataset.ranking, el]));
   let ultimaIndicacion = null;
   let ultimoEstado = null;
 
@@ -92,7 +117,7 @@ export function crearOverlays(raiz, { pantallaCompleta = false } = {}) {
     }
   }
 
-  function pintarResultado(desenlace, infoRecord = null) {
+  function pintarResultado(desenlace, posicion = -1) {
     const ok = desenlace.exito;
     resultado.classList.toggle('acople-resultado--fallida', !ok);
     titulo.textContent = ok ? 'Acople completo' : 'Misión fallida';
@@ -108,16 +133,52 @@ export function crearOverlays(raiz, { pantallaCompleta = false } = {}) {
       datos.precision.textContent = pct(desenlace.precision);
       datos.puntaje.textContent = formatoPuntaje(desenlace.puntaje);
     }
-    pintarRecord(ok, infoRecord);
+    recordEl.textContent = textoPuesto(posicion);
+    recordEl.hidden = recordEl.textContent === '';
   }
 
-  function pintarRecord(ok, info) {
-    if (!ok || !info || !info.record) {
-      recordEl.hidden = true;
-      return;
-    }
-    recordEl.hidden = false;
-    recordEl.textContent = info.guardado ? '★ Nuevo récord' : `Récord vigente: ${formatoPuntaje(info.record.puntaje)}`;
+  // Tabla de puntajes: el bloque entero se oculta si no hay ninguna fila con datos.
+  function pintarRanking(cual, filas) {
+    const lista = rankings[cual];
+    if (!lista) return;
+    lista.replaceChildren(
+      ...filas.map((f) => {
+        const li = document.createElement('li');
+        li.className = 'acople-ranking-fila';
+        if (f.resaltada) li.classList.add('acople-ranking-fila--resaltada');
+        if (f.vacia) li.classList.add('acople-ranking-fila--vacia');
+        [f.puesto, f.nombre || '········', f.puntaje || '—'].forEach((texto, i) => {
+          const span = document.createElement('span');
+          span.className = ['acople-ranking-puesto', 'acople-ranking-nombre', 'acople-ranking-puntaje'][i];
+          span.textContent = texto;
+          li.append(span);
+        });
+        return li;
+      }),
+    );
+    lista.closest('[data-ranking-bloque]').hidden = filas.every((f) => f.vacia);
+  }
+
+  function mostrarEditor(visible) {
+    editorEl.hidden = !visible;
+    accionesResultado.hidden = visible;
+  }
+
+  function pintarEditor(editor) {
+    casillasEl.replaceChildren(
+      ...editor.letras.map((letra, i) => {
+        const span = document.createElement('span');
+        span.className = 'acople-nombre-casilla';
+        if (i === editor.cursor) span.classList.add('acople-nombre-casilla--activa');
+        span.textContent = letra === ' ' ? '_' : letra;
+        return span;
+      }),
+    );
+    lecturaNombreEl.textContent = `Nombre: ${editor.letras.join('').trim() || 'vacío'}`;
+  }
+
+  function enfocarResultado() {
+    titulo.focus();
   }
 
   // Si el motor no carga, el aviso pasa a explicar la falla en vez de pedir desktop.
@@ -132,5 +193,15 @@ export function crearOverlays(raiz, { pantallaCompleta = false } = {}) {
     botonPantalla.setAttribute('aria-label', activa ? 'Salir de pantalla completa' : 'Jugar en pantalla completa');
   }
 
-  return { mostrar, pintarHud, pintarResultado, mostrarFalla, pintarPantalla };
+  return {
+    mostrar,
+    pintarHud,
+    pintarResultado,
+    pintarRanking,
+    mostrarEditor,
+    pintarEditor,
+    enfocarResultado,
+    mostrarFalla,
+    pintarPantalla,
+  };
 }

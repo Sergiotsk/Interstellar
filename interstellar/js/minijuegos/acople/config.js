@@ -50,5 +50,13 @@ export const CONFIG = congelar({
     pesos: { precision: 0.3, combustible: 0.2, tiempo: 0.15, suavidad: 0.2, velocidad: 0.15 },
   },
 
-  record: { clave: 'interstellar:minijuegos:acople:best', version: 1 },
+  // Tabla de puntajes local estilo fichin: top N con nombre de hasta largoNombre letras.
+  ranking: {
+    clave: 'interstellar:minijuegos:acople:ranking',
+    version: 1,
+    tope: 10,
+    largoNombre: 8,
+    alfabeto: 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ0123456789 ',
+    nombrePorDefecto: 'RANGER',
+  },
 });
