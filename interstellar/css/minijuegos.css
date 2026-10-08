@@ -37,7 +37,7 @@
   display: block;
 }
 
-/* Marco del parabrisas blindado del Ranger (cockpit canopy frame) con cristal real */
+/* Marco del parabrisas blindado del Ranger (cockpit canopy frame) con cristal ópticamente limpio */
 .acople-cabina-marco {
   position: absolute;
   inset: 0;
@@ -47,10 +47,7 @@
     inset 0 0 70px rgba(0, 0, 0, 0.85),
     inset 0 0 22px rgba(0, 0, 0, 0.95);
   background:
-    url('../assets/img/minijuegos/cristal-cabina.webp') center / cover no-repeat,
     linear-gradient(135deg, rgba(255, 255, 255, 0.02) 0%, transparent 40%, rgba(100, 255, 218, 0.012) 100%);
-  background-blend-mode: screen, normal;
-  opacity: 0.82;
 }
 
 /* Montante superior de cabina con remaches y bisel */
