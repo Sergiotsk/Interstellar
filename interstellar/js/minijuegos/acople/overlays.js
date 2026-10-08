@@ -189,8 +189,15 @@ export function crearOverlays(raiz, { pantallaCompleta = false } = {}) {
 
   function pintarPantalla(activa) {
     if (!botonPantalla) return;
-    botonPantalla.textContent = activa ? 'Salir ✕' : 'Pantalla completa';
-    botonPantalla.setAttribute('aria-label', activa ? 'Salir de pantalla completa' : 'Jugar en pantalla completa');
+    // Se muestra la tecla real: Esc la reserva el navegador para salir de pantalla completa.
+    if (activa) {
+      const tecla = document.createElement('kbd');
+      tecla.textContent = 'Esc';
+      botonPantalla.replaceChildren(tecla, ' Salir');
+    } else {
+      botonPantalla.textContent = 'Pantalla completa';
+    }
+    botonPantalla.setAttribute('aria-label', activa ? 'Salir de pantalla completa (Esc)' : 'Jugar en pantalla completa');
   }
 
   return {
