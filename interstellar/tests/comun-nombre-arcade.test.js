@@ -10,11 +10,11 @@ import {
   textoEditor,
   teclaEditor,
   fijarCursor,
-} from '../js/minijuegos/acople/logica/nombre-arcade.js';
+} from '../js/minijuegos/comun/logica/nombre-arcade.js';
 
 const { largoNombre: LARGO, alfabeto: ALFABETO } = CONFIG.ranking;
 
-describe('acople/logica/nombre-arcade.js — editor de nombre estilo fichin', () => {
+describe('comun/logica/nombre-arcade.js — editor de nombre estilo fichin', () => {
   test('arranca con casillas en blanco y el cursor en la primera', () => {
     const ed = crearEditor('', CONFIG);
     assert.equal(ed.letras.length, LARGO);
@@ -84,7 +84,7 @@ describe('acople/logica/nombre-arcade.js — editor de nombre estilo fichin', ()
   });
 });
 
-describe('acople/logica/nombre-arcade.js — tocar una casilla (010 FR-021)', () => {
+describe('comun/logica/nombre-arcade.js — tocar una casilla (010 FR-021)', () => {
   test('mueve el cursor a la casilla tocada sin mutar el editor', () => {
     const ed = crearEditor('', CONFIG);
     const movido = fijarCursor(ed, 3, CONFIG);

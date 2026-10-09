@@ -1,8 +1,11 @@
-// Input del acople modelado como acciones, independiente del dispositivo (FR-011).
-import { CONFIG } from '../config.js';
+// Input modelado como acciones, independiente del dispositivo; cada juego trae su mapa de teclas (FR-011).
 
-export function accionDeTecla(code, teclas = CONFIG.teclas) {
+export function accionDeTecla(code, teclas = {}) {
   return Object.hasOwn(teclas, code) ? teclas[code] : null;
+}
+
+export function accionesDe(teclas) {
+  return Object.freeze([...new Set(Object.values(teclas))]);
 }
 
 export function presionar(activas, accion) {

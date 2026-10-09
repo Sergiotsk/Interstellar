@@ -7,7 +7,7 @@ import {
   insertarEntrada,
   guardarEnRanking,
   normalizarNombre,
-} from '../js/minijuegos/acople/logica/ranking.js';
+} from '../js/minijuegos/comun/logica/ranking.js';
 
 const { clave: CLAVE, tope: TOPE } = CONFIG.ranking;
 const ahora = new Date('2026-10-08T21:30:00.000Z');
@@ -39,7 +39,7 @@ const entrada = (nombre, puntaje) => ({ nombre, puntaje, fecha: ahora.toISOStrin
 const tabla = (...puntajes) => puntajes.map((p, i) => entrada(`P${i}`, p));
 const guardado = (entradas, extra = {}) => JSON.stringify({ v: 1, entradas, ultimoNombre: '', ...extra });
 
-describe('acople/logica/ranking.js — lectura tolerante', () => {
+describe('comun/logica/ranking.js — lectura tolerante', () => {
   test('sin nada guardado devuelve tabla vacia', () => {
     assert.deepEqual(leerRanking(fake(), CONFIG), { entradas: [], ultimoNombre: '' });
   });
@@ -67,7 +67,7 @@ describe('acople/logica/ranking.js — lectura tolerante', () => {
   });
 });
 
-describe('acople/logica/ranking.js — posicion e insercion', () => {
+describe('comun/logica/ranking.js — posicion e insercion', () => {
   test('tabla con lugar: cualquier puntaje entra', () => {
     assert.equal(posicionEnRanking([], 0, CONFIG), 0);
     assert.equal(posicionEnRanking(tabla(900, 500), 700, CONFIG), 1);
@@ -110,7 +110,7 @@ describe('acople/logica/ranking.js — posicion e insercion', () => {
   });
 });
 
-describe('acople/logica/ranking.js — nombres', () => {
+describe('comun/logica/ranking.js — nombres', () => {
   test('mayusculas, solo el alfabeto permitido, sin espacios en los bordes y hasta el largo maximo', () => {
     assert.equal(normalizarNombre('  sergio  ', CONFIG), 'SERGIO');
     assert.equal(normalizarNombre('ñandú!', CONFIG), 'ÑANDU');
@@ -125,7 +125,7 @@ describe('acople/logica/ranking.js — nombres', () => {
   });
 });
 
-describe('acople/logica/ranking.js — guardar', () => {
+describe('comun/logica/ranking.js — guardar', () => {
   test('guarda la entrada con nombre normalizado, fecha inyectada y recuerda el nombre', () => {
     const s = fake();
     const r = guardarEnRanking(exito(500), 'tars', s, CONFIG, ahora);

@@ -1,6 +1,6 @@
 // Modulo de pagina del hub de minijuegos: pinta el #1 del ranking local en la bahia 1 (FR-004).
 import { CONFIG } from './acople/config.js';
-import { leerRanking } from './acople/logica/ranking.js';
+import { leerRanking } from './comun/logica/ranking.js';
 
 export function textoRecord(record) {
   return record ? `Récord: ${record.puntaje.toLocaleString('es-AR')} pts` : 'Sin registro';
