@@ -653,6 +653,16 @@ export class SynthAudio {
     return 1 + (Math.random() * 2 - 1) * amount;
   }
 
+  playErrorBuzz() {
+    if (this.isMuted) return;
+    const ctx = this.getCtx();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    const v = this.vary();
+    this.blip(now, { type: 'sawtooth', freq: 150 * v, dur: 0.2, gain: 0.08 });
+    this.blip(now + 0.08, { type: 'sawtooth', freq: 159 * v, dur: 0.2, gain: 0.08 });
+  }
+
   playPowerupChime() {
     if (this.isMuted) return;
     const ctx = this.getCtx();

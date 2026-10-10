@@ -56,14 +56,25 @@ export function generarFauna(sim, dt, config, rng) {
   if (sim.elapsedSeconds < F.primerSpawnS) return;
   sim.faunaTimer -= dt;
   if (sim.faunaTimer > 0) return;
-  sim.faunaTimer = entre(rng, sim.beaconAcquired ? F.intervaloSpawnHuida : F.intervaloSpawn);
-  if (sim.enemies.filter(esFauna).length >= F.maxVivos) return;
+  sim.faunaTimer = entre(rng, sim.beaconAcquired ? F.huida.intervalo : F.intervaloSpawn);
+  const tope = sim.beaconAcquired ? F.huida.maxVivos : F.maxVivos;
+  if (sim.enemies.filter(esFauna).length >= tope) return;
+  aparecerUno(sim, F, rng);
+}
 
+function aparecerUno(sim, F, rng) {
   const angulo = rng() * Math.PI * 2;
   const distancia = entre(rng, F.distanciaSpawn);
   const x = sim.playerX + Math.cos(angulo) * distancia;
   const y = sim.playerY + Math.sin(angulo) * distancia;
   sim.enemies.push(rng() < F.probabilidadDron ? crearDron(sim, x, y, F) : crearAlimana(sim, x, y, F));
+}
+
+// Al recoger la baliza: una tanda de enemigos alrededor del jugador, sin pasar el tope de la huida.
+export function emboscada(sim, config, rng) {
+  const F = config.fauna;
+  const libres = F.huida.maxVivos - sim.enemies.filter(esFauna).length;
+  for (let i = 0; i < Math.min(F.huida.emboscada, libres); i++) aparecerUno(sim, F, rng);
 }
 
 function disparar(sim, desdeX, desdeY, vel, damage, type) {

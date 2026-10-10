@@ -196,13 +196,12 @@ describe('danio.js — applyPlayerDamage / triggerPlayerDeath', () => {
 });
 
 describe('nave.js — abordar, misiles, EMP y armas', () => {
-  test('abordar sin baliza: pasa a SHIP y anuncia los sistemas de vuelo', () => {
+  test('abordar sin baliza: el Ranger no despega y sigue a pie (el original quedaba trabado en SHIP)', () => {
     const sim = nueva();
     abordar(sim);
-    assert.equal(sim.controlMode, 'SHIP');
+    assert.equal(sim.controlMode, 'FOOT');
     assert.equal(sim.stage, 'MISSION_1_SURFACE');
-    assert.equal(sim.banner.text, '¡SISTEMAS DE VUELO EN LÍNEA!');
-    assert.ok(sonidos(sim).includes('playShipBoard'));
+    assert.equal(sim.banner.text, 'BALIZA NO RECUPERADA');
   });
 
   test('abordar con baliza: arranca la transicion a la fase 2', () => {

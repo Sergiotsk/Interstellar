@@ -4,7 +4,7 @@ import { ANIM, PALETA_PIXEL } from '../config.js';
 import { sonar, onda, mostrarBanner } from './efectos.js';
 import { matarJugador } from './danio.js';
 import { TEXTOS } from './textos.js';
-import { generarFauna, moverFauna, esFauna } from './fauna.js';
+import { generarFauna, moverFauna, esFauna, emboscada } from './fauna.js';
 
 const angulo = (a) => Math.atan2(Math.sin(a), Math.cos(a));
 // Una alimana sumergida no se puede apuntar ni recibe disparos.
@@ -229,6 +229,7 @@ export function actualizarSuperficie(sim, entrada, dt, config, rng) {
       sim.screenShake = ANIM.shake.fuerte * 2;
       sonar(sim, 'playBeaconAcquired');
       mostrarBanner(sim, TEXTOS.baliza[0], TEXTOS.baliza[1], PALETA_PIXEL.P13, 2.5, true);
+      emboscada(sim, config, rng);
     }
   }
 

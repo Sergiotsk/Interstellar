@@ -18,8 +18,15 @@ export function iniciarTransicion(sim) {
   mostrarBanner(sim, TEXTOS.fase2[0], TEXTOS.fase2[1], PALETA_PIXEL.P13, 3.2, true);
 }
 
+// El original dejaba subir sin la baliza: pasaba a modo nave sin despegar y despues abordar() salia de entrada,
+// asi que ya no se podia despegar nunca. Sin la baliza el Ranger avisa y no cambia de modo.
 export function abordar(sim) {
   if (sim.controlMode === 'SHIP' || sim.isDying) return;
+  if (sim.stage === 'MISSION_1_SURFACE' && !sim.beaconAcquired) {
+    sonar(sim, 'playErrorBuzz');
+    mostrarBanner(sim, TEXTOS.sinBaliza[0], TEXTOS.sinBaliza[1], PALETA_PIXEL.P15, 2.0);
+    return;
+  }
   sim.controlMode = 'SHIP';
   sim.shipBoardAnimTimer = 0.4;
   sim.screenShake = ANIM.shake.medio;

@@ -107,8 +107,9 @@ export const CONFIG = congelar({
   fauna: {
     primerSpawnS: 5,
     intervaloSpawn: [3.5, 5.5],
-    intervaloSpawnHuida: [2.0, 3.5],
     maxVivos: 6,
+    // Con la baliza la huida aprieta: emboscada al recogerla, mas enemigos y mas seguido.
+    huida: { maxVivos: 10, intervalo: [1.2, 2.2], emboscada: 4 },
     distanciaSpawn: [460, 620],
     probabilidadDron: 0.55,
     puntos: 200,
