@@ -100,6 +100,7 @@ function terminar(s) {
   const tick = (metodo, ...args) => s.audio[metodo]?.(...args);
   if (estado === 'VICTORY') {
     s.hud.victoria(resultado, tick);
+    pintarRanking(s);
     s.raiz.querySelector('[data-nombre]').value = s.ultimoNombre;
   } else {
     s.hud.fallo(resultado, tick);
@@ -116,8 +117,12 @@ function alternarMenu(s, abrir = !s.menu) {
   pintar(s, true);
 }
 
+function pintarRanking(s) {
+  s.hud.pintarHall(filasHall(leerHall(almacenamiento(), CONFIG)));
+}
+
 function abrirModal(s, nombre) {
-  if (nombre === 'ranking') s.hud.pintarHall(filasHall(leerHall(almacenamiento(), CONFIG)));
+  if (nombre === 'ranking') pintarRanking(s);
   s.modal = nombre;
   s.hud.mostrar(...s.pantallasBase(), nombre);
 }
@@ -245,6 +250,7 @@ function guardarNombre(s, e) {
   guardarEnHall(almacenamiento(), CONFIG, { nombre: input.value, puntaje: r.finalScore, anos: `${r.earthYearsLost}y`, rango: r.rank });
   s.ultimoNombre = input.value.trim().toUpperCase() || CONFIG.ranking.nombrePorDefecto;
   s.hud.guardado();
+  pintarRanking(s);
   s.audio.playTallyTick(true);
 }
 

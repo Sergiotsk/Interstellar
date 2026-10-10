@@ -106,13 +106,10 @@
 
       <!-- Controles tactiles del original -->
       <div class="mw-tactil" data-tactil hidden>
-        <div class="mw-dpad" aria-label="Dirección">
-          <span></span>
-          <button type="button" class="mw-tecla-dpad" data-dir="0,-1" aria-label="Arriba">▲</button>
-          <span></span>
-          <button type="button" class="mw-tecla-dpad" data-dir="-1,0" aria-label="Izquierda">◀</button>
-          <button type="button" class="mw-tecla-dpad" data-dir="0,1" aria-label="Abajo">▼</button>
-          <button type="button" class="mw-tecla-dpad" data-dir="1,0" aria-label="Derecha">▶</button>
+        <div class="mw-joystick" data-joystick aria-label="Zona de movimiento: apoyá el dedo y deslizalo">
+          <div class="mw-joystick-base" data-joystick-base>
+            <div class="mw-joystick-perilla" data-joystick-perilla></div>
+          </div>
         </div>
         <div class="mw-acciones-tactil" data-grupo="orbita" hidden>
           <button type="button" class="mw-tecla-accion mw-tecla-accion--emp" data-control="emp">✹<span>Bomb (<span data-hud="bombas-tactil">2</span>)</span></button>
@@ -160,34 +157,36 @@
       <!-- Victoria: acople con la Endurance -->
       <section class="mw-capa mw-capa--victoria" data-pantalla="victoria" aria-labelledby="mw-victoria-titulo" hidden>
         <div class="mw-panel mw-panel--victoria">
-          <div class="mw-panel-cabecera">
-            <p class="mw-cabecera-teal">Expedition complete // Orbital dock secured</p>
-            <p class="mw-cabecera-naranja">10,000m ascent reached</p>
-          </div>
-          <h2 id="mw-victoria-titulo" class="mw-titulo" tabindex="-1">Atraque en el Endurance completado</h2>
-          <dl class="mw-caja mw-tirada">
-            <div><dt>Mission time:</dt><dd data-tirada="1">---</dd></div>
-            <div class="mw-tirada--ambar"><dt>Earth years lost: <span class="mw-licencia">✎ Licencia narrativa</span></dt><dd data-tirada="2">---</dd></div>
-            <div class="mw-tirada--teal"><dt>Aerial &amp; space enemies downed:</dt><dd data-tirada="3">---</dd></div>
-            <div><dt>Mothership docking:</dt><dd data-tirada="4">---</dd></div>
-            <div class="mw-tirada-total"><dt>Total expedition score:</dt><dd data-tirada="total">---</dd></div>
-          </dl>
-          <div class="mw-sello" data-sello hidden>
-            <div>
-              <p class="mw-sello-etiqueta">Command performance rating</p>
-              <p class="mw-sello-frase">«Maniobra de combate shmup y atraque orbital impecable.»</p>
+          <div class="mw-victoria-resumen">
+            <div class="mw-panel-cabecera">
+              <p class="mw-cabecera-teal">Expedition complete // Orbital dock secured</p>
+              <p class="mw-cabecera-naranja">10,000m ascent reached</p>
             </div>
-            <p class="mw-rango" data-hud="rango">S</p>
+            <h2 id="mw-victoria-titulo" class="mw-titulo" tabindex="-1">Atraque en el Endurance completado</h2>
+            <dl class="mw-caja mw-tirada">
+              <div class="mw-tirada-total"><dt>Total expedition score:</dt><dd data-tirada="total">---</dd></div>
+            </dl>
+            <form class="mw-guardar" data-guardar>
+              <label class="visualmente-oculto" for="mw-nombre">Nombre del piloto</label>
+              <input id="mw-nombre" type="text" maxlength="8" value="COOPER" placeholder="PILOT" autocomplete="off" data-nombre>
+              <button type="submit" class="mw-boton mw-boton--guardar">Save</button>
+            </form>
+            <p class="mw-guardado" data-guardado hidden>✓ Record committed to relativity log</p>
+            <div class="mw-botonera">
+              <button type="button" class="mw-boton mw-boton--principal" data-accion="reintentar">Replay expedition</button>
+              <a class="mw-salir" href="minijuegos.html">Salir al hub de minijuegos</a>
+            </div>
           </div>
-          <form class="mw-guardar" data-guardar>
-            <label class="visualmente-oculto" for="mw-nombre">Nombre del piloto</label>
-            <input id="mw-nombre" type="text" maxlength="8" value="COOPER" placeholder="PILOT" autocomplete="off" data-nombre>
-            <button type="submit" class="mw-boton mw-boton--guardar">Save</button>
-          </form>
-          <p class="mw-guardado" data-guardado hidden>✓ Record committed to relativity log</p>
-          <div class="mw-botonera">
-            <button type="button" class="mw-boton mw-boton--principal" data-accion="reintentar">Replay expedition</button>
-            <a class="mw-salir" href="minijuegos.html">Salir al hub de minijuegos</a>
+          <div class="mw-victoria-ranking">
+            <h3 class="mw-subtitulo mw-subtitulo--ambar">Relativity Hall of Fame</h3>
+            <div class="mw-caja mw-tabla-caja">
+              <table class="mw-tabla">
+                <thead>
+                  <tr><th scope="col">#</th><th scope="col">Pilot</th><th scope="col">Time lost</th><th scope="col">Rank</th><th scope="col" class="mw-derecha">Score</th></tr>
+                </thead>
+                <tbody data-hall></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </section>
@@ -201,7 +200,7 @@
           <h2 id="mw-fallo-titulo" class="mw-titulo mw-titulo--rojo" tabindex="-1" data-fallo-titulo>Alcanzado por la ola</h2>
           <dl class="mw-caja mw-tirada">
             <div><dt>Time survived:</dt><dd data-fallo="tiempo">0s</dd></div>
-            <div class="mw-tirada--ambar"><dt>Earth time lost: <span class="mw-licencia">✎ Licencia narrativa</span></dt><dd data-fallo="anos">0.0 yrs</dd></div>
+            <div class="mw-tirada--ambar"><dt>Earth time lost:</dt><dd data-fallo="anos">0.0 yrs</dd></div>
             <div class="mw-tirada-total mw-tirada-total--rojo"><dt>Final score:</dt><dd data-fallo="puntaje">0</dd></div>
           </dl>
           <div class="mw-reintento">
