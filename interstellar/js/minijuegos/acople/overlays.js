@@ -1,5 +1,6 @@
 // Capa DOM del simulador: pantallas, HUD y resultado sobre el lienzo (research R3). Solo lee la partida.
 import { deltaOmega, deltaTheta } from './logica/docking.js';
+import { textoPuesto } from '../comun/logica/tabla-ranking.js';
 
 const CAUSAS = {
   impacto: 'Impacto a velocidad excesiva',
@@ -23,26 +24,6 @@ export function lecturasHud(partida, config) {
     distancia: `${Math.round(nave.distancia)} u`,
     combustible: pct(nave.combustible),
   };
-}
-
-// Filas de la tabla de puntajes; completar rellena hasta el tope con puestos vacios, como un fichin.
-export function filasRanking(entradas, resaltar, config, { completar = true } = {}) {
-  const total = completar ? config.ranking.tope : entradas.length;
-  return Array.from({ length: total }, (_, i) => {
-    const e = entradas[i];
-    return {
-      puesto: String(i + 1).padStart(2, '0'),
-      nombre: e ? e.nombre : '',
-      puntaje: e ? e.puntaje.toLocaleString('es-AR') : '',
-      resaltada: i === resaltar,
-      vacia: !e,
-    };
-  });
-}
-
-export function textoPuesto(posicion) {
-  if (posicion === 0) return '★ Nuevo récord';
-  return posicion > 0 ? `★ Entraste al ranking · puesto ${posicion + 1}` : '';
 }
 
 export function crearOverlays(raiz, { pantallaCompleta = false, tactil = false } = {}) {

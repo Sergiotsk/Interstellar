@@ -32,15 +32,15 @@ description: "Task list — 011 Miller's Wave Escape (Misión 1)"
 
 **Purpose**: la página y el registro en el sitio, todavía sin juego.
 
-- [ ] T001 Crear `minijuego-miller.html` como gemela estructural de `minijuego-acople.html`:
+- [X] T001 Crear `minijuego-miller.html` como gemela estructural de `minijuego-acople.html`:
   - `<head>` con las 4 hojas + `css/minijuegos.css` + `css/minijuego-miller.css`, y el meta viewport con `viewport-fit=cover`;
   - `<main>` con `<h1>` visualmente oculto y una raíz `<section class="juego-miller">` que contiene el lienzo y las secciones vacías de intro, HUD, cuenta, banners, resultado, aviso de falla y aviso de giro;
   - `js/layout.js` + `js/minijuegos/miller/main.js` como módulos.
-- [ ] T002 [P] Crear `css/minijuego-miller.css`, todo bajo `.juego-miller`:
+- [X] T002 [P] Crear `css/minijuego-miller.css`, todo bajo `.juego-miller`:
   - letterbox `#0a0e1a`, el lienzo centrado con `image-rendering: pixelated` y `touch-action: none` en el área de juego;
   - las reglas de visibilidad `[data-solo="tactil"]` / `[data-solo="teclado"]`, como en el acople;
   - sin bordes redondeados y solo tokens de `css/variables.css`.
-- [ ] T003 [P] En `js/swup-router.js`, agregar `'minijuego-miller.html': () => import('./minijuegos/miller/main.js')` (contrato modulo-pagina).
+- [X] T003 [P] En `js/swup-router.js`, agregar `'minijuego-miller.html': () => import('./minijuegos/miller/main.js')` (contrato modulo-pagina).
 
 ---
 
@@ -169,7 +169,7 @@ description: "Task list — 011 Miller's Wave Escape (Misión 1)"
 - [X] T031 [P] [US1] Implementar `horasTerrestres` y `formatoTierra` en `js/minijuegos/miller/logica/dilatacion.js` (T024 en VERDE).
 - [X] T032 [US1] Implementar en `js/minijuegos/miller/logica/mision.js`: `crearPartida`, `saltarIntro`, `conAcciones`, `avanzar` (acumulador de paso fijo, prioridades de R8), `pausar`, `reanudar` y `estadoHud` (T025 en VERDE).
 - [X] T033 [US1] Escribir `tests/miller-balance.test.js`: un piloto de referencia (función pura de acciones) en 20 semillas fijas gana todas y tarda entre 45 y 90 s. Ajustar `config.js` hasta que pase, sin tocar los tests de las unidades.
-- [ ] T034 [US1] Crear `js/minijuegos/miller/escena-miller.js` con `crearEscenaMiller(Phaser, { obtenerPartida, alAvanzar, reducirMovimiento, modo })`:
+- [X] T034 [US1] Crear `js/minijuegos/miller/escena-miller.js` con `crearEscenaMiller(Phaser, { obtenerPartida, alAvanzar, reducirMovimiento, modo })`:
   - en `preload`, generar las texturas desde `sprites.js` + `PALETA_PIXEL` y crear las animaciones a partir de `ANIMACIONES`;
   - cielo y horizonte, la franja de agua con oleaje y los sprites ordenados por z (`setDepth(z)`);
   - la ola con 3 planos de parallax, cresta a 12 fps y rocío adelantado;
@@ -179,7 +179,7 @@ description: "Task list — 011 Miller's Wave Escape (Misión 1)"
   - un pool de partículas con tope por modo: salpicaduras, rocío y estela del despegue;
   - la anticipación y el squash/stretch del despegue del Ranger.
   - La escena **solo lee** la partida.
-- [ ] T035 [US1] Crear `js/minijuegos/miller/overlays.js` con `crearOverlays(raiz, opciones)` sobre el marcado de T001:
+- [X] T035 [US1] Crear `js/minijuegos/miller/overlays.js` con `crearOverlays(raiz, opciones)` sobre el marcado de T001:
   - lecturas del HUD en `<output>`: `SCORE`, `MISSION TIME`, `EARTH TIME LOST`, `WAVE DISTANCE` (barra de 5 bloques), `BEACON SIGNAL`, `STATUS`, la barra `LIFTOFF` y los LEDs;
   - las clases de nivel teal/ámbar/rojo;
   - la intro con frases en fade, el chip `✎ Licencia narrativa` y el botón Saltar;
@@ -187,7 +187,7 @@ description: "Task list — 011 Miller's Wave Escape (Misión 1)"
   - los banners `MISSION 02 START`, `BEACON ACQUIRED!` y `WAVE INCOMING!` con `steps(6)`;
   - el resultado básico de éxito.
   - Agregar en `css/minijuego-miller.css` los estilos de HUD, banners, cuenta e intro.
-- [ ] T036 [US1] Crear `js/minijuegos/miller/main.js` con `mount()`/`unmount()` según `contracts/modulo-pagina.md`:
+- [X] T036 [US1] Crear `js/minijuegos/miller/main.js` con `mount()`/`unmount()` según `contracts/modulo-pagina.md`:
   - sesión cancelable e `import()` de Phaser vendorizado;
   - juego de 480×270 con `pixelArt`/`roundPixels`/`antialias: false` y escala con `escalaEntera` en el resize;
   - teclado → `comun/logica/acciones.js` con `CONFIG.teclas`, y Esc para pausar;
@@ -215,11 +215,11 @@ description: "Task list — 011 Miller's Wave Escape (Misión 1)"
   - `reintentar` → `cuenta` con un mapa nuevo (otra semilla), contadores en 0 y sin intro;
   - el `resultado` de un fracaso tiene puntaje 0 y rango `null`.
 - [X] T038 [US2] Implementar en `js/minijuegos/miller/logica/mision.js` la detección de fracaso con prioridades, la integración de `resolverRestos`, el `resultado` de fracaso y `reintentar` (T037 en VERDE).
-- [ ] T039 [US2] En `js/minijuegos/miller/escena-miller.js`, agregar:
+- [X] T039 [US2] En `js/minijuegos/miller/escena-miller.js`, agregar:
   - el hit-stop de 70 ms, el destello de 1 frame (máximo 3 por segundo) y el shake al chocar;
   - el aturdido con animación;
   - la muerte: tambaleo de 3 frames → la ola barre la pantalla → el frame se congela en crema.
-- [ ] T040 [US2] En `js/minijuegos/miller/overlays.js` y `main.js`, agregar:
+- [X] T040 [US2] En `js/minijuegos/miller/overlays.js` y `main.js`, agregar:
   - el sello `MISSION FAILED` con la causa en una frase en español;
   - una frase narrativa;
   - los botones **Reintentar** (llama a `reintentar` sin recargar) y **Salir** (enlace a `minijuegos.html`);
@@ -242,16 +242,16 @@ description: "Task list — 011 Miller's Wave Escape (Misión 1)"
   - `rangoDe` en los bordes de S, A y B.
 - [X] T042 [US3] Implementar `factores`, `calcularPuntaje` y `rangoDe` en `js/minijuegos/miller/logica/scoring.js` (T041 en VERDE).
 - [X] T043 [US3] Ampliar `tests/miller-mision.test.js` (ROJO), y después implementar en `mision.js` (VERDE): el `resultado` de éxito con `tiempoMision`, `horasTerrestres`, `margenOla`, `choques`, `asistenciaCase`, `precision`, `factores`, `puntaje` y `rango`.
-- [ ] T044 [US3] En `js/minijuegos/miller/overlays.js`, agregar:
+- [X] T044 [US3] En `js/minijuegos/miller/overlays.js`, agregar:
   - la tirada con un tick cada 40 ms en `MISSION TIME`, `EARTH TIME LOST` (con el chip `✎ Licencia narrativa`), `WAVE MARGIN`, `CASE ASSIST` y `TOTAL`;
   - el rango estampado en naranja Gargantúa;
   - `RETRY? 9…0`, que queda en espera al llegar a 0;
   - el ranking como `<ol>` en la intro y en el resultado.
-- [ ] T045 [US3] En `js/minijuegos/miller/main.js`, al ganar:
+- [X] T045 [US3] En `js/minijuegos/miller/main.js`, al ganar:
   - `posicionEnRanking`;
   - si entra al top 10, abrir el editor de `comun/logica/nombre-arcade.js` con `ultimoNombre` o `RANGER`, operado con teclado;
   - `guardarEnRanking` con el storage en `try/catch` y la config de Miller.
-- [ ] T046 [US3] En `tests/minijuegos-hub.test.js`, agregar el caso del récord de Miller (ROJO). Después:
+- [X] T046 [US3] En `tests/minijuegos-hub.test.js`, agregar el caso del récord de Miller (ROJO). Después:
   - en `minijuegos.html`, la bahía 02 pasa a `data-estado="disponible"`, sin `aria-disabled`, con `<p class="bahia-record" data-record-miller>Sin registro</p>`, el enlace "Iniciar simulación" → `minijuego-miller.html` y el LED `DISPONIBLE`;
   - en `js/minijuegos/hub.js`, leer el ranking de Miller y pintar el #1 (VERDE).
 
@@ -271,18 +271,18 @@ description: "Task list — 011 Miller's Wave Escape (Misión 1)"
   - en diagonales salen dos;
   - el umbral de diagonal es simétrico.
 - [X] T048 [US4] Implementar `accionesDeJoystick(dx, dy, zonaMuerta)` en `js/minijuegos/miller/logica/joystick.js` (T047 en VERDE).
-- [ ] T049 [US4] Crear `js/minijuegos/miller/controles-tactiles.js`:
+- [X] T049 [US4] Crear `js/minijuegos/miller/controles-tactiles.js`:
   - joystick (pointer capture, vector relativo al centro → `accionesDeJoystick`);
   - botón de acción con `comun/logica/controles-tactiles.js` y las acciones de Miller;
   - multitouch por `pointerId`;
   - `alCambiar(acciones)` combina las dos fuentes;
   - devuelve una función `desconectar`.
-- [ ] T050 [US4] En `minijuego-miller.html` y `css/minijuego-miller.css`, agregar:
+- [X] T050 [US4] En `minijuego-miller.html` y `css/minijuego-miller.css`, agregar:
   - el joystick (base con grilla y nudo cuadrado biselado) y el botón de acción como tecla de consola con `--recorte-tecla` y LED teal al presionar, ambos `data-solo="tactil"`;
   - los botones ▲▼◀▶/OK del editor;
   - el botón de pantalla completa;
   - "Salir" visible en pantalla completa.
-- [ ] T051 [US4] En `js/minijuegos/miller/main.js`, agregar:
+- [X] T051 [US4] En `js/minijuegos/miller/main.js`, agregar:
   - el modo de entrada con `comun/logica/dispositivo.js` (`?entrada=`) y el perfil de partículas o audio según el modo;
   - el aviso de giro con `requiereGiro` (pausa y suelta acciones);
   - la pantalla completa con `comun/pantalla-completa.js` y su fallback;
@@ -304,7 +304,7 @@ description: "Task list — 011 Miller's Wave Escape (Misión 1)"
   - el impulso vence a los 2 s;
   - `asistenciaCase` queda en el resultado.
 - [X] T053 [US5] Implementar el impulso de CASE en `js/minijuegos/miller/logica/mision.js`, que le pasa `{ impulso }` a `moverJugador` (T052 en VERDE).
-- [ ] T054 [US5] En `js/minijuegos/miller/escena-miller.js`, agregar:
+- [X] T054 [US5] En `js/minijuegos/miller/escena-miller.js`, agregar:
   - CASE con `quieto` y `aspa` (los bloques se separan y giran) al asistir;
   - CASE sigue al jugador durante el impulso;
   - el idle de CASE (medio giro).
@@ -313,7 +313,7 @@ description: "Task list — 011 Miller's Wave Escape (Misión 1)"
 
 ## Phase 8: Audio (transversal, FR-029)
 
-- [ ] T055 Crear `js/minijuegos/miller/audio-miller.js` con `crearAudioMiller(perfil)` → `{ actualizar(estado), evento(nombre), silenciar(bool), destruir() }`:
+- [X] T055 Crear `js/minijuegos/miller/audio-miller.js` con `crearAudioMiller(perfil)` → `{ actualizar(estado), evento(nombre), silenciar(bool), destruir() }`:
   - ambiente de agua y viento;
   - chapoteo con pitch ±10 %;
   - pulso de 2 notas según `frecuenciaPulso`;
@@ -324,7 +324,7 @@ description: "Task list — 011 Miller's Wave Escape (Misión 1)"
   - tick de la tirada y acorde final;
   - rugido y barrido del despegue;
   - perfiles `teclado`/`tactil` desde CONFIG.
-- [ ] T056 En `js/minijuegos/miller/main.js` y `overlays.js`:
+- [X] T056 En `js/minijuegos/miller/main.js` y `overlays.js`:
   - crear el audio en el primer gesto;
   - llevarle los `eventos` de cada paso;
   - botón de silencio propio;
@@ -334,13 +334,13 @@ description: "Task list — 011 Miller's Wave Escape (Misión 1)"
 
 ## Phase 9: Polish & Cross-Cutting Concerns
 
-- [ ] T057 [P] Crear `js/minijuegos/miller/escena-galeria.js` y conectar `?debug=sprites` en `main.js`: cada animación en loop sobre `#0a0e1a` con su nombre (FR-032).
+- [X] T057 [P] Crear `js/minijuegos/miller/escena-galeria.js` y conectar `?debug=sprites` en `main.js`: cada animación en loop sobre `#0a0e1a` con su nombre (FR-032).
 - [ ] T058 [P] Animaciones idle a los 3 s sin input en `escena-miller.js`: mirar el reloj (con `EARTH TIME LOST` parpadeando en ámbar en overlays) y sacudirse la bota.
 - [ ] T059 Revisar `prefers-reduced-motion` de punta a punta:
   - sin shake, sin destellos y sin hit-stop;
   - parallax al 30 %;
   - banners con fade.
-- [ ] T060 [P] Escribir `docs/20-notas-de-codigo/minijuegos-miller.md`: por qué belt-scroller, por qué `comun/`, la fórmula del arrastre, la fórmula del puntaje, la escala entera y los sprites como mapas de caracteres.
+- [X] T060 [P] Escribir `docs/20-notas-de-codigo/minijuegos-miller.md`: por qué belt-scroller, por qué `comun/`, la fórmula del arrastre, la fórmula del puntaje, la escala entera y los sprites como mapas de caracteres.
 - [ ] T061 Prueba de 10 ciclos de montaje y desmontaje vía swup (quickstart §4): un canvas, sin sonidos dobles y la consola limpia.
 - [ ] T062 Prueba en un celular de gama media real (quickstart §3 + SC-006). Si hay tirones, bajar el tope de partículas en táctil desde CONFIG.
 - [ ] T063 Recorrer `quickstart.md` completo, incluida la §6 (el acople sin regresiones), con `pnpm test` en verde. Marcar las tareas en este archivo.

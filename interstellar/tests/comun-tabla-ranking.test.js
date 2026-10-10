@@ -1,14 +1,14 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { CONFIG } from '../js/minijuegos/acople/config.js';
-import { filasRanking, textoPuesto } from '../js/minijuegos/acople/overlays.js';
+import { filasRanking, textoPuesto } from '../js/minijuegos/comun/logica/tabla-ranking.js';
 
 const entradas = [
   { nombre: 'COOPER', puntaje: 8004 },
   { nombre: 'BRAND', puntaje: 7705 },
 ];
 
-describe('acople/overlays.js — filas de la tabla de puntajes', () => {
+describe('comun/logica/tabla-ranking.js — filas de la tabla de puntajes', () => {
   test('completa hasta el tope con filas vacias, puesto con dos digitos y miles con punto', () => {
     const filas = filasRanking(entradas, -1, CONFIG);
     assert.equal(filas.length, CONFIG.ranking.tope);
@@ -29,7 +29,7 @@ describe('acople/overlays.js — filas de la tabla de puntajes', () => {
   });
 });
 
-describe('acople/overlays.js — texto del puesto conseguido', () => {
+describe('comun/logica/tabla-ranking.js — texto del puesto conseguido', () => {
   test('primer puesto es nuevo record; el resto indica el puesto; fuera del ranking, nada', () => {
     assert.equal(textoPuesto(0), '★ Nuevo récord');
     assert.equal(textoPuesto(3), '★ Entraste al ranking · puesto 4');

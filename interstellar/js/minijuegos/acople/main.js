@@ -20,7 +20,8 @@ import { crearEditor, textoEditor, teclaEditor, fijarCursor } from '../comun/log
 import { modoEntrada, requiereGiro } from '../comun/logica/dispositivo.js';
 import { levantarTodo, accionesTactiles } from '../comun/logica/controles-tactiles.js';
 import { instrumentos } from './logica/instrumentos.js';
-import { crearOverlays, lecturasHud, filasRanking } from './overlays.js';
+import { crearOverlays, lecturasHud } from './overlays.js';
+import { filasRanking } from '../comun/logica/tabla-ranking.js';
 import { crearEscenaAcople } from './escena-acople.js';
 import { crearAudioAcople } from './audio-acople.js';
 import * as pantalla from '../comun/pantalla-completa.js';

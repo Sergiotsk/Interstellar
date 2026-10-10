@@ -122,3 +122,9 @@ El primer piloto de referencia perdió en 4 de 20 semillas, y el diagnóstico fu
 - **Escala del mundo**: con 1440 gpx y 98 gpx/s una partida duraba ~28 s (menos que el mínimo de 45). Se pasa a 2400 gpx y 75 gpx/s.
 - **Barrido**: se probaron distanciaRevelacion ∈ {450, 520, 600} × velHuida ∈ {45, 50, 55} × aceleración ∈ {0,8, 1,2, 1,6}. Se eligió **520 / 55 / 1,2**: gana 20/20, de 49 a 62 s, margen promedio 416 y mínimo 221. Con aceleración 1,6 el margen mínimo cae a 15 gpx, demasiado al límite para un jugador humano.
 - **margenMax**: pasa de 400 a 500, porque con 400 el factor margen casi siempre saturaba en 1 y no distinguía entre jugadores.
+
+## R17 — Vistazo de cámara en lugar de zoom-out (2026-10-09)
+
+- **Decisión**: al revelarse la ola, la cámara se adelanta 170 gpx hacia ella durante 1,5 s y vuelve. No hay zoom.
+- **Por qué**: el cielo, las nubes y el agua son capas fijas a la cámara, de 480 px de ancho. Un zoom de cámara también las escala y deja bordes vacíos a 480 × 270. Además, la banda de la ola en el horizonte ya cumple el "es una línea que no se reconoce" del DesignSystem §5.3.
+- **Alternativa descartada**: escalar el canvas con CSS (rompe la escala entera de R6).
