@@ -59,3 +59,9 @@ Todo lo demás, incluidas las rarezas inofensivas (disparar en la superficie sin
 
 - La página `minijuego-miller.html` vive bajo el header y el footer del sitio, en el contenedor `.juego-miller`. El juego del original ocupa toda la ventana (`fixed inset-0`); acá ocupa el alto visible debajo del header, y en táctil pasa a cabina completa (`data-cabina`, como el acople).
 - La ruta de swup y la bahía 02 del hub ya están hechas en la v1 y se conservan.
+
+## R10 — Página sin scroll y escena a pantalla completa (2026-10-09)
+
+- **Sin scroll**: se usa la cadena flex de alto completo del hub (`body` a 100dvh sin overflow, `main` flexible y `.juego-miller` ocupando el resto). El header, el juego y el footer caben en la ventana, y el pie de secciones se oculta.
+- **Pantalla completa (y cabina táctil)**: la escena ocupa todo el ancho y el alto. Las opciones eran estirar (deforma), recortar los bordes (en el shmup el Ranger se perdería contra los costados) o **ampliar el campo visible**. Se eligió la tercera: `logica/visor.js` conserva 540 de alto (o 960 de ancho) y ajusta el otro lado a la proporción de la pantalla, acotada entre 4:3 y 21:9. Las barras del HUD flotan encima con fondo translúcido. Fuera de pantalla completa sigue el lienzo original de 960 × 540.
+- **Detalle de Phaser**: para cambiar el tamaño con `Scale.FIT` se usa `scale.setGameSize()`. `resize()` cambia el tamaño interno pero no recalcula el ajuste, y quedaban franjas.

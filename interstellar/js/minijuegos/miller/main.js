@@ -7,6 +7,7 @@ import { actualizar } from './logica/motor.js';
 import { abordar, dispararMisil, detonarEmp, cambiarArma } from './logica/nave.js';
 import { sonar } from './logica/efectos.js';
 import { leerHall, filasHall, guardarEnHall } from './logica/hall-of-fame.js';
+import { dimensionesVisor, ajustarDimensiones } from './logica/visor.js';
 import { modoEntrada, requiereGiro } from '../comun/logica/dispositivo.js';
 import * as pantalla from '../comun/pantalla-completa.js';
 import { crearHud } from './hud.js';
@@ -16,7 +17,7 @@ import { conectarTactil } from './controles.js';
 
 const URL_PHASER = '../../vendor/phaser@4.2.1/phaser.esm.min.js';
 const URL_MUSICA = 'assets/audio/minijuegos/miller-ambiente.mp3';
-const DIMS = { ancho: CONFIG.baseCanvasWidth, alto: CONFIG.baseCanvasHeight };
+const DIMS_BASE = { ancho: CONFIG.baseCanvasWidth, alto: CONFIG.baseCanvasHeight };
 const INTERVALO_HUD_MS = 50;
 
 // El useInput del helper del Playground: mapeo por e.key.
@@ -41,9 +42,9 @@ function escuchar(s, objetivo, evento, fn, opciones) {
   s.limpiezas.push(() => objetivo.removeEventListener(evento, fn, opciones));
 }
 
-function nuevaSim() {
+function nuevaSim(dims) {
   const semilla = (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0;
-  return { sim: crearSim(CONFIG, crearRng(semilla), DIMS), rng: crearRng(semilla + 1) };
+  return { sim: crearSim(CONFIG, crearRng(semilla), dims), rng: crearRng(semilla + 1) };
 }
 
 // La logica pide sonidos por cola; aca se tocan con el sintetizador del original.
@@ -66,7 +67,7 @@ function pintar(s, forzar = false) {
 // initGame del original.
 function iniciar(s) {
   s.hud.cancelar();
-  const { sim, rng } = nuevaSim();
+  const { sim, rng } = nuevaSim(s.dims);
   s.sim = sim;
   s.rng = rng;
   s.entrada = entradaVacia();
@@ -121,7 +122,7 @@ function cerrarModal(s) {
 
 function paso(s, dt) {
   if (s.estado !== 'PLAYING' || s.menu || s.girando) return;
-  actualizar(s.sim, s.entrada, dt, CONFIG, s.rng, DIMS);
+  actualizar(s.sim, s.entrada, dt, CONFIG, s.rng, s.dims);
   vaciarSonidos(s);
   if (s.sim.fin) terminar(s);
   else pintar(s);
@@ -245,6 +246,16 @@ function conectarPuntero(s) {
   ['pointerup', 'pointercancel'].forEach((t) => escuchar(s, s.lienzo, t, presionar(false)));
 }
 
+// En pantalla completa (o cabina tactil) la escena llena todo; si no, el lienzo original de 960x540.
+function actualizarDims(s) {
+  const lleno = pantalla.estaActiva(s.raiz) || s.raiz.hasAttribute('data-cabina');
+  const visor = s.raiz.querySelector('.mw-visor');
+  const dims = lleno ? dimensionesVisor(visor.clientWidth, visor.clientHeight) : DIMS_BASE;
+  if (dims.ancho === s.dims.ancho && dims.alto === s.dims.alto) return;
+  s.dims = dims;
+  ajustarDimensiones(s.sim, dims);
+}
+
 function evaluarGiro(s) {
   const girar = requiereGiro({ modo: s.modo, ancho: window.innerWidth, alto: window.innerHeight });
   if (girar === s.girando) return;
@@ -258,12 +269,12 @@ async function crearJuego(s) {
   if (sesion !== s) return; // se desmonto mientras Phaser bajaba: descartar
   const Phaser = modulo.default ?? modulo;
   const factor = s.modo === 'tactil' ? 1 : Math.min(2, window.devicePixelRatio || 1);
-  const Escena = crearEscenaMiller(Phaser, { obtenerSim: () => s.sim, alPaso: (dt) => paso(s, dt), config: CONFIG, factor });
+  const Escena = crearEscenaMiller(Phaser, { obtenerSim: () => s.sim, obtenerDims: () => s.dims, alPaso: (dt) => paso(s, dt), config: CONFIG, factor });
   s.game = new Phaser.Game({
     type: Phaser.AUTO,
     parent: s.lienzo,
-    width: DIMS.ancho * factor,
-    height: DIMS.alto * factor,
+    width: s.dims.ancho * factor,
+    height: s.dims.alto * factor,
     backgroundColor: '#000000',
     banner: false,
     audio: { noAudio: true },
@@ -285,8 +296,9 @@ export async function mount() {
   raiz.dataset.entrada = modo;
   if (modo === 'tactil') raiz.dataset.cabina = '';
 
-  const { sim, rng } = nuevaSim();
+  const { sim, rng } = nuevaSim(DIMS_BASE);
   const s = {
+    dims: DIMS_BASE,
     raiz,
     modo,
     lienzo: raiz.querySelector('[data-miller-lienzo]'),
@@ -321,6 +333,8 @@ export async function mount() {
     s.entrada = entradaVacia();
     alternarMenu(s, true);
   });
+  escuchar(s, window, 'resize', () => actualizarDims(s));
+  escuchar(s, document, 'fullscreenchange', () => requestAnimationFrame(() => actualizarDims(s)));
   escuchar(s, document, 'visibilitychange', () => {
     if (document.hidden) alternarMenu(s, true);
   });
@@ -342,6 +356,7 @@ export async function mount() {
     escuchar(s, window.matchMedia('(orientation: portrait)'), 'change', () => evaluarGiro(s));
   }
 
+  actualizarDims(s);
   if (new URLSearchParams(location.search).has('autoplay')) iniciar(s);
 
   try {

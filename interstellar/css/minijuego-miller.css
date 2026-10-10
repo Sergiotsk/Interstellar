@@ -1,6 +1,29 @@
 /* css/minijuego-miller.css - capitulo 2 "Miller's Wave Escape": estilos del prototipo del Playground
    (clases de Tailwind del JSX original) traducidos a CSS propio. Todo vive bajo .juego-miller. */
 
+/* 0. Pagina sin scroll: header, juego y pie caben en la ventana (mismo criterio que el hub).
+   :has() cubre la navegacion con swup, que no cambia las clases del body */
+body:has(.juego-miller),
+body.pagina-miller {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+body:has(.juego-miller) main,
+body.pagina-miller main {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+body:has(.juego-miller) .pie-secciones-marco,
+body.pagina-miller .pie-secciones-marco {
+  display: none !important;
+}
+
 /* 1. Tokens del original (TOKENS_HUD de constants.ts) */
 .juego-miller {
   --mw-panel: #0c2529;
@@ -23,8 +46,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: calc(100svh - 5.5rem);
-  min-height: 24rem;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
   overflow: hidden;
   background: var(--mw-abismo);
   color: #ffffff;
@@ -63,6 +87,14 @@
 }
 
 /* 2. Barras superior e inferior (clip-path trapezoidal del original) */
+.mw-instrumentos {
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
 .mw-barra {
   z-index: 20;
   display: flex;
@@ -1007,7 +1039,51 @@
 }
 
 .juego-miller:fullscreen {
+  width: 100%;
   height: 100%;
+}
+
+/* Pantalla completa y cabina tactil: la escena ocupa todo y los instrumentos flotan encima (logica/visor.js) */
+.juego-miller:fullscreen .mw-visor,
+.juego-miller[data-cabina] .mw-visor {
+  position: absolute;
+  inset: 0;
+}
+
+.juego-miller:fullscreen .mw-lienzo canvas,
+.juego-miller[data-cabina] .mw-lienzo canvas {
+  border: 0;
+  box-shadow: none;
+}
+
+.juego-miller:fullscreen .mw-instrumentos,
+.juego-miller[data-cabina] .mw-instrumentos {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.juego-miller:fullscreen .mw-barra--abajo {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.juego-miller:fullscreen .mw-barra,
+.juego-miller[data-cabina] .mw-barra {
+  background: color-mix(in srgb, var(--mw-panel) 85%, transparent);
+}
+
+.juego-miller:fullscreen .mw-sub,
+.juego-miller[data-cabina] .mw-sub {
+  background: color-mix(in srgb, var(--mw-panel-oscuro) 80%, transparent);
+}
+
+/* En la cabina tactil el pie de ayuda le deja lugar a los controles (el original lo ocultaba en mobile) */
+.juego-miller[data-cabina] .mw-barra--abajo {
+  display: none;
 }
 
 .mw-girar {
