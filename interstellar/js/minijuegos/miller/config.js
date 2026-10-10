@@ -119,6 +119,9 @@ export const CONFIG = congelar({
     autoapuntado: { rango: 320, cono: 0.87 },
   },
 
+  // Radar tactico del HUD (radio en px del radar; alcances en px del mundo).
+  radar: { radio: 62, alcanceSuperficie: 900, alcanceOrbita: 600 },
+
   // Integracion con el sitio (no estaba en el original).
   // 1 h en Miller = 7 anos en la Tierra: 7 x 365,25 x 24 / 3600 = 17,045 h por segundo (el original usaba 17,518).
   horasTerrestresPorSegundo: (7 * 365.25 * 24) / 3600,

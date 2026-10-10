@@ -86,134 +86,99 @@ body.pagina-miller .pie-secciones-marco {
   vertical-align: middle;
 }
 
-/* 2. Barras superior e inferior (clip-path trapezoidal del original) */
-.mw-instrumentos {
+/* 2. HUD flotante: paneles en las esquinas del canvas (hud.js alinea la capa al canvas) */
+.mw-hud {
+  position: absolute;
   z-index: 20;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
+  font-size: clamp(0.62rem, 1.05vw, 0.85rem);
+  pointer-events: none;
 }
 
-.mw-barra {
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  width: 100%;
-  max-width: 1020px;
-  padding: 0.5rem 1rem;
-  background: var(--mw-panel);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+.mw-hud button {
+  pointer-events: auto;
 }
 
-.mw-barra--arriba {
-  border-bottom: 2px solid var(--mw-bezel);
-  clip-path: polygon(0 0, 100% 0, 98% 100%, 2% 100%);
+.mw-panel-hud {
+  position: absolute;
+  margin: 0;
+  padding: 0.4em 0.65em;
+  background: rgba(7, 21, 23, 0.62);
+  border: 1px solid rgba(79, 208, 224, 0.35);
+  clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+  backdrop-filter: blur(2px);
 }
 
-.mw-barra--abajo {
-  font-size: 0.75rem;
-  border-top: 2px solid var(--mw-bezel);
-  clip-path: polygon(2% 0, 98% 0, 100% 100%, 0 100%);
-}
-
-.mw-grupo {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-}
-
-.mw-grupo--chico {
-  gap: 0.5rem;
-}
-
-.mw-separado {
-  padding-left: 1rem;
-  border-left: 1px solid var(--mw-bezel);
-}
-
-.mw-etiqueta {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
+.mw-hud-etiqueta {
+  font-size: 0.72em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--mw-teal) 70%, transparent);
+  color: rgba(79, 208, 224, 0.75);
 }
 
-.mw-etiqueta--ambar {
-  color: color-mix(in srgb, var(--mw-ambar) 80%, transparent);
+.mw-hud-etiqueta--naranja { color: var(--mw-naranja); }
+.mw-hud-etiqueta--violeta { color: var(--mw-violeta); }
+
+.mw-hud-puntaje {
+  top: 0.6em;
+  left: 0.6em;
 }
 
-.mw-etiqueta--sector {
-  justify-content: center;
-  margin-bottom: 0.25rem;
-  color: color-mix(in srgb, var(--mw-teal) 90%, transparent);
-}
-
-.mw-led-ambar {
-  display: inline-block;
-  width: 0.5rem;
-  height: 0.5rem;
-  background: var(--mw-ambar);
-  animation: mw-pulso 2s ease-in-out infinite;
-}
-
-.mw-brujula {
-  color: var(--mw-teal);
-  animation: mw-girar 2s linear infinite;
-}
-
-.mw-valor {
+.mw-hud-score {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: clamp(0.875rem, 1.5vw, 1rem);
+  gap: 0.45em;
+  font-size: 1.55em;
   font-weight: 700;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+  color: var(--mw-teal);
+  text-shadow: 0 0 8px rgba(79, 208, 224, 0.5);
+}
+
+.mw-hud-tierra {
+  font-size: 0.85em;
+  color: var(--mw-ambar);
   font-variant-numeric: tabular-nums;
 }
 
-.mw-valor--teal { color: var(--mw-teal); }
-.mw-valor--ambar { color: var(--mw-ambar); }
-
-.mw-combo {
-  padding: 0.125rem 0.375rem;
-  font-size: 0.75rem;
-  font-weight: 900;
-  color: #000000;
-  background: var(--mw-naranja);
-  border-radius: 0.25rem;
+.mw-hud-tierra .mw-hud-etiqueta {
+  color: rgba(224, 169, 74, 0.8);
 }
 
-.mw-centro {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.mw-hud-objetivo {
+  top: 0.6em;
+  left: 50%;
+  text-align: center;
+  transform: translateX(-50%);
 }
 
-.mw-recuadro {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.25rem 0.75rem;
-  background: var(--mw-panel-oscuro);
-  border: 1px solid var(--mw-bezel);
+.mw-hud-objetivo-texto {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  color: var(--mw-crema);
 }
 
-.mw-ascenso {
+.mw-rombo {
+  color: var(--mw-naranja);
+}
+
+.mw-hud[data-baliza-asegurada] .mw-hud-objetivo-texto {
+  color: var(--mw-naranja);
+  animation: mw-pulso 2s ease-in-out infinite;
+}
+
+.mw-hud-ascenso {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+  gap: 0.5em;
+  margin-top: 0.3em;
 }
 
 .mw-progreso {
-  width: 10rem;
-  height: 0.625rem;
+  width: 10em;
+  height: 0.55em;
   overflow: hidden;
   background: var(--mw-pista);
   border: 1px solid var(--mw-bezel);
@@ -227,121 +192,199 @@ body.pagina-miller .pie-secciones-marco {
 }
 
 .mw-altitud {
-  font-size: 0.75rem;
+  font-size: 0.85em;
   font-weight: 900;
   color: var(--mw-teal);
   font-variant-numeric: tabular-nums;
 }
 
-.mw-baliza {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--mw-crema);
-}
-
-.mw-baliza[data-asegurada] {
-  color: var(--mw-naranja);
-  animation: mw-pulso 2s ease-in-out infinite;
-}
-
-.mw-derecha {
-  text-align: right;
-}
-
-.mw-stage {
-  font-size: clamp(0.75rem, 1.3vw, 0.875rem);
+.mw-combo {
+  padding: 0.05em 0.35em;
+  font-size: 0.55em;
   font-weight: 900;
-  letter-spacing: 0.05em;
-  color: var(--mw-naranja);
+  color: #000000;
+  background: var(--mw-naranja);
+  border-radius: 0.2em;
 }
 
-.mw-boton-menu {
-  padding: 0.375rem 0.75rem;
-  font-size: 0.75rem;
+.mw-hud-botones {
+  position: absolute;
+  top: 0.6em;
+  right: 0.6em;
+  display: flex;
+  gap: 0.4em;
+}
+
+.mw-boton-hud {
+  padding: 0.35em 0.75em;
+  font-size: 0.85em;
   font-weight: 700;
   text-transform: uppercase;
   color: var(--mw-teal);
-  background: var(--mw-panel-oscuro);
+  background: rgba(7, 21, 23, 0.72);
   border: 1px solid var(--mw-teal);
-  box-shadow: 0 0 10px rgba(79, 208, 224, 0.3);
+  box-shadow: 0 0 10px rgba(79, 208, 224, 0.25);
 }
 
-.mw-boton-menu:hover {
+.mw-boton-hud:hover {
   background: #12282c;
 }
 
-.mw-radar {
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-  font-weight: 700;
-  color: var(--mw-crema);
+.mw-hud-vitales {
+  bottom: 0.6em;
+  left: 0.6em;
+  display: grid;
+  gap: 0.3em;
 }
 
-.mw-radar-titulo {
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+.mw-hud-vitales > div {
+  display: grid;
+  gap: 0.3em;
+}
+
+.mw-hud-fila {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.mw-hud-fila .mw-hud-etiqueta {
+  min-width: 4.2em;
+}
+
+.mw-segmentos {
+  display: flex;
+  gap: 2px;
+}
+
+.mw-segmentos i {
+  width: 0.55em;
+  height: 0.85em;
+  background: rgba(79, 208, 224, 0.15);
+  transform: skewX(-15deg);
+}
+
+.mw-segmentos i[data-lleno] {
+  background: var(--mw-teal);
+  box-shadow: 0 0 4px rgba(79, 208, 224, 0.6);
+}
+
+.mw-hud[data-traje-alerta] .mw-segmentos i[data-lleno] {
+  background: var(--mw-rojo);
+  box-shadow: 0 0 4px rgba(208, 69, 58, 0.7);
+  animation: mw-pulso 1s ease-in-out infinite;
+}
+
+.mw-hud[data-traje-alerta] [data-hud-traje-icono] {
+  color: var(--mw-rojo);
+}
+
+.mw-hud-vitales output {
+  font-weight: 700;
+  color: var(--mw-crema);
+  font-variant-numeric: tabular-nums;
+}
+
+.mw-hud-arma {
+  font-weight: 700;
   color: var(--mw-teal);
 }
 
-.mw-ping {
-  width: 0.75rem;
-  height: 0.75rem;
-  background: var(--mw-teal);
-  animation: mw-ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
-}
-
-.mw-ayuda {
-  font-size: 0.75rem;
-  color: color-mix(in srgb, var(--mw-crema) 80%, transparent);
-}
-
-/* 3. Sub-barra de armas */
-.mw-sub {
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  max-width: 1020px;
-  padding: 0.375rem 1rem;
-  font-size: 0.75rem;
-  background: color-mix(in srgb, var(--mw-panel-oscuro) 95%, transparent);
-  border-bottom: 1px solid var(--mw-bezel);
-}
-
-.mw-sub-lado {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.mw-mini {
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.mw-mini--teal { color: var(--mw-teal); }
-.mw-mini--naranja { color: var(--mw-naranja); }
-.mw-mini--violeta { color: var(--mw-violeta); }
-
-.mw-icono { font-size: 0.85rem; color: var(--mw-teal); }
-.mw-icono--violeta { color: var(--mw-violeta); }
-.mw-icono[data-alerta] { color: var(--mw-rojo); animation: mw-pulso 1s ease-in-out infinite; }
-
-.mw-medidor {
+.mw-barrita {
   display: block;
-  width: 6rem;
-  height: 0.625rem;
+  width: 8em;
+  height: 0.55em;
   background: var(--mw-pista);
   border: 1px solid var(--mw-bezel);
 }
 
-.mw-medidor--traje {
-  width: clamp(7rem, 16vw, 11rem);
-  height: 0.75rem;
-  padding: 0.125rem;
+.mw-barrita-relleno {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.mw-barrita-relleno--teal { background: var(--mw-teal); }
+.mw-barrita-relleno--naranja { background: var(--mw-naranja); }
+
+.mw-canon {
+  font-weight: 900;
+  color: var(--mw-violeta);
+}
+
+.mw-hud-municion {
+  gap: 0.4em;
+}
+
+.mw-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  padding: 0.15em 0.55em;
+  font-size: 0.85em;
+  font-weight: 700;
+}
+
+.mw-chip kbd {
+  padding: 0 0.3em;
+  font-family: inherit;
+  font-size: 0.85em;
+  border: 1px solid currentColor;
+}
+
+.mw-chip--naranja {
+  color: var(--mw-naranja);
+  background: rgba(12, 37, 41, 0.85);
+  border: 1px solid var(--mw-naranja);
+}
+
+.mw-chip--violeta {
+  color: var(--mw-violeta);
+  background: rgba(59, 7, 100, 0.85);
+  border: 1px solid var(--mw-violeta);
+}
+
+.mw-hud-radar {
+  right: 0.6em;
+  bottom: 0.6em;
+  padding: 0.3em;
+  text-align: center;
+}
+
+.mw-hud-radar canvas {
+  display: block;
+  width: clamp(96px, 11vw, 140px);
+  height: auto;
+}
+
+.mw-hud-radar figcaption {
+  margin-top: 0.15em;
+  font-size: 0.62em;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(79, 208, 224, 0.75);
+}
+
+.mw-hud-ayuda {
+  position: absolute;
+  bottom: 0.8em;
+  left: 50%;
+  margin: 0;
+  padding: 0.35em 0.85em;
+  font-size: 0.8em;
+  white-space: nowrap;
+  color: color-mix(in srgb, var(--mw-crema) 85%, transparent);
+  background: rgba(7, 21, 23, 0.72);
+  border: 1px solid rgba(79, 208, 224, 0.25);
+  transform: translateX(-50%);
+}
+
+/* Barra del jefe (la usa la Fase 2) */
+.mw-medidor {
+  display: block;
+  height: 0.625rem;
+  background: var(--mw-pista);
+  border: 1px solid var(--mw-bezel);
 }
 
 .mw-medidor--jefe {
@@ -355,53 +398,24 @@ body.pagina-miller .pie-secciones-marco {
   height: 100%;
 }
 
-.mw-relleno--teal { background: var(--mw-teal); }
-.mw-relleno--naranja { background: var(--mw-naranja); }
-.mw-relleno--traje { background: linear-gradient(to right, #35586c, var(--mw-teal)); }
 .mw-relleno--jefe { background: linear-gradient(to right, var(--mw-naranja), var(--mw-rojo)); transition: width 0.15s; }
 
-.mw-canon {
-  font-weight: 900;
-  color: var(--mw-violeta);
+/* En tactil los controles ocupan las esquinas de abajo: vitales y radar suben */
+.juego-miller[data-entrada='tactil'] .mw-hud-vitales {
+  top: 5.2em;
+  bottom: auto;
 }
 
-.mw-porcentaje {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--mw-crema);
-  font-variant-numeric: tabular-nums;
+.juego-miller[data-entrada='tactil'] .mw-hud-radar {
+  top: 3.2em;
+  bottom: auto;
 }
 
-.mw-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.125rem 0.625rem;
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
+.juego-miller[data-entrada='tactil'] .mw-hud-radar canvas {
+  width: 92px;
 }
 
-.mw-chip--naranja {
-  color: var(--mw-naranja);
-  background: var(--mw-panel);
-  border: 1px solid var(--mw-naranja);
-}
-
-.mw-chip--violeta {
-  color: var(--mw-violeta);
-  background: #3b0764;
-  border: 1px solid var(--mw-violeta);
-  box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
-}
-
-.mw-chip--pulso {
-  color: #000000;
-  background: var(--mw-teal);
-  border: 1px solid var(--mw-teal);
-}
-
-/* 4. Visor de 960 x 540: el canvas de Phaser con Scale.FIT */
+/* 4. Visor: el canvas de Phaser con Scale.FIT ocupa todo el juego */
 .mw-visor {
   position: relative;
   display: flex;
@@ -1016,20 +1030,6 @@ body.pagina-miller .pie-secciones-marco {
 }
 
 /* 7. Integracion con el sitio: pantalla completa, cabina tactil y aviso de giro */
-.mw-pantalla {
-  position: absolute;
-  top: 6.5rem;
-  right: calc(0.75rem + env(safe-area-inset-right));
-  z-index: 35;
-  padding: 0.25rem 0.6rem;
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--mw-teal);
-  background: var(--mw-panel-oscuro);
-  border: 1px solid var(--mw-bezel);
-}
-
 .juego-miller[data-cabina] {
   position: fixed;
   inset: 0;
@@ -1056,36 +1056,6 @@ body.pagina-miller .pie-secciones-marco {
   box-shadow: none;
 }
 
-.juego-miller:fullscreen .mw-instrumentos,
-.juego-miller[data-cabina] .mw-instrumentos {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-}
-
-.juego-miller:fullscreen .mw-barra--abajo {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.juego-miller:fullscreen .mw-barra,
-.juego-miller[data-cabina] .mw-barra {
-  background: color-mix(in srgb, var(--mw-panel) 85%, transparent);
-}
-
-.juego-miller:fullscreen .mw-sub,
-.juego-miller[data-cabina] .mw-sub {
-  background: color-mix(in srgb, var(--mw-panel-oscuro) 80%, transparent);
-}
-
-/* En la cabina tactil el pie de ayuda le deja lugar a los controles (el original lo ocultaba en mobile) */
-.juego-miller[data-cabina] .mw-barra--abajo {
-  display: none;
-}
-
 .mw-girar {
   position: absolute;
   inset: 0;
@@ -1110,20 +1080,14 @@ body.pagina-miller .pie-secciones-marco {
   color: var(--color-texto-atenuado);
 }
 
-/* 8. Pantallas angostas o bajas: el original ocultaba la ayuda en mobile (hidden sm:block) */
+/* 8. Pantallas angostas o bajas: el HUD se compacta */
 @media (max-width: 40rem), (max-height: 30rem) {
-  .mw-ayuda,
-  .mw-etiqueta--sector,
-  .mw-barra--arriba .mw-derecha {
+  .mw-hud {
+    font-size: 0.6rem;
+  }
+
+  .mw-hud-tierra .mw-licencia {
     display: none;
-  }
-
-  .mw-barra {
-    padding: 0.25rem 0.75rem;
-  }
-
-  .mw-sub {
-    padding: 0.25rem 0.75rem;
   }
 }
 

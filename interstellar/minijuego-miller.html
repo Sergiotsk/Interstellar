@@ -29,82 +29,62 @@
 
     <section class="juego-miller" aria-labelledby="miller-titulo" data-miller data-estado="START">
 
-      <div class="mw-instrumentos">
-      <!-- Barra superior de mision y sector -->
-      <div class="mw-barra mw-barra--arriba">
-        <div class="mw-grupo">
-          <div>
-            <p class="mw-etiqueta">Score</p>
-            <p class="mw-valor mw-valor--teal">
-              <output data-hud="score">000000</output>
-              <span class="mw-combo" data-hud="combo" hidden>x1</span>
-            </p>
-          </div>
-          <div class="mw-separado">
-            <p class="mw-etiqueta mw-etiqueta--ambar"><span class="mw-led-ambar" aria-hidden="true"></span>Earth time lost <span class="mw-licencia">✎ Licencia narrativa</span></p>
-            <p class="mw-valor mw-valor--ambar"><output data-hud="tierra">0y 0m</output></p>
-          </div>
-        </div>
+      <!-- Visor: la escena, con el HUD flotando en sus esquinas (se alinea al canvas desde hud.js) -->
+      <div class="mw-visor">
+        <div class="mw-lienzo" data-miller-lienzo tabindex="-1"></div>
 
-        <div class="mw-centro">
-          <p class="mw-etiqueta mw-etiqueta--sector"><span class="mw-brujula" aria-hidden="true">✦</span><span data-hud="sector">MISSION 01 // SURFACE EXPLORATION</span></p>
-          <div class="mw-recuadro">
-            <div class="mw-ascenso" data-hud-ascenso hidden>
+        <div class="mw-hud" data-hud-capa hidden>
+          <!-- Arriba a la izquierda: puntaje y tiempo terrestre -->
+          <div class="mw-panel-hud mw-hud-puntaje">
+            <p class="mw-hud-score"><output data-hud="score">000000</output><span class="mw-combo" data-hud="combo" hidden>x1</span></p>
+            <p class="mw-hud-tierra"><span class="mw-hud-etiqueta">Earth time lost</span> <output data-hud="tierra">0y 0m</output> <span class="mw-licencia">✎ Licencia narrativa</span></p>
+          </div>
+
+          <!-- Arriba al centro: objetivo (y en la fase 2, la altitud) -->
+          <div class="mw-panel-hud mw-hud-objetivo">
+            <p class="mw-hud-objetivo-texto"><span class="mw-rombo" aria-hidden="true">◆</span> <output data-hud="objetivo">RETRIEVE MILLER BEACON</output></p>
+            <div class="mw-hud-ascenso" data-hud-ascenso hidden>
               <span class="mw-progreso" aria-hidden="true"><span data-hud="progreso"></span></span>
               <output class="mw-altitud" data-hud="altitud">▲ 0m / 10,000m</output>
             </div>
-            <output class="mw-baliza" data-hud="baliza">RETRIEVE MILLER BEACON</output>
           </div>
-        </div>
 
-        <div class="mw-grupo">
-          <div class="mw-derecha">
-            <p class="mw-etiqueta">Mission stage</p>
-            <p class="mw-stage" data-hud="stage">🌊 STAGE 01: SURFACE</p>
+          <!-- Arriba a la derecha: menu y pantalla completa -->
+          <div class="mw-hud-botones">
+            <button type="button" class="mw-boton-hud" data-accion="pantalla" hidden>⛶<span class="visualmente-oculto">Pantalla completa</span></button>
+            <button type="button" class="mw-boton-hud" data-accion="menu">Menu</button>
           </div>
-          <button type="button" class="mw-boton-menu" data-accion="menu">Menu</button>
-        </div>
-      </div>
 
-      <!-- Sub-barra de armas -->
-      <div class="mw-sub" data-subbarra hidden>
-        <div class="mw-sub-lado" data-sub="orbita" hidden>
-          <div class="mw-grupo mw-grupo--chico">
-            <span class="mw-icono mw-icono--teal" aria-hidden="true">⛨</span>
-            <span class="mw-mini mw-mini--teal">Shield:</span>
-            <span class="mw-medidor" aria-hidden="true"><span class="mw-relleno mw-relleno--teal" data-hud="escudo"></span></span>
+          <!-- Abajo a la izquierda: signos vitales y armas -->
+          <div class="mw-panel-hud mw-hud-vitales">
+            <div data-vitales="superficie">
+              <p class="mw-hud-fila"><span class="mw-hud-etiqueta" data-hud-traje-icono>Suit</span>
+                <span class="mw-segmentos" data-segmentos="traje" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+                <output data-hud="traje-pct">100%</output></p>
+              <p class="mw-hud-fila"><span class="mw-hud-etiqueta">Pulse</span> <span class="mw-hud-arma">∞</span></p>
+            </div>
+            <div data-vitales="orbita" hidden>
+              <p class="mw-hud-fila"><span class="mw-hud-etiqueta">Shield</span>
+                <span class="mw-barrita" aria-hidden="true"><span class="mw-barrita-relleno mw-barrita-relleno--teal" data-hud="escudo"></span></span></p>
+              <p class="mw-hud-fila"><span class="mw-hud-etiqueta mw-hud-etiqueta--naranja">Hull</span>
+                <span class="mw-barrita" aria-hidden="true"><span class="mw-barrita-relleno mw-barrita-relleno--naranja" data-hud="casco"></span></span></p>
+              <p class="mw-hud-fila"><span class="mw-hud-etiqueta mw-hud-etiqueta--violeta">Cannon</span> <output class="mw-canon" data-hud="canon">LV1 DUAL</output></p>
+              <p class="mw-hud-fila mw-hud-municion">
+                <button type="button" class="mw-chip mw-chip--naranja" data-accion="misil">⌖ <span data-hud="misiles">8</span> <kbd>Q</kbd></button>
+                <button type="button" class="mw-chip mw-chip--violeta" data-accion="emp">✹ <span data-hud="bombas">2</span> <kbd>B</kbd></button>
+              </p>
+            </div>
           </div>
-          <div class="mw-grupo mw-grupo--chico mw-separado">
-            <span class="mw-mini mw-mini--naranja">Hull:</span>
-            <span class="mw-medidor" aria-hidden="true"><span class="mw-relleno mw-relleno--naranja" data-hud="casco"></span></span>
-          </div>
-          <div class="mw-grupo mw-grupo--chico mw-separado">
-            <span class="mw-icono mw-icono--violeta" aria-hidden="true">⚡</span>
-            <span class="mw-mini mw-mini--violeta">Cannon:</span>
-            <output class="mw-canon" data-hud="canon">LV1 DUAL</output>
-          </div>
-        </div>
-        <div class="mw-sub-lado" data-sub="orbita" hidden>
-          <button type="button" class="mw-chip mw-chip--naranja" data-accion="misil">⌖ Missiles [<span data-hud="misiles">8</span>] (Q)</button>
-          <button type="button" class="mw-chip mw-chip--violeta" data-accion="emp">✹ EMP bomb [<span data-hud="bombas">2</span>] (B)</button>
-        </div>
 
-        <div class="mw-sub-lado" data-sub="superficie">
-          <span class="mw-icono" data-hud-traje-icono aria-hidden="true">⛨</span>
-          <span class="mw-mini mw-mini--teal">Suit integrity:</span>
-          <span class="mw-medidor mw-medidor--traje" aria-hidden="true"><span class="mw-relleno mw-relleno--traje" data-hud="traje"></span></span>
-          <output class="mw-porcentaje" data-hud="traje-pct">100%</output>
-        </div>
-        <div class="mw-sub-lado" data-sub="superficie">
-          <button type="button" class="mw-chip mw-chip--pulso" data-accion="arma">Pulse carbine [∞]</button>
-        </div>
-      </div>
+          <!-- Abajo a la derecha: el radar tactico de verdad -->
+          <figure class="mw-panel-hud mw-hud-radar">
+            <canvas width="140" height="140" data-radar aria-label="Radar táctico: baliza, Ranger, enemigos y frente de la ola"></canvas>
+            <figcaption>Tactical radar</figcaption>
+          </figure>
 
-      </div>
-
-      <!-- Visor: 960 x 540 o la pantalla entera en pantalla completa -->
-      <div class="mw-visor">
-        <div class="mw-lienzo" data-miller-lienzo tabindex="-1"></div>
+          <!-- Abajo al centro: los controles, solo unos segundos al arrancar cada fase -->
+          <p class="mw-hud-ayuda" data-hud="ayuda" hidden></p>
+        </div>
 
         <div class="mw-jefe" data-jefe hidden>
           <p>Titan Sentinel Dreadnought</p>
@@ -122,12 +102,6 @@
           <p class="mw-cuenta-numero" data-hud="cuenta">3</p>
           <p class="mw-cuenta-sub">1 sec on Miller = 17 hours Earth time <span class="mw-licencia">✎ Licencia narrativa</span></p>
         </div>
-      </div>
-
-      <!-- Barra inferior de ayuda -->
-      <div class="mw-barra mw-barra--abajo">
-        <p class="mw-radar"><span class="mw-ping" aria-hidden="true"></span><span class="mw-radar-titulo">Tactical radar:</span> <output data-hud="radar">EXPLORE WATER SURFACE // RETRIEVE MILLER BEACON</output></p>
-        <p class="mw-ayuda" data-hud="ayuda">WASD / Arrows: Move | SPACE: Jump | SHIFT: Slide | J/CLICK: Shoot | E: Board Ship</p>
       </div>
 
       <!-- Controles tactiles del original -->
@@ -291,8 +265,6 @@
           <a class="mw-salir" href="minijuegos.html">Salir al hub de minijuegos</a>
         </div>
       </section>
-
-      <button type="button" class="mw-pantalla" data-accion="pantalla" hidden>Pantalla completa</button>
 
       <div class="mw-girar" data-aviso-giro role="alertdialog" aria-labelledby="mw-girar-titulo" aria-describedby="mw-girar-texto" hidden>
         <h2 id="mw-girar-titulo">Girá el dispositivo</h2>
