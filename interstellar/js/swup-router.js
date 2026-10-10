@@ -124,6 +124,7 @@ const HOJAS_ESTILO_SITIO = [
   'css/contacto.css',
   'css/en-desarrollo.css',
   'css/minijuegos.css',
+  'css/minijuego-miller.css',
 ];
 
 export function precargarHojasDeEstilo() {

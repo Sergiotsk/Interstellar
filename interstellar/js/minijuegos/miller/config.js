@@ -1,5 +1,5 @@
-// Parametros del capitulo 2 (Miller): unico lugar con numeros de gameplay y nombres de la pelicula.
-// Unidades: distancia en gpx (pixel de juego, base 480x270), tiempo en s, velocidad en gpx/s.
+// Configuracion y tokens de "Miller's Wave Escape": constants.ts del prototipo del Playground, sin cambios de valores.
+// Unidades: px logicos sobre un lienzo de 960x540, segundos y px/s.
 
 const congelar = (obj) => {
   Object.values(obj).forEach((v) => {
@@ -8,104 +8,110 @@ const congelar = (obj) => {
   return Object.freeze(obj);
 };
 
+export const PALETA_PIXEL = congelar({
+  P0: 'rgba(0,0,0,0)', // transparente
+  P1: '#0a0e1a', // abismo / cielo
+  P2: '#141c2b', // silueta lejana de la ola
+  P3: '#1a2a3a', // agua oscura
+  P4: '#243d4f', // agua media
+  P5: '#35586c', // agua clara / base de espuma
+  P6: '#588094', // rocio de la ola
+  P7: '#9ec2cf', // brillo de espuma / ondas
+  P8: '#efe7d6', // crema: luz maxima / casco del traje
+  P9: '#c2b8a3', // sombra del traje / aleacion de CASE
+  P10: '#7a756b', // gris profundo del traje / costuras
+  P11: '#3d3b36', // botas / restos de metal
+  P12: '#1b1b1a', // gunmetal / chasis
+  P13: '#e8803b', // naranja Gargantua: baliza, llama, sello de rango
+  P14: '#f7a952', // nucleo del propulsor / destello de la baliza
+  P15: '#c94b32', // alerta / rojo critico
+  P16: '#4287f5', // LED de CASE
+  P17: '#ffffff', // blanco puro: solo el destello de 1 frame
+  P18: '#4fd0e0', // energia cian / plasma de pulso
+  P19: '#7ee7f8', // cian blanco de alta energia
+  P20: '#a855f7', // violeta del vacio / EMP
+});
+
+export const ANIM = congelar({
+  fpsSprite: 12,
+  fpsSpriteRapido: 16,
+  hitStopMs: 65,
+  shake: { leve: 1.5, medio: 3.5, fuerte: 6.0, decaimiento: 0.88 },
+  squash: { x: 1.15, y: 0.85, ms: 90 },
+  stretch: { x: 0.9, y: 1.12, ms: 90 },
+  bannerEntradaMs: 280,
+  bannerRetencionMs: 1200,
+  idleEsperaS: 2.5,
+  tickTiradaMs: 40,
+});
+
+export const TOKENS_HUD = congelar({
+  panelBg: '#0c2529',
+  panelDark: '#071517',
+  bezelBorder: '#3d454c',
+  bezelDark: '#23282c',
+  tealGlow: '#4fd0e0',
+  tealMuted: 'rgba(79, 208, 224, 0.4)',
+  amberLed: '#e0a94a',
+  redLed: '#d0453a',
+  gargantuaOrange: '#e8803b',
+  creamLight: '#efe7d6',
+  abyssBlack: '#0a0e1a',
+  fontFamily: "'Share Tech Mono', 'Courier New', monospace",
+  fontBanner: "'Orbitron', 'Exo 2', 'Impact', sans-serif",
+});
+
 export const CONFIG = congelar({
-  nombres: { planeta: 'Miller', nave: 'Ranger', robot: 'CASE' },
-  teclas: {
-    ArrowUp: 'moverArriba',
-    ArrowDown: 'moverAbajo',
-    ArrowLeft: 'moverIzquierda',
-    ArrowRight: 'moverDerecha',
-    KeyW: 'moverArriba',
-    KeyS: 'moverAbajo',
-    KeyA: 'moverIzquierda',
-    KeyD: 'moverDerecha',
-    Space: 'accion',
-    Enter: 'accion',
-    Escape: 'pausa',
-  },
+  title: "Miller's Wave Escape: Deep Space Run & Gun",
+  baseCanvasWidth: 960,
+  baseCanvasHeight: 540,
 
-  pasoFijoS: 1 / 60,
-  deltaMaxS: 0.1,
-  introS: 7,
-  cuentaS: 3,
+  targetFPS: 60,
+  stepMs: 1000 / 60,
+  maxSubSteps: 5,
 
-  // x recorre el mapa; z es la profundidad dentro de la franja de agua (belt-scroller, R2).
-  mundo: { ancho: 2400, profundidad: 90, horizonte: 150, base: { ancho: 480, alto: 270 } },
+  defaultMusicVolume: 0.5,
+  defaultSfxVolume: 0.75,
 
-  // Velocidad terminal = aceleracion / arrastre = 75 gpx/s.
-  jugador: { aceleracion: 315, arrastre: 4.2, factorProfundidad: 0.6, caja: { ancho: 10, prof: 6 }, alcanceBaliza: 14 },
-  ranger: { x: 80, z: 45, radio: 36 },
-  baliza: { ventanaX: [1800, 2200], pulsoMinHz: 0.8, pulsoMaxHz: 6, rangoSenal: 900 },
-  restos: { cantidad: 18, desdeX: 220, hastaX: 2300, separacionMin: 60, huecoMinZ: 20, caja: { ancho: 16, prof: 10 }, velChoque: 50, aturdimientoS: 0.8 },
+  playerBaseSpeed: 260,
+  playerSprintSpeed: 370,
+  playerAcceleration: 2300,
+  waterDragCoeff: 4.0,
+  jumpVelocity: 350,
+  gravity: 860,
+  playerMaxHp: 100,
+  slideSpeed: 460,
+  slideDuration: 0.32,
 
-  // La ola se revela a distanciaRevelacion del jugador al recoger la baliza (R7).
-  ola: { xInicial: 2800, distanciaRevelacion: 520, velHuida: 55, aceleracion: 1.2, umbrales: { cerca: 360, inminente: 150 } },
+  waveInitialDistance: 2200,
+  waveSpeedBase: 38,
+  waveSpeedFlight: 115,
+  waveMaxSpeed: 170,
+  liftoffHoldDuration: 1.2,
+  landerTriggerRadius: 95,
+  beaconPickupRadius: 58,
+  caseTriggerRadius: 62,
+  debrisObstacleCount: 16,
 
-  despegue: { tiempo: 1.5, decaimientoCarga: 0.8, maxSoltadas: 3 },
-  caseRobot: { radio: 16, impulso: 1.5, duracionS: 2, recargaS: 8 },
-  dilatacion: { anosPorHora: 7 },
+  shipMaxSpeed: 460,
+  shipBoostSpeed: 720,
+  shipThrustAccel: 480,
+  shipTurnRate: 3.0,
+  shipAirDrag: 0.95,
+  shipBoardingRadius: 120,
 
-  puntaje: {
-    max: 10000,
-    tMin: 45,
-    tMax: 90,
-    margenMax: 500,
-    maxChoques: 5,
-    pesos: { tiempo: 0.45, margen: 0.25, choques: 0.15, precision: 0.15 },
-    rangos: { S: 9000, A: 7500, B: 5000 },
-  },
+  mission2TargetDistance: 10000,
+  enduranceDockingRadius: 160,
 
-  particulas: { tope: { teclado: 300, tactil: 150 } },
-
-  // El parlante del celular no da graves: en tactil se sube el volumen y se abren los filtros.
-  audio: {
-    teclado: { volumen: 0.75, olaFiltro: [120, 900], ambienteFiltro: 700, compresor: false },
-    tactil: { volumen: 1, olaFiltro: [400, 2000], ambienteFiltro: 1800, compresor: true },
-  },
-
+  // Integracion con el sitio (no estaba en el original).
+  // 1 h en Miller = 7 anos en la Tierra: 7 x 365,25 x 24 / 3600 = 17,045 h por segundo (el original usaba 17,518).
+  horasTerrestresPorSegundo: (7 * 365.25 * 24) / 3600,
   ranking: {
     clave: 'interstellar:minijuegos:miller:ranking',
     version: 1,
     tope: 10,
     largoNombre: 8,
     alfabeto: 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ0123456789 ',
-    nombrePorDefecto: 'RANGER',
+    nombrePorDefecto: 'COOPER',
   },
-});
-
-// Paleta cerrada del mundo (DesignSystem §3.2): ningun sprite usa un color fuera de esta lista.
-export const PALETA_PIXEL = congelar({
-  P0: 0x0a0e1a,
-  P1: 0x161c2b,
-  P2: 0x2a3346,
-  P3: 0x3f4c5f,
-  P4: 0x5d6c7e,
-  P5: 0x8a98a6,
-  P6: 0xb9c0c4,
-  P7: 0xefe7d6,
-  P8: 0x3d454c,
-  P9: 0x6b7680,
-  P10: 0x9aa6b6,
-  P11: 0xc9cfd6,
-  P12: 0x8e959c,
-  P13: 0xa8793f,
-  P14: 0xd4a94e,
-  P15: 0xe8803b,
-  P16: 0x7a3d1c,
-  P17: 0xd0453a,
-});
-
-// Tokens de tiempo de animacion (DesignSystem §5.1).
-export const ANIM = congelar({
-  fpsSprite: 12,
-  fpsSpriteRapido: 15,
-  hitStopMs: 70,
-  shake: { leve: 1, medio: 2, fuerte: 4, decaimiento: 0.85 },
-  squash: { x: 1.15, y: 0.85, ms: 90 },
-  stretch: { x: 0.9, y: 1.12, ms: 90 },
-  bannerEntradaMs: 280,
-  bannerRetencionMs: 1200,
-  idleEsperaS: 3,
-  tickTiradaMs: 40,
-  maxDestellosPorS: 3,
 });

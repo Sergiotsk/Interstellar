@@ -1,28 +1,28 @@
-// Modulo de pagina de Miller: mount/unmount para swup, carga de Phaser y conexion logica-escena-DOM.
-// Mismo ciclo de vida que el acople: docs/20-notas-de-codigo/minijuegos-acople.md
-import { CONFIG, PALETA_PIXEL, ANIM } from './config.js';
-import { SPRITES, ANIMACIONES, LEYENDA } from './sprites.js';
-import { crearPartida, saltarIntro, conAcciones, avanzar, pausar, reanudar, reintentar, estadoHud } from './logica/mision.js';
-import { escalaEntera } from './logica/escala.js';
-import { intensidadSenal, frecuenciaPulso } from './logica/baliza.js';
-import { accionDeTecla, accionesDe, presionar, soltar, soltarTodo } from '../comun/logica/acciones.js';
-import { leerRanking, posicionEnRanking, insertarEntrada, guardarEnRanking } from '../comun/logica/ranking.js';
-import { crearEditor, textoEditor, teclaEditor, fijarCursor } from '../comun/logica/nombre-arcade.js';
+// Modulo de pagina de Miller: mount/unmount para swup y el flujo del componente App del original
+// (START -> PLAYING -> VICTORY | GAME_OVER, con menu de pausa), sin React.
+import { CONFIG } from './config.js';
+import { crearRng } from './logica/azar.js';
+import { crearSim } from './logica/estado.js';
+import { actualizar } from './logica/motor.js';
+import { abordar, dispararMisil, detonarEmp, cambiarArma } from './logica/nave.js';
+import { sonar } from './logica/efectos.js';
+import { leerHall, filasHall, guardarEnHall } from './logica/hall-of-fame.js';
 import { modoEntrada, requiereGiro } from '../comun/logica/dispositivo.js';
-import { filasRanking } from '../comun/logica/tabla-ranking.js';
 import * as pantalla from '../comun/pantalla-completa.js';
-import { crearOverlays, lecturasHud } from './overlays.js';
+import { crearHud } from './hud.js';
 import { crearEscenaMiller } from './escena-miller.js';
-import { crearEscenaGaleria } from './escena-galeria.js';
-import { crearAudioMiller } from './audio-miller.js';
-import { conectarControles } from './controles-tactiles.js';
+import { SynthAudio, crearMusica } from './audio-miller.js';
+import { conectarTactil } from './controles.js';
 
 const URL_PHASER = '../../vendor/phaser@4.2.1/phaser.esm.min.js';
-const INTERVALO_HUD_MS = 100;
-const ESPERA_RESULTADO_MS = { exito: 1600, fracaso: 1400 }; // dejan ver el despegue o el barrido de la ola
-const EN_JUEGO = ['exploracion', 'huida', 'despegue'];
-const FINALES = ['exito', 'fracaso'];
-const VELOCIDAD_PASOS = 10;
+const URL_MUSICA = 'assets/audio/minijuegos/miller-ambiente.mp3';
+const DIMS = { ancho: CONFIG.baseCanvasWidth, alto: CONFIG.baseCanvasHeight };
+const INTERVALO_HUD_MS = 50;
+
+// El useInput del helper del Playground: mapeo por e.key.
+const TECLAS_MOVIMIENTO = { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'up', ArrowDown: 'down', a: 'left', d: 'right', w: 'up', s: 'down' };
+const TECLAS_CONFIRMAR = ['Enter', ' '];
+const TECLAS_DISPARO = ['j', 'J', 'x', 'X', 'z', 'Z', 'Enter'];
 
 let sesion = null;
 
@@ -30,455 +30,325 @@ function almacenamiento() {
   try {
     return globalThis.localStorage;
   } catch {
-    return undefined; // con el almacenamiento bloqueado, el solo acceso puede lanzar
+    return undefined;
   }
 }
 
-// La semilla del mapa: fija por URL para reproducir un mapa, o nueva en cada partida.
-function nuevaSemilla() {
-  const fija = Number.parseInt(new URLSearchParams(location.search).get('semilla'), 10);
-  return Number.isInteger(fija) ? fija : (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0;
-}
+const entradaVacia = () => ({ left: false, right: false, up: false, down: false, confirm: false, tap: false, pointerDown: false });
 
 function escuchar(s, objetivo, evento, fn, opciones) {
   objetivo.addEventListener(evento, fn, opciones);
   s.limpiezas.push(() => objetivo.removeEventListener(evento, fn, opciones));
 }
 
-function programar(s, fn, ms) {
-  const id = setTimeout(fn, ms);
-  s.temporizadores.push(id);
-  return id;
+function nuevaSim() {
+  const semilla = (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0;
+  return { sim: crearSim(CONFIG, crearRng(semilla), DIMS), rng: crearRng(semilla + 1) };
 }
 
-function soltarControles(s) {
-  s.acciones = soltarTodo();
-  s.tactiles = new Set();
-  s.mandos?.soltar();
+// La logica pide sonidos por cola; aca se tocan con el sintetizador del original.
+function vaciarSonidos(s) {
+  for (const [metodo, ...args] of s.sim.sonidos) s.audio[metodo]?.(...args);
+  s.sim.sonidos.length = 0;
 }
 
-function accionesEfectivas(s) {
-  return new Set([...s.acciones, ...s.tactiles]);
+function actualizarMusica(s) {
+  s.musica.sonar(s.estado === 'PLAYING' && !s.menu);
 }
 
-function vibrar(s, patron) {
-  if (s.modo === 'tactil' && !s.audio.estaMuteado()) navigator.vibrate?.(patron);
+function pintar(s, forzar = false) {
+  const ahora = performance.now();
+  if (!forzar && ahora - s.ultimoHud < INTERVALO_HUD_MS) return;
+  s.ultimoHud = ahora;
+  s.hud.pintar(s.sim, s.estado, CONFIG, { menu: s.menu, tactil: s.modo === 'tactil', puntajeFinal: s.sim.fin?.resultado.finalScore ?? null });
 }
 
-function enfocarLienzo(s) {
+// initGame del original.
+function iniciar(s) {
+  s.hud.cancelar();
+  const { sim, rng } = nuevaSim();
+  s.sim = sim;
+  s.rng = rng;
+  s.entrada = entradaVacia();
+  s.estado = 'PLAYING';
+  s.menu = false;
+  s.audio.resume();
+  sonar(s.sim, 'playBannerImpact');
+  s.hud.reiniciar();
+  s.hud.mostrar();
+  actualizarMusica(s);
+  pintar(s, true);
+  if (s.modo === 'tactil' && !pantalla.estaActiva(s.raiz)) pantalla.entrar(s.raiz).then((ok) => ok && pantalla.bloquearHorizontal());
   s.lienzo.focus({ preventScroll: true });
 }
 
-// En tactil, el gesto que arranca la partida tambien pide pantalla completa y horizontal.
-function entrarPantalla(s) {
-  if (s.modo !== 'tactil' || pantalla.estaActiva(s.raiz)) return;
-  pantalla.entrar(s.raiz).then((ok) => ok && pantalla.bloquearHorizontal());
+function terminar(s) {
+  const { estado, resultado } = s.sim.fin;
+  s.estado = estado;
+  s.entrada = entradaVacia();
+  s.audio.stopWaveRumble();
+  actualizarMusica(s);
+  pintar(s, true);
+  const tick = (metodo, ...args) => s.audio[metodo]?.(...args);
+  if (estado === 'VICTORY') {
+    s.hud.victoria(resultado, tick);
+    s.raiz.querySelector('[data-nombre]').value = s.ultimoNombre;
+  } else {
+    s.hud.fallo(resultado, tick);
+  }
 }
 
-function ajustarEscala(s) {
-  const canvas = s.game?.canvas;
-  if (!canvas) return;
-  const { base } = CONFIG.mundo;
-  const k = escalaEntera(s.lienzo.clientWidth, s.lienzo.clientHeight, base);
-  canvas.style.width = `${base.ancho * k}px`;
-  canvas.style.height = `${base.alto * k}px`;
+function alternarMenu(s, abrir = !s.menu) {
+  if (s.estado !== 'PLAYING' || s.menu === abrir) return;
+  s.menu = abrir;
+  s.entrada = entradaVacia();
+  s.hud.pintarMutes({ sfx: s.audio.getMuteState(), bgm: s.musica.estaMuteada() });
+  s.hud.mostrar(...(abrir ? ['menu'] : []));
+  actualizarMusica(s);
+  pintar(s, true);
 }
 
-function comenzar(s) {
-  if (s.partida.fase !== 'intro') return;
-  s.partida = saltarIntro(s.partida);
-  s.ui.mostrar('hud');
-  entrarPantalla(s);
-  enfocarLienzo(s);
+function abrirModal(s, nombre) {
+  if (nombre === 'ranking') s.hud.pintarHall(filasHall(leerHall(almacenamiento(), CONFIG)));
+  s.modal = nombre;
+  s.hud.mostrar(...s.pantallasBase(), nombre);
 }
 
-function pausarPartida(s) {
-  const { fase, pausada } = s.partida;
-  if (pausada || !(EN_JUEGO.includes(fase) || fase === 'cuenta')) return;
-  s.partida = pausar(s.partida);
-  soltarControles(s);
-  s.ui.mostrar('pausa');
+function cerrarModal(s) {
+  s.modal = null;
+  s.hud.mostrar(...s.pantallasBase());
 }
 
-function reanudarPartida(s) {
-  if (!s.partida.pausada || s.girando) return;
-  s.partida = reanudar(s.partida);
-  s.ui.mostrar('hud');
-  entrarPantalla(s);
-  enfocarLienzo(s);
+function paso(s, dt) {
+  if (s.estado !== 'PLAYING' || s.menu || s.girando) return;
+  actualizar(s.sim, s.entrada, dt, CONFIG, s.rng, DIMS);
+  vaciarSonidos(s);
+  if (s.sim.fin) terminar(s);
+  else pintar(s);
 }
 
-// Reintentar reusa el Game ya creado: partida nueva (otra semilla, sin intro) y la escena rearma el mapa.
-function volverAJugar(s) {
-  if (!s.puedeReintentar) return;
-  s.ui.cancelar();
-  s.editor = null;
-  s.puedeReintentar = false;
-  s.partida = reintentar(s.partida, CONFIG, nuevaSemilla());
-  soltarControles(s);
-  s.escena?.reiniciar();
-  s.ui.reiniciarHud();
-  s.ui.mostrar('hud');
-  entrarPantalla(s);
-  enfocarLienzo(s);
-}
+// Handlers de teclado del original: useInput (movimiento y confirmar) + el listener global de App.
+function alPresionar(s, e) {
+  if (e.target.closest?.('input')) return;
+  s.audio.resume();
 
-function habilitarReintento(s) {
-  s.puedeReintentar = true;
-  s.ui.mostrarAcciones(true);
-  s.ui.iniciarContinue();
-  s.ui.enfocarResultado();
-}
-
-function terminarPartida(s) {
-  soltarControles(s);
-  const r = s.partida.resultado;
-  const { entradas, ultimoNombre } = leerRanking(almacenamiento(), CONFIG);
-  const posicion = r.exito ? posicionEnRanking(entradas, r.puntaje, CONFIG) : -1;
-  s.ranking = entradas;
-  s.ui.mostrar('resultado');
-  s.ui.pintarRanking('resultado', filasRanking(entradas, -1, CONFIG));
-  s.ui.pintarResultado(r, {
-    posicion,
-    alTick: () => s.audio.evento('tick'),
-    alTerminar: () => {
-      s.audio.evento('tickFinal');
-      if (posicion >= 0) {
-        s.editor = crearEditor(ultimoNombre || CONFIG.ranking.nombrePorDefecto, CONFIG);
-        s.ui.mostrarEditor(true);
-        pintarEditor(s);
-      } else {
-        habilitarReintento(s);
-      }
-    },
-  });
-  s.ui.enfocarResultado();
-}
-
-// Mientras se carga el nombre, la tabla muestra la fila provisoria con lo que se va tipeando.
-function pintarEditor(s) {
-  const provisoria = insertarEntrada(s.ranking, { nombre: textoEditor(s.editor), puntaje: s.partida.resultado.puntaje }, CONFIG);
-  s.ui.pintarEditor(s.editor);
-  s.ui.pintarRanking('resultado', filasRanking(provisoria.entradas, provisoria.posicion, CONFIG));
-}
-
-function confirmarNombre(s) {
-  const r = s.partida.resultado;
-  const desenlace = { exito: r.exito, puntaje: r.puntaje, tiempoTotal: r.tiempoMision };
-  const guardado = guardarEnRanking(desenlace, textoEditor(s.editor), almacenamiento(), CONFIG);
-  s.editor = null;
-  if (guardado.guardado) s.ranking = guardado.entradas;
-  s.ui.mostrarEditor(false);
-  s.ui.pintarRanking('resultado', filasRanking(s.ranking, guardado.posicion, CONFIG));
-  habilitarReintento(s);
-}
-
-function alPresionarEnEditor(s, e) {
-  if (e.ctrlKey || e.metaKey || e.altKey) return;
-  if ((e.key === 'Enter' || e.key === ' ') && e.target.closest?.('a, button')) return;
-  const r = teclaEditor(s.editor, e.key, CONFIG);
-  if (!r.manejada) return;
-  e.preventDefault();
-  // La accion sostenida del despegue no debe confirmar el nombre de un saque.
-  if (r.confirmar) {
-    if (!e.repeat) confirmarNombre(s);
+  if (e.key === 'Escape') {
+    if (s.modal) cerrarModal(s);
+    else alternarMenu(s);
     return;
   }
-  s.editor = r.editor;
-  pintarEditor(s);
+  if (s.estado === 'GAME_OVER' && [' ', 'Enter', 'r', 'R'].includes(e.key)) {
+    e.preventDefault();
+    iniciar(s);
+    return;
+  }
+  if (s.estado !== 'PLAYING' || s.menu) return;
+
+  const mov = TECLAS_MOVIMIENTO[e.key];
+  if (mov) {
+    e.preventDefault();
+    s.entrada[mov] = true;
+  }
+  if (TECLAS_CONFIRMAR.includes(e.key)) s.entrada.confirm = true;
+  if (s.sim.isDying) return;
+
+  const sim = s.sim;
+  const enSuperficie = sim.stage === 'MISSION_1_SURFACE';
+  if (['e', 'E', 'f', 'F'].includes(e.key)) {
+    if (enSuperficie) {
+      e.preventDefault();
+      if (Math.hypot(sim.playerX - sim.shipX, sim.playerY - sim.shipY) <= CONFIG.shipBoardingRadius) abordar(sim);
+      else cambiarArma(sim);
+    }
+  } else if (['b', 'B'].includes(e.key)) {
+    e.preventDefault();
+    detonarEmp(sim);
+  } else if (['q', 'Q', 'm', 'M'].includes(e.key)) {
+    if (sim.stage === 'MISSION_2_ORBITAL_ASCENT') dispararMisil(sim);
+    else cambiarArma(sim);
+  } else if (e.key === '1') cambiarArma(sim, 'pulse');
+  else if (e.key === '2') cambiarArma(sim, 'scatter');
+  else if (e.key === '3') cambiarArma(sim, 'rocket');
+  else if (['Shift', 'c', 'C'].includes(e.key)) sim.touchSlide = true;
+  else if (e.key === ' ') {
+    e.preventDefault();
+    if (enSuperficie) sim.touchJump = true;
+    else sim.touchShoot = true;
+  } else if (TECLAS_DISPARO.includes(e.key)) sim.touchShoot = true;
+  vaciarSonidos(s);
 }
 
-// Eventos de la logica -> escena, sonido, banners y hit-stop.
-function procesarEventos(s, eventos) {
-  for (const nombre of eventos) {
-    s.escena?.evento(nombre);
-    if (nombre === 'inicio') {
-      s.ui.banner('Mission 02 start');
-      s.audio.evento('banner');
-    }
-    if (nombre === 'baliza') {
-      s.ui.banner('Beacon acquired!');
-      s.audio.evento('baliza');
-      vibrar(s, 30);
-    }
-    if (nombre === 'choque') {
-      s.audio.evento('choque');
-      if (!s.reducirMovimiento) s.congeladoHasta = performance.now() + ANIM.hitStopMs;
-      vibrar(s, 50);
-    }
-    if (nombre === 'impulso') s.audio.evento('impulso');
-    if (nombre === 'despegue') s.audio.evento('despegue');
-    if (nombre === 'fracaso') {
-      s.audio.evento('fracaso');
-      vibrar(s, [60, 40, 120]);
-    }
-  }
+function alSoltar(s, e) {
+  const mov = TECLAS_MOVIMIENTO[e.key];
+  if (mov) s.entrada[mov] = false;
+  if (TECLAS_CONFIRMAR.includes(e.key)) s.entrada.confirm = false;
+  if ([' ', ...TECLAS_DISPARO].includes(e.key)) s.sim.touchShoot = false;
 }
 
-function tick(s, dt) {
-  // Hit-stop: el mundo se congela unos ms en un impacto fuerte; la escena sigue dibujando.
-  if (performance.now() < s.congeladoHasta) return;
-  const antes = s.partida;
-  const entrada = conAcciones(antes, accionesEfectivas(s));
-  const nueva = avanzar(entrada, dt, CONFIG);
-  if (nueva === entrada) return; // pausada o terminada: no hay eventos nuevos
-  s.partida = nueva;
-  procesarEventos(s, nueva.eventos);
-
-  if (antes.fase === 'intro' && nueva.fase === 'cuenta') s.ui.mostrar('hud');
-  s.ui.pintarCuenta(nueva.fase === 'cuenta' ? Math.max(1, Math.ceil(CONFIG.cuentaS - nueva.tFase)) : null);
-
-  const estado = estadoHud(nueva);
-  if (estado === 'WAVE INCOMING' && s.estado !== 'WAVE INCOMING') {
-    s.ui.banner('Wave incoming!', 'alerta');
-    s.audio.evento('banner');
+function alClic(s, e) {
+  const boton = e.target.closest('[data-accion]');
+  if (!boton) return;
+  s.audio.resume();
+  const accion = boton.dataset.accion;
+  if (accion === 'iniciar' || accion === 'reintentar') iniciar(s);
+  if (accion === 'manual') abrirModal(s, 'manual');
+  if (accion === 'ranking') abrirModal(s, 'ranking');
+  if (accion === 'cerrar') cerrarModal(s);
+  if (accion === 'menu') alternarMenu(s, true);
+  if (accion === 'reanudar') alternarMenu(s, false);
+  if (accion === 'sfx') s.audio.toggleMute();
+  if (accion === 'bgm') {
+    s.musica.alternarMute();
+    actualizarMusica(s);
   }
-  s.estado = estado;
+  if (accion === 'sfx' || accion === 'bgm') s.hud.pintarMutes({ sfx: s.audio.getMuteState(), bgm: s.musica.estaMuteada() });
+  if (accion === 'abandonar') {
+    s.menu = false;
+    s.estado = 'START';
+    s.hud.mostrar('inicio');
+    actualizarMusica(s);
+    pintar(s, true);
+  }
+  if (accion === 'abordar') abordar(s.sim);
+  if (accion === 'misil') dispararMisil(s.sim);
+  if (accion === 'emp') detonarEmp(s.sim);
+  if (accion === 'arma') cambiarArma(s.sim, 'pulse');
+  if (accion === 'pantalla') {
+    if (pantalla.estaActiva(s.raiz)) pantalla.salir();
+    else pantalla.entrar(s.raiz);
+  }
+  vaciarSonidos(s);
+}
 
-  const enJuego = EN_JUEGO.includes(nueva.fase);
-  const { jugador, mapa, balizaRecogida, despegue } = nueva;
-  s.audio.actualizar({
-    enJuego,
-    revelada: nueva.ola.revelada,
-    nivel: nueva.nivel,
-    pulsoHz: enJuego && !balizaRecogida ? frecuenciaPulso(intensidadSenal(jugador, mapa.baliza, CONFIG), CONFIG) : 0,
-    moviendose: Math.hypot(jugador.vx, jugador.vz) > VELOCIDAD_PASOS,
-    carga: nueva.fase === 'despegue' ? despegue.carga : 0,
+function guardarNombre(s, e) {
+  e.preventDefault();
+  const r = s.sim.fin?.resultado;
+  if (!r) return;
+  const input = s.raiz.querySelector('[data-nombre]');
+  guardarEnHall(almacenamiento(), CONFIG, { nombre: input.value, puntaje: r.finalScore, anos: `${r.earthYearsLost}y`, rango: r.rank });
+  s.ultimoNombre = input.value.trim().toUpperCase() || CONFIG.ranking.nombrePorDefecto;
+  s.hud.guardado();
+  s.audio.playTallyTick(true);
+}
+
+// El clic sobre el lienzo dispara, como el pointerdown del canvas en el useInput original.
+function conectarPuntero(s) {
+  const presionar = (abajo) => () => {
+    s.entrada.tap = abajo;
+    s.entrada.pointerDown = abajo;
+  };
+  escuchar(s, s.lienzo, 'pointerdown', (e) => {
+    s.audio.resume();
+    s.lienzo.setPointerCapture?.(e.pointerId);
+    presionar(true)();
   });
-
-  const ahora = performance.now();
-  if (ahora - s.ultimoHud > INTERVALO_HUD_MS || antes.fase !== nueva.fase) {
-    s.ultimoHud = ahora;
-    s.ui.pintarHud(lecturasHud(nueva, CONFIG));
-  }
-  if (!FINALES.includes(antes.fase) && FINALES.includes(nueva.fase)) {
-    soltarControles(s);
-    programar(s, () => terminarPartida(s), ESPERA_RESULTADO_MS[nueva.fase]);
-  }
+  ['pointerup', 'pointercancel'].forEach((t) => escuchar(s, s.lienzo, t, presionar(false)));
 }
 
-// Vertical en tactil: capa de giro encima y partida en pausa (mismo criterio que el acople, 010 R6).
 function evaluarGiro(s) {
   const girar = requiereGiro({ modo: s.modo, ancho: window.innerWidth, alto: window.innerHeight });
   if (girar === s.girando) return;
   s.girando = girar;
   s.raiz.querySelector('[data-aviso-giro]').hidden = !girar;
-  if (girar) pausarPartida(s);
+  if (girar) alternarMenu(s, true);
 }
 
-function alPresionar(s, e) {
-  if (s.girando) return;
-  s.audio.reanudar();
-  const { fase, pausada } = s.partida;
-  if (pausada) {
-    // Esc acaba de sacar al jugador de pantalla completa: no reanuda. Tab recorre las opciones.
-    if (e.code === 'Escape' || e.code === 'Tab' || e.target.closest?.('a, button')) return;
-    e.preventDefault();
-    reanudarPartida(s);
-    return;
-  }
-  if (fase === 'intro' && (e.code === 'Space' || e.key === 'Enter')) {
-    e.preventDefault();
-    comenzar(s);
-    return;
-  }
-  if (s.editor) {
-    alPresionarEnEditor(s, e);
-    return;
-  }
-  if (FINALES.includes(fase)) {
-    if (!e.repeat && (e.code === 'KeyR' || (e.key === 'Enter' && !e.target.closest?.('a, button')))) {
-      e.preventDefault();
-      volverAJugar(s);
-    }
-    return;
-  }
-  const accion = accionDeTecla(e.code, CONFIG.teclas);
-  if (!accion) return;
-  e.preventDefault();
-  if (accion === 'pausa') pausarPartida(s);
-  else s.acciones = presionar(s.acciones, accion);
-}
-
-function alSoltar(s, e) {
-  const accion = accionDeTecla(e.code, CONFIG.teclas);
-  if (accion) s.acciones = soltar(s.acciones, accion);
-}
-
-function clicEnEditor(s, e) {
-  const tecla = e.target.closest('[data-tecla-editor]');
-  if (tecla) {
-    const r = teclaEditor(s.editor, tecla.dataset.teclaEditor, CONFIG);
-    if (r.confirmar) confirmarNombre(s);
-    else {
-      s.editor = r.editor;
-      pintarEditor(s);
-    }
-    return true;
-  }
-  const casilla = e.target.closest('[data-casilla]');
-  if (casilla) {
-    s.editor = fijarCursor(s.editor, Number(casilla.dataset.casilla), CONFIG);
-    pintarEditor(s);
-    return true;
-  }
-  return false;
-}
-
-function alClic(s, e) {
-  if (s.girando) return;
-  s.audio.reanudar();
-  if (s.editor && clicEnEditor(s, e)) return;
-  const boton = e.target.closest('[data-accion]');
-  if (!boton) return;
-  const accion = boton.dataset.accion;
-  if (accion === 'saltar-intro') comenzar(s);
-  if (accion === 'reintentar') volverAJugar(s);
-  if (accion === 'confirmar-nombre' && s.editor) confirmarNombre(s);
-  if (accion === 'seguir') reanudarPartida(s);
-  if (accion === 'pausar') pausarPartida(s);
-  if (accion === 'pantalla') {
-    if (pantalla.estaActiva(s.raiz)) pantalla.salir();
-    else pantalla.entrar(s.raiz).then((ok) => ok && s.modo === 'tactil' && pantalla.bloquearHorizontal());
-  }
-  if (accion === 'mute') {
-    s.audio.setMute(!s.audio.estaMuteado());
-    boton.setAttribute('aria-pressed', String(s.audio.estaMuteado()));
-  }
-}
-
-// Salir de pantalla completa en plena partida la pausa.
-function alCambiarPantalla(s) {
-  const activa = pantalla.estaActiva(s.raiz);
-  s.ui.pintarPantalla(activa);
-  if (!activa) pausarPartida(s);
-}
-
-async function crearJuego(s, depurarSprites) {
+async function crearJuego(s) {
   const modulo = await import(URL_PHASER);
   if (sesion !== s) return; // se desmonto mientras Phaser bajaba: descartar
   const Phaser = modulo.default ?? modulo;
-  const comunes = { sprites: SPRITES, animaciones: ANIMACIONES, leyenda: LEYENDA, paleta: PALETA_PIXEL };
-  const Escena = depurarSprites
-    ? crearEscenaGaleria(Phaser, comunes)
-    : crearEscenaMiller(Phaser, {
-        ...comunes,
-        config: CONFIG,
-        obtenerPartida: () => s.partida,
-        alAvanzar: (dt) => tick(s, dt),
-        alCrear: (escena) => {
-          s.escena = escena;
-        },
-        reducirMovimiento: s.reducirMovimiento,
-        topeParticulas: CONFIG.particulas.tope[s.modo],
-      });
-  const { base } = CONFIG.mundo;
+  const factor = s.modo === 'tactil' ? 1 : Math.min(2, window.devicePixelRatio || 1);
+  const Escena = crearEscenaMiller(Phaser, { obtenerSim: () => s.sim, alPaso: (dt) => paso(s, dt), config: CONFIG, factor });
   s.game = new Phaser.Game({
     type: Phaser.AUTO,
     parent: s.lienzo,
-    width: base.ancho,
-    height: base.alto,
-    pixelArt: true,
-    roundPixels: true,
-    antialias: false,
-    backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--color-fondo').trim(),
+    width: DIMS.ancho * factor,
+    height: DIMS.alto * factor,
+    backgroundColor: '#000000',
     banner: false,
     audio: { noAudio: true },
     input: { keyboard: false, mouse: false, touch: false, gamepad: false },
-    scale: { mode: Phaser.Scale.NONE, width: base.ancho, height: base.alto },
+    scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
     scene: [Escena],
   });
-  s.game.events.once('ready', () => ajustarEscala(s));
-  ajustarEscala(s);
 }
 
 export async function mount() {
   unmount();
   const raiz = document.querySelector('[data-miller]');
   if (!raiz) return;
-  const parametros = new URLSearchParams(location.search);
   const modo = modoEntrada({
     punteroGrueso: window.matchMedia('(pointer: coarse)').matches,
     algunPunteroFino: window.matchMedia('(any-pointer: fine)').matches,
-    forzado: parametros.get('entrada'),
+    forzado: new URLSearchParams(location.search).get('entrada'),
   });
-  const ui = crearOverlays(raiz, { pantallaCompleta: pantalla.soportada(), tactil: modo === 'tactil', config: CONFIG });
   raiz.dataset.entrada = modo;
-  // Cabina a toda la pantalla visible en tactil: el iPhone no tiene Fullscreen API para elementos.
   if (modo === 'tactil') raiz.dataset.cabina = '';
 
+  const { sim, rng } = nuevaSim();
   const s = {
     raiz,
-    ui,
     modo,
     lienzo: raiz.querySelector('[data-miller-lienzo]'),
-    partida: crearPartida(CONFIG, { semilla: nuevaSemilla(), conIntro: true }),
-    estado: 'SEARCHING',
-    acciones: soltarTodo(),
-    tactiles: new Set(),
-    mandos: null,
-    ranking: [],
-    editor: null,
-    puedeReintentar: false,
+    hud: crearHud(raiz),
+    sim,
+    rng,
+    entrada: entradaVacia(),
+    estado: 'START',
+    menu: false,
+    modal: null,
     girando: false,
-    congeladoHasta: 0,
     ultimoHud: 0,
-    reducirMovimiento: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
-    audio: crearAudioMiller(CONFIG.audio[modo]),
+    ultimoNombre: CONFIG.ranking.nombrePorDefecto,
+    audio: new SynthAudio(),
+    musica: crearMusica(URL_MUSICA, CONFIG.defaultMusicVolume),
     game: null,
-    escena: null,
-    temporizadores: [],
     limpiezas: [],
+    // Pantalla que queda debajo de un modal (ranking o manual).
+    pantallasBase: () => ({ START: ['inicio'], VICTORY: ['victoria'], GAME_OVER: ['fallo'] })[s.estado] ?? (s.menu ? ['menu'] : []),
   };
   sesion = s;
 
-  if (modo === 'tactil') {
-    s.mandos = conectarControles(raiz, {
-      alCambiar: (acciones) => {
-        s.tactiles = acciones;
-      },
-      alTocar: () => s.audio.reanudar(),
-      acciones: accionesDe(CONFIG.teclas),
-    });
-    s.limpiezas.push(s.mandos.limpiar);
-  }
+  s.hud.mostrar('inicio');
+  pintar(s, true);
+  raiz.querySelector('[data-accion="pantalla"]').hidden = !pantalla.soportada();
 
-  raiz.querySelector('[data-accion="mute"]')?.setAttribute('aria-pressed', String(s.audio.estaMuteado()));
-  const { entradas } = leerRanking(almacenamiento(), CONFIG);
-  ui.pintarRanking('intro', filasRanking(entradas, -1, CONFIG, { completar: false }));
-  const depurarSprites = parametros.get('debug') === 'sprites';
-  ui.mostrar(depurarSprites ? 'ninguna' : 'intro');
-  ui.pintarPantalla(false);
-  ui.pintarHud(lecturasHud(s.partida, CONFIG));
-
-  if (modo === 'tactil') {
-    evaluarGiro(s);
-    escuchar(s, window.matchMedia('(orientation: portrait)'), 'change', () => evaluarGiro(s));
-  }
-  escuchar(s, window, 'resize', () => {
-    if (modo === 'tactil') evaluarGiro(s);
-    ajustarEscala(s);
-  });
   escuchar(s, window, 'keydown', (e) => alPresionar(s, e));
   escuchar(s, window, 'keyup', (e) => alSoltar(s, e));
   escuchar(s, raiz, 'click', (e) => alClic(s, e));
-  escuchar(s, window, 'blur', () => pausarPartida(s));
-  escuchar(s, document, 'fullscreenchange', () => {
-    alCambiarPantalla(s);
-    ajustarEscala(s);
+  escuchar(s, raiz.querySelector('[data-guardar]'), 'submit', (e) => guardarNombre(s, e));
+  escuchar(s, window, 'blur', () => {
+    s.entrada = entradaVacia();
+    alternarMenu(s, true);
   });
   escuchar(s, document, 'visibilitychange', () => {
-    if (document.hidden) pausarPartida(s);
+    if (document.hidden) alternarMenu(s, true);
   });
+  conectarPuntero(s);
+  if (modo === 'tactil') {
+    s.limpiezas.push(
+      conectarTactil(raiz, {
+        obtenerSim: () => s.sim,
+        alGesto: () => s.audio.resume(),
+        acciones: {
+          abordar: () => abordar(s.sim),
+          emp: () => detonarEmp(s.sim),
+          misil: () => dispararMisil(s.sim),
+        },
+      }),
+    );
+    evaluarGiro(s);
+    escuchar(s, window, 'resize', () => evaluarGiro(s));
+    escuchar(s, window.matchMedia('(orientation: portrait)'), 'change', () => evaluarGiro(s));
+  }
+
+  if (new URLSearchParams(location.search).has('autoplay')) iniciar(s);
 
   try {
-    await crearJuego(s, depurarSprites);
+    await crearJuego(s);
   } catch (err) {
     console.error('[miller] no se pudo cargar el motor del simulador:', err);
-    if (sesion === s) {
-      ui.mostrar('aviso');
-      raiz.querySelector('[data-pantalla="aviso"] a')?.focus({ preventScroll: true });
-    }
+    if (sesion === s) s.hud.mostrar('aviso');
   }
 }
 
@@ -486,24 +356,18 @@ export function unmount() {
   const s = sesion;
   if (!s) return;
   sesion = null; // primero: un import() en vuelo vera que la sesion ya no es la suya
-  s.temporizadores.forEach(clearTimeout);
-  s.ui.cancelar();
+  s.hud.cancelar();
   if (pantalla.estaActiva(s.raiz)) pantalla.salir();
   delete s.raiz.dataset.cabina;
-  if (s.game) {
-    s.game.destroy(true);
-    s.game = null;
-  }
-  s.escena = null;
-  s.limpiezas.forEach((limpiar) => limpiar());
+  s.game?.destroy(true);
+  s.game = null;
+  s.limpiezas.forEach((fn) => fn());
   s.limpiezas = [];
   s.audio.cerrar();
+  s.musica.cerrar();
 }
 
 if (typeof document !== 'undefined' && !window.__SWUP_ROUTER_ACTIVE__) {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => mount());
-  } else {
-    mount();
-  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => mount());
+  else mount();
 }

@@ -1,75 +1,46 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { CONFIG, PALETA_PIXEL, ANIM } from '../js/minijuegos/miller/config.js';
+import { CONFIG, PALETA_PIXEL, ANIM, TOKENS_HUD } from '../js/minijuegos/miller/config.js';
 
-const congeladoProfundo = (obj) =>
-  Object.isFrozen(obj) && Object.values(obj).every((v) => v === null || typeof v !== 'object' || congeladoProfundo(v));
+const congeladoProfundo = (o) => Object.isFrozen(o) && Object.values(o).every((v) => typeof v !== 'object' || v === null || congeladoProfundo(v));
 
-const ACCIONES = ['moverArriba', 'moverAbajo', 'moverIzquierda', 'moverDerecha', 'accion', 'pausa'];
-
-describe('miller/config.js — parametros del capitulo 2', () => {
-  test('CONFIG, PALETA_PIXEL y ANIM estan congelados en profundidad', () => {
-    assert.ok(congeladoProfundo(CONFIG));
-    assert.ok(congeladoProfundo(PALETA_PIXEL));
-    assert.ok(congeladoProfundo(ANIM));
+describe('miller/config.js — constants.ts del original', () => {
+  test('todo congelado', () => {
+    [CONFIG, PALETA_PIXEL, ANIM, TOKENS_HUD].forEach((o) => assert.ok(congeladoProfundo(o)));
   });
 
-  test('tiene todos los grupos del data-model', () => {
-    for (const grupo of ['nombres', 'teclas', 'mundo', 'jugador', 'ranger', 'baliza', 'restos', 'ola', 'despegue', 'caseRobot', 'dilatacion', 'puntaje', 'particulas', 'audio', 'ranking']) {
-      assert.ok(CONFIG[grupo], `falta CONFIG.${grupo}`);
-    }
-    assert.equal(CONFIG.pasoFijoS, 1 / 60);
-    assert.ok(CONFIG.deltaMaxS > 0);
+  test('los valores de juego son los del original', () => {
+    const esperado = {
+      baseCanvasWidth: 960, baseCanvasHeight: 540, stepMs: 1000 / 60, maxSubSteps: 5,
+      defaultMusicVolume: 0.5, defaultSfxVolume: 0.75,
+      playerBaseSpeed: 260, playerSprintSpeed: 370, playerAcceleration: 2300, waterDragCoeff: 4.0,
+      jumpVelocity: 350, gravity: 860, playerMaxHp: 100, slideSpeed: 460, slideDuration: 0.32,
+      waveInitialDistance: 2200, waveSpeedBase: 38, waveSpeedFlight: 115, waveMaxSpeed: 170,
+      liftoffHoldDuration: 1.2, landerTriggerRadius: 95, beaconPickupRadius: 58, caseTriggerRadius: 62,
+      debrisObstacleCount: 16, shipMaxSpeed: 460, shipBoostSpeed: 720, shipThrustAccel: 480, shipTurnRate: 3.0,
+      shipAirDrag: 0.95, shipBoardingRadius: 120, mission2TargetDistance: 10000, enduranceDockingRadius: 160,
+    };
+    for (const [k, v] of Object.entries(esperado)) assert.equal(CONFIG[k], v, k);
   });
 
-  test('las teclas mapean solo a acciones validas y cubren las seis', () => {
-    const valores = new Set(Object.values(CONFIG.teclas));
-    for (const v of valores) assert.ok(ACCIONES.includes(v), `accion invalida: ${v}`);
-    assert.equal(valores.size, ACCIONES.length);
-    assert.equal(CONFIG.teclas.KeyW, 'moverArriba');
-    assert.equal(CONFIG.teclas.Space, 'accion');
-    assert.equal(CONFIG.teclas.Escape, 'pausa');
+  test('paleta P0..P20 del original', () => {
+    assert.equal(Object.keys(PALETA_PIXEL).length, 21);
+    assert.equal(PALETA_PIXEL.P13, '#e8803b');
+    assert.equal(PALETA_PIXEL.P18, '#4fd0e0');
+    assert.equal(PALETA_PIXEL.P20, '#a855f7');
   });
 
-  test('paleta cerrada: hasta 20 colores y sin el teal de la cabina', () => {
-    const colores = Object.values(PALETA_PIXEL);
-    assert.ok(colores.length <= 20);
-    assert.ok(!colores.includes(0x4fd0e0));
-    assert.equal(PALETA_PIXEL.P15, 0xe8803b); // naranja Gargantua: baliza y llama
+  test('ANIM y TOKENS_HUD del original', () => {
+    assert.equal(ANIM.hitStopMs, 65);
+    assert.deepEqual({ ...ANIM.shake }, { leve: 1.5, medio: 3.5, fuerte: 6.0, decaimiento: 0.88 });
+    assert.equal(TOKENS_HUD.tealGlow, '#4fd0e0');
+    assert.equal(TOKENS_HUD.panelBg, '#0c2529');
   });
 
-  test('los pesos del puntaje suman 1 y los rangos son decrecientes', () => {
-    const suma = Object.values(CONFIG.puntaje.pesos).reduce((a, b) => a + b, 0);
-    assert.ok(Math.abs(suma - 1) < 1e-9);
-    const { S, A, B } = CONFIG.puntaje.rangos;
-    assert.ok(S > A && A > B && B > 0 && S <= CONFIG.puntaje.max);
-    assert.ok(CONFIG.puntaje.tMin < CONFIG.puntaje.tMax);
-  });
-
-  test('ranking propio de Miller, compatible con comun/logica/ranking.js', () => {
-    const r = CONFIG.ranking;
-    assert.equal(r.clave, 'interstellar:minijuegos:miller:ranking');
-    assert.equal(r.version, 1);
-    assert.equal(r.tope, 10);
-    assert.equal(r.largoNombre, 8);
-    assert.equal(r.nombrePorDefecto, 'RANGER');
-    assert.ok(r.alfabeto.includes('Ñ') && r.alfabeto.endsWith(' '));
-  });
-
-  test('geometria coherente: baliza dentro del mundo y lejos del Ranger', () => {
-    const { mundo, ranger, baliza, ola } = CONFIG;
-    assert.ok(baliza.ventanaX[0] > ranger.x + ranger.radio);
-    assert.ok(baliza.ventanaX[1] < mundo.ancho);
-    assert.ok(ola.xInicial > mundo.ancho && ola.distanciaRevelacion > ola.umbrales.cerca);
-    assert.ok(ola.umbrales.cerca > ola.umbrales.inminente);
-  });
-
-  test('la dilatacion es 7 anos por hora', () => {
-    assert.equal(CONFIG.dilatacion.anosPorHora, 7);
-  });
-
-  test('perfiles de audio y tope de particulas por modo', () => {
-    assert.ok(CONFIG.audio.teclado && CONFIG.audio.tactil);
-    assert.ok(CONFIG.particulas.tope.tactil < CONFIG.particulas.tope.teclado);
+  test('integracion con el sitio: ranking y dilatacion correcta', () => {
+    assert.equal(CONFIG.ranking.clave, 'interstellar:minijuegos:miller:ranking');
+    assert.equal(CONFIG.ranking.tope, 10);
+    assert.equal(CONFIG.ranking.largoNombre, 8);
+    assert.ok(Math.abs(CONFIG.horasTerrestresPorSegundo - 17.045) < 0.001);
   });
 });

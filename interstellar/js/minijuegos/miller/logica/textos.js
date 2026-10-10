@@ -1,0 +1,10 @@
+// Textos de los banners del original en espanol (language === 'es' en App.tsx).
+
+export const TEXTOS = Object.freeze({
+  fase1: ['FASE 01 // EXPLORACIÓN DE SUPERFICIE', 'RECUPERA LA BALIZA Y ABORDA EL RANGER [E]'],
+  baliza: ['¡BALIZA DE MILLER RECUPERADA!', '¡SUBE AL RANGER [E] PARA EL ASCENSO!'],
+  sistemas: ['¡SISTEMAS DE VUELO EN LÍNEA!', 'W: EMPUJE | A/D: VIRAR | SHIFT: BOOST | J: CAÑONES'],
+  fase2: ['FASE 02: ASCENSO ORBITAL HACIA EL ENDURANCE', 'WASD / FLECHAS: MOVER | ESPACIO / CLICK: DISPARAR | B: BOMBA EMP'],
+  colapso: ['¡COLAPSO ESTRUCTURAL!', 'SOPORTE VITAL Y PROPULSIÓN TERMINADOS'],
+  alcanzado: ['¡ALCANZADO POR LA OLA!', 'COLAPSO ESTRUCTURAL TOTAL'],
+});
