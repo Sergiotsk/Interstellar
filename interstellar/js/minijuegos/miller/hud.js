@@ -310,32 +310,17 @@ export function crearHud(raiz) {
     });
   }
 
-  // Tirada de la victoria: 5 pasos con los tiempos del original (300, 400, 400, 400 y 500 ms).
+  // Victoria: solo el puntaje total; al lado (o debajo) queda el Hall of Fame.
   function victoria(r, alTick) {
     cancelar();
-    const fila = (n) => raiz.querySelector(`[data-tirada="${n}"]`);
-    ['1', '2', '3', '4', 'total'].forEach((n) => {
-      fila(n).textContent = '---';
-    });
-    $('[data-sello]').hidden = true;
+    const total = $('[data-tirada="total"]');
+    total.textContent = '---';
     $('[data-guardar]').hidden = false;
     $('[data-guardado]').hidden = true;
-    const pasos = [
-      [300, () => { fila('1').textContent = `${r.missionTime}s`; alTick('playTallyTick', true); }],
-      [700, () => { fila('2').textContent = `${r.earthYearsLost} yrs`; alTick('playTallyTick', true); }],
-      [1100, () => { fila('3').textContent = String(r.aerialInterceptorsDowned + r.enemiesDestroyed); alTick('playTallyTick', true); }],
-      [1500, () => {
-        fila('4').textContent = '100% PERFECT LOCK';
-        fila('total').textContent = String(r.finalScore);
-        alTick('playTallyTick', true);
-      }],
-      [2000, () => {
-        texto('rango', r.rank);
-        $('[data-sello]').hidden = false;
-        alTick('playBannerImpact');
-      }],
-    ];
-    pasos.forEach(([ms, fn]) => programar(fn, ms));
+    programar(() => {
+      total.textContent = String(r.finalScore);
+      alTick('playBannerImpact');
+    }, 500);
     mostrar('victoria');
   }
 
@@ -361,18 +346,21 @@ export function crearHud(raiz) {
     mostrar('fallo');
   }
 
+  // El ranking vive en el modal y en la pantalla de victoria: se pintan las dos tablas.
   function pintarHall(filas) {
-    $('[data-hall]').replaceChildren(
-      ...filas.map((f, i) => {
-        const tr = document.createElement('tr');
-        [String(i + 1), f.nombre, f.anos, f.rango || 'A', String(f.puntaje)].forEach((t) => {
-          const td = document.createElement('td');
-          td.textContent = t;
-          tr.append(td);
-        });
-        return tr;
-      }),
-    );
+    raiz.querySelectorAll('[data-hall]').forEach((tbody) => {
+      tbody.replaceChildren(
+        ...filas.map((f, i) => {
+          const tr = document.createElement('tr');
+          [String(i + 1), f.nombre, f.anos, f.rango || 'A', String(f.puntaje)].forEach((t) => {
+            const td = document.createElement('td');
+            td.textContent = t;
+            tr.append(td);
+          });
+          return tr;
+        }),
+      );
+    });
   }
 
   function pintarMutes({ sfx, bgm }) {
