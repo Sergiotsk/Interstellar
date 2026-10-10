@@ -114,7 +114,7 @@ description: "Task list — 011 v2: réplica fiel de Miller's Wave Escape"
 ## Phase 5: Audio, táctil e integración
 
 - [X] T020 `audio-miller.js`: `SynthAudio` + `playPowerupChime`, `playVictoryFanfare`, `playDefeatMotif` y el rumor de la ola; música mp3 en loop; vaciar `sim.sonidos`.
-- [~] T021 Táctil: D-pad y grupos de acciones por fase, aviso de giro, pantalla completa y cabina (`data-cabina`).
+- [X] T021 Táctil: D-pad y grupos de acciones por fase, aviso de giro, pantalla completa y cabina (`data-cabina`).
 - [X] T022 Pausa por visibilidad y foco; `unmount` limpio; 10 ciclos de swup.
 - [X] T023 Notas de código en `docs/20-notas-de-codigo/minijuegos-miller.md` (local) y `quickstart` completo; `pnpm test` en verde.
 

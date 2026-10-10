@@ -19,6 +19,7 @@ export function conectarTactil(raiz, { obtenerSim, alGesto, acciones }) {
     };
     escuchar(boton, 'pointerdown', (e) => {
       e.preventDefault();
+      if (boton.hasPointerCapture?.(e.pointerId)) boton.releasePointerCapture(e.pointerId);
       alGesto();
       boton.setAttribute('data-activo', '');
       obtenerSim().touchDir = { x, y, active: true };
@@ -33,6 +34,7 @@ export function conectarTactil(raiz, { obtenerSim, alGesto, acciones }) {
     escuchar(boton, 'pointerdown', (e) => {
       e.preventDefault();
       e.stopPropagation();
+      if (boton.hasPointerCapture?.(e.pointerId)) boton.releasePointerCapture(e.pointerId);
       alGesto();
       boton.setAttribute('data-activo', '');
       const sim = obtenerSim();

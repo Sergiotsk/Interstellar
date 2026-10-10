@@ -64,6 +64,13 @@ function pintar(s, forzar = false) {
   s.hud.pintar(s.sim, s.estado, CONFIG, { menu: s.menu, tactil: s.modo === 'tactil', puntajeFinal: s.sim.fin?.resultado.finalScore ?? null });
 }
 
+// Pantalla completa siempre que haya un gesto, y bloqueo horizontal en tactil (010 R5).
+function entrarPantalla(s) {
+  const pedido = pantalla.entrar(s.raiz);
+  if (s.modo === 'tactil') pedido.then((ok) => ok && pantalla.bloquearHorizontal());
+  return pedido;
+}
+
 // initGame del original.
 function iniciar(s) {
   s.hud.cancelar();
@@ -79,7 +86,7 @@ function iniciar(s) {
   s.hud.mostrar();
   actualizarMusica(s);
   pintar(s, true);
-  if (s.modo === 'tactil' && !pantalla.estaActiva(s.raiz)) pantalla.entrar(s.raiz).then((ok) => ok && pantalla.bloquearHorizontal());
+  entrarPantalla(s);
   s.lienzo.focus({ preventScroll: true });
 }
 
@@ -130,6 +137,7 @@ function paso(s, dt) {
 
 // Handlers de teclado del original: useInput (movimiento y confirmar) + el listener global de App.
 function alPresionar(s, e) {
+  if (s.girando) return;
   if (e.target.closest?.('input')) return;
   s.audio.resume();
 
@@ -140,6 +148,7 @@ function alPresionar(s, e) {
   }
   if (s.estado === 'GAME_OVER' && [' ', 'Enter', 'r', 'R'].includes(e.key)) {
     e.preventDefault();
+    entrarPantalla(s);
     iniciar(s);
     return;
   }
@@ -187,16 +196,23 @@ function alSoltar(s, e) {
 }
 
 function alClic(s, e) {
+  if (s.girando) return;
   const boton = e.target.closest('[data-accion]');
   if (!boton) return;
   s.audio.resume();
   const accion = boton.dataset.accion;
-  if (accion === 'iniciar' || accion === 'reintentar') iniciar(s);
+  if (accion === 'iniciar' || accion === 'reintentar') {
+    entrarPantalla(s);
+    iniciar(s);
+  }
   if (accion === 'manual') abrirModal(s, 'manual');
   if (accion === 'ranking') abrirModal(s, 'ranking');
   if (accion === 'cerrar') cerrarModal(s);
   if (accion === 'menu') alternarMenu(s, true);
-  if (accion === 'reanudar') alternarMenu(s, false);
+  if (accion === 'reanudar') {
+    entrarPantalla(s);
+    alternarMenu(s, false);
+  }
   if (accion === 'sfx') s.audio.toggleMute();
   if (accion === 'bgm') {
     s.musica.alternarMute();
@@ -216,7 +232,7 @@ function alClic(s, e) {
   if (accion === 'arma') cambiarArma(s.sim, 'pulse');
   if (accion === 'pantalla') {
     if (pantalla.estaActiva(s.raiz)) pantalla.salir();
-    else pantalla.entrar(s.raiz);
+    else entrarPantalla(s);
   }
   vaciarSonidos(s);
 }
@@ -239,6 +255,7 @@ function conectarPuntero(s) {
     s.entrada.pointerDown = abajo;
   };
   escuchar(s, s.lienzo, 'pointerdown', (e) => {
+    if (s.girando) return;
     s.audio.resume();
     s.lienzo.setPointerCapture?.(e.pointerId);
     presionar(true)();
@@ -261,7 +278,24 @@ function evaluarGiro(s) {
   if (girar === s.girando) return;
   s.girando = girar;
   s.raiz.querySelector('[data-aviso-giro]').hidden = !girar;
-  if (girar) alternarMenu(s, true);
+  if (girar) {
+    if (s.estado === 'PLAYING') alternarMenu(s, true);
+    s.entrada = entradaVacia();
+    s.audio.stopWaveRumble?.();
+  } else {
+    actualizarDims(s);
+  }
+}
+
+function alCambiarPantalla(s) {
+  const activa = pantalla.estaActiva(s.raiz);
+  if (!activa && s.estado === 'PLAYING' && !s.menu) {
+    alternarMenu(s, true);
+  }
+  requestAnimationFrame(() => {
+    actualizarDims(s);
+    setTimeout(() => actualizarDims(s), 100);
+  });
 }
 
 async function crearJuego(s) {
@@ -333,8 +367,11 @@ export async function mount() {
     s.entrada = entradaVacia();
     alternarMenu(s, true);
   });
-  escuchar(s, window, 'resize', () => actualizarDims(s));
-  escuchar(s, document, 'fullscreenchange', () => requestAnimationFrame(() => actualizarDims(s)));
+  escuchar(s, window, 'resize', () => {
+    evaluarGiro(s);
+    actualizarDims(s);
+  });
+  escuchar(s, document, 'fullscreenchange', () => alCambiarPantalla(s));
   escuchar(s, document, 'visibilitychange', () => {
     if (document.hidden) alternarMenu(s, true);
   });
@@ -352,8 +389,16 @@ export async function mount() {
       }),
     );
     evaluarGiro(s);
-    escuchar(s, window, 'resize', () => evaluarGiro(s));
-    escuchar(s, window.matchMedia('(orientation: portrait)'), 'change', () => evaluarGiro(s));
+    escuchar(s, window.matchMedia('(orientation: portrait)'), 'change', () => {
+      evaluarGiro(s);
+      actualizarDims(s);
+    });
+    if (typeof screen !== 'undefined' && screen.orientation) {
+      escuchar(s, screen.orientation, 'change', () => {
+        evaluarGiro(s);
+        actualizarDims(s);
+      });
+    }
   }
 
   actualizarDims(s);
