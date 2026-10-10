@@ -22,6 +22,7 @@ const PAGE_MODULES = {
   'creditos.html': () => import('./creditos.js'),
   'contacto.html': () => import('./contacto.js'),
   'minijuego-acople.html': () => import('./minijuegos/acople/main.js'),
+  'minijuego-miller.html': () => import('./minijuegos/miller/main.js'),
   'mundos-tierra.html': async () => {
     const p = await import('./mundo-portada.js');
     const f = await import('./filmstrip.js');
@@ -123,6 +124,7 @@ const HOJAS_ESTILO_SITIO = [
   'css/contacto.css',
   'css/en-desarrollo.css',
   'css/minijuegos.css',
+  'css/minijuego-miller.css',
 ];
 
 export function precargarHojasDeEstilo() {

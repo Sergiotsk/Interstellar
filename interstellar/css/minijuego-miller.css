@@ -1,0 +1,1188 @@
+/* css/minijuego-miller.css - capitulo 2 "Miller's Wave Escape": estilos del prototipo del Playground
+   (clases de Tailwind del JSX original) traducidos a CSS propio. Todo vive bajo .juego-miller. */
+
+/* 0. Pagina sin scroll: header, juego y pie caben en la ventana (mismo criterio que el hub).
+   :has() cubre la navegacion con swup, que no cambia las clases del body */
+body:has(.juego-miller),
+body.pagina-miller {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+body:has(.juego-miller) main,
+body.pagina-miller main {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+body:has(.juego-miller) .pie-secciones-marco,
+body.pagina-miller .pie-secciones-marco {
+  display: none !important;
+}
+
+/* 1. Tokens del original (TOKENS_HUD de constants.ts) */
+.juego-miller {
+  --mw-panel: #0c2529;
+  --mw-panel-oscuro: #071517;
+  --mw-bezel: #3d454c;
+  --mw-pista: #1b2528;
+  --mw-teal: #4fd0e0;
+  --mw-teal-hover: #38b9c8;
+  --mw-cian: #7ee7f8;
+  --mw-ambar: #e0a94a;
+  --mw-rojo: #d0453a;
+  --mw-naranja: #e8803b;
+  --mw-crema: #efe7d6;
+  --mw-violeta: #a855f7;
+  --mw-abismo: #0a0e1a;
+  --mw-mono: 'Share Tech Mono', 'Courier New', monospace;
+  --mw-banner: 'Orbitron', 'Exo 2', 'Impact', sans-serif;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--mw-abismo);
+  color: #ffffff;
+  font-family: var(--mw-mono);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.juego-miller [hidden] {
+  display: none !important;
+}
+
+/* Modo de entrada: bloques data-solo visibles solo en su modo */
+.juego-miller:not([data-entrada='tactil']) [data-solo='tactil'],
+.juego-miller[data-entrada='tactil'] [data-solo='teclado'] {
+  display: none !important;
+}
+
+.juego-miller p {
+  margin: 0;
+}
+
+.juego-miller button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.mw-licencia {
+  display: inline-block;
+  margin-left: 0.35rem;
+  padding: 0 0.35rem;
+  font-family: var(--font-texto);
+  font-size: 0.6rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+  color: var(--color-texto-atenuado);
+  border: 1px solid color-mix(in srgb, var(--mw-crema) 25%, transparent);
+  vertical-align: middle;
+}
+
+/* 2. HUD flotante: paneles en las esquinas del canvas (hud.js alinea la capa al canvas) */
+.mw-hud {
+  position: absolute;
+  z-index: 20;
+  font-size: clamp(0.62rem, 1.05vw, 0.85rem);
+  pointer-events: none;
+}
+
+.mw-hud button {
+  pointer-events: auto;
+}
+
+.mw-panel-hud {
+  position: absolute;
+  margin: 0;
+  padding: 0.4em 0.65em;
+  background: rgba(7, 21, 23, 0.62);
+  border: 1px solid rgba(79, 208, 224, 0.35);
+  clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+  backdrop-filter: blur(2px);
+}
+
+.mw-hud-etiqueta {
+  font-size: 0.72em;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(79, 208, 224, 0.75);
+}
+
+.mw-hud-etiqueta--naranja { color: var(--mw-naranja); }
+.mw-hud-etiqueta--violeta { color: var(--mw-violeta); }
+
+.mw-hud-puntaje {
+  top: 0.6em;
+  left: 0.6em;
+}
+
+.mw-hud-score {
+  display: flex;
+  align-items: center;
+  gap: 0.45em;
+  font-size: 1.55em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+  color: var(--mw-teal);
+  text-shadow: 0 0 8px rgba(79, 208, 224, 0.5);
+}
+
+.mw-hud-tierra {
+  font-size: 0.85em;
+  color: var(--mw-ambar);
+  font-variant-numeric: tabular-nums;
+}
+
+.mw-hud-tierra .mw-hud-etiqueta {
+  color: rgba(224, 169, 74, 0.8);
+}
+
+.mw-hud-objetivo {
+  top: 0.6em;
+  left: 50%;
+  text-align: center;
+  transform: translateX(-50%);
+}
+
+.mw-hud-objetivo-texto {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  color: var(--mw-crema);
+}
+
+.mw-rombo {
+  color: var(--mw-naranja);
+}
+
+.mw-hud[data-baliza-asegurada] .mw-hud-objetivo-texto {
+  color: var(--mw-naranja);
+  animation: mw-pulso 2s ease-in-out infinite;
+}
+
+.mw-hud-ascenso {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  margin-top: 0.3em;
+}
+
+.mw-progreso {
+  width: 10em;
+  height: 0.55em;
+  overflow: hidden;
+  background: var(--mw-pista);
+  border: 1px solid var(--mw-bezel);
+}
+
+.mw-progreso span {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(to right, var(--mw-naranja), var(--mw-teal), var(--mw-cian));
+}
+
+.mw-altitud {
+  font-size: 0.85em;
+  font-weight: 900;
+  color: var(--mw-teal);
+  font-variant-numeric: tabular-nums;
+}
+
+.mw-combo {
+  padding: 0.05em 0.35em;
+  font-size: 0.55em;
+  font-weight: 900;
+  color: #000000;
+  background: var(--mw-naranja);
+  border-radius: 0.2em;
+}
+
+.mw-hud-botones {
+  position: absolute;
+  top: 0.6em;
+  right: 0.6em;
+  display: flex;
+  gap: 0.4em;
+}
+
+.mw-boton-hud {
+  padding: 0.35em 0.75em;
+  font-size: 0.85em;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--mw-teal);
+  background: rgba(7, 21, 23, 0.72);
+  border: 1px solid var(--mw-teal);
+  box-shadow: 0 0 10px rgba(79, 208, 224, 0.25);
+}
+
+.mw-boton-hud:hover {
+  background: #12282c;
+}
+
+.mw-hud-vitales {
+  bottom: 0.6em;
+  left: 0.6em;
+  display: grid;
+  gap: 0.3em;
+}
+
+.mw-hud-vitales > div {
+  display: grid;
+  gap: 0.3em;
+}
+
+.mw-hud-fila {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.mw-hud-fila .mw-hud-etiqueta {
+  min-width: 4.2em;
+}
+
+.mw-segmentos {
+  display: flex;
+  gap: 2px;
+}
+
+.mw-segmentos i {
+  width: 0.55em;
+  height: 0.85em;
+  background: rgba(79, 208, 224, 0.15);
+  transform: skewX(-15deg);
+}
+
+.mw-segmentos i[data-lleno] {
+  background: var(--mw-teal);
+  box-shadow: 0 0 4px rgba(79, 208, 224, 0.6);
+}
+
+.mw-hud[data-traje-alerta] .mw-segmentos i[data-lleno] {
+  background: var(--mw-rojo);
+  box-shadow: 0 0 4px rgba(208, 69, 58, 0.7);
+  animation: mw-pulso 1s ease-in-out infinite;
+}
+
+.mw-hud[data-traje-alerta] [data-hud-traje-icono] {
+  color: var(--mw-rojo);
+}
+
+.mw-hud-vitales output {
+  font-weight: 700;
+  color: var(--mw-crema);
+  font-variant-numeric: tabular-nums;
+}
+
+.mw-hud-arma {
+  font-weight: 700;
+  color: var(--mw-teal);
+}
+
+.mw-barrita {
+  display: block;
+  width: 8em;
+  height: 0.55em;
+  background: var(--mw-pista);
+  border: 1px solid var(--mw-bezel);
+}
+
+.mw-barrita-relleno {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.mw-barrita-relleno--teal { background: var(--mw-teal); }
+.mw-barrita-relleno--naranja { background: var(--mw-naranja); }
+
+.mw-canon {
+  font-weight: 900;
+  color: var(--mw-violeta);
+}
+
+.mw-hud-municion {
+  gap: 0.4em;
+}
+
+.mw-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  padding: 0.15em 0.55em;
+  font-size: 0.85em;
+  font-weight: 700;
+}
+
+.mw-chip kbd {
+  padding: 0 0.3em;
+  font-family: inherit;
+  font-size: 0.85em;
+  border: 1px solid currentColor;
+}
+
+.mw-chip--naranja {
+  color: var(--mw-naranja);
+  background: rgba(12, 37, 41, 0.85);
+  border: 1px solid var(--mw-naranja);
+}
+
+.mw-chip--violeta {
+  color: var(--mw-violeta);
+  background: rgba(59, 7, 100, 0.85);
+  border: 1px solid var(--mw-violeta);
+}
+
+.mw-hud-radar {
+  right: 0.6em;
+  bottom: 0.6em;
+  padding: 0.3em;
+  text-align: center;
+}
+
+.mw-hud-radar canvas {
+  display: block;
+  width: clamp(96px, 11vw, 140px);
+  height: auto;
+}
+
+.mw-hud-radar figcaption {
+  margin-top: 0.15em;
+  font-size: 0.62em;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(79, 208, 224, 0.75);
+}
+
+.mw-hud-ayuda {
+  position: absolute;
+  bottom: 0.8em;
+  left: 50%;
+  margin: 0;
+  padding: 0.35em 0.85em;
+  font-size: 0.8em;
+  white-space: nowrap;
+  color: color-mix(in srgb, var(--mw-crema) 85%, transparent);
+  background: rgba(7, 21, 23, 0.72);
+  border: 1px solid rgba(79, 208, 224, 0.25);
+  transform: translateX(-50%);
+}
+
+/* Barra del jefe (la usa la Fase 2) */
+.mw-medidor {
+  display: block;
+  height: 0.625rem;
+  background: var(--mw-pista);
+  border: 1px solid var(--mw-bezel);
+}
+
+.mw-medidor--jefe {
+  width: 100%;
+  height: 0.75rem;
+}
+
+.mw-relleno {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.mw-relleno--jefe { background: linear-gradient(to right, var(--mw-naranja), var(--mw-rojo)); transition: width 0.15s; }
+
+/* En tactil los controles ocupan las esquinas de abajo: vitales y radar suben */
+.juego-miller[data-entrada='tactil'] .mw-hud-vitales {
+  top: 5.2em;
+  bottom: auto;
+}
+
+.juego-miller[data-entrada='tactil'] .mw-hud-radar {
+  top: 3.2em;
+  bottom: auto;
+}
+
+.juego-miller[data-entrada='tactil'] .mw-hud-radar canvas {
+  width: 92px;
+}
+
+/* 4. Visor: el canvas de Phaser con Scale.FIT ocupa todo el juego */
+.mw-visor {
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 0;
+  background: var(--mw-abismo);
+}
+
+.mw-lienzo {
+  width: 100%;
+  height: 100%;
+}
+
+.mw-lienzo:focus {
+  outline: none;
+}
+
+.mw-lienzo canvas {
+  border: 1px solid var(--mw-bezel);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.mw-jefe {
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  z-index: 30;
+  width: 20rem;
+  padding: 0.5rem;
+  text-align: center;
+  transform: translateX(-50%);
+  background: color-mix(in srgb, var(--mw-panel-oscuro) 90%, transparent);
+  border: 2px solid var(--mw-rojo);
+  box-shadow: 0 0 20px rgba(208, 69, 58, 0.6);
+}
+
+.mw-jefe p {
+  margin-bottom: 0.25rem;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mw-rojo);
+}
+
+.mw-abordar {
+  position: absolute;
+  top: 33%;
+  left: 50%;
+  z-index: 30;
+  padding: 0.5rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mw-teal);
+  background: var(--mw-panel);
+  border: 2px solid var(--mw-teal);
+  border-radius: 0.25rem;
+  box-shadow: 0 0 20px rgba(79, 208, 224, 0.6);
+  animation: mw-rebote 1s infinite;
+}
+
+.mw-banner {
+  position: absolute;
+  top: 25%;
+  left: 50%;
+  z-index: 30;
+  padding: 0.75rem 2rem;
+  text-align: center;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  background: color-mix(in srgb, var(--mw-panel) 95%, transparent);
+  border: 2px solid var(--mw-teal);
+  box-shadow: 0 0 30px rgba(79, 208, 224, 0.5);
+}
+
+.mw-banner[data-parpadeo] {
+  animation: mw-pulso 2s ease-in-out infinite;
+}
+
+.mw-banner-texto {
+  font-family: var(--mw-banner);
+  font-size: clamp(1.25rem, 3vw, 1.875rem);
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.mw-banner-sub {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--mw-crema);
+}
+
+.mw-banner-sub:empty {
+  display: none;
+}
+
+.mw-cuenta {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.mw-cuenta-numero {
+  font-family: var(--mw-banner);
+  font-size: 4.5rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  color: var(--mw-teal);
+  transform: scale(1.25);
+}
+
+.mw-cuenta-sub {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mw-ambar);
+}
+
+/* 5. Controles tactiles del original */
+.mw-tactil {
+  position: absolute;
+  inset: auto 0 0 0;
+  z-index: 30;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 1rem calc(1rem + env(safe-area-inset-right)) calc(1rem + env(safe-area-inset-bottom)) calc(1rem + env(safe-area-inset-left));
+  pointer-events: none;
+  touch-action: none;
+}
+
+.mw-dpad {
+  display: grid;
+  grid-template-columns: repeat(3, 3rem);
+  gap: 0.25rem;
+  padding: 0.5rem;
+  pointer-events: auto;
+  background: color-mix(in srgb, var(--mw-panel) 90%, transparent);
+  border: 1px solid var(--mw-bezel);
+}
+
+.mw-tecla-dpad,
+.mw-tecla-accion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+.mw-tecla-dpad {
+  width: 3rem;
+  height: 3rem;
+  color: var(--mw-teal);
+  background: var(--mw-panel-oscuro);
+  border: 1px solid var(--mw-teal);
+}
+
+.mw-tecla-dpad[data-activo],
+.mw-tecla-accion[data-activo] {
+  color: #000000;
+  background: var(--mw-teal);
+}
+
+.mw-acciones-tactil {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  pointer-events: auto;
+}
+
+.mw-tecla-accion {
+  width: 3.25rem;
+  height: 3.25rem;
+  font-size: 0.75rem;
+  color: var(--mw-teal);
+  background: var(--mw-panel-oscuro);
+  border: 1px solid var(--mw-teal);
+}
+
+.mw-tecla-accion span {
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.mw-tecla-accion--saltar {
+  border-width: 2px;
+}
+
+.mw-tecla-accion--abordar {
+  background: var(--mw-panel);
+  border-width: 2px;
+  animation: mw-pulso 2s ease-in-out infinite;
+}
+
+.mw-tecla-accion--fuego {
+  width: 3.75rem;
+  height: 3.75rem;
+  color: #ffffff;
+  background: var(--mw-rojo);
+  border: 2px solid var(--mw-crema);
+  box-shadow: 0 0 15px rgba(208, 69, 58, 0.5);
+}
+
+.mw-tecla-accion--grande {
+  width: 4rem;
+  height: 4rem;
+}
+
+.mw-tecla-accion--emp {
+  color: var(--mw-violeta);
+  background: #3b0764;
+  border-color: var(--mw-violeta);
+}
+
+.mw-tecla-accion--misil {
+  color: var(--mw-naranja);
+  border-color: var(--mw-naranja);
+}
+
+.mw-tecla-accion--fuego[data-activo] {
+  color: #000000;
+  background: #ffffff;
+}
+
+/* 6. Pantallas: el MenuOverlay del original (fondo translucido y panel centrado) */
+.mw-capa {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  overflow-y: auto;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.7);
+  touch-action: auto;
+}
+
+.mw-capa--victoria { background: rgba(6, 78, 59, 0.8); }
+.mw-capa--peligro { background: rgba(127, 29, 29, 0.8); }
+.mw-capa--menu { z-index: 50; }
+.mw-capa--modal { z-index: 60; }
+
+.mw-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  max-width: 28rem;
+  margin: auto;
+  padding: 1.5rem;
+  text-align: left;
+  color: var(--mw-crema);
+  background: var(--mw-panel);
+  border: 2px solid var(--mw-bezel);
+}
+
+.mw-panel--inicio { max-width: 32rem; box-shadow: 0 0 50px rgba(79, 208, 224, 0.25); }
+.mw-panel--victoria { max-width: 32rem; border-color: var(--mw-teal); box-shadow: 0 0 50px rgba(79, 208, 224, 0.3); }
+.mw-panel--fallo { border-color: var(--mw-rojo); box-shadow: 0 0 50px rgba(208, 69, 58, 0.4); }
+.mw-panel--menu { max-width: 24rem; }
+.mw-panel--ranking { border-color: var(--mw-ambar); }
+.mw-panel--manual { border-color: var(--mw-teal); }
+
+.mw-panel-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-bottom: 1px solid var(--mw-bezel);
+}
+
+.mw-cabecera-teal { color: var(--mw-teal); letter-spacing: 0.1em; }
+.mw-cabecera-naranja { color: var(--mw-naranja); }
+.mw-cabecera-rojo { color: var(--mw-rojo); letter-spacing: 0.1em; text-transform: uppercase; }
+
+.mw-pulso {
+  display: inline-block;
+  animation: mw-pulso 2s ease-in-out infinite;
+}
+
+.mw-insignia {
+  padding: 0.125rem 0.5rem;
+  font-size: 10px;
+  color: var(--mw-ambar);
+  background: var(--mw-panel-oscuro);
+  border: 1px solid var(--mw-bezel);
+}
+
+.mw-titulo {
+  margin: 0;
+  font-family: var(--mw-banner);
+  font-size: clamp(1.5rem, 3vw, 1.875rem);
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--mw-crema);
+}
+
+.mw-titulo:focus {
+  outline: none;
+}
+
+.mw-titulo--rojo { color: var(--mw-rojo); }
+
+.mw-subtitulo {
+  margin: 0;
+  font-family: var(--mw-banner);
+  font-size: 1.125rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--mw-teal);
+}
+
+.mw-subtitulo--ambar { color: var(--mw-ambar); letter-spacing: 0.05em; }
+
+.mw-cita {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--mw-naranja);
+}
+
+.mw-caja {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--mw-crema);
+  background: var(--mw-panel-oscuro);
+  border: 1px solid var(--mw-bezel);
+}
+
+.mw-fuerte-teal { font-weight: 700; color: var(--mw-teal); text-transform: uppercase; }
+.mw-fuerte-naranja { font-weight: 700; color: var(--mw-naranja); text-transform: uppercase; }
+
+.mw-botonera {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mw-fila {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.mw-fila .mw-boton {
+  flex: 1;
+}
+
+.mw-boton {
+  padding: 0.625rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+}
+
+.mw-boton:focus-visible,
+.mw-boton-menu:focus-visible,
+.mw-chip:focus-visible,
+.mw-abordar:focus-visible,
+.mw-enlace:focus-visible,
+.mw-salir:focus-visible {
+  outline: 2px solid var(--mw-teal);
+  outline-offset: 2px;
+}
+
+.mw-boton--principal {
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: #000000;
+  background: var(--mw-teal);
+  box-shadow: 0 0 15px rgba(79, 208, 224, 0.4);
+}
+
+.mw-boton--principal:hover { background: var(--mw-teal-hover); }
+
+.mw-boton--secundario {
+  background: var(--mw-panel-oscuro);
+  border-color: var(--mw-bezel);
+}
+
+.mw-boton--secundario:hover { background: #12282c; }
+.mw-boton--teal { color: var(--mw-teal); }
+.mw-boton--ambar { color: var(--mw-ambar); }
+
+.mw-boton--ambar:not(.mw-boton--secundario) {
+  color: #000000;
+  background: var(--mw-ambar);
+}
+
+.mw-boton--neutro {
+  color: var(--mw-crema);
+  background: var(--mw-panel-oscuro);
+  border-color: var(--mw-bezel);
+}
+
+.mw-boton--ambar-borde {
+  color: var(--mw-ambar);
+  background: var(--mw-panel-oscuro);
+  border-color: var(--mw-ambar);
+}
+
+.mw-boton--peligro {
+  padding: 0.75rem 1rem;
+  color: #ffffff;
+  background: var(--mw-rojo);
+}
+
+.mw-boton--peligro:hover { background: #b03b2e; }
+
+.mw-boton--guardar {
+  color: #000000;
+  background: var(--mw-teal);
+}
+
+.mw-enlace {
+  align-self: flex-start;
+  padding: 0;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--mw-crema) 70%, transparent);
+  text-decoration: underline;
+  background: none;
+  border: 0;
+}
+
+.mw-salir {
+  font-size: 11px;
+  color: color-mix(in srgb, var(--mw-crema) 70%, transparent);
+  text-align: center;
+}
+
+/* Tirada del resultado */
+.mw-tirada div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.mw-tirada dt {
+  color: color-mix(in srgb, var(--mw-crema) 70%, transparent);
+  text-transform: uppercase;
+}
+
+.mw-tirada dd {
+  margin: 0;
+  font-weight: 700;
+  color: var(--mw-teal);
+  font-variant-numeric: tabular-nums;
+}
+
+.mw-tirada--ambar dt,
+.mw-tirada--ambar dd { color: var(--mw-ambar); }
+.mw-tirada--teal dt { color: var(--mw-teal); }
+
+.mw-tirada-total {
+  padding-top: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 900;
+  border-top: 1px solid var(--mw-bezel);
+}
+
+.mw-tirada-total dt { color: var(--mw-teal); }
+.mw-tirada-total dd { font-size: 1rem; }
+.mw-tirada-total--rojo dt { color: var(--mw-rojo); }
+
+.mw-sello {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background: var(--mw-panel-oscuro);
+  border: 1px solid var(--mw-naranja);
+}
+
+.mw-sello-etiqueta {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--mw-naranja);
+}
+
+.mw-sello-frase {
+  margin-top: 0.125rem;
+  font-size: 0.75rem;
+  font-style: italic;
+  color: var(--mw-crema);
+}
+
+.mw-rango {
+  padding: 0.25rem 0.75rem;
+  font-family: var(--mw-banner);
+  font-size: 2.25rem;
+  font-weight: 900;
+  color: var(--mw-naranja);
+  border: 2px solid var(--mw-naranja);
+  transform: rotate(-6deg);
+}
+
+.mw-guardar {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.mw-guardar input {
+  flex: 1;
+  padding: 0.25rem 0.5rem;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--mw-teal);
+  background: var(--mw-panel-oscuro);
+  border: 1px solid var(--mw-teal);
+}
+
+.mw-guardado {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--mw-teal);
+}
+
+.mw-reintento {
+  padding: 0.5rem 0;
+  text-align: center;
+  background: var(--mw-panel-oscuro);
+  border: 1px solid var(--mw-rojo);
+}
+
+.mw-reintento p {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--mw-crema) 70%, transparent);
+}
+
+.mw-reintento output {
+  font-size: 1.875rem;
+  font-weight: 900;
+  color: var(--mw-rojo);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Hall of Fame */
+.mw-tabla-caja {
+  max-height: 15rem;
+  overflow-y: auto;
+}
+
+.mw-tabla {
+  width: 100%;
+  font-size: 11px;
+  border-collapse: collapse;
+}
+
+.mw-tabla th {
+  padding: 0.25rem 0;
+  color: color-mix(in srgb, var(--mw-crema) 60%, transparent);
+  border-bottom: 1px solid var(--mw-bezel);
+}
+
+.mw-tabla td {
+  padding: 0.25rem 0;
+  text-align: center;
+  color: var(--mw-crema);
+  border-bottom: 1px solid var(--mw-pista);
+}
+
+.mw-tabla td:nth-child(1) { color: var(--mw-ambar); }
+.mw-tabla td:nth-child(2) { font-weight: 700; }
+.mw-tabla td:nth-child(3) { color: var(--mw-ambar); }
+.mw-tabla td:nth-child(4) { font-weight: 700; color: var(--mw-naranja); }
+.mw-tabla td:nth-child(5),
+.mw-tabla th.mw-derecha { text-align: right; }
+.mw-tabla td:nth-child(5) { font-weight: 700; color: var(--mw-teal); }
+
+.mw-manual {
+  display: grid;
+  gap: 0.5rem;
+}
+
+/* 7. Integracion con el sitio: pantalla completa, cabina tactil y aviso de giro */
+.juego-miller[data-cabina] {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  height: 100dvh;
+  min-height: 0;
+}
+
+.juego-miller:fullscreen {
+  width: 100%;
+  height: 100%;
+}
+
+/* Pantalla completa y cabina tactil: la escena ocupa todo y los instrumentos flotan encima (logica/visor.js) */
+.juego-miller:fullscreen .mw-visor,
+.juego-miller[data-cabina] .mw-visor {
+  position: absolute;
+  inset: 0;
+}
+
+.juego-miller:fullscreen .mw-lienzo canvas,
+.juego-miller[data-cabina] .mw-lienzo canvas {
+  border: 0;
+  box-shadow: none;
+}
+
+.mw-girar {
+  position: absolute;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  text-align: center;
+  background: var(--mw-abismo);
+  color: var(--mw-crema);
+}
+
+.mw-girar[hidden] {
+  display: none !important;
+}
+
+.mw-girar svg {
+  width: 4.5rem;
+  height: 4.5rem;
+  color: var(--mw-teal);
+  animation: mw-girar 2.4s ease-in-out infinite;
+}
+
+.mw-girar h2 {
+  margin: 0;
+  font-family: var(--mw-banner);
+  font-size: 1.2rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mw-teal);
+}
+
+.mw-girar p {
+  margin: 0;
+  max-width: 18rem;
+  color: var(--color-texto-atenuado);
+}
+
+.mw-intro-controles {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--mw-crema);
+  text-align: center;
+}
+
+.mw-intro-controles kbd {
+  display: inline-block;
+  padding: 0.1rem 0.35rem;
+  font-size: 0.7rem;
+  background: var(--mw-panel-oscuro);
+  border: 1px solid var(--mw-bezel);
+  border-radius: 2px;
+  color: var(--mw-teal);
+}
+
+/* 8. Pantallas angostas o bajas: el HUD y los paneles se compactan en horizontal */
+@media (max-width: 40rem), (max-height: 32rem) {
+  .mw-hud {
+    font-size: 0.6rem;
+  }
+
+  .mw-hud-tierra .mw-licencia {
+    display: none;
+  }
+
+  .mw-panel {
+    padding: 0.75rem 1rem;
+    gap: 0.5rem;
+    max-height: 96dvh;
+  }
+
+  .mw-panel--inicio,
+  .mw-panel--victoria,
+  .mw-panel--fallo {
+    max-width: 36rem;
+  }
+
+  .mw-titulo {
+    font-size: 1.25rem;
+  }
+
+  .mw-cita {
+    display: none;
+  }
+
+  .mw-caja {
+    padding: 0.5rem;
+    font-size: 0.75rem;
+  }
+}
+
+@keyframes mw-pulso {
+  50% { opacity: 0.5; }
+}
+
+@keyframes mw-girar {
+  0%, 20% { transform: rotate(0deg); }
+  50%, 70% { transform: rotate(-90deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes mw-ping {
+  75%, 100% { transform: scale(2); opacity: 0; }
+}
+
+@keyframes mw-rebote {
+  0%, 100% { transform: translate(-50%, -25%); animation-timing-function: cubic-bezier(0.8, 0, 1, 1); }
+  50% { transform: translate(-50%, 0); animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mw-led-ambar,
+  .mw-brujula,
+  .mw-ping,
+  .mw-abordar,
+  .mw-banner[data-parpadeo],
+  .mw-baliza[data-asegurada],
+  .mw-pulso,
+  .mw-tecla-accion--abordar {
+    animation: none;
+  }
+}

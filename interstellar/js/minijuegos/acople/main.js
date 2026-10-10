@@ -1,7 +1,7 @@
 // Modulo de pagina del simulador de acople: mount/unmount para swup, carga de Phaser y conexion logica-escena-DOM.
 // Ciclo de vida y cancelacion del import: docs/20-notas-de-codigo/minijuegos-acople.md
 import { CONFIG } from './config.js';
-import { accionDeTecla, presionar, soltar, soltarTodo } from './logica/acciones.js';
+import { accionDeTecla, presionar, soltar, soltarTodo } from '../comun/logica/acciones.js';
 import {
   crearPartida,
   iniciar,
@@ -15,15 +15,16 @@ import {
   nivelDeEstado,
   indicacionHud,
 } from './logica/mision.js';
-import { leerRanking, posicionEnRanking, insertarEntrada, guardarEnRanking } from './logica/ranking.js';
-import { crearEditor, textoEditor, teclaEditor, fijarCursor } from './logica/nombre-arcade.js';
-import { modoEntrada, requiereGiro } from './logica/dispositivo.js';
-import { levantarTodo, accionesTactiles } from './logica/controles-tactiles.js';
+import { leerRanking, posicionEnRanking, insertarEntrada, guardarEnRanking } from '../comun/logica/ranking.js';
+import { crearEditor, textoEditor, teclaEditor, fijarCursor } from '../comun/logica/nombre-arcade.js';
+import { modoEntrada, requiereGiro } from '../comun/logica/dispositivo.js';
+import { levantarTodo, accionesTactiles } from '../comun/logica/controles-tactiles.js';
 import { instrumentos } from './logica/instrumentos.js';
-import { crearOverlays, lecturasHud, filasRanking } from './overlays.js';
+import { crearOverlays, lecturasHud } from './overlays.js';
+import { filasRanking } from '../comun/logica/tabla-ranking.js';
 import { crearEscenaAcople } from './escena-acople.js';
 import { crearAudioAcople } from './audio-acople.js';
-import * as pantalla from './pantalla-completa.js';
+import * as pantalla from '../comun/pantalla-completa.js';
 import { conectarControles } from './controles-tactiles.js';
 
 const URL_PHASER = '../../vendor/phaser@4.2.1/phaser.esm.min.js';
@@ -314,7 +315,7 @@ function alPresionar(s, e) {
     if (!e.repeat) pedirAcople(s);
     return;
   }
-  const accion = accionDeTecla(e.code);
+  const accion = accionDeTecla(e.code, CONFIG.teclas);
   if (!accion) return;
   e.preventDefault();
   s.acciones = presionar(s.acciones, accion);
@@ -333,7 +334,7 @@ function pedirAcople(s) {
 }
 
 function alSoltar(s, e) {
-  const accion = accionDeTecla(e.code);
+  const accion = accionDeTecla(e.code, CONFIG.teclas);
   if (accion) s.acciones = soltar(s.acciones, accion);
 }
 

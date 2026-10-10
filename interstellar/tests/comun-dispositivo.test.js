@@ -1,8 +1,8 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { modoEntrada, requiereGiro } from '../js/minijuegos/acople/logica/dispositivo.js';
+import { modoEntrada, requiereGiro } from '../js/minijuegos/comun/logica/dispositivo.js';
 
-describe('acople/logica/dispositivo.js — modo de entrada (010 R1)', () => {
+describe('comun/logica/dispositivo.js — modo de entrada (010 R1)', () => {
   test('solo un puntero grueso sin ningun puntero fino es tactil', () => {
     assert.equal(modoEntrada({ punteroGrueso: true, algunPunteroFino: false }), 'tactil');
   });
@@ -25,7 +25,7 @@ describe('acople/logica/dispositivo.js — modo de entrada (010 R1)', () => {
   });
 });
 
-describe('acople/logica/dispositivo.js — aviso de giro (010 R6)', () => {
+describe('comun/logica/dispositivo.js — aviso de giro (010 R6)', () => {
   test('tactil en vertical pide girar; en horizontal o cuadrado no', () => {
     assert.equal(requiereGiro({ modo: 'tactil', ancho: 390, alto: 844 }), true);
     assert.equal(requiereGiro({ modo: 'tactil', ancho: 844, alto: 390 }), false);

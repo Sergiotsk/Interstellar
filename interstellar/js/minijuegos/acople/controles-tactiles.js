@@ -1,5 +1,9 @@
 // Glue de los mandos tactiles: Pointer Events -> mapa de dedos (logica/controles-tactiles.js). Ver 010 R2.
-import { tocar, levantar, levantarTodo } from './logica/controles-tactiles.js';
+import { CONFIG } from './config.js';
+import { accionesDe } from '../comun/logica/acciones.js';
+import { tocar, levantar, levantarTodo } from '../comun/logica/controles-tactiles.js';
+
+const ACCIONES = accionesDe(CONFIG.teclas);
 
 export function conectarControles(raiz, { alCambiar, alTocar }) {
   const botones = [...raiz.querySelectorAll('[data-control]')];
@@ -25,7 +29,7 @@ export function conectarControles(raiz, { alCambiar, alTocar }) {
     // El tactil captura el dedo en el boton de origen; sin soltarla, pointerleave no llega al salir.
     if (e.currentTarget.hasPointerCapture?.(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
     alTocar();
-    cambiar(tocar(toques, e.pointerId, e.currentTarget.dataset.control));
+    cambiar(tocar(toques, e.pointerId, e.currentTarget.dataset.control, ACCIONES));
   }
 
   function alLevantar(e) {

@@ -1,10 +1,7 @@
 // Dedos apoyados sobre los controles tactiles: Map pointerId -> accion, inmutable (010 R3, data-model "Toques").
-import { CONFIG } from '../config.js';
 
-export const ACCIONES_TACTILES = Object.freeze([...new Set(Object.values(CONFIG.teclas))]);
-
-export function tocar(mapa, id, accion) {
-  if (!ACCIONES_TACTILES.includes(accion)) return mapa;
+export function tocar(mapa, id, accion, acciones = []) {
+  if (!acciones.includes(accion)) return mapa;
   return new Map(mapa).set(id, accion);
 }
 
