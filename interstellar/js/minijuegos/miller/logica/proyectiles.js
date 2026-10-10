@@ -1,7 +1,8 @@
 // Proyectiles, impactos y caidas: pasos 8 y 9 del update() original (App.tsx 3936-4073), con rng inyectado.
-import { ANIM, PALETA_PIXEL } from '../config.js';
+import { ANIM, CONFIG, PALETA_PIXEL } from '../config.js';
 import { sonar, textoFlotante, mostrarBanner } from './efectos.js';
 import { aplicarDanio } from './danio.js';
+import { esFauna } from './fauna.js';
 
 const ORBITA = 'MISSION_2_ORBITAL_ASCENT';
 
@@ -17,6 +18,31 @@ function guiarMisil(sim, b, dt) {
   const speed = Math.hypot(b.vx, b.vy);
   b.vx = Math.cos(newAngle) * speed;
   b.vy = Math.sin(newAngle) * speed;
+}
+
+// Baja en la superficie: cuenta en enemiesDestroyed (el campo que el puntaje del original ya sumaba).
+function derribarFauna(sim, enemy, eIdx, rng, F) {
+  sim.enemies.splice(eIdx, 1);
+  sim.enemiesDestroyed++;
+  sonar(sim, 'playExplosion', false);
+  textoFlotante(sim, enemy.x, enemy.y - enemy.z - 18, `+${F.puntos} PTS`, PALETA_PIXEL.P13, false);
+  for (let p = 0; p < 14; p++) {
+    const a = rng() * Math.PI * 2;
+    const spd = 60 + rng() * 140;
+    sim.particles.push({
+      x: enemy.x,
+      y: enemy.y - enemy.z,
+      vx: Math.cos(a) * spd,
+      vy: Math.sin(a) * spd,
+      life: 0.5,
+      maxLife: 0.5,
+      color: p % 2 === 0 ? PALETA_PIXEL.P13 : PALETA_PIXEL.P7,
+      size: 2 + rng() * 3,
+    });
+  }
+  if (rng() < F.probabilidadCelda) {
+    sim.drops.push({ id: sim.nextDropId++, type: 'energy_cell', x: enemy.x, y: enemy.y, z: 0, vz: 0, life: 14.0 });
+  }
 }
 
 function derribar(sim, enemy, eIdx, rng) {
@@ -67,7 +93,8 @@ function derribar(sim, enemy, eIdx, rng) {
   }
 }
 
-export function actualizarProyectiles(sim, dt, rng, { ancho, alto }) {
+export function actualizarProyectiles(sim, dt, rng, { ancho, alto }, F = CONFIG.fauna) {
+  const enSuperficie = sim.stage === 'MISSION_1_SURFACE';
   for (let bIdx = sim.bullets.length - 1; bIdx >= 0; bIdx--) {
     const b = sim.bullets[bIdx];
     b.life -= dt;
@@ -76,8 +103,12 @@ export function actualizarProyectiles(sim, dt, rng, { ancho, alto }) {
     b.x += b.vx * dt;
     b.y += b.vy * dt;
 
-    // Como en el original, los limites son los de la pantalla aun en la superficie (coordenadas de mundo).
-    if (b.life <= 0 || b.y < -50 || b.y > alto + 50 || b.x < -50 || b.x > ancho + 50) {
+    // En la superficie las coordenadas son de mundo: el limite es la vista de la camara. El original usaba
+    // el rectangulo de pantalla y los disparos lejos del origen desaparecian al nacer.
+    const fuera = enSuperficie
+      ? Math.abs(b.x - sim.camX) > ancho / 2 + 60 || Math.abs(b.y - sim.camY) > alto / 2 + 60
+      : b.y < -50 || b.y > alto + 50 || b.x < -50 || b.x > ancho + 50;
+    if (b.life <= 0 || fuera) {
       sim.bullets.splice(bIdx, 1);
       continue;
     }
@@ -95,8 +126,10 @@ export function actualizarProyectiles(sim, dt, rng, { ancho, alto }) {
 
     for (let eIdx = sim.enemies.length - 1; eIdx >= 0; eIdx--) {
       const enemy = sim.enemies[eIdx];
+      if (enemy.type === 'trench_lurker' && enemy.state === 'submerged') continue;
       const hitRadius = enemy.type === 'dreadnought_boss' ? 75 : enemy.type === 'armored_gunship' ? 36 : 22;
-      if (Math.hypot(b.x - enemy.x, b.y - enemy.y) >= hitRadius) continue;
+      // Los drones flotan: el impacto se mide a su altura, como la mira.
+      if (Math.hypot(b.x - enemy.x, b.y - (enemy.y - (enemy.z ?? 0))) >= hitRadius) continue;
 
       const isCrit = b.type === 'homing_missile' || rng() < 0.25;
       const finalDmg = isCrit ? Math.round(b.damage * 1.5) : b.damage;
@@ -119,7 +152,10 @@ export function actualizarProyectiles(sim, dt, rng, { ancho, alto }) {
       sim.combo++;
       sim.comboTimer = 2.4;
 
-      if (enemy.hp <= 0) derribar(sim, enemy, eIdx, rng);
+      if (enemy.hp <= 0) {
+        if (esFauna(enemy)) derribarFauna(sim, enemy, eIdx, rng, F);
+        else derribar(sim, enemy, eIdx, rng);
+      }
       break;
     }
   }

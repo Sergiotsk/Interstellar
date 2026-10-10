@@ -65,3 +65,9 @@ Todo lo demás, incluidas las rarezas inofensivas (disparar en la superficie sin
 - **Sin scroll**: se usa la cadena flex de alto completo del hub (`body` a 100dvh sin overflow, `main` flexible y `.juego-miller` ocupando el resto). El header, el juego y el footer caben en la ventana, y el pie de secciones se oculta.
 - **Pantalla completa (y cabina táctil)**: la escena ocupa todo el ancho y el alto. Las opciones eran estirar (deforma), recortar los bordes (en el shmup el Ranger se perdería contra los costados) o **ampliar el campo visible**. Se eligió la tercera: `logica/visor.js` conserva 540 de alto (o 960 de ancho) y ajusta el otro lado a la proporción de la pantalla, acotada entre 4:3 y 21:9. Las barras del HUD flotan encima con fondo translúcido. Fuera de pantalla completa sigue el lienzo original de 960 × 540.
 - **Detalle de Phaser**: para cambiar el tamaño con `Scale.FIT` se usa `scale.setGameSize()`. `resize()` cambia el tamaño interno pero no recalcula el ajuste, y quedaban franjas.
+
+## R11 — Fauna de la Fase 1, mira y disparos (2026-10-09)
+
+- **Fauna**: el original declaraba , , los estados / y el proyectil , pero no los implementaba. El comportamiento () y el arte () son nuevos, con el estilo del juego. Los números van en .
+- **Mira**: el original calculaba  y  sin dibujarlos, y su regla (blanco a menos de 60 px de un punto fijo a 160 px) casi nunca fijaba. Se conserva esa regla, y como respaldo se suma un cono de ±50° con 320 px de alcance.
+- **Disparos que no salían**:  se evaluaba con coordenadas de mundo. Con la baliza en y ≈ −500, cada disparo se destruía en el cuadro en que nacía. En la superficie el límite pasa a ser la vista de la cámara.

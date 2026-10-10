@@ -103,6 +103,21 @@ export const CONFIG = congelar({
   mission2TargetDistance: 10000,
   enduranceDockingRadius: 160,
 
+  // Fauna de la Fase 1: los bio_drone y trench_lurker que el original declaraba sin implementar.
+  fauna: {
+    primerSpawnS: 5,
+    intervaloSpawn: [3.5, 5.5],
+    intervaloSpawnHuida: [2.0, 3.5],
+    maxVivos: 6,
+    distanciaSpawn: [460, 620],
+    probabilidadDron: 0.55,
+    puntos: 200,
+    probabilidadCelda: 0.3,
+    dron: { hp: 60, z: 28, vel: 90, distancia: 190, rangoDisparo: 520, cadencia: 1.9, danio: 12, velBala: 330 },
+    alimana: { hp: 45, velSumergida: 120, rangoSalto: 150, velSalto: 260, gravedad: 860, radioMordida: 30, danioMordida: 18, danioEscupida: 10, velEscupida: 300, enfriamiento: 2.5 },
+    autoapuntado: { rango: 320, cono: 0.87 },
+  },
+
   // Integracion con el sitio (no estaba en el original).
   // 1 h en Miller = 7 anos en la Tierra: 7 x 365,25 x 24 / 3600 = 17,045 h por segundo (el original usaba 17,518).
   horasTerrestresPorSegundo: (7 * 365.25 * 24) / 3600,

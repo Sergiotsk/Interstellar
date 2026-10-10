@@ -4,8 +4,17 @@ import { ANIM, PALETA_PIXEL } from '../config.js';
 import { sonar, onda, mostrarBanner } from './efectos.js';
 import { matarJugador } from './danio.js';
 import { TEXTOS } from './textos.js';
+import { generarFauna, moverFauna, esFauna } from './fauna.js';
+
+const angulo = (a) => Math.atan2(Math.sin(a), Math.cos(a));
+// Una alimana sumergida no se puede apuntar ni recibe disparos.
+const apuntable = (e) => !(e.type === 'trench_lurker' && e.state === 'submerged');
 
 export function actualizarSuperficie(sim, entrada, dt, config, rng) {
+  // La fauna se mueve antes de apuntar: la mira queda sobre su posicion de este paso.
+  generarFauna(sim, dt, config, rng);
+  moverFauna(sim, dt, config, rng);
+
   let moveX = 0;
   let moveY = 0;
   if (entrada.left) moveX -= 1;
@@ -36,7 +45,7 @@ export function actualizarSuperficie(sim, entrada, dt, config, rng) {
     else if (moveX < -0.05) sim.playerFacing = -1;
   }
 
-  // Mira a 160 px; si hay un blanco a menos de 60 de la mira, se fija sobre el.
+  // Mira a 160 px; si hay un blanco a menos de 60 de la mira, se fija sobre el (regla del original).
   const aimDist = 160;
   const shoulderX = sim.playerX + sim.playerFacing * 2;
   const shoulderY = sim.playerY - sim.playerZ - 6;
@@ -46,6 +55,7 @@ export function actualizarSuperficie(sim, entrada, dt, config, rng) {
   let targetedEnemy = null;
   let minCrossDist = 60;
   for (const e of sim.enemies) {
+    if (!apuntable(e)) continue;
     const eY = e.y - (e.z ?? 0);
     const d = Math.hypot(targetCrossX - e.x, targetCrossY - eY);
     if (d < minCrossDist) {
@@ -54,7 +64,24 @@ export function actualizarSuperficie(sim, entrada, dt, config, rng) {
     }
   }
 
+  // Autoapuntado (nuevo): si la regla original no encontro nada, el mas cercano en rango y dentro del cono de la mira.
+  if (!targetedEnemy) {
+    const { rango, cono } = config.fauna.autoapuntado;
+    let mejor = rango;
+    for (const e of sim.enemies) {
+      if (!esFauna(e) || !apuntable(e)) continue;
+      const ex = e.x - shoulderX;
+      const ey = e.y - (e.z ?? 0) - shoulderY;
+      const d = Math.hypot(ex, ey);
+      if (d < mejor && Math.abs(angulo(Math.atan2(ey, ex) - sim.aimAngle)) <= cono) {
+        mejor = d;
+        targetedEnemy = e;
+      }
+    }
+  }
+
   if (targetedEnemy) {
+    if (sim.lockedEnemyId !== targetedEnemy.id) sonar(sim, 'playTargetLock');
     sim.hasTargetLock = true;
     sim.lockedEnemyId = targetedEnemy.id;
     targetCrossX = targetedEnemy.x;

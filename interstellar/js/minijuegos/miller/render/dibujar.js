@@ -17,6 +17,7 @@ import {
   renderHitMarkers,
   renderFloatingTexts,
 } from './funciones.js';
+import { renderBioDrone, renderTrenchLurker, renderMira } from './fauna.js';
 
 const ETAPAS_ESPACIO = ['MISSION_2_ORBITAL_ASCENT', 'VICTORY_ENDURANCE_DOCKED', 'MISSION_TRANSITION'];
 
@@ -85,6 +86,17 @@ function dibujarSuperficie(ctx, sim, time, canvasWidth, canvasHeight) {
     ctx.restore();
   }
 
+  // Fauna (nuevo): las alimanas sumergidas van bajo el astronauta; el resto, por profundidad en pantalla.
+  for (const e of sim.enemies) {
+    if (e.type === 'trench_lurker' && e.state === 'submerged') renderTrenchLurker(ctx, e, time);
+  }
+  for (const e of sim.enemies) {
+    if (e.type === 'bio_drone') renderBioDrone(ctx, e, time);
+    else if (e.type === 'trench_lurker' && e.state !== 'submerged') renderTrenchLurker(ctx, e, time);
+  }
+
+  for (const drop of sim.drops) renderDropItem(ctx, drop, time);
+
   renderExpressiveAstronaut(
     ctx,
     sim.playerX,
@@ -104,6 +116,11 @@ function dibujarSuperficie(ctx, sim, time, canvasWidth, canvasHeight) {
   );
 
   for (const b of sim.bullets) renderBullet(ctx, b);
+
+  // La mira del autoapuntado (el original la calculaba pero no la dibujaba).
+  if (sim.phase !== 'COUNTDOWN' && !sim.isDying && sim.controlMode === 'FOOT') {
+    renderMira(ctx, sim.crosshairX, sim.crosshairY, sim.hasTargetLock, time);
+  }
 }
 
 // azar() solo mueve el temblor de pantalla, que es puramente visual (como el Math.random del original).

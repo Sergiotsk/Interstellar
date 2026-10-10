@@ -148,6 +148,7 @@ export function crearSim(config, rng, { ancho, alto }) {
     debris,
 
     enemySpawnTimer: 2.2,
+    faunaTimer: 0,
     wavePatternTimer: 0,
     nextEnemyId: 2,
     nextDropId: 1,
