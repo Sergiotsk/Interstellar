@@ -17,7 +17,7 @@
 - Q: ¿La v1 (belt-scroller lateral, solo Misión 1, hecha a partir de los briefs) cumple? → A: No. "No tiene nada que ver con el proyecto que te pasé". Hay que replicar el juego real.
 - Q: ¿Qué alcance tiene la réplica? → A: El juego completo: Fase 1 de superficie, transición y Fase 2 shmup hasta el acople con la Endurance.
 - Q: ¿Con qué motor? → A: Phaser 4.2.1 (ya vendorizado). Las funciones de dibujo del original se portan casi 1:1 sobre un `CanvasTexture` de Phaser (contexto 2D real), para que el juego se vea igual.
-- Q: (posterior) ¿La Fase 1 lleva enemigos? → A: Sí. Drones y alimañas: los tipos  y  que el original declaraba sin implementar. Además hay que dibujar la mira con autoapuntado y arreglar los disparos que a veces no salen (FR-031 a FR-033).
+- Q: (posterior) ¿La Fase 1 lleva enemigos? → A: Sí. Drones y alimañas: los tipos `bio_drone` y `trench_lurker` que el original declaraba sin implementar. Además hay que dibujar la mira con autoapuntado y arreglar los disparos que a veces no salen (FR-031 a FR-033).
 - Q: ¿Qué se hace con lo ya commiteado? → A: Se conserva el refactor a `js/minijuegos/comun/`. Se reemplazan `js/minijuegos/miller/`, la página y estos documentos.
 
 ## User Scenarios & Testing *(mandatory)*
@@ -153,8 +153,8 @@ Desde el botón MENU o con Esc se abre "PAUSE // INSTRUMENTS": Resume, SFX activ
   - (d) el tiempo terrestre usaba 17,518 h/s, cuando 1 h = 7 años da 17,045 h/s; se usa el valor correcto y el texto de la cuenta lo dice;
   - (e) el sitio exige `✎ Licencia narrativa` junto a las cifras de la película (Constitución VI); se agrega en la cuenta y en el resultado.
 
-- **FR-031**: La Fase 1 MUST tener fauna hostil que aparece fuera de pantalla desde los 5 s (más seguido después de recoger la baliza, con un tope de 6). Los drones flotan, mantienen distancia y disparan plasma. Las alimañas nadan sumergidas (en ese estado no se las puede apuntar ni dañar), saltan, muerden si caen encima y escupen. La ola las barre. Cada baja suma a  (+200 en el puntaje) y puede soltar una celda de energía.
-- **FR-032**: La mira MUST dibujarse: un anillo cian cuando está libre, y corchetes rojos con LOCK cuando hay un blanco fijado. El autoapuntado conserva la regla original (60 px de la mira) y, si no encuentra nada, fija al enemigo más cercano dentro de 320 px y ±50° de la dirección de apuntado, con el sonido de fijación.
+- **FR-031**: La Fase 1 MUST tener fauna hostil que aparece fuera de pantalla desde los 5 s (más seguido después de recoger la baliza, con un tope de 6). Los drones flotan, mantienen distancia y disparan plasma. Las alimañas nadan sumergidas (en ese estado no se las puede apuntar ni dañar), saltan, muerden si caen encima y escupen. La ola las barre. Cada baja suma a `enemiesDestroyed` (+200 en el puntaje) y puede soltar una celda de energía.
+- **FR-032**: La mira MUST dibujarse: un anillo cian cuando está libre, y corchetes rojos con "LOCK" cuando hay un blanco fijado. El autoapuntado conserva la regla original (60 px de la mira) y, si no encuentra nada, fija al enemigo más cercano dentro de 320 px y ±50° de la dirección de apuntado, con el sonido de fijación.
 - **FR-033**: Los disparos en la superficie MUST descartarse al salir de la vista de la cámara, no del rectángulo de pantalla. En el original desaparecían al nacer cuando el jugador estaba lejos del origen.
 
 ### Key Entities

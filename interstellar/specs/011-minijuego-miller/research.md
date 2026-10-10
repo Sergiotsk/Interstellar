@@ -68,6 +68,6 @@ Todo lo demás, incluidas las rarezas inofensivas (disparar en la superficie sin
 
 ## R11 — Fauna de la Fase 1, mira y disparos (2026-10-09)
 
-- **Fauna**: el original declaraba , , los estados / y el proyectil , pero no los implementaba. El comportamiento () y el arte () son nuevos, con el estilo del juego. Los números van en .
-- **Mira**: el original calculaba  y  sin dibujarlos, y su regla (blanco a menos de 60 px de un punto fijo a 160 px) casi nunca fijaba. Se conserva esa regla, y como respaldo se suma un cono de ±50° con 320 px de alcance.
-- **Disparos que no salían**:  se evaluaba con coordenadas de mundo. Con la baliza en y ≈ −500, cada disparo se destruía en el cuadro en que nacía. En la superficie el límite pasa a ser la vista de la cámara.
+- **Fauna**: el original declaraba `bio_drone`, `trench_lurker`, los estados `submerged`/`leap` y el proyectil `lurker_spit`, pero no los implementaba. El comportamiento (`logica/fauna.js`) y el arte (`render/fauna.js`) son nuevos, con el estilo del juego. Los números van en `CONFIG.fauna`.
+- **Mira**: el original calculaba `crosshairX/Y` y `hasTargetLock` sin dibujarlos, y su regla (blanco a menos de 60 px de un punto fijo a 160 px) casi nunca fijaba. Se conserva esa regla, y como respaldo se suma un cono de ±50° con 320 px de alcance.
+- **Disparos que no salían**: `b.x < -50 || b.y < -50 ...` se evaluaba con coordenadas de mundo. Con la baliza en y ≈ −500, cada disparo se destruía en el cuadro en que nacía. En la superficie el límite pasa a ser la vista de la cámara.
