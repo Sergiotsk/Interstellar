@@ -646,6 +646,11 @@ body.pagina-miller .pie-secciones-marco {
   pointer-events: auto;
 }
 
+/* Superficie: Slide, Fire y Jump (el pulgar descansa en el ultimo) separados para no errarle al boton */
+.mw-acciones-tactil--superficie {
+  gap: 1.25rem;
+}
+
 .mw-tecla-accion {
   width: 3.25rem;
   height: 3.25rem;
