@@ -885,6 +885,7 @@
 }
 
 .acople-nombre-titulo {
+  display: block;
   margin: 0 0 0.6rem;
   font-size: 0.75rem;
   letter-spacing: 0.14em;
@@ -892,92 +893,40 @@
   color: var(--color-tierra-oro);
 }
 
-.acople-nombre-casillas {
-  display: flex;
-  gap: 0.3rem;
-  margin: 1rem 0 0.75rem;
-}
-
-.acople-nombre-casilla {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 1.9rem;
-  height: 2.4rem;
-  font-size: 1.3rem;
-  color: var(--color-texto);
-  border-bottom: 2px solid var(--cockpit-bezel);
-}
-
-button.acople-nombre-casilla {
-  padding: 0;
+/* Campo real: en movil abre el teclado nativo; mayusculas y espaciado de fichin */
+.acople-nombre-campo {
+  display: block;
+  width: 100%;
+  max-width: 16rem;
+  margin: 0.75rem 0 0.5rem;
+  padding: 0.5rem 0.6rem;
   font: inherit;
   font-size: 1.3rem;
-  background: none;
-  border-top: 0;
-  border-right: 0;
-  border-left: 0;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.acople[data-entrada='tactil'] .acople-nombre-casilla {
-  height: 3rem;
-}
-
-/* Teclas tactiles del editor de nombre: misma fila, 48 px minimo (010 FR-020/022) */
-.acople-nombre-teclas {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  margin: 1rem 0 0.9rem;
-}
-
-.acople-nombre-teclas .acople-tecla {
-  min-width: 3rem;
-  min-height: 3rem;
-  padding: 0;
-  font-size: 1.1rem;
-  touch-action: manipulation;
-  user-select: none;
-  -webkit-user-select: none;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.acople-nombre-casilla--activa {
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
   color: var(--instrumento-teal);
+  caret-color: var(--instrumento-teal);
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid var(--cockpit-bezel);
+  border-radius: 0;
+}
+
+.acople-nombre-campo:focus-visible {
+  outline: none;
   border-bottom-color: var(--instrumento-teal);
-  animation: acople-parpadeo 1s steps(1) infinite;
 }
 
-/* Flechas arriba/abajo sobre la casilla activa: avisan que la letra se gira */
-.acople-nombre-casilla--activa::before,
-.acople-nombre-casilla--activa::after {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.55rem;
-  color: var(--instrumento-teal);
-}
-
-.acople-nombre-casilla--activa::before {
-  content: '▲';
-  top: -0.85rem;
-}
-
-.acople-nombre-casilla--activa::after {
-  content: '▼';
-  bottom: -1rem;
+.acople[data-entrada='tactil'] .acople-nombre-campo {
+  min-height: 3rem;
+  /* 16px+ evita el zoom automatico de iOS al enfocar */
+  font-size: max(1.3rem, 16px);
 }
 
 .acople-nombre-ayuda {
   margin: 1rem 0 0.9rem;
   font-size: 0.75rem;
   color: var(--color-texto-atenuado);
-}
-
-@keyframes acople-parpadeo {
-  50% { color: transparent; }
 }
 
 /* Tabla de puntajes */
@@ -1448,8 +1397,8 @@ body.pagina-minijuegos .pie-secciones-marco {
     padding-bottom: 0.15rem;
   }
 
-  .acople-nombre-casillas {
-    margin: 0.75rem 0 0.5rem;
+  .acople-nombre-campo {
+    margin: 0.5rem 0 0.4rem;
   }
 
   .acople-nombre-ayuda {
@@ -1463,10 +1412,6 @@ body.pagina-minijuegos .pie-secciones-marco {
   .acople-intro-controles,
   .acople-ranking--intro {
     opacity: 1;
-    animation: none;
-  }
-
-  .acople-nombre-casilla--activa {
     animation: none;
   }
 

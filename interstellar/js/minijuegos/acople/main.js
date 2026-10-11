@@ -16,7 +16,7 @@ import {
   indicacionHud,
 } from './logica/mision.js';
 import { leerRanking, posicionEnRanking, insertarEntrada, guardarEnRanking } from '../comun/logica/ranking.js';
-import { crearEditor, textoEditor, teclaEditor, fijarCursor } from '../comun/logica/nombre-arcade.js';
+import { sanearEntrada } from '../comun/logica/nombre-arcade.js';
 import { modoEntrada, requiereGiro } from '../comun/logica/dispositivo.js';
 import { levantarTodo, accionesTactiles } from '../comun/logica/controles-tactiles.js';
 import { instrumentos } from './logica/instrumentos.js';
@@ -198,27 +198,28 @@ function terminarPartida(s) {
   s.ui.pintarResultado(desenlace, posicion);
   s.ui.mostrarEditor(posicion >= 0);
   if (posicion >= 0) {
-    s.editor = crearEditor(ultimoNombre, CONFIG);
+    s.editor = { texto: sanearEntrada(ultimoNombre, CONFIG) };
     pintarEditor(s);
   } else {
     s.ui.pintarRanking('resultado', filasRanking(entradas, -1, CONFIG));
   }
   s.ui.mostrar('resultado');
+  if (s.editor) s.ui.enfocarEditor();
 }
 
 // Mientras se carga el nombre, la tabla muestra la fila provisoria con lo que se va tipeando.
 function pintarEditor(s) {
   const provisoria = insertarEntrada(
     s.ranking,
-    { nombre: textoEditor(s.editor), puntaje: s.partida.desenlace.puntaje },
+    { nombre: s.editor.texto.trim(), puntaje: s.partida.desenlace.puntaje },
     CONFIG,
   );
-  s.ui.pintarEditor(s.editor);
+  s.ui.pintarEditor(s.editor.texto);
   s.ui.pintarRanking('resultado', filasRanking(provisoria.entradas, provisoria.posicion, CONFIG));
 }
 
 function confirmarNombre(s) {
-  const r = guardarEnRanking(s.partida.desenlace, textoEditor(s.editor), almacenamiento(), CONFIG);
+  const r = guardarEnRanking(s.partida.desenlace, s.editor.texto, almacenamiento(), CONFIG);
   s.editor = null;
   if (r.guardado) s.ranking = r.entradas;
   s.ui.mostrarEditor(false);
@@ -226,19 +227,23 @@ function confirmarNombre(s) {
   s.ui.enfocarResultado();
 }
 
-// Editor de nombre: se traga las teclas que usa (R incluida) para no reiniciar mientras se escribe.
+// El campo de nombre recibe las letras solo; aca se frena todo lo demas (R incluida) para no reiniciar mientras se escribe.
 function alPresionarEnEditor(s, e) {
   if (e.ctrlKey || e.metaKey || e.altKey) return;
-  if ((esEnter(e) || e.key === ' ') && e.target.closest?.('a, button')) return;
-  const r = teclaEditor(s.editor, e.key, CONFIG);
-  if (!r.manejada) return;
-  e.preventDefault();
-  // Enter sostenido desde el acople no debe confirmar el nombre de un saque.
-  if (r.confirmar) {
+  if (esEnter(e)) {
+    if (e.target.closest?.('a, button')) return;
+    e.preventDefault();
+    // Enter sostenido desde el acople no debe confirmar el nombre de un saque.
     if (!e.repeat) confirmarNombre(s);
     return;
   }
-  s.editor = r.editor;
+  // Si el foco quedo afuera, la tecla se redirige al campo.
+  if (e.key.length === 1 && !e.target.closest?.('[data-nombre-campo]')) s.ui.enfocarEditor();
+}
+
+function alTipearNombre(s, e) {
+  if (!s.editor) return;
+  s.editor = { texto: sanearEntrada(e.target.value, CONFIG) };
   pintarEditor(s);
 }
 
@@ -338,31 +343,9 @@ function alSoltar(s, e) {
   if (accion) s.acciones = soltar(s.acciones, accion);
 }
 
-// Botones tactiles del editor y casillas tocables: mismo camino que el teclado (010 R10).
-function clicEnEditor(s, e) {
-  const tecla = e.target.closest('[data-tecla-editor]');
-  if (tecla) {
-    const r = teclaEditor(s.editor, tecla.dataset.teclaEditor, CONFIG);
-    if (r.confirmar) confirmarNombre(s);
-    else {
-      s.editor = r.editor;
-      pintarEditor(s);
-    }
-    return true;
-  }
-  const casilla = e.target.closest('[data-casilla]');
-  if (casilla) {
-    s.editor = fijarCursor(s.editor, Number(casilla.dataset.casilla), CONFIG);
-    pintarEditor(s);
-    return true;
-  }
-  return false;
-}
-
 function alClic(s, e) {
   if (s.girando) return;
   s.audio.reanudar();
-  if (s.editor && clicEnEditor(s, e)) return;
   const boton = e.target.closest('[data-accion]');
   if (!boton) return;
   const accion = boton.dataset.accion;
@@ -476,6 +459,7 @@ export async function mount() {
   escuchar(s, window, 'keydown', (e) => alPresionar(s, e));
   escuchar(s, window, 'keyup', (e) => alSoltar(s, e));
   escuchar(s, raiz, 'click', (e) => alClic(s, e));
+  escuchar(s, raiz.querySelector('[data-nombre-campo]'), 'input', (e) => alTipearNombre(s, e));
   escuchar(s, window, 'blur', () => pausarPartida(s));
   escuchar(s, document, 'fullscreenchange', () => alCambiarPantalla(s));
   escuchar(s, document, 'visibilitychange', () => {
