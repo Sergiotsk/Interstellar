@@ -14,9 +14,11 @@ import { crearHud } from './hud.js';
 import { crearEscenaMiller } from './escena-miller.js';
 import { SynthAudio, crearMusica } from './audio-miller.js';
 import { conectarTactil } from './controles.js';
+import { crearClip } from '../comun/clip.js';
 
 const URL_PHASER = '../../vendor/phaser@4.2.1/phaser.esm.min.js';
 const URL_MUSICA = 'assets/audio/minijuegos/miller-ambiente.mp3';
+const VOZ_MISION = crearClip('assets/audio/minijuegos/perfecto-caballero.mp3');
 const DIMS_BASE = { ancho: CONFIG.baseCanvasWidth, alto: CONFIG.baseCanvasHeight };
 const INTERVALO_HUD_MS = 50;
 
@@ -81,6 +83,7 @@ function iniciar(s) {
   s.estado = 'PLAYING';
   s.menu = false;
   s.audio.resume();
+  VOZ_MISION.precargar(s.audio.getCtx());
   sonar(s.sim, 'playBannerImpact');
   s.hud.reiniciar();
   s.hud.mostrar();
@@ -99,6 +102,7 @@ function terminar(s) {
   pintar(s, true);
   const tick = (metodo, ...args) => s.audio[metodo]?.(...args);
   if (estado === 'VICTORY') {
+    VOZ_MISION.sonar(s.audio.ctx, s.audio.masterGain);
     s.hud.victoria(resultado, tick);
     pintarRanking(s);
     s.raiz.querySelector('[data-nombre]').value = s.ultimoNombre;
