@@ -43,8 +43,7 @@ export function crearOverlays(raiz, { pantallaCompleta = false, tactil = false }
   const ordenEl = raiz.querySelector('[data-orden-acople]');
   const mandos = [...raiz.querySelectorAll('[data-mandos]')];
   const editorEl = raiz.querySelector('[data-editor-nombre]');
-  const casillasEl = raiz.querySelector('[data-nombre-casillas]');
-  const lecturaNombreEl = raiz.querySelector('[data-nombre-lectura]');
+  const campoNombre = raiz.querySelector('[data-nombre-campo]');
   const accionesResultado = raiz.querySelector('[data-resultado-acciones]');
   const rankings = Object.fromEntries([...raiz.querySelectorAll('[data-ranking]')].map((el) => [el.dataset.ranking, el]));
   const cuentaEl = raiz.querySelector('[data-cuenta]');
@@ -151,21 +150,13 @@ export function crearOverlays(raiz, { pantallaCompleta = false, tactil = false }
     accionesResultado.hidden = visible;
   }
 
-  function pintarEditor(editor) {
-    casillasEl.replaceChildren(
-      ...editor.letras.map((letra, i) => {
-        // Boton para poder tocar la casilla y moverle el cursor (010 FR-021).
-        const casilla = document.createElement('button');
-        casilla.type = 'button';
-        casilla.tabIndex = -1;
-        casilla.dataset.casilla = String(i);
-        casilla.className = 'acople-nombre-casilla';
-        if (i === editor.cursor) casilla.classList.add('acople-nombre-casilla--activa');
-        casilla.textContent = letra === ' ' ? '_' : letra;
-        return casilla;
-      }),
-    );
-    lecturaNombreEl.textContent = `Nombre: ${editor.letras.join('').trim() || 'vacío'}`;
+  // Solo se reescribe si cambio: reasignar value en cada tecla mueve el cursor al final en algunos moviles.
+  function pintarEditor(texto) {
+    if (campoNombre.value !== texto) campoNombre.value = texto;
+  }
+
+  function enfocarEditor() {
+    campoNombre.focus({ preventScroll: true });
   }
 
   function enfocarResultado() {
@@ -202,6 +193,7 @@ export function crearOverlays(raiz, { pantallaCompleta = false, tactil = false }
     pintarRanking,
     mostrarEditor,
     pintarEditor,
+    enfocarEditor,
     enfocarResultado,
     pintarPantalla,
     pintarCuenta,
