@@ -2,6 +2,10 @@
 // El AudioContext nace en el primer gesto del jugador: asi no choca con el bloqueo de autoplay.
 
 import { CONFIG } from './config.js';
+import { crearClip } from '../comun/clip.js';
+
+const VOZ_MISION = crearClip('assets/audio/minijuegos/perfecto-caballero.mp3');
+const RETRASO_VOZ_MS = 700; // la voz entra cuando ya sono el cerrojo del acople
 
 const CLAVE_MUTE = 'interstellar:minijuegos:mute';
 const SUAVE = 0.05; // constante de tiempo de los cambios de ganancia (s)
@@ -159,6 +163,7 @@ export function crearAudioAcople(perfil = CONFIG.audio.teclado) {
   function reanudar() {
     if (!ctx) montarGrafo();
     if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
+    VOZ_MISION.precargar(ctx);
   }
 
   let proximoTic = 0;
@@ -357,7 +362,10 @@ export function crearAudioAcople(perfil = CONFIG.audio.teclado) {
   function evento(nombre) {
     if (!ctx) return;
     if (nombre === 'impacto') golpe();
-    if (nombre === 'acople') sonidoAcopleMecanico();
+    if (nombre === 'acople') {
+      sonidoAcopleMecanico();
+      setTimeout(() => VOZ_MISION.sonar(ctx, maestro), RETRASO_VOZ_MS);
+    }
     if (nombre === 'rechazo') zumbido();
     if (nombre === 'lock-in') tonoLockIn();
   }
