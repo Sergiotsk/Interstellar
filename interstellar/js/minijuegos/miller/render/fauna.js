@@ -71,6 +71,67 @@ export function renderBioDrone(ctx, e, time) {
   ctx.restore();
 }
 
+// Cangrejo kamikaze: caparazon bajo con patas que corren; armado titila en rojo con un anillo que se cierra.
+export function renderTideCrab(ctx, e, time) {
+  const armado = e.state === 'armado';
+  const flash = e.flashTimer > 0;
+  ctx.save();
+  ctx.translate(Math.round(e.x), Math.round(e.y));
+
+  ctx.fillStyle = 'rgba(10, 14, 26, 0.55)';
+  ctx.beginPath();
+  ctx.ellipse(0, 6, 15, 4.5, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  if (armado) {
+    // El anillo marca el radio de la explosion y se cierra a medida que se acaba la mecha.
+    ctx.strokeStyle = `rgba(201, 75, 50, ${0.35 + 0.35 * Math.sin(time * 30)})`;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.ellipse(0, 4, 60 * Math.max(0.2, e.stateTimer / 0.5), 22 * Math.max(0.2, e.stateTimer / 0.5), 0, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  ctx.scale(e.facing, 1);
+  const paso = Math.sin(time * 28 + e.id) * (armado ? 0 : 3);
+  ctx.strokeStyle = PALETA_PIXEL.P11;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  [-1, 1].forEach((lado) => {
+    for (let k = 0; k < 3; k++) {
+      const x = -6 + k * 6;
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x + lado * 3 + (k % 2 ? paso : -paso), lado * 9);
+    }
+  });
+  ctx.stroke();
+
+  // Pinzas.
+  ctx.fillStyle = flash || armado ? PALETA_PIXEL.P15 : PALETA_PIXEL.P13;
+  ctx.beginPath();
+  ctx.ellipse(13, -5, 5, 3.5, -0.4, 0, Math.PI * 2);
+  ctx.ellipse(13, 5, 5, 3.5, 0.4, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = flash ? '#ffffff' : armado ? PALETA_PIXEL.P15 : PALETA_PIXEL.P12;
+  ctx.beginPath();
+  ctx.ellipse(0, 0, 11, 8, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = PALETA_PIXEL.P10;
+  ctx.lineWidth = 1.2;
+  ctx.stroke();
+
+  ctx.fillStyle = PALETA_PIXEL.P14;
+  ctx.beginPath();
+  ctx.arc(7, -3, 1.8, 0, Math.PI * 2);
+  ctx.arc(7, 3, 1.8, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.scale(e.facing, 1);
+  barraDeVida(ctx, e, -16);
+  ctx.restore();
+}
+
 // Alimana de trinchera: sumergida es una sombra con estela y dos ojos; al saltar muestra el cuerpo y las fauces.
 export function renderTrenchLurker(ctx, e, time) {
   const flash = e.flashTimer > 0;

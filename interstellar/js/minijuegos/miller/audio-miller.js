@@ -711,9 +711,9 @@ export class SynthAudio {
 }
 
 // Musica ambiente del original (ocean_abyss_ambience.mp3) en loop, con su propio mute (BGM).
-export function crearMusica(url, volumen) {
+export function crearMusica(url, volumen, loop = true) {
   const audio = new Audio(url);
-  audio.loop = true;
+  audio.loop = loop;
   audio.volume = volumen;
   audio.preload = 'auto';
   let muteada = false;
@@ -730,6 +730,9 @@ export function crearMusica(url, volumen) {
       return muteada;
     },
     estaMuteada: () => muteada,
+    desdeCero() {
+      audio.currentTime = 0;
+    },
     cerrar() {
       audio.pause();
       audio.removeAttribute('src');

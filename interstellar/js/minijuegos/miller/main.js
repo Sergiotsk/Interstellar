@@ -18,7 +18,10 @@ import { crearClip } from '../comun/clip.js';
 
 const URL_PHASER = '../../vendor/phaser@4.2.1/phaser.esm.min.js';
 const URL_MUSICA = 'assets/audio/minijuegos/miller-ambiente.mp3';
-const VOZ_MISION = crearClip('assets/audio/minijuegos/perfecto-caballero.mp3');
+const VOZ_MISION = crearClip('assets/audio/minijuegos/miller-festejo-messi.mp3');
+const URL_MUSICA_JEFE = 'assets/audio/minijuegos/miller-jefe-sancor.mp3';
+const URL_MUSICA_BATALLA = 'assets/audio/minijuegos/miller-jefe-batalla.mp3';
+const VOZ_SANCOR = crearClip('assets/audio/minijuegos/sancor-tapia.mp3');
 const DIMS_BASE = { ancho: CONFIG.baseCanvasWidth, alto: CONFIG.baseCanvasHeight };
 const INTERVALO_HUD_MS = 50;
 
@@ -50,13 +53,32 @@ function nuevaSim(dims) {
 }
 
 // La logica pide sonidos por cola; aca se tocan con el sintetizador del original.
+// vozSancor es grabada: va por el grafo del sintetizador para respetar el mute de efectos.
 function vaciarSonidos(s) {
-  for (const [metodo, ...args] of s.sim.sonidos) s.audio[metodo]?.(...args);
+  for (const [metodo, ...args] of s.sim.sonidos) {
+    if (metodo === 'vozSancor') VOZ_SANCOR.sonar(s.audio.ctx, s.audio.masterGain);
+    else s.audio[metodo]?.(...args);
+  }
   s.sim.sonidos.length = 0;
 }
 
+// Pista segun el momento: ascenso, show de drones original durante la presentacion del jefe, batalla en el combate.
+function pistaActual(s) {
+  if (s.estado !== 'PLAYING' || s.menu) return null;
+  const f = s.sim?.formacion;
+  if (!f) return 'musica';
+  return f.fase === 'combate' ? 'musicaBatalla' : 'musicaJefe';
+}
+
 function actualizarMusica(s) {
-  s.musica.sonar(s.estado === 'PLAYING' && !s.menu);
+  const pista = pistaActual(s);
+  if (s.ultimaMusica === pista) return;
+  // Cada vez que el jefe entra, la intro y la batalla arrancan del principio (la pausa del menu no cuenta).
+  if (pista === 'musicaJefe' && s.ultimaPista !== 'musicaJefe') s.musicaJefe.desdeCero();
+  if (pista === 'musicaBatalla' && s.ultimaPista !== 'musicaBatalla') s.musicaBatalla.desdeCero();
+  s.ultimaMusica = pista;
+  if (pista) s.ultimaPista = pista;
+  for (const nombre of ['musica', 'musicaJefe', 'musicaBatalla']) s[nombre].sonar(pista === nombre);
 }
 
 function pintar(s, forzar = false) {
@@ -84,6 +106,7 @@ function iniciar(s) {
   s.menu = false;
   s.audio.resume();
   VOZ_MISION.precargar(s.audio.getCtx());
+  VOZ_SANCOR.precargar(s.audio.getCtx());
   sonar(s.sim, 'playBannerImpact');
   s.hud.reiniciar();
   s.hud.mostrar();
@@ -140,6 +163,7 @@ function paso(s, dt) {
   if (s.estado !== 'PLAYING' || s.menu || s.girando) return;
   actualizar(s.sim, s.entrada, dt, CONFIG, s.rng, s.dims);
   vaciarSonidos(s);
+  actualizarMusica(s);
   if (s.sim.fin) terminar(s);
   else pintar(s);
 }
@@ -225,6 +249,9 @@ function alClic(s, e) {
   if (accion === 'sfx') s.audio.toggleMute();
   if (accion === 'bgm') {
     s.musica.alternarMute();
+    s.musicaJefe.alternarMute();
+    s.musicaBatalla.alternarMute();
+    s.ultimaMusica = null;
     actualizarMusica(s);
   }
   if (accion === 'sfx' || accion === 'bgm') s.hud.pintarMutes({ sfx: s.audio.getMuteState(), bgm: s.musica.estaMuteada() });
@@ -358,6 +385,10 @@ export async function mount() {
     ultimoNombre: CONFIG.ranking.nombrePorDefecto,
     audio: new SynthAudio(),
     musica: crearMusica(URL_MUSICA, CONFIG.defaultMusicVolume),
+    musicaJefe: crearMusica(URL_MUSICA_JEFE, CONFIG.defaultMusicVolume, false),
+    musicaBatalla: crearMusica(URL_MUSICA_BATALLA, CONFIG.defaultMusicVolume),
+    ultimaMusica: null,
+    ultimaPista: null,
     game: null,
     limpiezas: [],
     // Pantalla que queda debajo de un modal (ranking o manual).
@@ -435,6 +466,8 @@ export function unmount() {
   s.limpiezas = [];
   s.audio.cerrar();
   s.musica.cerrar();
+  s.musicaJefe.cerrar();
+  s.musicaBatalla.cerrar();
 }
 
 if (typeof document !== 'undefined' && !window.__SWUP_ROUTER_ACTIVE__) {

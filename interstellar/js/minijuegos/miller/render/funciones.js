@@ -876,6 +876,20 @@ export function renderBullet(ctx, b) {
     ctx.lineTo(-14, 3);
     ctx.closePath();
     ctx.fill();
+  } else if (b.pesada) {
+    // Orbe pesado del jefe Sancor: mas grande y magenta, para leerlo distinto del plasma comun.
+    ctx.fillStyle = 'rgba(255, 45, 143, 0.35)';
+    ctx.beginPath();
+    ctx.arc(0, 0, 11, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#ff2d8f';
+    ctx.beginPath();
+    ctx.arc(0, 0, 7, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(0, 0, 3, 0, Math.PI * 2);
+    ctx.fill();
   } else if (b.isEnemy) {
     // High visibility glowing enemy plasma orbs
     ctx.fillStyle = '#ef4444';

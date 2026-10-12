@@ -20,16 +20,21 @@ describe('miller/logica/radar.js — radar tactico', () => {
     assert.equal(ranger.fuera, false);
   });
 
-  test('la baliza fuera de alcance queda en el borde marcando la direccion', () => {
-    const s = sim({ playerX: 0, playerY: 0, beaconX: 3000, beaconY: 0 });
+  test('una carga fuera de alcance queda en el borde marcando la direccion', () => {
+    const s = sim({ playerX: 0, playerY: 0 });
+    s.cargas = [{ tipo: 'baliza', x: 3000, y: 0, estado: 'suelo' }];
     const [baliza] = de(contactosRadar(s, CONFIG), 'baliza');
     assert.equal(baliza.fuera, true);
     assert.ok(Math.abs(baliza.x - R.radio) < 1e-9);
     assert.ok(Math.abs(baliza.y) < 1e-9);
   });
 
-  test('con la baliza recogida deja de aparecer', () => {
-    assert.equal(de(contactosRadar(sim({ beaconAcquired: true }), CONFIG), 'baliza').length, 0);
+  test('marca las cargas que siguen en el suelo; las levantadas o cargadas no', () => {
+    const s = sim();
+    assert.equal(de(contactosRadar(s, CONFIG), 'baliza').length, 3);
+    s.cargas[0].estado = 'llevando';
+    s.cargas[1].estado = 'cargada';
+    assert.equal(de(contactosRadar(s, CONFIG), 'baliza').length, 1);
   });
 
   test('enemigos dentro del alcance; los de afuera no se muestran; alimanas sumergidas aparte', () => {

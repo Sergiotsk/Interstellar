@@ -14,6 +14,15 @@ const AYUDA = {
 };
 
 // Lo que muestra cada lectura (pura, para poder probarla sin DOM).
+const CARGA_EN = { baliza: 'MILLER BEACON', caja_negra: 'BLACK BOX', muestra: 'OCEAN SAMPLE' };
+
+// Fase 1: buscar la siguiente carga, llevarla al Ranger o, con todas a bordo, despegar.
+function objetivoSuperficie(sim) {
+  if (sim.beaconAcquired) return 'ALL CARGO LOADED // BOARD THE RANGER [E]';
+  if (sim.cargando) return `CARRYING ${CARGA_EN[sim.cargando]} → LOAD AT RANGER`;
+  return `RETRIEVE CARGO ${sim.cargasCargadas}/${sim.cargas.length}`;
+}
+
 export function lecturasHud(sim, estado, config, puntajeFinal = null) {
   const orbita = sim.stage === ORBITA;
   const jefe = sim.enemies.find((e) => e.type === 'dreadnought_boss');
@@ -24,9 +33,10 @@ export function lecturasHud(sim, estado, config, puntajeFinal = null) {
     score: String(score).padStart(6, '0'),
     combo: Math.min(4, 1 + Math.floor(sim.combo / 5)),
     tierra: textoAnosHud(sim.elapsedSeconds, config),
-    objetivo: orbita ? sim.sectorName : sim.beaconAcquired ? 'BEACON SECURED // BOARD THE RANGER [E]' : 'RETRIEVE MILLER BEACON',
+    objetivo: orbita ? sim.sectorName : objetivoSuperficie(sim),
     balizaAsegurada: sim.beaconAcquired,
-    altitud: `▲ ${Math.round(sim.altitude)}m / 10,000m`,
+    altitud: `${(Math.min(sim.targetAltitude, sim.altitude) / 1000).toFixed(1)} km`,
+    sector: `S${sim.sector}`,
     progreso: Math.round((Math.min(sim.targetAltitude, sim.altitude) / sim.targetAltitude) * 100),
     escudo: Math.round(sim.shipShield),
     casco: Math.round(sim.shipHealth),
@@ -223,6 +233,11 @@ export function crearHud(raiz) {
     ultimo[`ancho-${clave}`] = pct;
     hud[clave].style.width = `${Math.max(0, pct)}%`;
   };
+  const alto = (clave, pct) => {
+    if (ultimo[`alto-${clave}`] === pct || !hud[clave]) return;
+    ultimo[`alto-${clave}`] = pct;
+    hud[clave].style.height = `${Math.max(0, pct)}%`;
+  };
   const programar = (fn, ms) => temporizadores.push(setTimeout(fn, ms));
 
   // El HUD se alinea al canvas (que puede tener franjas a los costados), no al visor.
@@ -251,9 +266,11 @@ export function crearHud(raiz) {
     texto('tierra', l.tierra);
     texto('objetivo', l.objetivo);
     capa.toggleAttribute('data-baliza-asegurada', l.balizaAsegurada && !l.orbita);
+    $('[data-hud-objetivo-fila]').hidden = l.orbita;
     $('[data-hud-ascenso]').hidden = !l.orbita;
+    texto('sector', l.sector);
     texto('altitud', l.altitud);
-    ancho('progreso', l.progreso);
+    alto('progreso', l.progreso);
 
     $('[data-vitales="superficie"]').hidden = l.orbita;
     $('[data-vitales="orbita"]').hidden = !l.orbita;

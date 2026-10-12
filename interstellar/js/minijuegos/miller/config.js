@@ -109,14 +109,29 @@ export const CONFIG = congelar({
     intervaloSpawn: [3.5, 5.5],
     maxVivos: 6,
     // Con la baliza la huida aprieta: emboscada al recogerla, mas enemigos y mas seguido.
-    huida: { maxVivos: 10, intervalo: [1.2, 2.2], emboscada: 4 },
+    huida: { maxVivos: 10, intervalo: [1.2, 2.2], emboscada: 4, porCarga: { maxVivos: 2, factorIntervalo: 0.85 } },
     distanciaSpawn: [460, 620],
-    probabilidadDron: 0.55,
+    probabilidades: { dron: 0.45, alimana: 0.3, cangrejo: 0.25 },
     puntos: 200,
     probabilidadCelda: 0.3,
     dron: { hp: 60, z: 28, vel: 90, distancia: 190, rangoDisparo: 520, cadencia: 1.9, danio: 12, velBala: 330 },
+    cangrejo: { hp: 30, vel: 170, rangoArmado: 40, armado: 0.5, radioExplosion: 60, danio: 22 },
     alimana: { hp: 45, velSumergida: 120, rangoSalto: 150, velSalto: 260, gravedad: 860, radioMordida: 30, danioMordida: 18, danioEscupida: 10, velEscupida: 300, enfriamiento: 2.5 },
     autoapuntado: { rango: 320, cono: 0.87 },
+  },
+
+  // Fase 1 (nuevo): ademas de la baliza, 2 cargas mas; se llevan de a una al Ranger y cada carga hace retroceder la ola.
+  carga: { extras: 2, distanciaExtra: [1200, 1500], separacionAngular: [0.9, 1.3], retrasoOla: 600, factorVelocidad: 0.85, distanciaEscombros: 90 },
+
+  // Obstaculos de la fase 1 (nuevo): escombros solidos que se saltan, geiseres que lanzan y chatarra electrificada.
+  obstaculos: {
+    radioJugador: 14,
+    alturaSalto: 20,
+    lejosDelRanger: 200,
+    lejosDeCargas: 110,
+    anillo: [220, 1400],
+    geiser: { cantidad: 10, radio: 36, periodo: [3.5, 5], aviso: 1, erupcion: 0.6, danio: 15, impulso: 420, empuje: 180 },
+    chatarra: { cantidad: 8, radio: [40, 55], apagada: 1.6, aviso: 0.4, activa: 1.2, danio: 8, tick: 0.5 },
   },
 
   // Radar tactico del HUD (radio en px del radar; alcances en px del mundo).

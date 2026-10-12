@@ -1,10 +1,10 @@
-// Fauna de la Fase 1: drones (bio_drone) y alimanas (trench_lurker). El original declaraba estos tipos
-// y sus estados (submerged, leap) pero nunca los implemento; el comportamiento es nuevo, con el estilo del juego.
-import { CONFIG } from '../config.js';
+// Fauna de la Fase 1: drones (bio_drone), alimanas (trench_lurker) y cangrejos kamikaze (tide_crab, nuevo).
+// El original declaraba los dos primeros y sus estados (submerged, leap) pero nunca los implemento; el comportamiento es nuevo.
+import { CONFIG, ANIM, PALETA_PIXEL } from '../config.js';
 import { sonar, onda } from './efectos.js';
 import { aplicarDanio } from './danio.js';
 
-const TIPOS = ['bio_drone', 'trench_lurker'];
+const TIPOS = ['bio_drone', 'trench_lurker', 'tide_crab'];
 
 export const esFauna = (e) => TIPOS.includes(e.type);
 
@@ -50,15 +50,39 @@ export function crearAlimana(sim, x, y, { alimana: A } = CONFIG.fauna) {
   };
 }
 
+export function crearCangrejo(sim, x, y, { cangrejo: K } = CONFIG.fauna) {
+  return {
+    id: sim.nextEnemyId++,
+    type: 'tide_crab',
+    x,
+    y,
+    z: 0,
+    vx: 0,
+    vy: 0,
+    vz: 0,
+    hp: K.hp,
+    maxHp: K.hp,
+    facing: 1,
+    attackTimer: 0,
+    stateTimer: 0,
+    state: 'corre',
+    flashTimer: 0,
+  };
+}
+
+// En la huida, cada carga a bordo suma enemigos vivos y acorta el intervalo de aparicion.
+function topeVivos(sim, F) {
+  return sim.huida ? F.huida.maxVivos + F.huida.porCarga.maxVivos * sim.cargasCargadas : F.maxVivos;
+}
+
 // Aparecen fuera de pantalla alrededor del jugador; con la baliza recogida, mas seguido.
 export function generarFauna(sim, dt, config, rng) {
   const F = config.fauna;
   if (sim.elapsedSeconds < F.primerSpawnS) return;
   sim.faunaTimer -= dt;
   if (sim.faunaTimer > 0) return;
-  sim.faunaTimer = entre(rng, sim.beaconAcquired ? F.huida.intervalo : F.intervaloSpawn);
-  const tope = sim.beaconAcquired ? F.huida.maxVivos : F.maxVivos;
-  if (sim.enemies.filter(esFauna).length >= tope) return;
+  sim.faunaTimer = sim.huida ? entre(rng, F.huida.intervalo) * F.huida.porCarga.factorIntervalo ** sim.cargasCargadas : entre(rng, F.intervaloSpawn);
+  if (sim.enemies.filter(esFauna).length >= topeVivos(sim, F)) return;
   aparecerUno(sim, F, rng);
 }
 
@@ -67,13 +91,16 @@ function aparecerUno(sim, F, rng) {
   const distancia = entre(rng, F.distanciaSpawn);
   const x = sim.playerX + Math.cos(angulo) * distancia;
   const y = sim.playerY + Math.sin(angulo) * distancia;
-  sim.enemies.push(rng() < F.probabilidadDron ? crearDron(sim, x, y, F) : crearAlimana(sim, x, y, F));
+  const tirada = rng();
+  const P = F.probabilidades;
+  const crear = tirada < P.dron ? crearDron : tirada < P.dron + P.alimana ? crearAlimana : crearCangrejo;
+  sim.enemies.push(crear(sim, x, y, F));
 }
 
-// Al recoger la baliza: una tanda de enemigos alrededor del jugador, sin pasar el tope de la huida.
+// Al recoger cada carga: una tanda de enemigos alrededor del jugador, sin pasar el tope de la huida.
 export function emboscada(sim, config, rng) {
   const F = config.fauna;
-  const libres = F.huida.maxVivos - sim.enemies.filter(esFauna).length;
+  const libres = F.huida.maxVivos + F.huida.porCarga.maxVivos * sim.cargasCargadas - sim.enemies.filter(esFauna).length;
   for (let i = 0; i < Math.min(F.huida.emboscada, libres); i++) aparecerUno(sim, F, rng);
 }
 
@@ -162,6 +189,41 @@ function moverAlimana(sim, e, dt, A, rng) {
   }
 }
 
+// Corre por el suelo hacia el jugador; cerca se arma (titila) y explota. Saltando o lejos, la explosion no alcanza.
+function moverCangrejo(sim, e, i, dt, K, rng) {
+  const dx = sim.playerX - e.x;
+  const dy = sim.playerY - e.y;
+  const d = Math.hypot(dx, dy) || 1;
+  e.facing = dx >= 0 ? 1 : -1;
+
+  if (e.state === 'corre') {
+    e.x += (dx / d) * K.vel * dt;
+    e.y += (dy / d) * K.vel * dt;
+    if (d < K.rangoArmado) {
+      e.state = 'armado';
+      e.stateTimer = K.armado;
+      sonar(sim, 'playTargetLock');
+    }
+    return;
+  }
+
+  e.stateTimer -= dt;
+  e.flashTimer = Math.floor(e.stateTimer * 16) % 2 ? 0.05 : 0;
+  if (e.stateTimer > 0) return;
+  sim.enemies.splice(i, 1);
+  sim.screenShake = ANIM.shake.medio;
+  sonar(sim, 'playExplosion', true);
+  onda(sim, e.x, e.y, 70, 110, 'rgba(201, 75, 50, 0.85)');
+  for (let p = 0; p < 16; p++) {
+    const a = rng() * Math.PI * 2;
+    const spd = 80 + rng() * 160;
+    sim.particles.push({ x: e.x, y: e.y - 4, vx: Math.cos(a) * spd, vy: Math.sin(a) * spd, life: 0.5, maxLife: 0.5, color: p % 2 ? PALETA_PIXEL.P15 : PALETA_PIXEL.P14, size: 2 + rng() * 3 });
+  }
+  if (!sim.isDying && sim.playerZ < 30 && Math.hypot(sim.playerX - e.x, sim.playerY - e.y) < K.radioExplosion) {
+    aplicarDanio(sim, K.danio, e.x, e.y, 'damage', rng);
+  }
+}
+
 export function moverFauna(sim, dt, config, rng) {
   const F = config.fauna;
   const dirX = Math.cos(sim.waveAngle);
@@ -180,6 +242,7 @@ export function moverFauna(sim, dt, config, rng) {
     }
 
     if (e.type === 'bio_drone') moverDron(sim, e, dt, F.dron);
+    else if (e.type === 'tide_crab') moverCangrejo(sim, e, i, dt, F.cangrejo, rng);
     else moverAlimana(sim, e, dt, F.alimana, rng);
   }
 }

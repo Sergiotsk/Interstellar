@@ -20,8 +20,10 @@ function radarSuperficie(sim, { radio, alcanceSuperficie }) {
   const cy = sim.playerY;
   const contactos = [];
 
-  // Baliza y Ranger se clavan en el borde: marcan hacia donde ir aunque esten lejos.
-  if (!sim.beaconAcquired) agregar(contactos, 'baliza', proyectar(sim.beaconX - cx, sim.beaconY - cy, escala, radio, true));
+  // Cargas en el suelo y Ranger se clavan en el borde: marcan hacia donde ir aunque esten lejos.
+  for (const c of sim.cargas) {
+    if (c.estado === 'suelo') agregar(contactos, 'baliza', proyectar(c.x - cx, c.y - cy, escala, radio, true));
+  }
   agregar(contactos, 'ranger', proyectar(sim.shipX - cx, sim.shipY - cy, escala, radio, true));
   agregar(contactos, 'case', proyectar(sim.caseX - cx, sim.caseY - cy, escala, radio, false));
   for (const e of sim.enemies) {

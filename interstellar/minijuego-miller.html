@@ -34,46 +34,43 @@
         <div class="mw-lienzo" data-miller-lienzo tabindex="-1"></div>
 
         <div class="mw-hud" data-hud-capa hidden>
-          <!-- Arriba a la izquierda: puntaje y tiempo terrestre -->
-          <div class="mw-panel-hud mw-hud-puntaje">
-            <p class="mw-hud-score"><output data-hud="score">000000</output><span class="mw-combo" data-hud="combo" hidden>x1</span></p>
-            <p class="mw-hud-tierra"><span class="mw-hud-etiqueta">Earth time lost</span> <output data-hud="tierra">0y 0m</output> <span class="mw-licencia">✎ Licencia narrativa</span></p>
+          <!-- Columna izquierda: en desktop no existe (display: contents); en tactil apila puntaje y vitales -->
+          <div class="mw-hud-izquierda">
+            <!-- Arriba a la izquierda: puntaje, tiempo terrestre y objetivo -->
+            <div class="mw-panel-hud mw-hud-puntaje">
+              <p class="mw-hud-score"><output data-hud="score">000000</output><span class="mw-combo" data-hud="combo" hidden>x1</span></p>
+              <p class="mw-hud-tierra"><span class="mw-hud-etiqueta">Earth time lost</span> <output data-hud="tierra">0y 0m</output> <span class="mw-licencia">✎ Licencia narrativa</span></p>
+              <p class="mw-hud-objetivo-texto" data-hud-objetivo-fila><span class="mw-rombo" aria-hidden="true">◆</span> <output data-hud="objetivo">RETRIEVE MILLER BEACON</output></p>
+            </div>
+
+            <!-- Abajo a la izquierda: signos vitales y armas -->
+            <div class="mw-panel-hud mw-hud-vitales">
+              <div data-vitales="superficie">
+                <p class="mw-hud-fila"><span class="mw-hud-etiqueta" data-hud-traje-icono>Suit</span>
+                  <span class="mw-segmentos" data-segmentos="traje" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+                  <output data-hud="traje-pct">100%</output></p>
+                <p class="mw-hud-fila"><span class="mw-hud-etiqueta">Pulse</span> <span class="mw-hud-arma">∞</span></p>
+              </div>
+              <div data-vitales="orbita" hidden>
+                <p class="mw-hud-fila"><span class="mw-hud-etiqueta">Shield</span>
+                  <span class="mw-barrita" aria-hidden="true"><span class="mw-barrita-relleno mw-barrita-relleno--teal" data-hud="escudo"></span></span></p>
+                <p class="mw-hud-fila"><span class="mw-hud-etiqueta mw-hud-etiqueta--naranja">Hull</span>
+                  <span class="mw-barrita" aria-hidden="true"><span class="mw-barrita-relleno mw-barrita-relleno--naranja" data-hud="casco"></span></span></p>
+              </div>
+            </div>
           </div>
 
-          <!-- Arriba al centro: objetivo (y en la fase 2, la altitud) -->
-          <div class="mw-panel-hud mw-hud-objetivo">
-            <p class="mw-hud-objetivo-texto"><span class="mw-rombo" aria-hidden="true">◆</span> <output data-hud="objetivo">RETRIEVE MILLER BEACON</output></p>
-            <div class="mw-hud-ascenso" data-hud-ascenso hidden>
-              <span class="mw-progreso" aria-hidden="true"><span data-hud="progreso"></span></span>
-              <output class="mw-altitud" data-hud="altitud">▲ 0m / 10,000m</output>
-            </div>
+          <!-- Borde derecho: altimetro de la fase 2 (el nombre del sector ya lo anuncia el cartel) -->
+          <div class="mw-hud-altimetro" data-hud-ascenso hidden>
+            <output class="mw-altimetro-sector" data-hud="sector">S1</output>
+            <span class="mw-altimetro-pista" aria-hidden="true"><span data-hud="progreso"></span></span>
+            <output class="mw-altimetro-km" data-hud="altitud">0.0 km</output>
           </div>
 
           <!-- Arriba a la derecha: menu y pantalla completa -->
           <div class="mw-hud-botones">
             <button type="button" class="mw-boton-hud" data-accion="pantalla" hidden>⛶<span class="visualmente-oculto">Pantalla completa</span></button>
             <button type="button" class="mw-boton-hud" data-accion="menu">Menu</button>
-          </div>
-
-          <!-- Abajo a la izquierda: signos vitales y armas -->
-          <div class="mw-panel-hud mw-hud-vitales">
-            <div data-vitales="superficie">
-              <p class="mw-hud-fila"><span class="mw-hud-etiqueta" data-hud-traje-icono>Suit</span>
-                <span class="mw-segmentos" data-segmentos="traje" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
-                <output data-hud="traje-pct">100%</output></p>
-              <p class="mw-hud-fila"><span class="mw-hud-etiqueta">Pulse</span> <span class="mw-hud-arma">∞</span></p>
-            </div>
-            <div data-vitales="orbita" hidden>
-              <p class="mw-hud-fila"><span class="mw-hud-etiqueta">Shield</span>
-                <span class="mw-barrita" aria-hidden="true"><span class="mw-barrita-relleno mw-barrita-relleno--teal" data-hud="escudo"></span></span></p>
-              <p class="mw-hud-fila"><span class="mw-hud-etiqueta mw-hud-etiqueta--naranja">Hull</span>
-                <span class="mw-barrita" aria-hidden="true"><span class="mw-barrita-relleno mw-barrita-relleno--naranja" data-hud="casco"></span></span></p>
-              <p class="mw-hud-fila"><span class="mw-hud-etiqueta mw-hud-etiqueta--violeta">Cannon</span> <output class="mw-canon" data-hud="canon">LV1 DUAL</output></p>
-              <p class="mw-hud-fila mw-hud-municion">
-                <button type="button" class="mw-chip mw-chip--naranja" data-accion="misil">⌖ <span data-hud="misiles">8</span> <kbd>Q</kbd></button>
-                <button type="button" class="mw-chip mw-chip--violeta" data-accion="emp">✹ <span data-hud="bombas">2</span> <kbd>B</kbd></button>
-              </p>
-            </div>
           </div>
 
           <!-- Abajo a la derecha: el radar tactico de verdad -->

@@ -4,6 +4,7 @@ import { ANIM, PALETA_PIXEL, TOKENS_HUD } from '../config.js';
 import { sonar, mostrarBanner } from './efectos.js';
 import { aplicarDanio } from './danio.js';
 import { resultadoVictoria } from './puntaje.js';
+import { iniciarFormacion, actualizarFormacion } from './sancor.js';
 
 const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
@@ -321,7 +322,11 @@ export function actualizarOrbita(sim, entrada, dt, config, rng, dims) {
     mostrarBanner(sim, 'TITAN SENTINEL DREADNOUGHT', 'DEFEAT TO CLEAR DOCKING VECTOR', PALETA_PIXEL.P15, 3.0, true);
   }
 
-  if (sim.enemySpawnTimer <= 0 && (!sim.bossActive || sim.enemies.length < 5)) {
+  // Jefe final: el show de drones entra a la altitud objetivo, una vez caido el Dreadnought.
+  if (altitude >= sim.targetAltitude && !sim.formacion && !sim.formacionDerribada && !sim.bossActive) iniciarFormacion(sim, dims);
+  if (sim.formacion) actualizarFormacion(sim, dt, rng);
+
+  if (sim.enemySpawnTimer <= 0 && !sim.formacion && (!sim.bossActive || sim.enemies.length < 5)) {
     sim.enemySpawnTimer = 1.8 + rng() * 1.2;
     generarOleada(sim, rng, ancho);
   }
@@ -330,7 +335,7 @@ export function actualizarOrbita(sim, entrada, dt, config, rng, dims) {
   moverEnemigos(sim, dt, rng, dims);
 
   // 7. Llegada de la Endurance y acople.
-  if (altitude >= sim.targetAltitude && !sim.enduranceDescending) {
+  if (altitude >= sim.targetAltitude && sim.formacionDerribada && !sim.enduranceDescending) {
     sim.enduranceDescending = true;
     sim.scrollSpeed = 60;
     sonar(sim, 'playBannerImpact');

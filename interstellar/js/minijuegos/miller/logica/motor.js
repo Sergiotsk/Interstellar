@@ -66,9 +66,10 @@ export function actualizar(sim, entrada, dt, config, rng, dims) {
     if (sim.comboTimer <= 0) sim.combo = 0;
   }
 
-  // Regeneracion: escudo de la nave o traje (este tras 4 s sin danio).
+  // Regeneracion: escudo de la nave (tras 2.5 s sin danio) o traje (tras 4 s).
   if (sim.controlMode === 'SHIP') {
-    if (sim.shipShield < 100) sim.shipShield = Math.min(100, sim.shipShield + dt * 12);
+    if (sim.shipShieldRegenDelay > 0) sim.shipShieldRegenDelay -= dt;
+    else if (sim.shipShield < 100) sim.shipShield = Math.min(100, sim.shipShield + dt * 12);
   } else if (sim.playerShieldRegenDelay > 0) {
     sim.playerShieldRegenDelay -= dt;
   } else if (sim.playerShieldHp < 100) {

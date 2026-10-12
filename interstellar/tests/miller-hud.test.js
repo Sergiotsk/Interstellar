@@ -8,30 +8,36 @@ import { lecturasHud } from '../js/minijuegos/miller/hud.js';
 const sim = (cambios = {}) => Object.assign(crearSim(CONFIG, crearRng(1), { ancho: 960, alto: 540 }), cambios);
 
 describe('miller/hud.js — lecturas del HUD flotante', () => {
-  test('superficie: objetivo de la baliza, traje y ayuda de controles de la fase 1', () => {
+  test('superficie: objetivo de las cargas, traje y ayuda de controles de la fase 1', () => {
     const l = lecturasHud(sim({ phase: 'EXPLORATION' }), 'PLAYING', CONFIG);
     assert.equal(l.orbita, false);
-    assert.equal(l.objetivo, 'RETRIEVE MILLER BEACON');
+    assert.equal(l.objetivo, 'RETRIEVE CARGO 0/3');
     assert.equal(l.traje, 100);
     assert.equal(l.score, '000000');
     assert.match(l.ayuda, /SPACE: Jump/);
   });
 
-  test('baliza asegurada: el objetivo pasa a volver al Ranger', () => {
-    const l = lecturasHud(sim({ beaconAcquired: true }), 'PLAYING', CONFIG);
-    assert.equal(l.objetivo, 'BEACON SECURED // BOARD THE RANGER [E]');
+  test('llevando una carga: el objetivo es cargarla en el Ranger', () => {
+    assert.equal(lecturasHud(sim({ cargando: 'caja_negra', cargasCargadas: 1 }), 'PLAYING', CONFIG).objetivo, 'CARRYING BLACK BOX → LOAD AT RANGER');
+    assert.equal(lecturasHud(sim({ cargasCargadas: 2 }), 'PLAYING', CONFIG).objetivo, 'RETRIEVE CARGO 2/3');
+  });
+
+  test('carga completa: el objetivo pasa a subir al Ranger', () => {
+    const l = lecturasHud(sim({ beaconAcquired: true, cargasCargadas: 3 }), 'PLAYING', CONFIG);
+    assert.equal(l.objetivo, 'ALL CARGO LOADED // BOARD THE RANGER [E]');
     assert.equal(l.balizaAsegurada, true);
   });
 
   test('orbita: sector como objetivo, altitud, barras, armas y ayuda de la fase 2', () => {
     const l = lecturasHud(
-      sim({ stage: 'MISSION_2_ORBITAL_ASCENT', sectorName: 'SECTOR 2: STRATOSPHERIC FIGHTERS', altitude: 2500, shipShield: 60, shipHealth: 80, weaponPowerLevel: 2, combo: 12, aerialInterceptorsDowned: 3 }),
+      sim({ stage: 'MISSION_2_ORBITAL_ASCENT', sector: 2, sectorName: 'SECTOR 2: STRATOSPHERIC FIGHTERS', altitude: 2500, shipShield: 60, shipHealth: 80, weaponPowerLevel: 2, combo: 12, aerialInterceptorsDowned: 3 }),
       'PLAYING',
       CONFIG,
     );
     assert.equal(l.orbita, true);
     assert.equal(l.objetivo, 'SECTOR 2: STRATOSPHERIC FIGHTERS');
-    assert.equal(l.altitud, '▲ 2500m / 10,000m');
+    assert.equal(l.altitud, '2.5 km');
+    assert.equal(l.sector, 'S2');
     assert.equal(l.progreso, 25);
     assert.equal(l.escudo, 60);
     assert.equal(l.casco, 80);
