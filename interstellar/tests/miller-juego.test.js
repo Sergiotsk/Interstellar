@@ -119,12 +119,13 @@ describe('superficie.js — Fase 1 a pie', () => {
     assert.ok(sonidos(sim).includes('playBeaconSonar'));
   });
 
-  test('recoger la baliza: RETRIEVED, ola a 115 y banner naranja', () => {
+  test('recoger la baliza: se lleva encima, RETRIEVED, ola a 115 y banner naranja', () => {
     const sim = nueva();
     sim.playerX = sim.beaconX;
     sim.playerY = sim.beaconY + 40;
     superficie(sim, QUIETO, DT);
-    assert.equal(sim.beaconAcquired, true);
+    assert.equal(sim.cargando, 'baliza');
+    assert.equal(sim.beaconAcquired, false, 'la mision pide las 3 cargas a bordo');
     assert.equal(sim.phase, 'RETRIEVED');
     assert.equal(sim.waveSpeed, CONFIG.waveSpeedFlight);
     assert.equal(sim.banner.text, '¡BALIZA DE MILLER RECUPERADA!');
@@ -248,6 +249,7 @@ describe('orbita.js — transicion y Fase 2', () => {
   test('a 10.000 m baja la Endurance, atrae al Ranger y termina en VICTORY', () => {
     const sim = enOrbita();
     sim.altitude = 10000;
+    sim.formacionDerribada = true;
     orbita(sim, QUIETO, 12);
     assert.equal(sim.enduranceDescending, true);
     assert.equal(sim.stage, 'VICTORY_ENDURANCE_DOCKED');
@@ -338,6 +340,16 @@ describe('proyectiles.js — impactos y caidas', () => {
 });
 
 describe('motor.js — update completo', () => {
+  test('el escudo de la nave no regenera mientras dura la pausa tras un golpe; despues si', () => {
+    const sim = enOrbita();
+    Object.assign(sim, { shipShield: 20, shipShieldRegenDelay: 1 });
+    actualizar(sim, QUIETO, 0.5, CONFIG, rng(), DIMS);
+    assert.equal(sim.shipShield, 20);
+    actualizar(sim, QUIETO, 0.5, CONFIG, rng(), DIMS);
+    actualizar(sim, QUIETO, 0.5, CONFIG, rng(), DIMS);
+    assert.ok(sim.shipShield > 20);
+  });
+
   test('el hit-stop congela el paso', () => {
     const sim = nueva();
     sim.hitStopMsRemaining = 50;

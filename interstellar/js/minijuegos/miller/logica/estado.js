@@ -1,5 +1,7 @@
 // Estado inicial de la mision: initGame del original con el azar inyectado (rng en lugar de Math.random).
 // Unica diferencia: la superficie arranca sin el bio_drone invisible del original (R7 c).
+import { crearCargas } from './carga.js';
+import { crearObstaculos } from './obstaculos-superficie.js';
 
 export function crearSim(config, rng, { ancho, alto }) {
   const obstacleCount = config.debrisObstacleCount;
@@ -32,6 +34,11 @@ export function crearSim(config, rng, { ancho, alto }) {
     });
   }
 
+  // Lo nuevo consume rng DESPUES de las estrellas: la baliza, los restos y el cielo de cada semilla no cambian.
+  const cargas = crearCargas(config, rng, bX, bY, beaconAngle);
+  const { geiseres, chatarra } = crearObstaculos(config, rng, cargas);
+  const lejosDeCargas = (d) => d.isMain || cargas.every((c) => Math.hypot(d.x - c.x, d.y - c.y) > config.carga.distanciaEscombros);
+
   return {
     stage: 'MISSION_1_SURFACE',
     controlMode: 'FOOT',
@@ -45,6 +52,7 @@ export function crearSim(config, rng, { ancho, alto }) {
     shipHealth: 100,
     shipMaxHealth: 100,
     shipShield: 100,
+    shipShieldRegenDelay: 0,
     shipWeaponCooldown: 0,
     shipMissileCooldown: 0,
     shipBoardPrompt: false,
@@ -69,6 +77,11 @@ export function crearSim(config, rng, { ancho, alto }) {
     bossHp: 650,
     bossMaxHp: 650,
     bossPhase: 1,
+
+    formacion: null,
+    formacionDerribada: false,
+    dronesSancor: 0,
+    puntosSancor: 0,
 
     enduranceX: ancho / 2,
     enduranceY: -280,
@@ -129,8 +142,13 @@ export function crearSim(config, rng, { ancho, alto }) {
     landerY: 0,
     beaconX: bX,
     beaconY: bY,
+    // beaconAcquired = toda la carga a bordo (lo que habilita el despegue).
     beaconAcquired: false,
     lastSonarTime: 0,
+    cargas,
+    cargando: null,
+    cargasCargadas: 0,
+    huida: false,
 
     waveAngle: waveDir,
     waveDistance: config.waveInitialDistance,
@@ -145,7 +163,9 @@ export function crearSim(config, rng, { ancho, alto }) {
     casings: [],
     ripples: [],
     waterParticles: [],
-    debris,
+    debris: debris.filter(lejosDeCargas),
+    geiseres,
+    chatarra,
 
     enemySpawnTimer: 2.2,
     faunaTimer: 0,

@@ -17,7 +17,7 @@ export function textoAnosHud(segundos, config) {
 }
 
 export function puntajeEnVivo(sim) {
-  return Math.max(0, Math.floor(sim.altitude * 2.5) + sim.enemiesDestroyed * 200 + sim.aerialInterceptorsDowned * 350);
+  return Math.max(0, Math.floor(sim.altitude * 2.5) + sim.enemiesDestroyed * 200 + sim.aerialInterceptorsDowned * 350 + (sim.puntosSancor ?? 0));
 }
 
 export function puntajeFallo(sim) {
@@ -31,6 +31,7 @@ export function puntajeVictoria(sim) {
       Math.floor(sim.elapsedSeconds * 25) +
       sim.enemiesDestroyed * 200 +
       sim.aerialInterceptorsDowned * 400 +
+      (sim.puntosSancor ?? 0) +
       (sim.caseAssisting ? 3000 : 0),
   );
 }

@@ -3,6 +3,7 @@ import { ANIM, CONFIG, PALETA_PIXEL } from '../config.js';
 import { sonar, textoFlotante, mostrarBanner } from './efectos.js';
 import { aplicarDanio } from './danio.js';
 import { esFauna } from './fauna.js';
+import { impactarFormacion } from './sancor.js';
 
 const ORBITA = 'MISSION_2_ORBITAL_ASCENT';
 
@@ -121,6 +122,11 @@ export function actualizarProyectiles(sim, dt, rng, { ancho, alto }, F = CONFIG.
         sim.bullets.splice(bIdx, 1);
         if (sim.slideTimer <= 0 && !sim.isDying) aplicarDanio(sim, b.damage, b.x, b.y, 'damage', rng);
       }
+      continue;
+    }
+
+    if (sim.stage === ORBITA && impactarFormacion(sim, b, dt, rng)) {
+      sim.bullets.splice(bIdx, 1);
       continue;
     }
 

@@ -10,19 +10,23 @@ import {
   renderSleekRanger,
   renderBullet,
   renderDynamicOceanBody,
-  renderSleekBeacon,
   renderSleekCase,
   renderEnhancedMegatidalWave,
   renderExpressiveAstronaut,
   renderHitMarkers,
   renderFloatingTexts,
 } from './funciones.js';
-import { renderBioDrone, renderTrenchLurker, renderMira } from './fauna.js';
+import { renderBioDrone, renderTrenchLurker, renderTideCrab, renderMira } from './fauna.js';
+import { renderShowDrones } from './sancor.js';
+import { renderNaveRota } from './nave-rota.js';
+import { renderCargaEnSuelo, renderCargaLlevada } from './cargas.js';
+import { renderObstaculosSuperficie } from './obstaculos-superficie.js';
 
 const ETAPAS_ESPACIO = ['MISSION_2_ORBITAL_ASCENT', 'VICTORY_ENDURANCE_DOCKED', 'MISSION_TRANSITION'];
 
 function dibujarEspacio(ctx, sim, time, canvasWidth, canvasHeight) {
   renderShmupSpaceBackground(ctx, sim.stars, sim.sector, sim.altitude, time, canvasWidth, canvasHeight);
+  renderShowDrones(ctx, sim.formacion, time);
 
   if (sim.enduranceDescending || sim.stage === 'VICTORY_ENDURANCE_DOCKED') {
     renderEnduranceMothership(ctx, sim.enduranceX, sim.enduranceY, sim.enduranceRot, sim.enduranceDocked ? 1.0 : sim.dockingLerp, time);
@@ -32,7 +36,11 @@ function dibujarEspacio(ctx, sim, time, canvasWidth, canvasHeight) {
   for (const drop of sim.drops) renderDropItem(ctx, drop, time);
   for (const enemy of sim.enemies) renderShmupEnemy(ctx, enemy, time);
 
-  renderSleekRanger(ctx, sim.shipX, sim.shipY, sim.shipAngle, sim.shipRoll, true, true, false, false, false, time, sim.shipShield, sim.weaponPowerLevel);
+  if (sim.isDying) {
+    renderNaveRota(ctx, sim.shipX, sim.shipY, sim.shipAngle, 1 - sim.deathTimer / sim.deathMaxTimer, time);
+  } else {
+    renderSleekRanger(ctx, sim.shipX, sim.shipY, sim.shipAngle, sim.shipRoll, true, true, false, false, false, time, sim.shipShield, sim.weaponPowerLevel);
+  }
 
   for (const b of sim.bullets) renderBullet(ctx, b);
 
@@ -60,7 +68,8 @@ function dibujarSuperficie(ctx, sim, time, canvasWidth, canvasHeight) {
     ctx.restore();
   }
 
-  if (!sim.beaconAcquired) renderSleekBeacon(ctx, sim.beaconX, sim.beaconY, time);
+  renderObstaculosSuperficie(ctx, sim, time);
+  for (const c of sim.cargas) if (c.estado === 'suelo') renderCargaEnSuelo(ctx, c, time);
 
   renderSleekCase(ctx, sim.caseX, sim.caseY, sim.caseAnim, sim.caseAssisting, time);
   renderEnhancedMegatidalWave(ctx, sim.waveAngle, sim.waveDistance, time);
@@ -92,6 +101,7 @@ function dibujarSuperficie(ctx, sim, time, canvasWidth, canvasHeight) {
   }
   for (const e of sim.enemies) {
     if (e.type === 'bio_drone') renderBioDrone(ctx, e, time);
+    else if (e.type === 'tide_crab') renderTideCrab(ctx, e, time);
     else if (e.type === 'trench_lurker' && e.state !== 'submerged') renderTrenchLurker(ctx, e, time);
   }
 
@@ -114,6 +124,7 @@ function dibujarSuperficie(ctx, sim, time, canvasWidth, canvasHeight) {
     sim.isDying,
     Math.min(1, Math.max(0, 1 - sim.deathTimer / sim.deathMaxTimer)),
   );
+  renderCargaLlevada(ctx, sim, time);
 
   for (const b of sim.bullets) renderBullet(ctx, b);
 

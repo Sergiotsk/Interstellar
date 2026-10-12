@@ -1,10 +1,10 @@
 // Fase 1 a pie: bloque MISSION_1_SURFACE del update() original (App.tsx 3669-3933), con rng en lugar de Math.random.
 // Devuelve 'muerto' si la ola alcanzo al jugador en este paso (el original hacia return).
-import { ANIM, PALETA_PIXEL } from '../config.js';
-import { sonar, onda, mostrarBanner } from './efectos.js';
+import { sonar, onda } from './efectos.js';
 import { matarJugador } from './danio.js';
-import { TEXTOS } from './textos.js';
-import { generarFauna, moverFauna, esFauna, emboscada } from './fauna.js';
+import { generarFauna, moverFauna, esFauna } from './fauna.js';
+import { actualizarCargas } from './carga.js';
+import { actualizarObstaculos } from './obstaculos-superficie.js';
 
 const angulo = (a) => Math.atan2(Math.sin(a), Math.cos(a));
 // Una alimana sumergida no se puede apuntar ni recibe disparos.
@@ -131,7 +131,8 @@ export function actualizarSuperficie(sim, entrada, dt, config, rng) {
     const jumpVel = config.jumpVelocity;
 
     if (sim.caseBoostTimer > 0) sim.caseBoostTimer -= dt;
-    const effectiveMaxSpeed = sim.caseBoostTimer > 0 ? sprintSpeed : baseSpeed;
+    const llevando = sim.cargando ? config.carga.factorVelocidad : 1;
+    const effectiveMaxSpeed = (sim.caseBoostTimer > 0 ? sprintSpeed : baseSpeed) * llevando;
 
     const canJump = (sim.isGrounded || sim.coyoteTimer > 0) && sim.jumpBufferTimer > 0;
     if (canJump && sim.playerStunTimer <= 0) {
@@ -186,6 +187,9 @@ export function actualizarSuperficie(sim, entrada, dt, config, rng) {
     }
   }
 
+  // Obstaculos despues de mover: los escombros corrigen la posicion de este paso.
+  actualizarObstaculos(sim, dt, config, rng);
+
   // Armas a pie.
   if (sim.fireCooldown > 0) sim.fireCooldown -= dt;
   if (sim.shootFlashTimer > 0) sim.shootFlashTimer -= dt;
@@ -213,25 +217,8 @@ export function actualizarSuperficie(sim, entrada, dt, config, rng) {
     }
   }
 
-  // Baliza: sonar por distancia y recogida.
-  const distToBeacon = Math.hypot(sim.playerX - sim.beaconX, sim.playerY - sim.beaconY);
-  if (!sim.beaconAcquired) {
-    const sonarInterval = Math.max(0.3, Math.min(1.8, distToBeacon / 480));
-    if (sim.elapsedSeconds - sim.lastSonarTime >= sonarInterval) {
-      sim.lastSonarTime = sim.elapsedSeconds;
-      sonar(sim, 'playBeaconSonar', Math.min(2.0, Math.max(0.8, 1.8 - distToBeacon / 600)));
-    }
-
-    if (distToBeacon <= config.beaconPickupRadius) {
-      sim.beaconAcquired = true;
-      sim.phase = 'RETRIEVED';
-      sim.waveSpeed = config.waveSpeedFlight;
-      sim.screenShake = ANIM.shake.fuerte * 2;
-      sonar(sim, 'playBeaconAcquired');
-      mostrarBanner(sim, TEXTOS.baliza[0], TEXTOS.baliza[1], PALETA_PIXEL.P13, 2.5, true);
-      emboscada(sim, config, rng);
-    }
-  }
+  // Cargas: sonar, recoger de a una y cargarlas en el Ranger.
+  actualizarCargas(sim, config, rng);
 
   // CASE: impulso al alcanzarlo y despues sigue al jugador.
   const distToCase = Math.hypot(sim.playerX - sim.caseX, sim.playerY - sim.caseY);

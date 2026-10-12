@@ -3,13 +3,35 @@ import { ANIM, PALETA_PIXEL } from '../config.js';
 import { sonar, textoFlotante, mostrarBanner } from './efectos.js';
 import { TEXTOS } from './textos.js';
 
+export const ESCUDO_NAVE_PAUSA_S = 2.5; // segundos sin danio antes de que el escudo de la nave regenere
+
+// Pedazos de ceramica que saltan de la grieta (el eje de la nave) hacia los costados.
+function escombrosDelCasco(sim, x, y, rng) {
+  for (let i = 0; i < 16; i++) {
+    const lado = i % 2 ? 1 : -1;
+    const spd = 50 + rng() * 140;
+    sim.particles.push({
+      x: x + (rng() - 0.5) * 8,
+      y: y - 50 + rng() * 75,
+      vx: lado * spd,
+      vy: (rng() - 0.5) * 90,
+      life: 1.0 + rng() * 0.8,
+      maxLife: 1.8,
+      color: i % 4 === 0 ? PALETA_PIXEL.P14 : i % 4 === 1 ? PALETA_PIXEL.P9 : PALETA_PIXEL.P8,
+      size: 2.5 + rng() * 2.5,
+      escombro: true,
+    });
+  }
+}
+
 export function matarJugador(sim, reason = 'damage', rng) {
   if (sim.isDying) return;
 
+  const enNave = sim.controlMode === 'SHIP';
   sim.isDying = true;
   sim.deathReason = reason;
-  sim.deathTimer = 1.6;
-  sim.deathMaxTimer = 1.6;
+  // En la nave dura mas: hay que ver como se parte el casco (render/nave-rota.js).
+  sim.deathTimer = sim.deathMaxTimer = enNave ? 2.2 : 1.6;
   sim.state = 'dying';
   sim.playerShieldHp = 0;
   sim.shipHealth = 0;
@@ -25,8 +47,9 @@ export function matarJugador(sim, reason = 'damage', rng) {
   const [texto, sub] = reason === 'damage' ? TEXTOS.colapso : TEXTOS.alcanzado;
   mostrarBanner(sim, texto, sub, PALETA_PIXEL.P15, 1.6, true);
 
-  const px = sim.controlMode === 'SHIP' ? sim.shipX : sim.playerX;
-  const py = sim.controlMode === 'SHIP' ? sim.shipY : sim.playerY;
+  const px = enNave ? sim.shipX : sim.playerX;
+  const py = enNave ? sim.shipY : sim.playerY;
+  if (enNave) escombrosDelCasco(sim, px, py, rng);
   for (let i = 0; i < 36; i++) {
     const angle = (Math.PI * 2 * i) / 36;
     const spd = 60 + rng() * 180;
@@ -48,12 +71,17 @@ export function aplicarDanio(sim, amount, sourceX, sourceY, reason = 'damage', r
   if (sim.slideTimer > 0) return;
 
   if (sim.controlMode === 'SHIP') {
-    if (sim.shipShield > 0) {
-      sim.shipShield = Math.max(0, sim.shipShield - amount);
-      textoFlotante(sim, sim.shipX, sim.shipY - 30, `-${Math.round(amount)} SHIELD`, '#4fd0e0', false);
-    } else {
-      sim.shipHealth = Math.max(0, sim.shipHealth - amount);
-      textoFlotante(sim, sim.shipX, sim.shipY - 30, `-${Math.round(amount)} HULL`, PALETA_PIXEL.P15, true);
+    // El escudo absorbe lo que puede; lo que sobra va al casco. Cada golpe frena su regeneracion.
+    const alEscudo = Math.min(sim.shipShield, amount);
+    const alCasco = amount - alEscudo;
+    sim.shipShieldRegenDelay = ESCUDO_NAVE_PAUSA_S;
+    if (alEscudo > 0) {
+      sim.shipShield -= alEscudo;
+      textoFlotante(sim, sim.shipX, sim.shipY - 30, `-${Math.round(alEscudo)} SHIELD`, '#4fd0e0', false);
+    }
+    if (alCasco > 0) {
+      sim.shipHealth = Math.max(0, sim.shipHealth - alCasco);
+      textoFlotante(sim, sim.shipX, sim.shipY - 30, `-${Math.round(alCasco)} HULL`, PALETA_PIXEL.P15, true);
     }
     sim.screenShake = ANIM.shake.medio;
     sonar(sim, 'playHitMarker', true);

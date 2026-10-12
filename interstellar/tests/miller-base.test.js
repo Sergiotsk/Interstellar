@@ -174,6 +174,31 @@ describe('danio.js — applyPlayerDamage / triggerPlayerDeath', () => {
     assert.equal(sim.floatingTexts.at(-1).text, '-30 HULL');
   });
 
+  test('en la nave: el danio que el escudo no absorbe pasa al casco', () => {
+    const sim = nueva();
+    sim.controlMode = 'SHIP';
+    sim.shipShield = 5;
+    aplicarDanio(sim, 16);
+    assert.equal(sim.shipShield, 0);
+    assert.equal(sim.shipHealth, 89);
+  });
+
+  test('en la nave: un golpe frena la regeneracion del escudo', () => {
+    const sim = nueva();
+    sim.controlMode = 'SHIP';
+    aplicarDanio(sim, 30);
+    assert.ok(sim.shipShieldRegenDelay > 0);
+  });
+
+  test('en la nave: con el casco en cero, muere', () => {
+    const sim = nueva();
+    sim.controlMode = 'SHIP';
+    sim.shipShield = 0;
+    sim.shipHealth = 10;
+    aplicarDanio(sim, 12, 0, 0, 'damage', () => 0.5);
+    assert.equal(sim.isDying, true);
+  });
+
   test('traje en 0: muere con 1.6 s, 36 particulas y el banner de la razon', () => {
     const sim = nueva();
     aplicarDanio(sim, 150, 0, 0, 'wave', crearRng(1));
@@ -183,6 +208,20 @@ describe('danio.js — applyPlayerDamage / triggerPlayerDeath', () => {
     assert.equal(sim.particles.length, 36);
     assert.equal(sim.banner.text, '¡ALCANZADO POR LA OLA!');
     assert.ok(sonidos(sim).includes('playPlayerDeath') && sonidos(sim).includes('stopWaveRumble'));
+  });
+
+  test('nave en 0: el casco se parte; muerte mas larga y escombros del casco', () => {
+    const sim = nueva();
+    sim.controlMode = 'SHIP';
+    Object.assign(sim, { shipShield: 0, shipHealth: 5, shipX: 300, shipY: 400 });
+    aplicarDanio(sim, 20, 0, 0, 'damage', crearRng(1));
+    assert.equal(sim.isDying, true);
+    assert.equal(sim.deathTimer, 2.2);
+    assert.equal(sim.deathMaxTimer, 2.2);
+    const escombros = sim.particles.filter((p) => p.escombro);
+    assert.ok(escombros.length >= 10, `escombros ${escombros.length}`);
+    // Salen de la linea de la grieta: el eje vertical de la nave.
+    assert.ok(escombros.every((p) => Math.abs(p.x - 300) < 10));
   });
 
   test('morir dos veces no hace nada la segunda', () => {
@@ -201,7 +240,7 @@ describe('nave.js — abordar, misiles, EMP y armas', () => {
     abordar(sim);
     assert.equal(sim.controlMode, 'FOOT');
     assert.equal(sim.stage, 'MISSION_1_SURFACE');
-    assert.equal(sim.banner.text, 'BALIZA NO RECUPERADA');
+    assert.equal(sim.banner.text, 'CARGA INCOMPLETA');
   });
 
   test('abordar con baliza: arranca la transicion a la fase 2', () => {

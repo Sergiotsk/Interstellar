@@ -2,6 +2,7 @@
 import { ANIM, PALETA_PIXEL, TOKENS_HUD } from '../config.js';
 import { sonar, textoFlotante, mostrarBanner } from './efectos.js';
 import { TEXTOS } from './textos.js';
+import { empFormacion } from './sancor.js';
 
 const ARMAS = ['pulse', 'scatter', 'rocket'];
 
@@ -87,6 +88,7 @@ export function detonarEmp(sim) {
   }
   // Como en el original: les baja la vida, pero los obstaculos nunca revisan su hp.
   for (const obs of sim.obstacles) obs.hp -= 300;
+  empFormacion(sim);
 
   mostrarBanner(sim, 'EMP PULSE DETONATED', 'AIRSPACE THREATS CLEARED', '#a855f7', 1.8);
 }

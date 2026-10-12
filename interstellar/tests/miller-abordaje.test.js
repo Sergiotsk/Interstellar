@@ -19,7 +19,7 @@ describe('nave.js — abordar en la superficie', () => {
     abordar(sim);
     assert.equal(sim.controlMode, 'FOOT');
     assert.equal(sim.stage, 'MISSION_1_SURFACE');
-    assert.equal(sim.banner.text, 'BALIZA NO RECUPERADA');
+    assert.equal(sim.banner.text, 'CARGA INCOMPLETA');
     assert.ok(sonidos(sim).includes('playErrorBuzz'));
   });
 
@@ -39,7 +39,7 @@ describe('fauna.js — la huida con la baliza', () => {
     sim.playerX = sim.beaconX;
     sim.playerY = sim.beaconY + 30;
     actualizarSuperficie(sim, QUIETO, 1 / 60, CONFIG, crearRng(5));
-    assert.equal(sim.beaconAcquired, true);
+    assert.equal(sim.cargando, 'baliza');
     assert.equal(sim.enemies.filter(esFauna).length, CONFIG.fauna.huida.emboscada);
   });
 
@@ -51,7 +51,7 @@ describe('fauna.js — la huida con la baliza', () => {
 
   test('con la baliza el tope de enemigos vivos es mayor', () => {
     const sim = nueva();
-    Object.assign(sim, { elapsedSeconds: 100, beaconAcquired: true });
+    Object.assign(sim, { elapsedSeconds: 100, huida: true });
     for (let i = 0; i < 60; i++) {
       sim.faunaTimer = 0;
       generarFauna(sim, 1 / 60, CONFIG, crearRng(i));

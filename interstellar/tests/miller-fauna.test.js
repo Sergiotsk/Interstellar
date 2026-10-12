@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { CONFIG } from '../js/minijuegos/miller/config.js';
 import { crearRng } from '../js/minijuegos/miller/logica/azar.js';
 import { crearSim } from '../js/minijuegos/miller/logica/estado.js';
-import { generarFauna, moverFauna, crearDron, crearAlimana } from '../js/minijuegos/miller/logica/fauna.js';
+import { generarFauna, moverFauna, crearDron, crearAlimana, crearCangrejo, emboscada, esFauna } from '../js/minijuegos/miller/logica/fauna.js';
 import { actualizarSuperficie } from '../js/minijuegos/miller/logica/superficie.js';
 import { actualizarProyectiles } from '../js/minijuegos/miller/logica/proyectiles.js';
 
@@ -34,7 +34,7 @@ describe('fauna.js — aparicion', () => {
     generarFauna(sim, DT, CONFIG, crearRng(1));
     assert.equal(sim.enemies.length, 1);
     const e = sim.enemies[0];
-    assert.ok(['bio_drone', 'trench_lurker'].includes(e.type));
+    assert.ok(['bio_drone', 'trench_lurker', 'tide_crab'].includes(e.type));
     const d = Math.hypot(e.x - sim.playerX, e.y - sim.playerY);
     assert.ok(d >= F.distanciaSpawn[0] && d <= F.distanciaSpawn[1], `distancia ${d}`);
   });
@@ -49,16 +49,104 @@ describe('fauna.js — aparicion', () => {
     assert.equal(sim.enemies.length, F.maxVivos);
   });
 
-  test('con la baliza recogida aparecen mas seguido', () => {
+  test('en la huida (primera carga recogida) aparecen mas seguido', () => {
     const sim = nueva();
     sim.elapsedSeconds = 100;
     generarFauna(sim, DT, CONFIG, fijo(0.99));
     const normal = sim.faunaTimer;
     const huida = nueva();
     huida.elapsedSeconds = 100;
-    huida.beaconAcquired = true;
+    huida.huida = true;
     generarFauna(huida, DT, CONFIG, fijo(0.99));
     assert.ok(huida.faunaTimer < normal);
+  });
+});
+
+describe('fauna.js — mas presion por cada carga a bordo', () => {
+  test('el tope de vivos sube con cada carga cargada', () => {
+    const vivos = (cargas) => {
+      const sim = nueva();
+      Object.assign(sim, { elapsedSeconds: 100, huida: true, cargasCargadas: cargas });
+      for (let i = 0; i < 80; i++) {
+        sim.faunaTimer = 0;
+        generarFauna(sim, DT, CONFIG, crearRng(i));
+      }
+      return sim.enemies.length;
+    };
+    assert.equal(vivos(0), F.huida.maxVivos);
+    assert.equal(vivos(2), F.huida.maxVivos + 2 * F.huida.porCarga.maxVivos);
+  });
+
+  test('el intervalo se acorta con cada carga cargada', () => {
+    const intervalo = (cargas) => {
+      const sim = nueva();
+      Object.assign(sim, { elapsedSeconds: 100, huida: true, cargasCargadas: cargas });
+      generarFauna(sim, DT, CONFIG, fijo(0.99));
+      return sim.faunaTimer;
+    };
+    assert.ok(Math.abs(intervalo(2) - intervalo(0) * F.huida.porCarga.factorIntervalo ** 2) < 1e-9);
+  });
+
+  test('la emboscada respeta el tope que sube con las cargas', () => {
+    const sim = nueva();
+    Object.assign(sim, { huida: true, cargasCargadas: 1 });
+    for (let i = 0; i < 8; i++) emboscada(sim, CONFIG, crearRng(i));
+    assert.equal(sim.enemies.filter(esFauna).length, F.huida.maxVivos + F.huida.porCarga.maxVivos);
+  });
+});
+
+describe('fauna.js — cangrejo kamikaze', () => {
+  test('corre por el suelo hacia el jugador', () => {
+    const sim = nueva();
+    sim.enemies.push(crearCangrejo(sim, sim.playerX + 300, sim.playerY));
+    correrFauna(sim, 0.5);
+    const c = sim.enemies[0];
+    assert.equal(c.type, 'tide_crab');
+    assert.equal(c.z, 0);
+    const d = Math.hypot(c.x - sim.playerX, c.y - sim.playerY);
+    assert.ok(Math.abs(d - (300 - F.cangrejo.vel * 0.5)) < 2, `distancia ${d}`);
+  });
+
+  test('cerca se arma, explota y dania', () => {
+    const sim = nueva();
+    sim.enemies.push(crearCangrejo(sim, sim.playerX + 30, sim.playerY));
+    correrFauna(sim, DT);
+    assert.equal(sim.enemies[0].state, 'armado');
+    assert.equal(sim.playerShieldHp, 100, 'avisa antes de explotar');
+    correrFauna(sim, F.cangrejo.armado + 0.05);
+    assert.equal(sim.enemies.length, 0);
+    assert.equal(sim.playerShieldHp, 100 - F.cangrejo.danio);
+    assert.ok(sonidos(sim).includes('playExplosion'));
+  });
+
+  test('si te alejas mientras se arma, la explosion no te alcanza', () => {
+    const sim = nueva();
+    sim.enemies.push(crearCangrejo(sim, sim.playerX + 30, sim.playerY));
+    correrFauna(sim, DT);
+    sim.playerX += F.cangrejo.radioExplosion + 100;
+    correrFauna(sim, F.cangrejo.armado + 0.05);
+    assert.equal(sim.enemies.length, 0);
+    assert.equal(sim.playerShieldHp, 100);
+  });
+
+  test('saltando por encima de la explosion no dania', () => {
+    const sim = nueva();
+    sim.enemies.push(crearCangrejo(sim, sim.playerX + 30, sim.playerY));
+    correrFauna(sim, DT);
+    sim.playerZ = 40;
+    correrFauna(sim, F.cangrejo.armado + 0.05);
+    assert.equal(sim.playerShieldHp, 100);
+  });
+
+  test('muerto a tiros no explota ni dania, y suma la baja', () => {
+    const sim = nueva();
+    const c = crearCangrejo(sim, sim.playerX + 20, sim.playerY);
+    sim.enemies.push(c);
+    sim.bullets.push({ x: c.x, y: c.y, vx: 0, vy: 0, type: 'pulse', damage: F.cangrejo.hp, life: 1, maxLife: 1 });
+    actualizarProyectiles(sim, DT, fijo(0.9), DIMS);
+    assert.equal(sim.enemies.length, 0);
+    assert.equal(sim.enemiesDestroyed, 1);
+    assert.equal(sim.playerShieldHp, 100);
   });
 });
 
