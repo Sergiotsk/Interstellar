@@ -24,9 +24,9 @@ import { renderObstaculosSuperficie } from './obstaculos-superficie.js';
 
 const ETAPAS_ESPACIO = ['MISSION_2_ORBITAL_ASCENT', 'VICTORY_ENDURANCE_DOCKED', 'MISSION_TRANSITION'];
 
-function dibujarEspacio(ctx, sim, time, canvasWidth, canvasHeight) {
+function dibujarEspacio(ctx, sim, time, canvasWidth, canvasHeight, nitido) {
   renderShmupSpaceBackground(ctx, sim.stars, sim.sector, sim.altitude, time, canvasWidth, canvasHeight);
-  renderShowDrones(ctx, sim.formacion, time);
+  renderShowDrones(ctx, sim.formacion, time, nitido);
 
   if (sim.enduranceDescending || sim.stage === 'VICTORY_ENDURANCE_DOCKED') {
     renderEnduranceMothership(ctx, sim.enduranceX, sim.enduranceY, sim.enduranceRot, sim.enduranceDocked ? 1.0 : sim.dockingLerp, time);
@@ -135,7 +135,7 @@ function dibujarSuperficie(ctx, sim, time, canvasWidth, canvasHeight) {
 }
 
 // azar() solo mueve el temblor de pantalla, que es puramente visual (como el Math.random del original).
-export function dibujar(ctx, sim, { ancho: canvasWidth, alto: canvasHeight }, azar = Math.random) {
+export function dibujar(ctx, sim, { ancho: canvasWidth, alto: canvasHeight }, azar = Math.random, { nitido = false } = {}) {
   const time = sim.elapsedSeconds;
 
   if (sim.oneFrameFlash || sim.empFlashTimer > 0) {
@@ -153,7 +153,7 @@ export function dibujar(ctx, sim, { ancho: canvasWidth, alto: canvasHeight }, az
     ctx.translate((azar() * 2 - 1) * sim.screenShake, (azar() * 2 - 1) * sim.screenShake);
   }
 
-  if (ETAPAS_ESPACIO.includes(sim.stage)) dibujarEspacio(ctx, sim, time, canvasWidth, canvasHeight);
+  if (ETAPAS_ESPACIO.includes(sim.stage)) dibujarEspacio(ctx, sim, time, canvasWidth, canvasHeight, nitido);
   else dibujarSuperficie(ctx, sim, time, canvasWidth, canvasHeight);
 
   renderHitMarkers(ctx, sim.hitMarkers);
