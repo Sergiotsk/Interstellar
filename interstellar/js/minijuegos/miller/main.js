@@ -300,11 +300,20 @@ function conectarPuntero(s) {
   ['pointerup', 'pointercancel'].forEach((t) => escuchar(s, s.lienzo, t, presionar(false)));
 }
 
+// Pixeles reales del lienzo por unidad logica: lo que ocupa en pantalla, no solo el devicePixelRatio,
+// asi un monitor grande no estira 960x540. En tactil queda en 1 (la pantalla chica ya lo achica).
+function factorLienzo(s, visor, dims) {
+  if (s.modo === 'tactil') return 1;
+  const reales = (visor?.clientWidth || dims.ancho) * (window.devicePixelRatio || 1);
+  return Math.min(3, Math.max(1, Math.ceil((reales / dims.ancho) * 4) / 4));
+}
+
 // En pantalla completa (o cabina tactil) la escena llena todo; si no, el lienzo original de 960x540.
 function actualizarDims(s) {
   const lleno = pantalla.estaActiva(s.raiz) || s.raiz.hasAttribute('data-cabina');
   const visor = s.raiz.querySelector('.mw-visor');
   const dims = lleno ? dimensionesVisor(visor.clientWidth, visor.clientHeight) : DIMS_BASE;
+  s.factor = factorLienzo(s, visor, dims);
   if (dims.ancho === s.dims.ancho && dims.alto === s.dims.alto) return;
   s.dims = dims;
   ajustarDimensiones(s.sim, dims);
@@ -339,13 +348,12 @@ async function crearJuego(s) {
   const modulo = await import(URL_PHASER);
   if (sesion !== s) return; // se desmonto mientras Phaser bajaba: descartar
   const Phaser = modulo.default ?? modulo;
-  const factor = s.modo === 'tactil' ? 1 : Math.min(2, window.devicePixelRatio || 1);
-  const Escena = crearEscenaMiller(Phaser, { obtenerSim: () => s.sim, obtenerDims: () => s.dims, alPaso: (dt) => paso(s, dt), config: CONFIG, factor });
+  const Escena = crearEscenaMiller(Phaser, { obtenerSim: () => s.sim, obtenerDims: () => s.dims, obtenerFactor: () => s.factor, alPaso: (dt) => paso(s, dt), config: CONFIG, nitido: s.modo !== 'tactil' });
   s.game = new Phaser.Game({
     type: Phaser.AUTO,
     parent: s.lienzo,
-    width: s.dims.ancho * factor,
-    height: s.dims.alto * factor,
+    width: s.dims.ancho * s.factor,
+    height: s.dims.alto * s.factor,
     backgroundColor: '#000000',
     banner: false,
     audio: { noAudio: true },
@@ -370,6 +378,7 @@ export async function mount() {
   const { sim, rng } = nuevaSim(DIMS_BASE);
   const s = {
     dims: DIMS_BASE,
+    factor: 1,
     raiz,
     modo,
     lienzo: raiz.querySelector('[data-miller-lienzo]'),

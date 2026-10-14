@@ -4,24 +4,26 @@ import { dibujar } from './render/dibujar.js';
 
 const CLAVE_TEXTURA = 'miller-mundo';
 
-// factor: resolucion del lienzo (el prepareCanvas del original con devicePixelRatio, acotado).
+// obtenerFactor: pixeles reales del lienzo por unidad logica (segun el tamano en pantalla y el devicePixelRatio).
 // obtenerDims: tamano logico actual; cambia al entrar o salir de pantalla completa (logica/visor.js).
-export function crearEscenaMiller(Phaser, { obtenerSim, obtenerDims, alPaso, config, factor }) {
+export function crearEscenaMiller(Phaser, { obtenerSim, obtenerDims, obtenerFactor, alPaso, config, nitido = false }) {
   return class EscenaMiller extends Phaser.Scene {
     constructor() {
       super('miller');
       this.acumulado = 0;
       this.dims = null;
+      this.factor = 1;
     }
 
     create() {
       this.imagen = null;
-      this.preparar(obtenerDims());
+      this.preparar(obtenerDims(), obtenerFactor());
     }
 
     // Rearma la textura y el tamano del juego; Scale.FIT lo ajusta al contenedor sin deformar.
-    preparar(dims) {
+    preparar(dims, factor) {
       this.dims = dims;
+      this.factor = factor;
       this.imagen?.destroy();
       if (this.textures.exists(CLAVE_TEXTURA)) this.textures.remove(CLAVE_TEXTURA);
       this.lienzo = this.textures.createCanvas(CLAVE_TEXTURA, dims.ancho * factor, dims.alto * factor);
@@ -33,7 +35,8 @@ export function crearEscenaMiller(Phaser, { obtenerSim, obtenerDims, alPaso, con
     // Paso fijo de 60 Hz con 5 subpasos como maximo: el createFixedStepper del original.
     update(_tiempo, delta) {
       const dims = obtenerDims();
-      if (dims.ancho !== this.dims.ancho || dims.alto !== this.dims.alto) this.preparar(dims);
+      const factor = obtenerFactor();
+      if (dims.ancho !== this.dims.ancho || dims.alto !== this.dims.alto || factor !== this.factor) this.preparar(dims, factor);
 
       const paso = config.stepMs;
       this.acumulado += Math.min(delta, paso * config.maxSubSteps);
@@ -46,8 +49,8 @@ export function crearEscenaMiller(Phaser, { obtenerSim, obtenerDims, alPaso, con
 
       const sim = obtenerSim();
       if (!sim) return;
-      this.ctx.setTransform(factor, 0, 0, factor, 0, 0);
-      dibujar(this.ctx, sim, this.dims);
+      this.ctx.setTransform(this.factor, 0, 0, this.factor, 0, 0);
+      dibujar(this.ctx, sim, this.dims, Math.random, { nitido });
       this.lienzo.refresh();
     }
   };
